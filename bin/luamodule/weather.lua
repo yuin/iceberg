@@ -1,5 +1,5 @@
 local ibs = require("icebergsupport")
-local script_path = ibs.join_path(ibs.config_path, "luamodule")
+local script_path = ibs.join_path(ibs.CONFIG_DIR, "luamodule")
 
 require("LuaXml")
 require("lfs")

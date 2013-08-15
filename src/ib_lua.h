@@ -36,6 +36,7 @@ namespace ib {
 
   namespace luamodule { // {{{
     int create(lua_State *L);
+    int config_dir(lua_State *L); // void -> string:config path
     int build_platform(lua_State *L); // void -> string:platform_information
     int runtime_platform(lua_State *L); // void -> string:platform_information
     int hide_application(lua_State *L); // void -> void

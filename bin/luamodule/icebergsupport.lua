@@ -1,5 +1,6 @@
 local t = {
 -- Constants {{{
+  CONFIG_DIR = _iceberg_config_dir(),
   EVENT_STATE_SHIFT = 0x00010000,
   EVENT_STATE_CAPS_LOCK = 0x00020000,
   EVENT_STATE_CTRL = 0x00040000,

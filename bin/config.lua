@@ -1,8 +1,7 @@
-local script_path = string.sub(debug.getinfo(1).short_src, 1, string.len(debug.getinfo(1).short_src)-10)
-package.path = script_path .. "luamodule/?.lua;" .. package.path
-package.cpath = script_path .. "luamodule/?.dll;" .. package.path
+local script_path = _iceberg_config_dir()
+package.path = script_path .. [[\luamodule\?.lua;]] .. package.path
+package.cpath = script_path ..[[\luamodule\?.dll;]] .. package.path
 local ibs = require("icebergsupport")
-ibs.config_path = script_path
 local wins = require("winsupport")
 
 -- configurations --

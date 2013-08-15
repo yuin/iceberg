@@ -409,6 +409,7 @@ void ib::LuaState::init() { // {{{
   ib::Config &cfg = ib::Config::inst();
   luaL_openlibs(l_);
   lua_register(l_, "_iceberg_module", &ib::luamodule::create);
+  lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
   if(luaL_dofile(l_, cfg.getConfigPath().c_str())) {
     fl_alert(lua_tostring(l_, lua_gettop(l_)));
@@ -490,6 +491,18 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(list_dir);
   REGISTER_FUNCTION(join_path);
 #undef REGISTER_FUNCTION
+  return 1;
+} // }}}
+
+int ib::luamodule::config_dir(lua_State *L) { // {{{
+  auto &cfg = ib::Config::inst();
+  ib::oschar osbuf[IB_MAX_PATH];
+  ib::oschar osconfig[IB_MAX_PATH];
+  ib::platform::utf82oschar_b(osconfig, IB_MAX_PATH, cfg.getConfigPath().c_str());
+  ib::platform::dirname(osbuf, osconfig);
+  char config_dir[IB_MAX_PATH_BYTE];
+  ib::platform::oschar2utf8_b(config_dir, IB_MAX_PATH_BYTE, osbuf);
+  lua_pushstring(L, config_dir);
   return 1;
 } // }}}
 
