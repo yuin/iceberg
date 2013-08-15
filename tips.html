@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tips &mdash; iceberg 0.9.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="環境設定" href="config.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Tips</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="config.html">環境設定</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="api.html">API</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="tips">
+<h1>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>このページでは便利な使い方やお勧めの設定を紹介します。</p>
+</div>
+<div class="section" id="id2">
+<h2>ポチエス連携<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.geocities.jp/pochi_s2004/pochi.html">ポチエス</a> はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 <tt class="docutils literal"><span class="pre">ctrl-e</span></tt> を押すことでポスエスで実行する設定例を示します。</p>
+<p>コマンド定義</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">esExt5</span>  <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="o">#</span><span class="n">args</span> <span class="o">~=</span> <span class="mi">0</span> <span class="k">then</span>
+      <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">to_path</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+      <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
+        <span class="n">ibs</span><span class="p">.</span><span class="n">shell_execute</span><span class="p">(</span><span class="s">[[ポチエスexeへのパス]]</span><span class="p">,</span> <span class="p">{</span><span class="n">path</span><span class="p">},</span> <span class="s">[[ポチエスのディレクトリ]]</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="k">end</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">false</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>ショートカット定義</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-e&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">esExt5&quot;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h2>現在の日付・時刻をクリップボードにコピー<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>以下のようなコマンド定義を行います。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id5">
+<h2>エクスプローラで選択しているファイルをエディタで開く<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>エクスプローラでファイルを選択し、iceberg上で <tt class="docutils literal"><span class="pre">ctrl-m</span></tt> を実行するとvimでファイルを開く設定です。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ctrl-m&quot;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">vim&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">ex</span><span class="p">.</span><span class="n">path</span> <span class="o">..</span> <span class="s">[[\]]</span> <span class="o">..</span> <span class="n">ex</span><span class="p">.</span><span class="n">selected</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
+      <span class="n">ibs</span><span class="p">.</span><span class="n">set_input_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">&quot;</span><span class="p">)</span>
+      <span class="n">ibs</span><span class="p">.</span><span class="n">hide_application</span><span class="p">()</span>
+    <span class="k">else</span>
+      <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="k">end</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">accept</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">accept</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">process_shortcut_keys</span><span class="p">()</span>
+  <span class="k">end</span>
+  <span class="k">return</span> <span class="n">accept</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id6">
+<h2>コマンド登録されているディレクトリ配下の表示<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>例えば <tt class="docutils literal"><span class="pre">app</span></tt> というコマンドとして <tt class="docutils literal"><span class="pre">c:\app</span></tt> というディレクトリが登録されているとします。このときに <tt class="docutils literal"><span class="pre">app</span></tt> と入力し <tt class="docutils literal"><span class="pre">ctrl-l</span></tt> を実行するとカレントディレクトリが <tt class="docutils literal"><span class="pre">c:\app</span></tt> に変更されます。このあとに <tt class="docutils literal"><span class="pre">./</span></tt> と入力すると <tt class="docutils literal"><span class="pre">c:\app</span></tt> の配下のファイルを表示することができます。</p>
+</div>
+<div class="section" id="id7">
+<h2>数式入力で計算を行う<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>以下のように <tt class="docutils literal"><span class="pre">on_enter</span></tt> を定義することで <tt class="docutils literal"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></tt> のように数式を入力してEnterを押下するとすぐに計算を実行することができます。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">get_input_text</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">ok</span> <span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">regex_match</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s">d+</span><span class="se">\\</span><span class="s">s+.*&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">default_after_command_action</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">cal&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">text</span><span class="p">}))</span>
+    <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="k">end</span>
+
+  <span class="k">return</span> <span class="n">accept</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="config.html">環境設定</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="api.html">API</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012-2013, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

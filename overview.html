@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>概要 &mdash; iceberg 0.9.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
+    <link rel="next" title="環境設定" href="config.html" />
+    <link rel="prev" title="icebergドキュメント" href="index.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.0 documentation</span></a></h1>
+        <h2 class="heading"><span>概要</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">icebergドキュメント</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="config.html">環境設定</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="id1">
+<h1>概要<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="iceberg">
+<h2>icebergとは<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h2>
+<p>icebergはシンプルで拡張性の高いコマンドラインランチャです。以下のような機能があります。</p>
+<ul class="simple">
+<li>前方一致、部分一致、あいまい検索</li>
+<li>migemo検索</li>
+<li>ヒストリ検索</li>
+<li>Lua関数の呼び出し</li>
+</ul>
+<img alt="_images/screenshot_01.jpg" src="_images/screenshot_01.jpg" />
+</div>
+<div class="section" id="id2">
+<h2>使用法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>以下ではデフォルトの設定を例にします。</p>
+<div class="section" id="id3">
+<h3>コマンド登録<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>まず、コマンドを登録する必要があります。 <tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">all</span></tt> と入力しEnterを押下してください。この操作でスタートメニューのアプリケーションが自動で登録されます。ユーザが独自にコマンドを登録する場合は以下の2パターンが利用できます。</p>
+<ul>
+<li><dl class="first docutils">
+<dt>ショートカットファイルとサーチパスを用いる方法</dt>
+<dd><ol class="first last arabic simple">
+<li>configファイルにサーチパスを定義します。</li>
+<li>定義したサーチパスにショートカット( <tt class="docutils literal"><span class="pre">*.lnk</span></tt> )を作成します。</li>
+<li><tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">CATEGORY</span></tt> を実行します。 <tt class="docutils literal"><span class="pre">CATEGORY</span></tt> には1で定義したサーチパスのカテゴリもしくは <tt class="docutils literal"><span class="pre">all</span></tt> を入力します。</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">configファイルに直接記載する方法: 詳しい設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>組み込みコマンド<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>以下のコマンドが組み込みコマンドとして提供されています。組み込みコマンドは <tt class="docutils literal"><span class="pre">:</span></tt> から始まります。</p>
+<ul class="simple">
+<li><cite>:version</cite> : icebergのバージョンを表示します。</li>
+<li><cite>:exit</cite> : icebergを終了します。</li>
+<li><cite>:reboot</cite> : icebergを終了します。</li>
+<li><cite>:pwd</cite> : icebergのカレントディレクトリを表示します。</li>
+<li><cite>:cd</cite>  : icebergのカレントディレクトリを変更します。</li>
+<li><cite>:scan_search_path</cite>  : サーチパスを再検索します。</li>
+<li><cite>:opendir</cite> : 引数のコマンドもしくはディレクトリを開きます。</li>
+<li><cite>:empty</cite> : 特別なコマンドです。入力欄になにも入力せずにEnterを実行した場合このコマンドが実行されます。デフォルトでは最前面のエクスプローラで表示しているディレクトリをカレントディレクトリとしてコマンドプロンプトを開きます。</li>
+</ul>
+<p>その他、以下のコマンドがデフォルトで用意されています。</p>
+<ul class="simple">
+<li><cite>control_panel</cite> : コントロールパネルを表示する。</li>
+<li><cite>windows_service</cite> : サービスを表示する。</li>
+<li><cite>my_computer</cite> : マイコンピュータを表示する。</li>
+<li><cite>network_computer</cite> : ネットワークコンピュータを表示する。</li>
+<li><cite>google</cite> : Googleで第一引数の単語を検索する。</li>
+<li><cite>mkdir</cite> : 最前面のエクスプローラで表示されているディレクトリに第一引数の名前をもつディレクトリを作成する。</li>
+<li><cite>cal</cite> : <tt class="docutils literal"><span class="pre">cal</span> <span class="pre">10+2</span></tt> のように計算を行える計算機。</li>
+<li><cite>weather</cite> : 日本の主要都市の天気を表示します。(このコマンドはインターネット上から情報を取得するため、インターネット接続不可の場合情報が表示できません）</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>カレントディレクトリ<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>icebergはカレントディレクトリを保持しています。組み込みコマンド <tt class="docutils literal"><span class="pre">:pwd</span></tt> で表示、 <tt class="docutils literal"><span class="pre">:cd</span></tt> で変更できます。</p>
+</div>
+<div class="section" id="id6">
+<h3>表示と実行<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">ctrl-space</span></tt> を押下するとicebergが表示されます。なにかキーを入力すると補完候補が表示されます。 <tt class="docutils literal"><span class="pre">ctrl-p</span></tt> および <tt class="docutils literal"><span class="pre">ctrl-n</span></tt> で補完候補を選んで <tt class="docutils literal"><span class="pre">Enter</span></tt> を押すとコマンドが実行されます。その際、 <tt class="docutils literal"><span class="pre">!notepad</span></tt> のようにコマンドの先頭に <tt class="docutils literal"><span class="pre">!</span></tt> を付与するとコマンドに紐づけられた実行ディレクトリではなく、icebergのカレントディレクトリで実行されます。入力は <tt class="docutils literal"><span class="pre">&quot;aaa</span> <span class="pre">bbb&quot;</span></tt> のように <tt class="docutils literal"><span class="pre">&quot;</span></tt> でくくることにより空白を含めることができます。</p>
+<p>また <tt class="docutils literal"><span class="pre">c:/</span></tt> や <tt class="docutils literal"><span class="pre">./</span></tt> のように入力すると簡易ファイラとして利用することができます。 <tt class="docutils literal"><span class="pre">/</span></tt> または <tt class="docutils literal"><span class="pre">\</span></tt> を入力するとドライブ一覧を表示します。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">パスの区切り文字には <tt class="docutils literal"><span class="pre">/</span></tt> もしくは <tt class="docutils literal"><span class="pre">\</span></tt> が使用できますが、特定のケースでは <tt class="docutils literal"><span class="pre">/</span></tt> しか使用できません。
+たとえば <tt class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name&quot;</span></tt> と入力欄に表示されている場合 <tt class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name\&quot;</span></tt> とは入力できません。 <tt class="docutils literal"><span class="pre">name</span></tt> の直後の <tt class="docutils literal"><span class="pre">\</span></tt> は最後の <tt class="docutils literal"><span class="pre">&quot;</span></tt> に対するエスケープ文字として認識されます。このようなケースでは <tt class="docutils literal"><span class="pre">/</span></tt> を使用してください。</p>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>ショートカット<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>icebergになにかを入力した状態で <tt class="docutils literal"><span class="pre">Enter</span></tt> 以外の特別なキーを押すことによりicebergに入力されている文字列を引数としてコマンドを実行することができます。例えば、デフォルトではコマンドを入力した状態で <tt class="docutils literal"><span class="pre">ctrl-d</span></tt> を押すとそのコマンドのディレクトリを開きます。</p>
+</div>
+<div class="section" id="id8">
+<h3>非表示にする<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">escape</span></tt> を押下するとicebergを非表示にできます。</p>
+</div>
+<div class="section" id="id9">
+<h3>モード切り替え<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">ctrl-r</span></tt> を押下するとノーマルモードとヒストリモードを切り替えることができます。ヒストリモードでは引数も含めて過去に入力したコマンドから補完することができます。</p>
+</div>
+<div class="section" id="migemo">
+<h3>migemo検索<a class="headerlink" href="#migemo" title="Permalink to this headline">¶</a></h3>
+<p>iceberg実行ファイルのディレクトリに <tt class="docutils literal"><span class="pre">migemo.dll</span></tt> を <tt class="docutils literal"><span class="pre">dict</span></tt> ディレクトリ配下に辞書ファイルを配置することによりmigemo機能が有効となります。前方一致・部分一致検索を行う場合に日本語ファイルにもマッチするようになります。ファイル配置は以下のようになります。:</p>
+<div class="highlight-python"><pre>iceberg.exe
+migemo.dll
+dict/
+   han2zen.dat
+   hira2kata.dat
+   migemo-dict
+   roma2hira.dat
+   zen2han.dat</pre>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>外部からのコマンド送信<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>以下のように起動することで、外部から起動済みのicebergにコマンドを送信することができます。この機能を利用するためには <tt class="docutils literal"><span class="pre">system.server_port</span></tt> を <tt class="docutils literal"><span class="pre">0</span></tt> 以外に設定しておく必要があります。</p>
+<div class="highlight-python"><pre>iceberg.exe -m "exec 実行したいコマンド"
+iceberg.exe -m "set 入力欄にセットしたい文字列"</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>より進んだ使い方<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>詳しい使い方や設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> , <a class="reference internal" href="api.html"><em>API</em></a> や <a class="reference internal" href="tips.html"><em>Tips</em></a> を参照してください。</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">icebergドキュメント</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="config.html">環境設定</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012-2013, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
