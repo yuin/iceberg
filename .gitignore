@@ -1,6 +1,7 @@
 ext/*/
-docs/build/
+docs/build/doctrees/
 .venv
+*.pyc
 *.o
 *.dll
 *.sdf
