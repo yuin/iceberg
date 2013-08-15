@@ -37,13 +37,19 @@ const std::string* ib::CompletionString::getContextMenuPath() const { // {{{
 } // }}}
 
 Fl_RGB_Image* ib::CompletionString::loadIcon(const int size) { // {{{
+  ib::oschar ospath[IB_MAX_PATH];
   if(icon_file_.empty()){
-    return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size, false);
+    ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, value_.c_str());
+    if(ib::platform::is_path(ospath)){
+      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size, false);
+    }else{
+      return 0;
+    }
   }else{
     ib::oschar ospath[IB_MAX_PATH];
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, icon_file_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::IconManager::inst()->readFileIcon(icon_file_.empty() ? value_.c_str() : icon_file_.c_str(), size);
+      return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
     }else{
       return 0;
     }
