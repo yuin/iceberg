@@ -1,0 +1,17 @@
+# $Id: Makefile,v 1.36 2009/09/21 17:02:44 mascarenhas Exp $
+
+T= lfs
+PREFIX=/usr/local
+LIB_OPTION= -shared #for Linux
+WARN= -O2 -Wall -fPIC -W -Waggregate-return -Wcast-align -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings -pedantic
+INCS= -I../lua-5.1.4/src
+CFLAGS= $(WARN) $(INCS)
+CC= gcc
+SRCS= src/$T.c
+OBJS= src/$T.o
+
+lib: src/lfs.dll
+
+src/lfs.dll: $(OBJS)
+	$(CC) $(CFLAGS) $(LIB_OPTION) -o src/lfs.dll $(OBJS) ../lua-5.1.4/src/lua51.dll
+
