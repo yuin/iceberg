@@ -4,7 +4,7 @@ icebergドキュメント
 :Author: Yusuke Inuzuka
 :License: GPLv3
 :Date: |today|
-:Platform: Windows7 64bit
+:Platform: Windows7 64bit, Windows7 32bit
 :Description: icebergはLua言語で拡張可能なコマンドライン型ランチャーです。
 
 Contents:
