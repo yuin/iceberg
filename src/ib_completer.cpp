@@ -68,7 +68,7 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
     }
     switch(lua_type(IB_LUA, -1)) {
       case LUA_TSTRING: {
-          const char *value = lua_tostring(IB_LUA, -1);
+          const char *value = luaL_checkstring(IB_LUA, -1);
           if(!token->isValueToken() || method_option_->match(value, input) > -1){
             candidates.push_back(new ib::CompletionString(value));
           }
@@ -77,22 +77,26 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
 
       case LUA_TTABLE: {
           lua_getfield(IB_LUA, -1, "value");
-          ib::CompletionString *compstr = new ib::CompletionString(
-                                            luaL_checkstring(IB_LUA, -1));
-          lua_pop(IB_LUA, 1);
+          const char *value = luaL_checkstring(IB_LUA, -1);
+          if(!token->isValueToken() || method_option_->match(value, input) > -1){
+            ib::CompletionString *compstr = new ib::CompletionString(value);
+            lua_pop(IB_LUA, 1);
 
-          lua_getfield(IB_LUA, -1, "description");
-          if(!lua_isnil(IB_LUA, -1)){
-            compstr->setDescription(luaL_checkstring(IB_LUA, -1));
-          }
-          lua_pop(IB_LUA, 1);
+            lua_getfield(IB_LUA, -1, "description");
+            if(!lua_isnil(IB_LUA, -1)){
+              compstr->setDescription(luaL_checkstring(IB_LUA, -1));
+            }
+            lua_pop(IB_LUA, 1);
 
-          lua_getfield(IB_LUA, -1, "icon");
-          if(!lua_isnil(IB_LUA, -1)){
-            compstr->setIconFile(luaL_checkstring(IB_LUA, -1));
+            lua_getfield(IB_LUA, -1, "icon");
+            if(!lua_isnil(IB_LUA, -1)){
+              compstr->setIconFile(luaL_checkstring(IB_LUA, -1));
+            }
+            lua_pop(IB_LUA, 1);
+            candidates.push_back(compstr);
+          }else{
+            lua_pop(IB_LUA, 1);
           }
-          lua_pop(IB_LUA, 1);
-          candidates.push_back(compstr);
         }
         break;
 

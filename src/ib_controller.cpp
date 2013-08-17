@@ -870,7 +870,11 @@ void ib::Controller::completionInput() { // {{{
           ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_completed_path);
           buf += completed_path;
         }else{
-          buf += listbox->selectedValue()->getCompvalue();
+          const std::string &comp_value = listbox->selectedValue()->getCompvalue();
+          ib::unique_oschar_ptr oscomp_value(ib::platform::utf82oschar(comp_value.c_str()));
+          ib::unique_oschar_ptr osquoted_value(ib::platform::quote_string(0, oscomp_value.get()));
+          ib::unique_char_ptr   quoted_value(ib::platform::oschar2utf8(osquoted_value.get()));
+          buf += quoted_value.get();
         }
         position = buf.length();
         if(!buf.empty() && buf.at(position-1) == '"') {
