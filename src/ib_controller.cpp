@@ -91,17 +91,25 @@ void ib::Controller::executeCommand() { // {{{
     }else{
       success = true;
     }
-  }else if(ib::platform::directory_exists(os_cmd.get())){
-    if(ib::utils::open_directory(cmd.c_str(), error) != 0){
-      message = error.getMessage();
+  }else {
+    ib::oschar osabspath[IB_MAX_PATH];
+    ib::oschar oscwd[IB_MAX_PATH];
+    ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, getCwd().c_str());
+    ib::platform::to_absolute_path(osabspath, oscwd, os_cmd.get());
+    char abspath[IB_MAX_PATH_BYTE];
+    ib::platform::oschar2utf8_b(abspath, IB_MAX_PATH_BYTE, osabspath);
+    if(ib::platform::directory_exists(osabspath)){
+      if(ib::utils::open_directory(abspath, error) != 0){
+        message = error.getMessage();
+      }else{
+        success = true;
+      }
     }else{
-      success = true;
-    }
-  }else{
-    if(ib::platform::shell_execute(cmd.c_str(), input->getParamValues(), getCwd(), error) != 0){
-      message = error.getMessage();
-    }else{
-      success = true;
+      if(ib::platform::shell_execute(abspath, input->getParamValues(), getCwd(), error) != 0){
+        message = error.getMessage();
+      }else{
+        success = true;
+      }
     }
   }
 
