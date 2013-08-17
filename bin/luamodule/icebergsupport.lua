@@ -163,6 +163,15 @@ t.quote_path = function(string) -- {{{
   return string
 end -- }}}
 
+t.unquote_path = function(string) -- {{{
+  local ok, re = t.regex_match([[^"([^\"]*)"$]], Regex.NONE, string)
+  if ok then
+    return string:sub(2,-2)
+  else
+    return string
+  end
+end -- }}}
+
 t.to_directory_path = function(arg) -- {{{
   local ok = false
   local path = arg
