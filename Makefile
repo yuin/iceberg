@@ -80,9 +80,15 @@ run:
 	$(PACKAGE)
 
 package:
-	(_IB_ARCH=x86_`python -c 'import sys; sys.stdout.write(sys.maxsize > 2**32 and "64" or "32")'`; \
+	(echo "$$(gmake --version)" | grep i686-w64 > /dev/null 2>&1; \
+	 _IB_32=$$?;                                                  \
+	 if [ $${_IB_32} == 0 ]; then                                 \
+	   _IB_ARCH=x86_32;                                           \
+	 else                                                         \
+	   _IB_ARCH=x86_64;                                           \
+	 fi;                                                          \
 	 _IB_VERSION=`grep IB_VERSION src/ib_constants.h | sed -e 's/#define IB_VERSION //' | sed -e 's/"//g'`; \
-     _IB_PACKAGE_DIR=iceberg-$${_IB_ARCH}-$${_IB_VERSION};                               \
+	 _IB_PACKAGE_DIR=iceberg-$${_IB_ARCH}-$${_IB_VERSION};                               \
 	 mkdir $${_IB_PACKAGE_DIR};                                                          \
 	 cp bin/config.lua $${_IB_PACKAGE_DIR};                                              \
 	 cp bin/iceberg.exe $${_IB_PACKAGE_DIR};                                             \
