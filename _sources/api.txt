@@ -85,6 +85,13 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
    :param string path: パス
    :returns: string: 変換後パス
 
+.. lua:function:: icebergsupport.unquote_path(path)
+
+   ``path`` が ``"`` で囲われている場合、 ``"`` をとりのぞきます。
+
+   :param string path: パス
+   :returns: string: 変換後パス
+
 
 ビット演算
 ~~~~~~~~~~~~~~
