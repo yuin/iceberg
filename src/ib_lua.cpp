@@ -626,13 +626,14 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
   lua_state.clearStack();
 
   ib::unique_oschar_ptr osname_or_path(ib::platform::utf82oschar(name_or_path));
-  if(ib::platform::is_path(osname_or_path.get())){
+  ib::unique_oschar_ptr unquoted_osname_or_path(ib::platform::unquote_string(0, osname_or_path.get()));
+  if(ib::platform::is_path(unquoted_osname_or_path.get())){
     ib::oschar oscwd[IB_MAX_PATH];
     ib::oschar osabs_path[IB_MAX_PATH];
     char abs_path[IB_MAX_PATH_BYTE];
 
     ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, ib::Controller::inst().getCwd().c_str());
-    ib::platform::to_absolute_path(osabs_path, oscwd, osname_or_path.get());
+    ib::platform::to_absolute_path(osabs_path, oscwd, unquoted_osname_or_path.get());
     ib::platform::oschar2utf8_b(abs_path, IB_MAX_PATH_BYTE, osabs_path);
     lua_pushboolean(L, true);
     lua_pushstring(L, abs_path);

@@ -458,6 +458,13 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
   return result;
 } // }}}
 
+ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result != str) { _tcscpy(result, str); }
+  PathUnquoteSpaces(result);
+  return result;
+} // }}}
+
 void ib::platform::hide_window(Fl_Window *window){ // {{{
   ShowWindow(fl_xid(window), SW_HIDE);
 } // }}}

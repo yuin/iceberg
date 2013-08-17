@@ -26,6 +26,7 @@ namespace ib {
     char* utf82local(const char *src);
     char* local2utf8(const char *src);
     ib::oschar* quote_string(ib::oschar *result, const ib::oschar *str);
+    ib::oschar* unquote_string(ib::oschar *result, const ib::oschar *str);
 
     /* application functions */
     void hide_window(Fl_Window *window);
