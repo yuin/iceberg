@@ -962,7 +962,11 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
     tmp[0] = L'_'; tmp[1] = L'_';
   }
   tmp[length] = L'\0';
-  PathCanonicalize(result, tmp);
+  if(!is_dot_path && !is_dot_dot_path){
+    PathCanonicalize(result, tmp);
+  }else{
+    _tcscpy(result, tmp);
+  }
   if(is_dot_path){
     result[0] = L'.';
   }else if(is_dot_dot_path){
@@ -972,10 +976,10 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
 } // }}}
 
 ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child){ // {{{
-  ib::unique_oschar_ptr tmp_parent(ib::platform::normalize_path(0, parent));
-  ib::unique_oschar_ptr tmp_child(ib::platform::normalize_path(0, child));
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  ib::platform::join_path(result, tmp_parent.get(), tmp_child.get());
+  ib::oschar tmp[IB_MAX_PATH];
+  ib::platform::join_path(tmp, parent, child);
+  ib::platform::normalize_path(result, tmp);
   return result;
 } // }}}
 

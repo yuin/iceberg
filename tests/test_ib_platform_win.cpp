@@ -165,8 +165,8 @@ void test_which(ib::TestCase *c){
 
   wsprintf(result, L"");
   ib_test_assert(ib::platform::which(result, L"taskmgr.exe"), "");
-  ib_test_assert(_tcscmp(L"c:\\Windows\\system32\\taskmgr.exe", result) == 0, "");
+  ib_test_assert(_tcscmp(L"c:\\windows\\system32\\taskmgr.exe", result) == 0, "");
   wsprintf(result, L"");
   ib_test_assert(ib::platform::which(result, L"cmd"), "");
-  ib_test_assert(_tcscmp(L"c:\\Windows\\system32\\cmd.EXE", result) == 0, "");
+  ib_test_assert(_tcscmp(L"c:\\windows\\system32\\cmd.EXE", result) == 0, "");
 }
