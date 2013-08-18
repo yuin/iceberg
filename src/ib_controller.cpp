@@ -946,7 +946,7 @@ void ib::Controller::showCompletionCandidates() {
     ib::Completer::inst().completeOption(candidates, first_value);
   }else if(ib::platform::is_path(os_cursor_value.get())){
     ib::oschar oscwd[IB_MAX_PATH];
-    ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, "./");
+    ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, getCwd().c_str());
     if(input->getCursorTokenIndex() > 0) {
       if(input->isUsingCwd()) {
         ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, getCwd().c_str());

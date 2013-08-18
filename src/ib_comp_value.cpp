@@ -10,16 +10,12 @@
 // class CompletionPathParts {{{
 ib::CompletionPathParts::CompletionPathParts(const char *dirname, const char *basename) : dirname_(dirname), basename_(basename), description_(""), path_("") {
   ib::oschar wdir[IB_MAX_PATH] ;
-  ib::oschar wabsdir[IB_MAX_PATH];
   ib::oschar wbase[IB_MAX_PATH] ;
   ib::oschar wpath[IB_MAX_PATH] ;
-  ib::oschar wcwd[IB_MAX_PATH];
 
-  ib::platform::utf82oschar_b(wcwd, IB_MAX_PATH, ib::Controller::inst().getCwd().c_str());
   ib::platform::utf82oschar_b(wdir, IB_MAX_PATH, dirname_.c_str());
   ib::platform::utf82oschar_b(wbase, IB_MAX_PATH, basename_.c_str());
-  ib::platform::to_absolute_path(wabsdir, wcwd, wdir);
-  ib::platform::normalize_join_path(wpath, wabsdir, wbase);
+  ib::platform::normalize_join_path(wpath, wdir, wbase);
 
   char path[IB_MAX_PATH_BYTE];
   ib::platform::oschar2utf8_b(path, IB_MAX_PATH_BYTE, wpath);
