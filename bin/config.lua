@@ -14,7 +14,7 @@ system = {
   max_candidates = 15,
   history_factor = 0.8,
   file_browser = [[explorer ${1}]],
-  server_port = 43505,
+  server_port = 0,
 
   hot_key = "ctrl-space",
   escape_key = "escape",
@@ -24,10 +24,10 @@ system = {
   kill_word_key = "ctrl-w",
 
   search_path = {
+    {category="shortcuts", path = script_path .. [[\shortcuts]], depth = 5, pattern=[[^.*\.(exe|lnk|bat)$]]},
     {category="system", path = [[C:\Windows\System32]], depth = 1, pattern="^.*\\.(exe)$"}, 
     {category="programs", path = [[C:\Users\]] .. os.getenv("USERNAME") .. [[\AppData\Roaming\Microsoft\Windows\Start Menu\Programs]], depth = 10, pattern=[[^.*\.(exe|lnk)$]]},
     {category="programs", path = [[C:\ProgramData\Microsoft\Windows\Start Menu\Programs]], depth = 10, pattern=[[^.*\.(exe|lnk)$]]},
-    {category="shortcuts", path = script_path .. [[\shortcuts]], depth = 5, pattern=[[^.*\.(exe|lnk|bat)$]]}
   },
   completer = {
     command = ibs.COMP_ABBR,

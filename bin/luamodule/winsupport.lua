@@ -1,4 +1,4 @@
-local script_path = string.sub(debug.getinfo(1).short_src, 1, string.len(debug.getinfo(1).short_src)-15)
+local script_path = _iceberg_config_dir() .. [[\luamodule]]
 local ibs = require("icebergsupport")
 local lib = {}
 
