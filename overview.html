@@ -1,19 +1,20 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>概要 &mdash; iceberg v0.9.0 documentation</title>
+    <title>概要 &mdash; iceberg 0.9.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -24,13 +25,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg v0.9.0 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
     <link rel="next" title="環境設定" href="config.html" />
     <link rel="prev" title="icebergドキュメント" href="index.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg v0.9.0 documentation</span></a></h1>
+          <span>iceberg 0.9.0 documentation</span></a></h1>
         <h2 class="heading"><span>概要</span></h2>
       </div>
       <div class="topnav">
@@ -65,14 +66,34 @@
 <p>以下ではデフォルトの設定を例にします。</p>
 <div class="section" id="id3">
 <h3>コマンド登録<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p>まず、コマンドを登録する必要があります。 <tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">all</span></tt> と入力しEnterを押下してください。この操作でスタートメニューのアプリケーションが自動で登録されます。ユーザが独自にコマンドを登録する場合は以下の2パターンが利用できます。</p>
+<p>まず、コマンドを登録する必要があります。 <tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">all</span></tt> と入力しEnterを押下してください。この操作でスタートメニューのアプリケーションが自動で登録されます。ユーザが独自にコマンドを登録する簡単な方法は以下です。</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>icebergディレクトリにある <tt class="docutils literal"><span class="pre">shortcuts</span></tt> ディレクトリ内にショートカット( <tt class="docutils literal"><span class="pre">*.lnk</span></tt> )を作成します。</dt>
+<dd><ul class="first last simple">
+<li>ショートカットに設定した実行ディレクトリ、コメントはicebergにも引き継がれます。</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">icebergで <tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">shortcuts</span></tt> を実行します。</p>
+</li>
+</ol>
+<p>icebergではそのほか、以下のような方法でコマンド登録が行えます。</p>
 <ul>
 <li><dl class="first docutils">
-<dt>ショートカットファイルとサーチパスを用いる方法</dt>
-<dd><ol class="first last arabic simple">
-<li>configファイルにサーチパスを定義します。</li>
-<li>定義したサーチパスにショートカット( <tt class="docutils literal"><span class="pre">*.lnk</span></tt> )を作成します。</li>
-<li><tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">CATEGORY</span></tt> を実行します。 <tt class="docutils literal"><span class="pre">CATEGORY</span></tt> には1で定義したサーチパスのカテゴリもしくは <tt class="docutils literal"><span class="pre">all</span></tt> を入力します。</li>
+<dt>サーチパスを用いる方法</dt>
+<dd><ol class="first last arabic">
+<li><p class="first">configファイルにサーチパスを定義します。</p>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">CATEGORY</span></tt> を実行します。 <tt class="docutils literal"><span class="pre">CATEGORY</span></tt> には1で定義したサーチパスのカテゴリもしくは <tt class="docutils literal"><span class="pre">all</span></tt> を入力します。</dt>
+<dd><ul class="first last simple">
+<li>サーチパスにマッチするファイルがicebergのコマンドとして取り込まれます。</li>
+</ul>
+</dd>
+</dl>
+</li>
 </ol>
 </dd>
 </dl>
@@ -175,7 +196,7 @@ iceberg.exe -m "set 入力欄にセットしたい文字列"</pre>
 
     <div class="footer">
         &copy; Copyright 2012-2013, Yusuke Inuzuka.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

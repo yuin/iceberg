@@ -1,19 +1,20 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tips &mdash; iceberg v0.9.0 documentation</title>
+    <title>Tips &mdash; iceberg 0.9.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '0.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -24,13 +25,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg v0.9.0 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="環境設定" href="config.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg v0.9.0 documentation</span></a></h1>
+          <span>iceberg 0.9.0 documentation</span></a></h1>
         <h2 class="heading"><span>Tips</span></h2>
       </div>
       <div class="topnav">
@@ -59,7 +60,7 @@
 <p>コマンド定義</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">esExt5</span>  <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">esExt5</span>  <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="o">#</span><span class="n">args</span> <span class="o">~=</span> <span class="mi">0</span> <span class="k">then</span>
       <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">to_path</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
       <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
@@ -85,8 +86,8 @@
 <h2>現在の日付・時刻をクリップボードにコピー<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>以下のようなコマンド定義を行います。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
-<span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -98,7 +99,7 @@
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
-  <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ctrl-m&quot;</span><span class="p">,</span> <span class="n">function</span><span class="p">()</span>
+  <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ctrl-m&quot;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
     <span class="kd">local</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
     <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">vim&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">ex</span><span class="p">.</span><span class="n">path</span> <span class="o">..</span> <span class="s">[[\]]</span> <span class="o">..</span> <span class="n">ex</span><span class="p">.</span><span class="n">selected</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
     <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
@@ -161,7 +162,7 @@
 
     <div class="footer">
         &copy; Copyright 2012-2013, Yusuke Inuzuka.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>
