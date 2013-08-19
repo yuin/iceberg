@@ -98,6 +98,8 @@ package:
 	 rm -f $${_IB_PACKAGE_DIR}/luamodule/__*;                                            \
 	 rm -f $${_IB_PACKAGE_DIR}/luamodule/weather/*.{gif,xml};                            \
 	 cp -r docs/build/html $${_IB_PACKAGE_DIR}/docs;                                     \
+	 cp -r bin/shortcuts   $${_IB_PACKAGE_DIR};                                          \
+	 rm -f $${_IB_PACKAGE_DIR}/shortcuts/dummy;                                          \
 	 zip -r iceberg-$${_IB_ARCH}-$${_IB_VERSION}.zip $${_IB_PACKAGE_DIR};                \
 	)
 
