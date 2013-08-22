@@ -105,7 +105,12 @@ void ib::Controller::executeCommand() { // {{{
         success = true;
       }
     }else{
-      if(ib::platform::shell_execute(abspath, input->getParamValues(), getCwd(), error) != 0){
+      ib::oschar osdirpath[IB_MAX_PATH];
+      ib::platform::dirname(osdirpath, osabspath);
+      char dirpath[IB_MAX_PATH_BYTE];
+      ib::platform::oschar2utf8_b(dirpath, IB_MAX_PATH_BYTE, osdirpath);
+      std::string strdirpath = dirpath;
+      if(ib::platform::shell_execute(abspath, input->getParamValues(), strdirpath, error) != 0){
         message = error.getMessage();
       }else{
         success = true;
@@ -955,6 +960,11 @@ void ib::Controller::showCompletionCandidates() {
         auto it = commands_.find(cmdname);
         if(it != commands_.end()){
           ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, (*it).second->getWorkdir().c_str());
+        }else{
+          ib::unique_oschar_ptr osfirst_value(ib::platform::utf82oschar(cmdname.c_str()));
+          if(ib::platform::is_path(osfirst_value.get())){
+            ib::platform::dirname(oscwd, osfirst_value.get());
+          }
         }
       }
     }
