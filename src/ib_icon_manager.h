@@ -619,6 +619,7 @@ namespace ib{
       void load();
       Fl_RGB_Image* getAssociatedIcon(const char *path, const int size, const bool cache);
       Fl_RGB_Image* readPngFileIcon(const char *png_file, const int size);
+      Fl_RGB_Image* readJpegFileIcon(const char *jpeg_file, const int size);
       Fl_RGB_Image* readGifFileIcon(const char *gif_file, const int size);
       Fl_RGB_Image* readFileIcon(const char *file, const int size);
       Fl_RGB_Image* getEmptyIcon(const int width, const int height);

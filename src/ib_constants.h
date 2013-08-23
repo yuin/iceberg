@@ -65,6 +65,7 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_GIF_Image.H>
+#include <FL/Fl_JPEG_Image.H>
 #include <FL/Fl_Menu.H>
 #include "Fl_Font.H"
 

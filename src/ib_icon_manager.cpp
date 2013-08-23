@@ -216,6 +216,20 @@ Fl_RGB_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int s
   return result_image;
 } // }}}
 
+Fl_RGB_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(jpeg_file));
+  Fl_RGB_Image *tmp_image = new Fl_JPEG_Image(lopath.get());
+  Fl_RGB_Image *result_image;
+  if(tmp_image->w() != size){
+    result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
+    delete tmp_image;
+  }else{
+    result_image = tmp_image;
+  }
+  return result_image;
+} // }}}
+
 Fl_RGB_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(gif_file));
@@ -236,6 +250,10 @@ Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ /
       return readPngFileIcon(file, size);
     }else if(ret == "gif" || ret == "GIF") {
       return readGifFileIcon(file, size);
+    }else if(ret == "jpg" || ret == "JPG" || ret == "jpeg" || ret == "JPEG") {
+      return readJpegFileIcon(file, size);
+    }else{
+      return getAssociatedIcon(file, size, true);
     }
   }
   return 0;
