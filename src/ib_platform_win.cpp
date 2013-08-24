@@ -1258,7 +1258,10 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(ib::platform::directory_exists(path)) {
+  HANDLE hfind;
+  WIN32_FIND_DATA find_data;
+  hfind = FindFirstFile( path, &find_data );
+  if(find_data.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY){
     swprintf(result, L":folder:common:");
     return result;
   }
