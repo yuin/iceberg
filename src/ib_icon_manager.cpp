@@ -187,6 +187,8 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
     char buf[24] = {};
     snprintf(buf, 24, "_%d", size);
     cache_key += buf;
+    std::cout << path << std::endl;
+    std::cout << cache_key << std::endl;
     icon = getIconCache(cache_key);
     if(icon != 0){
       return copyCache(icon);

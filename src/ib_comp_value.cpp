@@ -27,7 +27,7 @@ const std::string* ib::CompletionPathParts::getContextMenuPath() const { // {{{
 } // }}}
 
 Fl_RGB_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
-  return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size, false);
+  return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size, true);
 } // }}}
 // }}}
 
@@ -41,7 +41,7 @@ Fl_RGB_Image* ib::CompletionString::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, value_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size, false);
+      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size, true);
     }else{
       return 0;
     }

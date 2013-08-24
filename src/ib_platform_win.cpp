@@ -1260,7 +1260,7 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
-  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0) {
+  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0) {
     _tcscpy(result, path);
     return result;
   }else{
@@ -1317,7 +1317,8 @@ ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::basename(tmp, path);
   ib::oschar *ptr = PathFindExtensionW(tmp);
-  if(ptr != tmp) { 
+  memset(result, 0, sizeof(result));
+  if(ptr != tmp && *ptr != L'\0') { 
     ptr++; 
     _tcscpy(result, ptr);
   }
