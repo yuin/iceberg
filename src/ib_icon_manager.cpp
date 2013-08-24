@@ -175,8 +175,15 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
   ib::platform::ScopedLock lock(cache_mutex_);
   Fl_RGB_Image *icon;
   std::string cache_key;
+  ib::oschar os_path[IB_MAX_PATH];
+  ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path);
+
   if(cache){
-    cache_key = path;
+    ib::oschar os_key[IB_MAX_PATH];
+    ib::platform::icon_cache_key(os_key, os_path);
+    char key[IB_MAX_PATH_BYTE];
+    ib::platform::oschar2utf8_b(key, IB_MAX_PATH_BYTE, os_key);
+    cache_key = key;
     char buf[24] = {};
     snprintf(buf, 24, "_%d", size);
     cache_key += buf;
@@ -186,8 +193,6 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
     }
   }
 
-  ib::oschar os_path[IB_MAX_PATH];
-  ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path);
   if(!ib::platform::is_path(os_path)){
     ib::oschar tmp[IB_MAX_PATH];
     memcpy(tmp, os_path, sizeof(ib::oschar)*IB_MAX_PATH);

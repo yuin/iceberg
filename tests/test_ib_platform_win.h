@@ -13,6 +13,8 @@ void test_file_exists(ib::TestCase *c);
 void test_path_exists(ib::TestCase *c);
 void test_walk_path(ib::TestCase *c);
 void test_which(ib::TestCase *c);
+void test_file_type(ib::TestCase *c);
+void test_icon_cache_key(ib::TestCase *c);
 
 namespace ib {
   IB_TESTCASE(PlatformWin)
@@ -30,6 +32,8 @@ namespace ib {
       add(test_is_relative_path);
       add(test_walk_path);
       add(test_which);
+      add(test_file_type);
+      add(test_icon_cache_key);
     }
   IB_END_TESTCASE;
 }

@@ -14,7 +14,7 @@ system = {
   max_candidates = 15,
   history_factor = 0.8,
   file_browser = [[explorer ${1}]],
-  server_port = 0,
+  server_port = 40000,
 
   hot_key = "ctrl-space",
   escape_key = "escape",
@@ -139,7 +139,7 @@ commands = {
   recycle_bin = {path = [[::{645FF040-5081-101B-9F08-00AA002F954E}]], description=[[Recycle bin]]},
   network_computer = {path = [[::{208D2C60-3AEA-1069-A2D7-08002B30309D}]], description=[[Network computer]]},
   google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false,
-               icon = script_path ..[[images\google256.png]]},
+               icon = script_path ..[[\images\google256.png]]},
   mkdir = { path = function(args) 
       if #args == 0 then
         ibs.message("Usage: mkdir DIRNAME")

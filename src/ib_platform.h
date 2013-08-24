@@ -61,11 +61,13 @@ namespace ib {
     int set_current_workdir(ib::oschar *dir, ib::Error &error);
     bool which(ib::oschar *result, const ib::oschar *name);
     int list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error);
+    ib::oschar* icon_cache_key(ib::oschar *result, const ib::oschar *path);
 
     /* filesystem functions */
     int remove_file(const ib::oschar *path, ib::Error &error);
     int copy_file(const ib::oschar *source, const ib::oschar *dest, ib::Error &error);
     int file_size(size_t &size, const ib::oschar *path, ib::Error &error);
+    ib::oschar* file_type(ib::oschar *result, const ib::oschar *path);
 
     /* thread functions */
     void create_thread(ib::thread *t, ib::threadfunc f, void* p);

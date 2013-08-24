@@ -1256,6 +1256,19 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
   return 0;
 } // }}}
 
+ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  ib::oschar file_type[IB_MAX_PATH];
+  ib::platform::file_type(file_type, path);
+  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0) {
+    _tcscpy(result, path);
+    return result;
+  }else{
+    swprintf(result, L":filetype:%s", file_type);
+    return result;
+  }
+} // }}}
+
 //////////////////////////////////////////////////
 // path functions }}}
 //////////////////////////////////////////////////
@@ -1299,6 +1312,17 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
   return 0;
 } // }}}
 
+ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){ // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  ib::oschar tmp[IB_MAX_PATH];
+  ib::platform::basename(tmp, path);
+  ib::oschar *ptr = PathFindExtensionW(tmp);
+  if(ptr != tmp) { 
+    ptr++; 
+    _tcscpy(result, ptr);
+  }
+  return result;
+} // }}}
 //////////////////////////////////////////////////
 // filesystem functions }}}
 //////////////////////////////////////////////////

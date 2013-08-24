@@ -170,3 +170,25 @@ void test_which(ib::TestCase *c){
   ib_test_assert(ib::platform::which(result, L"cmd"), "");
   ib_test_assert(_tcscmp(L"c:\\windows\\system32\\cmd.EXE", result) == 0, "");
 }
+
+void test_file_type(ib::TestCase *c){
+  ib::unique_oschar_ptr result1(ib::platform::file_type(0, L"c:\aaaaa\bbbb.exe"));
+  ib_test_assert(_tcscmp(result1.get(), L"exe") == 0, "");
+
+  ib::unique_oschar_ptr result2(ib::platform::file_type(0, L"c:\aaaaa\bbbb.exe.gif"));
+  ib_test_assert(_tcscmp(result2.get(), L"gif") == 0, "");
+
+  ib::unique_oschar_ptr result3(ib::platform::file_type(0, L"c:\aaaaa\bbbb"));
+  ib_test_assert(_tcscmp(result3.get(), L"") == 0, "");
+}
+
+void test_icon_cache_key(ib::TestCase *c){
+  ib::unique_oschar_ptr result1(ib::platform::icon_cache_key(0, L"c:\aaaaa\bbbb.exe"));
+  ib_test_assert(_tcscmp(result1.get(), L"c:\aaaaa\bbbb.exe") == 0, "");
+
+  ib::unique_oschar_ptr result2(ib::platform::icon_cache_key(0, L"c:\aaaaa\bbbb.exe.gif"));
+  ib_test_assert(_tcscmp(result2.get(), L":filetype:gif") == 0, "");
+
+  ib::unique_oschar_ptr result3(ib::platform::icon_cache_key(0, L"c:\aaaaa\bbbb"));
+  ib_test_assert(_tcscmp(result3.get(), L"c:\aaaaa\bbbb") == 0, "");
+}

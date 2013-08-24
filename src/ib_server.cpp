@@ -66,6 +66,8 @@ int ib::Server::start(ib::Error &error){ // {{{
 void ib::Server::shutdown() { // {{{
   if(started_){
     Fl::remove_fd(socket_, FL_READ);
+    ib::platform::close_socket(socket_);
+    started_ = false;
   }
 } // }}}
 
