@@ -112,6 +112,24 @@ else
   echo "LuaXML 1.7.4: installed"
 fi
 
+if [ ! -d "${BASE_DIR}/ext/luawinalttab-1.0.0" ]; then
+  echo "Downloading luawinalttab 1.0.0"
+  cd ${BASE_DIR}/ext/
+  wget --no-check-certificate https://github.com/yuin/luawinalttab/archive/v1.0.0.zip -O luawinalttab-1.0.0.zip
+  
+  echo "explode luawinalttab 1.0.0"
+  unzip luawinalttab-1.0.0.zip
+  rm -f luawinalttab-1.0.0.zip
+
+  echo "make the luawinalttab 1.0.0"
+  cd ${BASE_DIR}/ext/luawinalttab-1.0.0
+  make INCDIR=-I../lua-5.1.4/src LIBS=../lua-5.1.4/src/lua51.dll
+else
+  echo "luawinalttab 1.0.0: installed"
+fi
+
+
+
 if [ ! -d "${BASE_DIR}/ext/onig-5.9.3" ]; then
   echo "Downloading Oniguruma 5.9.3"
   cd ${BASE_DIR}/ext

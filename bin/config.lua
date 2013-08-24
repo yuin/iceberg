@@ -3,6 +3,7 @@ package.path = script_path .. [[\luamodule\?.lua;]] .. package.path
 package.cpath = script_path ..[[\luamodule\?.dll;]] .. package.path
 local ibs = require("icebergsupport")
 local wins = require("winsupport")
+local winalttab = require("winalttab")
 
 -- configurations --
 system = {
@@ -44,6 +45,15 @@ system = {
             table.insert(candidates, value.category)
             keys[value.category] = true
           end
+        end
+        return candidates
+      end, 
+      ["alttab"] = function(values)
+        local candidates = {}
+        for i, tb in ipairs(winalttab.list()) do
+          local title = tb.title .. " (ID:" .. tb.hwnd .. ")"
+          local value = {value = title, description = tb.path, icon=tb.path}
+          table.insert(candidates, value)
         end
         return candidates
       end
@@ -165,7 +175,18 @@ commands = {
       func()
       ibs.set_result_text(ret)
       return 0
-    end, description = "inline calculator", history = false}
+    end, description = "inline calculator", history = false},
+  alttab = { 
+    path = function(args) 
+      if #args == 0 then return end
+      local ok, r = ibs.regex_search([[\s\(ID:([0-9]+)\)]], Regex.NONE, args[1])
+      if ok then
+        winalttab.activate(tonumber(r:_1()))
+      end
+    end, 
+    description = "ウインドウを切り替えます",
+    history=false
+  }
 }
 
 shortcuts = {

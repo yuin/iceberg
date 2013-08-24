@@ -74,7 +74,7 @@
 #include <migemo.h>
 
 // constants {{{
-#define IB_VERSION "0.9.0"
+#define IB_VERSION "0.9.1"
 #ifdef IB_PUBLIC
 #      define IB_EXPORT
 #else

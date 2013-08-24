@@ -27,6 +27,7 @@ LUASOCKET_MIMEDLL=./ext/luasocket-2.0.2/src/mime.dll
 LUACJSON_FILES=./ext/lua-cjson-2.1.0/cjson.dll
 LUAFILESYSTEM_FILES=./ext/luafilesystem-1.5.0/src/lfs.dll
 LUAXML_FILES=./ext/LuaXML_101012/{LuaXml.lua,LuaXML_lib.dll}
+LUAWINALTTAB_FILES=./ext/luawinalttab-1.0.0/winalttab.dll
 
 FLTK_CXXFLAGS=$(shell ./ext/fltk-1.3.2/fltk-config --cxxflags) 
 FLTK_LDFLAGS=$(shell ./ext/fltk-1.3.2/fltk-config --ldflags)
@@ -61,6 +62,7 @@ $(MAINPACKAGE): $(MAINOBJS)
 	$(CP) $(LUACJSON_FILES) $(BINDIR)/luamodule/
 	$(CP) $(LUAFILESYSTEM_FILES) $(BINDIR)/luamodule/
 	$(CP) $(LUAXML_FILES) $(BINDIR)/luamodule/
+	$(CP) $(LUAWINALTTAB_FILES) $(BINDIR)/luamodule/
 
 $(MAINOBJS): $(MAINHEADS)
 
