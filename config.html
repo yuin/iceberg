@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>環境設定 &mdash; iceberg v0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="iceberg v0.9.1 documentation" href="index.html" />
+    <link rel="next" title="Tips" href="tips.html" />
+    <link rel="prev" title="概要" href="overview.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg v0.9.1 documentation</span></a></h1>
+        <h2 class="heading"><span>環境設定</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="overview.html">概要</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="tips.html">Tips</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="id1">
+<h1>環境設定<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>概要<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>設定は <a class="reference external" href="http://www.lua.org">Lua</a> による設定ファイルに記載します。デフォルトではiceberg実行ファイルと同一ディレクトリの <tt class="docutils literal"><span class="pre">config.lua</span></tt> が読み込まれますが、起動時に <tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIGFILE</span></tt> と指定することで別のファイルを読み込むことができます。ヒストリファイルなどは設定ファイルと同一のディレクトリに保存されます。</p>
+<p>設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。</p>
+</div>
+<div class="section" id="system">
+<h2>systemグローバル変数<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>設定例<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>以下に設定例と値の意味を示します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">-- search pathから検索する際の深さのデフォルト値 --</span>
+  <span class="n">default_search_path_depth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+
+  <span class="c1">-- 補完候補のアイコンを表示するか(true:する, false:しない) --</span>
+  <span class="n">enable_icons</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+
+  <span class="c1">-- 補完候補のアイコンのキャッシュ数 --</span>
+  <span class="n">max_cached_icons</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
+
+  <span class="c1">-- 何msキー入力が無い場合に補完候補を表示するか --</span>
+    <span class="c1">-- 低速マシンの場合、自身のキータイプ間隔以上の値にすることにより</span>
+    <span class="c1">-- 不要な補完動作を抑制することができます。</span>
+  <span class="n">key_event_threshold</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+  <span class="c1">-- ヒストリの保存数 --</span>
+  <span class="n">max_histories</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+
+  <span class="c1">-- 補完候補の表示数 --</span>
+  <span class="n">max_candidates</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+
+  <span class="c1">-- 補完候補ソート時のヒストリの影響度合い(0.0~1.0)</span>
+  <span class="n">history_factor</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+
+  <span class="c1">-- ディレクトリを開く際のコマンド、${1}にディレクトリパスが入る --</span>
+  <span class="n">file_browser</span> <span class="o">=</span> <span class="s">[[explorer ${1}]]</span><span class="p">,</span>
+
+  <span class="c1">-- 外部からコマンドを受け付けるポート(0: 無効)</span>
+  <span class="n">server_port</span> <span class="o">=</span> <span class="mi">13505</span><span class="p">,</span>
+
+  <span class="c1">-- キー設定 --</span>
+  <span class="n">hot_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-space&quot;</span><span class="p">,</span>
+  <span class="n">escape_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">escape&quot;</span><span class="p">,</span>
+  <span class="n">list_next_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-n&quot;</span><span class="p">,</span>
+  <span class="n">list_prev_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-p&quot;</span><span class="p">,</span>
+  <span class="n">toggle_mode_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-r&quot;</span><span class="p">,</span>
+  <span class="n">kill_word_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-w&quot;</span><span class="p">,</span>
+
+  <span class="c1">-- サーチパス --</span>
+  <span class="n">search_path</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">system&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Windows\System32]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">^.*</span><span class="se">\\</span><span class="s">.(exe)$&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Users\]]</span> <span class="o">..</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">USERNAME&quot;</span><span class="p">)</span> <span class="o">..</span> <span class="s">[[\AppData\Roaming\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\ProgramData\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
+  <span class="p">},</span>
+
+  <span class="c1">-- 補完設定 --</span>
+  <span class="n">completer</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">-- コマンドの補完:あいまい一致 --</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">COMP_ABBR</span><span class="p">,</span>
+
+    <span class="c1">-- パスの補完:前方一致 --</span>
+    <span class="n">path</span>    <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">COMP_BEGINSWITH</span><span class="p">,</span>
+
+    <span class="c1">-- ヒストリの補完:部分一致 --</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">COMP_PARTIAL</span><span class="p">,</span>
+
+    <span class="c1">-- 引数の補完 --</span>
+    <span class="n">option</span>  <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">COMP_PARTIAL</span><span class="p">,</span>
+
+    <span class="c1">-- 引数補完のための関数 --</span>
+    <span class="n">option_func</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="p">[</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="kd">local</span> <span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">all&quot;</span><span class="p">}</span>
+        <span class="kd">local</span> <span class="n">keys</span>       <span class="o">=</span> <span class="p">{</span><span class="n">all</span> <span class="o">=</span> <span class="kc">true</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">system</span><span class="p">.</span><span class="n">search_path</span><span class="p">)</span> <span class="k">do</span>
+          <span class="k">if</span> <span class="n">value</span><span class="p">.</span><span class="n">category</span> <span class="o">~=</span> <span class="kc">nil</span> <span class="ow">and</span> <span class="n">keys</span><span class="p">[</span><span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
+            <span class="nb">table.insert</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">)</span>
+            <span class="n">keys</span><span class="p">[</span><span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+      <span class="k">end</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h3>サーチパス<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>サーチパスは、指定したディレクトリ配下を検索し自動的にコマンドとして登録する機能です。サーチパスの構成要素は以下です。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">category:</th><td class="field-body">サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に <tt class="docutils literal"><span class="pre">default</span></tt> というカテゴリに属します。</td>
+</tr>
+<tr class="field"><th class="field-name">path:</th><td class="field-body">検索する起点となるディレクトリです。</td>
+</tr>
+<tr class="field"><th class="field-name">depth:</th><td class="field-body"><tt class="docutils literal"><span class="pre">path</span></tt> から何階層検索するかを示す数値です。無指定の場合 <tt class="docutils literal"><span class="pre">system.default_search_path_depth</span></tt> が適応されます。</td>
+</tr>
+<tr class="field"><th class="field-name">pattern:</th><td class="field-body">コマンドとして登録するファイル名の正規表現パターン(完全一致)です。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id5">
+<h3>補完関数<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>icebergではコマンドが入力された際の引数を補完する関数を定義できます。補完関数は以下のシグネチャです。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">}</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><tt class="docutils literal"><span class="pre">values</span></tt> は入力されているコマンドと引数の配列です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">value:</th><td class="field-body">補完文字列です。この項目は必須です。</td>
+</tr>
+<tr class="field"><th class="field-name">icon:</th><td class="field-body">アイコンとして使用するファイルのパスです。</td>
+</tr>
+<tr class="field"><th class="field-name">description:</th><td class="field-body">説明として利用する文字列です。</td>
+</tr>
+</tbody>
+</table>
+<p>補完関数は補完以外に情報表示だけのために利用することもできます。デフォルトの <tt class="docutils literal"><span class="pre">weather</span></tt> コマンドを参照してください。</p>
+</div>
+</div>
+<div class="section" id="commands">
+<h2>commandsグローバル変数<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h3>設定例<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>以下に代表的なコマンドの定義例を示します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">-- ディレクトリ,ヒストリに残さない --</span>
+  <span class="n">windir</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Windows]]</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+
+  <span class="c1">-- 実行ファイル, icebergのカレントディレクトリで実行 --</span>
+  <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[notepad.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Notepad&quot;</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.&quot;</span><span class="p">},</span>
+
+  <span class="c1">-- lua関数 --</span>
+  <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">explorer</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">explorer</span> <span class="k">then</span>
+      <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">table_to_string</span><span class="p">(</span><span class="n">explorer</span><span class="p">))</span>
+    <span class="k">end</span>
+  <span class="k">end</span> <span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Sample Lua command&quot;</span><span class="p">},</span>
+
+
+  <span class="c1">-- URL, アイコン画像を指定 --</span>
+  <span class="n">google</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[http://www.google.com/search?ie=utf8&amp;q=${1}]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">[[Searches words on Google]]</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span>
+       <span class="n">icon</span> <span class="o">=</span> <span class="n">script_path</span> <span class="o">..</span><span class="s">[[images\google256.png]]</span><span class="p">},</span>
+
+  <span class="c1">-- グループコマンド：連続してコマンドを実行 --</span>
+  <span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">windir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id7">
+<h3>コマンド<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>コマンドは以下の要素から構成されます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">name:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">commands</span></tt> tableのキーとして表現されます。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">path:</th><td class="field-body"><p class="first">実行対象のパスもしくはLuaの関数です。
+パスの場合、以下のように引数を含めることができます。また空白を含む場合は <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲う必要があります。:</p>
+<div class="highlight-python"><pre>path = [["C:\s p a c e\bin.exe" arg1 arg2]]</pre>
+</div>
+<p>また入力された変数を参照することができます。 <tt class="docutils literal"><span class="pre">google</span> <span class="pre">iceberg</span></tt> と入力された場合、 <tt class="docutils literal"><span class="pre">google</span></tt> コマンドの <tt class="docutils literal"><span class="pre">path</span></tt> が以下の場合、 <tt class="docutils literal"><span class="pre">${1}</span></tt> に <tt class="docutils literal"><span class="pre">iceberg</span></tt> が代入されます。:</p>
+<div class="highlight-python"><pre>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]</pre>
+</div>
+<p>関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">description:</th><td class="field-body"><p class="first">補完候補ウインドウに表示される説明文です。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">icon:</th><td class="field-body"><p class="first">補完候補ウインドウに表示されるアイコン画像のパスです。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">history:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">false</span></tt> を指定するとヒストリに残らなくなります。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">workdir:</th><td class="field-body"><p class="first">コマンドを実行するディレクトリです。以下の指定が可能です。</p>
+<ul class="last simple">
+<li>固定値: そのディレクトリで実行されます。</li>
+<li><tt class="docutils literal"><span class="pre">.</span></tt> : icebergのカレントディレクトリで実行されます。</li>
+<li>Lua関数: 関数の戻り値(文字列)のディレクトリで実行されます。例えば、外部ファイラのディレクトリを返す関数を設定すれば外部ファイラと連携できます。</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="shortcuts">
+<h2>shortcutsグローバル変数<a class="headerlink" href="#shortcuts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>設定例<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>以下に代表的なショートカットの定義例を示します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-d&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">:opendir&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-l&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">:cd&quot;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>上記のようにショートカットを定義し、 <tt class="docutils literal"><span class="pre">c:\</span></tt> と入力欄に入力された状態で <tt class="docutils literal"><span class="pre">ctrl-l</span></tt> を押下したとします。その時以下のようにコマンドが実行されます。:</p>
+<div class="highlight-python"><pre>:cd c:\</pre>
+</div>
+<p>つまり、コマンドの引数として入力欄に入力されている値が渡されます。</p>
+</div>
+</div>
+<div class="section" id="on-key-up">
+<h2>on_key_upイベントハンドラ<a class="headerlink" href="#on-key-up" title="Permalink to this headline">¶</a></h2>
+<p>キーが離された時に呼び出されます。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_up</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">return</span> <span class="n">accept</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>デフォルトの動作を抑止したい場合はこの関数で1を返してください。</p>
+</div>
+<div class="section" id="on-key-down">
+<h2>on_key_downイベントハンドラ<a class="headerlink" href="#on-key-down" title="Permalink to this headline">¶</a></h2>
+<p>キーが押された時に呼び出されます。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">return</span> <span class="n">accept</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>デフォルトの動作を抑止したい場合はこの関数で1を返してください。</p>
+</div>
+<div class="section" id="on-enter">
+<h2>on_enterイベントハンドラ<a class="headerlink" href="#on-enter" title="Permalink to this headline">¶</a></h2>
+<p>enterキーが押下された際に呼び出されます。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">return</span> <span class="n">accept</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>デフォルトの動作を抑止したい場合はこの関数で1を返してください。</p>
+</div>
+<div class="section" id="on-initialize">
+<h2>on_initializeイベントハンドラ<a class="headerlink" href="#on-initialize" title="Permalink to this headline">¶</a></h2>
+<p>起動時に呼び出されます。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">return</span> <span class="nb">error</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>この関数が1を返した場合、起動を停止します。</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="overview.html">概要</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="tips.html">Tips</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012-2013, Yusuke Inuzuka.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1270 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &mdash; iceberg v0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="top" title="iceberg v0.9.1 documentation" href="index.html" />
+    <link rel="next" title="既知の問題" href="knownissues.html" />
+    <link rel="prev" title="Tips" href="tips.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg v0.9.1 documentation</span></a></h1>
+        <h2 class="heading"><span>API</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="tips.html">Tips</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>概要<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>icebergは <a class="reference external" href="http://www.lua.org">Lua</a> を拡張言語として組み込んでいます。ユーザはLuaスクリプトによってicebergの機能を拡張することができます。 <tt class="docutils literal"><span class="pre">icebergsupport</span></tt> モジュールには拡張用の関数やクラスが用意されています。</p>
+</div>
+<div class="section" id="id2">
+<h2>文字コード<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>icebergは内部的にutf8で処理を行っています。そのためAPIでやりとりされる文字列は基本的にutf8が用いられます。ただし、 <a class="reference internal" href="#icebergsupport.command_output" title="icebergsupport.command_output"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_output()</span></tt></a> はコマンドが出力した文字コードのまま結果を返します。</p>
+<p><a class="reference external" href="http://www.lua.org">Lua</a> はマルチバイト文字を扱うAPIを持ちません。マルチバイト文字を文字単位で操作したい場合は <cite>icebergsupport</cite> モジュールの正規表現APIを利用してください。</p>
+</div>
+<div class="section" id="id4">
+<h2>定数<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="icebergsupport.EVENT_STATE_*">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">EVENT_STATE_*</tt><a class="headerlink" href="#icebergsupport.EVENT_STATE_*" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.matches_key()</span></tt></a> などで使用できるイベント定数群です。詳細は <a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.matches_key()</span></tt></a> を参照してください。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="icebergsupport.COMP_*">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">COMP_*</tt><a class="headerlink" href="#icebergsupport.COMP_*" title="Permalink to this definition">¶</a></dt>
+<dd><p>補完方法を示す定数です。</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">COMP_BEGINSWITH</span></tt> : 前方一致</li>
+<li><tt class="docutils literal"><span class="pre">COMP_PARTIAL</span></tt> : 部分一致</li>
+<li><tt class="docutils literal"><span class="pre">COMP_ABBR</span></tt> : 曖昧検索</li>
+</ul>
+</dd></dl>
+
+</div>
+<div class="section" id="id5">
+<h2>関数<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h3>パス操作<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.dirname">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">dirname</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.dirname" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> のディレクトリパスを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:ディレクトリパス</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.basename">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">basename</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.basename" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> のbasenameを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:basename</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.directory_exists">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">directory_exists</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.directory_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> で示されるディレクトリが存在するか返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool:存在すればtrue,でなければfalse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.file_exists">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">file_exists</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> で示されるファイルが存在するか返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool:存在すればtrue,でなければfalse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.path_exists">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">path_exists</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.path_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> で示されるパスが存在するか返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool:存在すればtrue,でなければfalse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.join_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">join_path</tt><big>(</big><em>pathparts</em><span class="optional">[</span>, <em>pathparts</em>, <em>pathparts ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.join_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">pathparts</span></tt> をパスとして結合します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>pathparts</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:結合後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.list_dir">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">list_dir</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.list_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> で示されるディレクトリ配下のファイルリストを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功すればtrue,でなければfalse, table or string:成功すればファイルのリストを示すtable,でなければエラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.quote_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">quote_path</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.quote_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> に空白が含まれる場合 <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲います。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string: 変換後パス</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.unquote_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">unquote_path</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.unquote_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> が <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲われている場合、 <tt class="docutils literal"><span class="pre">&quot;</span></tt> をとりのぞきます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; パス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string: 変換後パス</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id7">
+<h3>ビット演算<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.band">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">band</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.band" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理積を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>[number]</em>) &#8211; 数値</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">number: 結果の値</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.bor">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">bor</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.bor" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理和を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>[number]</em>) &#8211; 数値</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">number: 結果の値</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.bxor">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">bxor</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.bxor" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の排他的論理和を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>[number]</em>) &#8211; 数値</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">number: 結果の値</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id8">
+<h3>システム<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.build_platform">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">build_platform</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.build_platform" title="Permalink to this definition">¶</a></dt>
+<dd><p>ビルドされたプラットフォーム情報を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string: <tt class="docutils literal"><span class="pre">win_64</span></tt> のような文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.runtime_platform">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">runtime_platform</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.runtime_platform" title="Permalink to this definition">¶</a></dt>
+<dd><p>実行しているプラットフォーム情報を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string: <tt class="docutils literal"><span class="pre">6.1.7601</span> <span class="pre">x64</span></tt> のような文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id9">
+<h3>外部コマンド<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.shell_execute">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">shell_execute</tt><big>(</big><em>path</em><span class="optional">[</span>, <em>args</em>, <em>workdir</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.shell_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>外部コマンドを起動します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; 実行するコマンドのパス</li>
+<li><strong>args</strong> (<em>[string]</em>) &#8211; コマンドに対する引数の配列</li>
+<li><strong>workdir</strong> (<em>string</em>) &#8211; 実行ディレクトリ。指定が無い場合はカレントディレクトリで実行されます。</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrueでなければfalse, string:エラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.command_output">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">command_output</tt><big>(</big><em>command</em><big>)</big><a class="headerlink" href="#icebergsupport.command_output" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>外部コマンド <tt class="docutils literal"><span class="pre">command</span></tt> を実行し標準出力と標準エラー出力を返します。</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> (<em>string</em>) &#8211; 実行するコマンド</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrueでなければfalse, string:標準出力, string:標準エラー出力]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id10">
+<h3>文字コード<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.utf82local">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">utf82local</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.utf82local" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> をutf-8からマシンローカルの文字コードに変換します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:変換後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.local2utf8">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">local2utf8</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.local2utf8" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> マシンローカルの文字コードからutf-8に変換します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:変換後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.crlf2lf">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">crlf2lf</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.crlf2lf" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> の改行コードを <tt class="docutils literal"><span class="pre">crlf</span></tt> から <tt class="docutils literal"><span class="pre">lf</span></tt> に変換します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:変換後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id11">
+<h3>正規表現<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>utf-8を正しく扱える正規表現関連APIです。正規表現フラグは <a class="reference internal" href="#Regex.S" title="Regex.S"><tt class="xref lua lua-attr docutils literal"><span class="pre">Regex.S</span></tt></a> や <a class="reference internal" href="#Regex.I" title="Regex.I"><tt class="xref lua lua-attr docutils literal"><span class="pre">Regex.I</span></tt></a> の論理和( <a class="reference internal" href="#icebergsupport.bor" title="icebergsupport.bor"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.bor()</span></tt></a> が利用できます) として表現されます。無指定の場合は <a class="reference internal" href="#Regex.NONE" title="Regex.NONE"><tt class="xref lua lua-attr docutils literal"><span class="pre">Regex.NONE</span></tt></a> を指定します。</p>
+<dl class="function">
+<dt id="icebergsupport.regex_match">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">regex_match</tt><big>(</big><em>pattern</em>, <em>flags</em>, <em>string</em><span class="optional">[</span>, <em>startpos</em>, <em>endpos</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.regex_match" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">string</span></tt> から <tt class="docutils literal"><span class="pre">pattern</span></tt> を検索します。(完全一致)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現フラグ</li>
+<li><strong>string</strong> (<em>string</em>) &#8211; 文字列</li>
+<li><strong>startpos</strong> (<em>number</em>) &#8211; 検索開始位置</li>
+<li><strong>endpos</strong> (<em>number</em>) &#8211; 検索終了位置</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:見つかればtrue,でなければfalse, Regex:Regexオブジェクト]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.regex_search">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">regex_search</tt><big>(</big><em>pattern</em>, <em>flags</em>, <em>string</em><span class="optional">[</span>, <em>startpos</em>, <em>endpos</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.regex_search" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">string</span></tt> から <tt class="docutils literal"><span class="pre">pattern</span></tt> を検索します。(部分一致)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現フラグ</li>
+<li><strong>string</strong> (<em>string</em>) &#8211; 文字列</li>
+<li><strong>startpos</strong> (<em>number</em>) &#8211; 検索開始位置</li>
+<li><strong>endpos</strong> (<em>number</em>) &#8211; 検索終了位置</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:見つかればtrue,でなければfalse, Regex:Regexオブジェクト]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.regex_split">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">regex_split</tt><big>(</big><em>pattern</em>, <em>flags</em>, <em>string</em><big>)</big><a class="headerlink" href="#icebergsupport.regex_split" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">string</span></tt> を <tt class="docutils literal"><span class="pre">pattern</span></tt> で分割します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現フラグ</li>
+<li><strong>string</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[string]:文字列のリスト</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.regex_gsub">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">regex_gsub</tt><big>(</big><em>pattern</em>, <em>flags</em>, <em>string</em>, <em>repl</em><big>)</big><a class="headerlink" href="#icebergsupport.regex_gsub" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">string</span></tt> から <tt class="docutils literal"><span class="pre">pattern</span></tt> を検索し <tt class="docutils literal"><span class="pre">repl</span></tt> で置換します。
+<tt class="docutils literal"><span class="pre">repl</span></tt> には後方参照( <tt class="docutils literal"><span class="pre">\1,</span> <span class="pre">\2</span> <span class="pre">...</span></tt> )が使用できます。以下に例を示します。</p>
+<div class="highlight-lua"><div class="highlight"><pre><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span><span class="p">)</span>
+
+<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span>
+
+<span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">re</span><span class="p">)</span>
+ <span class="k">return</span> <span class="n">re</span><span class="p">:</span><span class="n">_1</span><span class="p">()</span>
+<span class="k">end</span><span class="p">))</span>
+
+<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">DEFG&quot;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現フラグ</li>
+<li><strong>string</strong> (<em>string</em>) &#8211; 置換対象文字列</li>
+<li><strong>repl</strong> (<em>callback</em>) &#8211; コールバック関数もしくは文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:置換後文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id12">
+<h3>その他<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.dump_lua_object">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">dump_lua_object</tt><big>(</big><em>object</em>, <em>indent</em>, <em>isarrayval</em><big>)</big><a class="headerlink" href="#icebergsupport.dump_lua_object" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">object</span></tt> をLuaの文法で解釈できる文字列に変換します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>object</strong> (<em>object</em>) &#8211; Luaのオブジェクト</li>
+<li><strong>indent</strong> (<em>number</em>) &#8211; インデント、呼び出し時は0とする</li>
+<li><strong>isarrayval</strong> (<em>bool</em>) &#8211; <tt class="docutils literal"><span class="pre">object</span></tt> が配列の場合trueとする</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:変換後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.load_lua_object">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">load_lua_object</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.load_lua_object" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> で示されるLuaオブジェクトを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; Luaのオブジェクトを示す文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrue,でなければfalse, object or string: 成功ならLuaオブジェクト,でなければエラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.grep">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">grep</tt><big>(</big><em>text</em>, <em>pattern</em><span class="optional">[</span>, <em>flags</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.grep" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> のうち 正規表現 <tt class="docutils literal"><span class="pre">pattern</span></tt> にマッチする行のみを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現のフラグ</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string: 文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.is_array">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">is_array</tt><big>(</big><em>table</em><big>)</big><a class="headerlink" href="#icebergsupport.is_array" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">table</span></tt> が配列かどうか判定します。すべての添え字が数値の場合配列と判定されます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>table</strong> (<em>table</em>) &#8211; table</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">配列であればtrue, でなければfalse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="iceberg">
+<h3>iceberg操作<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.version">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">version</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergのバージョン文字列を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:バージョン文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.hide_application">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">hide_application</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.hide_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergを非表示にします。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.show_application">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">show_application</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.show_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergを表示します。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.do_autocomplete">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">do_autocomplete</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.do_autocomplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>オートコンプリートを実行します。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.get_cwd">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">get_cwd</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.get_cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergのカレントディレクトリを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:カレントディレクトリのパス</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.set_cwd">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">set_cwd</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.set_cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergのカレントディレクトリを変更します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; ディレクトリパス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrue,でなければfalse, string:エラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.set_result_text">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">set_result_text</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.set_result_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergの入力欄にメッセージを設定します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 設定したいテキスト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.find_command">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">find_command</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#icebergsupport.find_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>コマンドを検索します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; コマンド名</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>[bool:見つかればtrue,でなければfalse, table or string:見つかった場合はコマンド情報を含むtableでなければエラーメッセージ]</p>
+<p>tableは以下の内容を含みます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">name:</th><td class="field-body">コマンド名</td>
+</tr>
+<tr class="field"><th class="field-name">path:</th><td class="field-body">コマンドパス</td>
+</tr>
+<tr class="field"><th class="field-name">cmdpath:</th><td class="field-body">コマンドパスから引数を除いたもの</td>
+</tr>
+<tr class="field"><th class="field-name">workdir:</th><td class="field-body">実行ディレクトリ</td>
+</tr>
+<tr class="field"><th class="field-name">description:</th><td class="field-body">説明</td>
+</tr>
+<tr class="field"><th class="field-name">icon:</th><td class="field-body">アイコンパス</td>
+</tr>
+<tr class="field"><th class="field-name">history:</th><td class="field-body">ヒストリへ追加するか</td>
+</tr>
+</tbody>
+</table>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.to_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">to_path</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.to_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> をパスに変換します。 <tt class="docutils literal"><span class="pre">text</span></tt> がicebergにコマンドとして登録されている場合、そのパスを返します。また、 <tt class="docutils literal"><span class="pre">text</span></tt> がパスである場合入力をそのまま返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrue,でなければfalse, string:成功ならパス、でなければエラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.to_directory_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">to_directory_path</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.to_directory_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">text</span></tt> をディレクトリパスに変換します。 <tt class="docutils literal"><span class="pre">text</span></tt> がicebergにコマンドとして登録されている場合、そのパスを返します。また、 <tt class="docutils literal"><span class="pre">text</span></tt> がパスである場合入力をそのまま返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrue,でなければfalse, string:成功ならパス、でなければエラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.message">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">message</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>ポップアップメッセージを表示します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 表示したいテキスト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.event_key">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">event_key</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.event_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>現在のイベントに対するキーを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">number:キー</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.event_state">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">event_state</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.event_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>修飾キーの押下状況を示すビット列(number)を返します。この配列は <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><tt class="xref lua lua-data docutils literal"><span class="pre">icebergsupport.EVENT_STATE_*</span></tt></a> とのビット演算に使用できます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">number:ビット配列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.matches_key">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">matches_key</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#icebergsupport.matches_key" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">key</span></tt> で示されるキーが現在のイベントで発生しているかを返します。 <tt class="docutils literal"><span class="pre">key</span></tt> は <tt class="docutils literal"><span class="pre">ctrl-a</span></tt> や <tt class="docutils literal"><span class="pre">ctrl-alt-space</span></tt> のようにすべて小文字で記載し、修飾キーは <tt class="docutils literal"><span class="pre">-</span></tt> で繋ぎます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> (<em>string</em>) &#8211; キーを示す文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool:イベントが発生している場合true,でない場合false</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.exit_application">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">exit_application</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.exit_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergを終了します。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.reboot_application">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">reboot_application</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.reboot_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergを再起動します。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.scan_search_path">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">scan_search_path</tt><big>(</big><em>category</em><big>)</big><a class="headerlink" href="#icebergsupport.scan_search_path" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">category</span></tt> で指定されるsearch pathを再スキャンします。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>category</strong> (<em>string</em>) &#8211; search pathのカテゴリ</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.get_input_text">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">get_input_text</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.get_input_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>現在入力されている文字列を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:入力されている文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.set_input_text">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">set_input_text</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.set_input_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>入力欄に <tt class="docutils literal"><span class="pre">text</span></tt> を設定します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 設定する文字列</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.get_clipboard">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">get_clipboard</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.get_clipboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>クリップボード上の文字列を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:クリップボード上の文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.set_clipboard">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">set_clipboard</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#icebergsupport.set_clipboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>クリップボードに <tt class="docutils literal"><span class="pre">text</span></tt> を設定します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 設定する文字列</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.command_execute">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">command_execute</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>args</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.command_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergに <tt class="docutils literal"><span class="pre">name</span></tt> で登録されているコマンドを実行します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>string</em>) &#8211; 実行するコマンドのname</li>
+<li><strong>args</strong> (<em>[string]</em>) &#8211; コマンドに対する引数の配列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrueでなければfalse, string:エラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.default_after_command_action">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">default_after_command_action</tt><big>(</big><em>success</em>, <em>message</em><big>)</big><a class="headerlink" href="#icebergsupport.default_after_command_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>icebergのコマンド実行後のデフォルトアクションを実行します。 <tt class="docutils literal"><span class="pre">success</span></tt> が <tt class="docutils literal"><span class="pre">true</span></tt> の場合は入力テキストをクリアし、ウインドウを隠します。 <tt class="docutils literal"><span class="pre">false</span></tt> の場合は <tt class="docutils literal"><span class="pre">message</span></tt> を表示します。典型的には <tt class="docutils literal"><span class="pre">icebergsupport.default_after_command_action(icebergsupport.command_execute(&quot;cmd&quot;,</span> <span class="pre">{&quot;arg0&quot;,</span> <span class="pre">&quot;arg1&quot;}))</span></tt> のように <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_execute()</span></tt></a> と組み合わせて使用します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>success</strong> (<em>bool</em>) &#8211; コマンドが成功したかどうか</li>
+<li><strong>message</strong> (<em>string</em>) &#8211; コマンド失敗時のメッセージ</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.open_dir">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">open_dir</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#icebergsupport.open_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">path</span></tt> でしめされるディレクトリを <tt class="docutils literal"><span class="pre">system.file_browser</span></tt> で指定されているアプリケーションで開きます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) &#8211; ディレクトリパス</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:成功ならtrueでなければfalse, string:エラーメッセージ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.group_command">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">group_command</tt><big>(</big><em>command</em><span class="optional">[</span>, <em>commmand</em>, <em>command ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.group_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>以下のように使用することで、複数のコマンドを順次実行するコマンドを作成することができます。各コマンドは <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><tt class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_execute()</span></tt></a> を通じて実行されるので、該当のコマンドが登録済みである必要があります。</p>
+<div class="highlight-lua"><div class="highlight"><pre><span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">userdir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.bind_key">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">bind_key</tt><big>(</big><em>key</em>, <em>func</em><big>)</big><a class="headerlink" href="#icebergsupport.bind_key" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">key</span></tt> で示されるキーを押下じに <tt class="docutils literal"><span class="pre">func</span></tt> を実行します。この関数は <tt class="docutils literal"><span class="pre">on_key_down</span></tt> 内で利用されます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>string</em>) &#8211; <tt class="docutils literal"><span class="pre">ctrl-m</span></tt> のようなキーを示す文字列</li>
+<li><strong>func</strong> (<em>function</em>) &#8211; 実行する関数</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.is_modifier_pressed">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">is_modifier_pressed</tt><big>(</big><em>keycode</em><big>)</big><a class="headerlink" href="#icebergsupport.is_modifier_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>keycode</strong> (<em>number</em>) &#8211; <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><tt class="xref lua lua-data docutils literal"><span class="pre">icebergsupport.EVENT_STATE_*</span></tt></a> 定数</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bool:キーが押下されていればtrue,でなければfalse</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="windows">
+<h2>Windows補助<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="winsupport.foreground_explorer">
+<tt class="descclassname">winsupport.</tt><tt class="descname">foreground_explorer</tt><big>(</big><big>)</big><a class="headerlink" href="#winsupport.foreground_explorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>最前面で表示されているエクスプローラの情報を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">table:次の要をを含む。{path=エクスプローラのパス, selected={選択されているファイル名の配列}}</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="winsupport.foreground_explorer_path">
+<tt class="descclassname">winsupport.</tt><tt class="descname">foreground_explorer_path</tt><big>(</big><big>)</big><a class="headerlink" href="#winsupport.foreground_explorer_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>最前面で表示されているエクスプローラのパスを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:エクスプローラで開いているパス、該当がない場合は空文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id13">
+<h2>クラス<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Regex.new">
+<em class="property">class </em><tt class="descclassname">Regex.</tt><tt class="descname">new</tt><big>(</big><em>pattern</em>, <em>flags</em><big>)</big><a class="headerlink" href="#Regex.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>utf8を正しく解釈可能な正規表現を示すクラスです。
+<tt class="docutils literal"><span class="pre">icebergsupport.regex_*</span></tt> 関数で利用されます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pattern</strong> (<em>string</em>) &#8211; 正規表現</li>
+<li><strong>flags</strong> (<em>number</em>) &#8211; 正規表現フラグ</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Regex.NONE">
+<tt class="descclassname">Regex.</tt><tt class="descname">NONE</tt><a class="headerlink" href="#Regex.NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>無指定を示す正規表現フラグです。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Regex.S">
+<tt class="descclassname">Regex.</tt><tt class="descname">S</tt><a class="headerlink" href="#Regex.S" title="Permalink to this definition">¶</a></dt>
+<dd><p>perlのsフラグと同一です。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Regex.M">
+<tt class="descclassname">Regex.</tt><tt class="descname">M</tt><a class="headerlink" href="#Regex.M" title="Permalink to this definition">¶</a></dt>
+<dd><p>perlのmフラグと同一です。</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Regex.I">
+<tt class="descclassname">Regex.</tt><tt class="descname">I</tt><a class="headerlink" href="#Regex.I" title="Permalink to this definition">¶</a></dt>
+<dd><p>perlのiフラグと同一です。</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Regex.escape">
+<tt class="descclassname">Regex.</tt><tt class="descname">escape</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#Regex.escape" title="Permalink to this definition">¶</a></dt>
+<dd><p>正規表現をエスケープした文字列を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<em>string</em>) &#8211; 文字列</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string:エスケープ後の文字列</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Regex:_1">
+<tt class="descclassname">Regex:</tt><tt class="descname">_1</tt><big>(</big><big>)</big><a class="headerlink" href="#Regex:_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>マッチしたグループの文字列を返します。
+<tt class="docutils literal"><span class="pre">Regex:_1()</span></tt> , <tt class="docutils literal"><span class="pre">Regex:_2()</span></tt> ... <tt class="docutils literal"><span class="pre">Regex:_9()</span></tt> まで定義されています。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:マッチした部分文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Regex:group">
+<tt class="descclassname">Regex:</tt><tt class="descname">group</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#Regex:group" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">group</span></tt> 番目のグループの文字列を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">string:マッチした部分文字列</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Regex:startpos">
+<tt class="descclassname">Regex:</tt><tt class="descname">startpos</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#Regex:startpos" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">group</span></tt> 番目のグループの開始位置を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">number:開始位置</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Regex:endpos">
+<tt class="descclassname">Regex:</tt><tt class="descname">endpos</tt><big>(</big><em>group</em><big>)</big><a class="headerlink" href="#Regex:endpos" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">group</span></tt> 番目のグループの終了位置を返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">number:終了位置</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="tips.html">Tips</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012-2013, Yusuke Inuzuka.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
