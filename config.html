@@ -1,21 +1,20 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>環境設定 &mdash; iceberg 0.9.0 documentation</title>
-    
+    <title>環境設定 &mdash; iceberg v0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.0',
+        URL_ROOT:    '',
+        VERSION:     '0.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +24,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
+    <link rel="top" title="iceberg v0.9.1 documentation" href="index.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="概要" href="overview.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.0 documentation</span></a></h1>
+          <span>iceberg v0.9.1 documentation</span></a></h1>
         <h2 class="heading"><span>環境設定</span></h2>
       </div>
       <div class="topnav">
@@ -122,7 +121,7 @@
 
     <span class="c1">-- 引数補完のための関数 --</span>
     <span class="n">option_func</span> <span class="o">=</span> <span class="p">{</span>
-      <span class="p">[</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+      <span class="p">[</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="kd">local</span> <span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">all&quot;</span><span class="p">}</span>
         <span class="kd">local</span> <span class="n">keys</span>       <span class="o">=</span> <span class="p">{</span><span class="n">all</span> <span class="o">=</span> <span class="kc">true</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">system</span><span class="p">.</span><span class="n">search_path</span><span class="p">)</span> <span class="k">do</span>
@@ -147,13 +146,13 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">category:</th><td class="field-body">サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に <tt class="docutils literal"><span class="pre">default</span></tt> というカテゴリに属します。</td>
+<tr class="field"><th class="field-name">category:</th><td class="field-body">サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に <tt class="docutils literal"><span class="pre">default</span></tt> というカテゴリに属します。</td>
 </tr>
-<tr class="field-even field"><th class="field-name">path:</th><td class="field-body">検索する起点となるディレクトリです。</td>
+<tr class="field"><th class="field-name">path:</th><td class="field-body">検索する起点となるディレクトリです。</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">depth:</th><td class="field-body"><tt class="docutils literal"><span class="pre">path</span></tt> から何階層検索するかを示す数値です。無指定の場合 <tt class="docutils literal"><span class="pre">system.default_search_path_depth</span></tt> が適応されます。</td>
+<tr class="field"><th class="field-name">depth:</th><td class="field-body"><tt class="docutils literal"><span class="pre">path</span></tt> から何階層検索するかを示す数値です。無指定の場合 <tt class="docutils literal"><span class="pre">system.default_search_path_depth</span></tt> が適応されます。</td>
 </tr>
-<tr class="field-even field"><th class="field-name">pattern:</th><td class="field-body">コマンドとして登録するファイル名の正規表現パターン(完全一致)です。</td>
+<tr class="field"><th class="field-name">pattern:</th><td class="field-body">コマンドとして登録するファイル名の正規表現パターン(完全一致)です。</td>
 </tr>
 </tbody>
 </table>
@@ -162,7 +161,7 @@
 <h3>補完関数<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>icebergではコマンドが入力された際の引数を補完する関数を定義できます。補完関数は以下のシグネチャです。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
   <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">}</span>
 <span class="k">end</span>
 </pre></div>
@@ -173,11 +172,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body">補完文字列です。この項目は必須です。</td>
+<tr class="field"><th class="field-name">value:</th><td class="field-body">補完文字列です。この項目は必須です。</td>
 </tr>
-<tr class="field-even field"><th class="field-name">icon:</th><td class="field-body">アイコンとして使用するファイルのパスです。</td>
+<tr class="field"><th class="field-name">icon:</th><td class="field-body">アイコンとして使用するファイルのパスです。</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">description:</th><td class="field-body">説明として利用する文字列です。</td>
+<tr class="field"><th class="field-name">description:</th><td class="field-body">説明として利用する文字列です。</td>
 </tr>
 </tbody>
 </table>
@@ -198,7 +197,7 @@
   <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[notepad.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Notepad&quot;</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.&quot;</span><span class="p">},</span>
 
   <span class="c1">-- lua関数 --</span>
-  <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+  <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="kd">local</span> <span class="n">explorer</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">explorer</span> <span class="k">then</span>
       <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">table_to_string</span><span class="p">(</span><span class="n">explorer</span><span class="p">))</span>
@@ -225,10 +224,10 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">commands</span></tt> tableのキーとして表現されます。</p>
+<tr class="field"><th class="field-name">name:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">commands</span></tt> tableのキーとして表現されます。</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">path:</th><td class="field-body"><p class="first">実行対象のパスもしくはLuaの関数です。
+<tr class="field"><th class="field-name">path:</th><td class="field-body"><p class="first">実行対象のパスもしくはLuaの関数です。
 パスの場合、以下のように引数を含めることができます。また空白を含む場合は <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲う必要があります。:</p>
 <div class="highlight-python"><pre>path = [["C:\s p a c e\bin.exe" arg1 arg2]]</pre>
 </div>
@@ -238,16 +237,16 @@
 <p>関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">description:</th><td class="field-body"><p class="first">補完候補ウインドウに表示される説明文です。</p>
+<tr class="field"><th class="field-name">description:</th><td class="field-body"><p class="first">補完候補ウインドウに表示される説明文です。</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">icon:</th><td class="field-body"><p class="first">補完候補ウインドウに表示されるアイコン画像のパスです。</p>
+<tr class="field"><th class="field-name">icon:</th><td class="field-body"><p class="first">補完候補ウインドウに表示されるアイコン画像のパスです。</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">history:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">false</span></tt> を指定するとヒストリに残らなくなります。</p>
+<tr class="field"><th class="field-name">history:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">false</span></tt> を指定するとヒストリに残らなくなります。</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">workdir:</th><td class="field-body"><p class="first">コマンドを実行するディレクトリです。以下の指定が可能です。</p>
+<tr class="field"><th class="field-name">workdir:</th><td class="field-body"><p class="first">コマンドを実行するディレクトリです。以下の指定が可能です。</p>
 <ul class="last simple">
 <li>固定値: そのディレクトリで実行されます。</li>
 <li><tt class="docutils literal"><span class="pre">.</span></tt> : icebergのカレントディレクトリで実行されます。</li>
@@ -348,7 +347,7 @@
 
     <div class="footer">
         &copy; Copyright 2012-2013, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>
