@@ -1258,6 +1258,10 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(ib::platform::directory_exists(path)) {
+    swprintf(result, L":folder:common:");
+    return result;
+  }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
   if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0) {
