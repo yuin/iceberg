@@ -1071,14 +1071,8 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
   hfind = FindFirstFile( path, &find_data );
   if(hfind != INVALID_HANDLE_VALUE) return true;
   // TODO should check wether a given drive exists
-  if(_tcslen(path) >= 3){
+  if(_tcslen(path) == 3){
     if(iswalpha(path[0]) && path[1] == L':' && (path[2] == L'/' || path[2] == L'\\')){
-      return true;
-    } else if(path[0] == L'.' && path[1] == '.' && (path[2] == L'/' || path[2] == L'\\')){
-      return true;
-    } else if(path[0] == L'.' && (path[1] == L'/' || path[1] == L'\\')){
-      return true;
-    } else if(path[0] == L'\\' && path[1] == L'\\'){
       return true;
     }
   }
