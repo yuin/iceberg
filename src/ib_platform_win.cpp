@@ -1069,7 +1069,20 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
   HANDLE hfind;
   WIN32_FIND_DATA find_data;
   hfind = FindFirstFile( path, &find_data );
-  return hfind != INVALID_HANDLE_VALUE;
+  if(hfind != INVALID_HANDLE_VALUE) return true;
+  // TODO should check wether a given drive exists
+  if(_tcslen(path) >= 3){
+    if(iswalpha(path[0]) && path[1] == L':' && (path[2] == L'/' || path[2] == L'\\')){
+      return true;
+    } else if(path[0] == L'.' && path[1] == '.' && (path[2] == L'/' || path[2] == L'\\')){
+      return true;
+    } else if(path[0] == L'.' && (path[1] == L'/' || path[1] == L'\\')){
+      return true;
+    } else if(path[0] == L'\\' && path[1] == L'\\'){
+      return true;
+    }
+  }
+  return false;
 } // }}}
 
 int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
