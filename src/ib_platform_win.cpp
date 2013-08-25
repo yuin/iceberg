@@ -1269,18 +1269,22 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  HANDLE hfind;
-  WIN32_FIND_DATA find_data;
-  hfind = FindFirstFile( path, &find_data );
-  if(hfind != INVALID_HANDLE_VALUE && find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-    swprintf(result, L":folder:common:");
-    return result;
-  }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
-  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
+  if(_tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
     _tcscpy(result, path);
     return result;
+  }else if(_tcscmp(file_type, L"") == 0){
+    HANDLE hfind;
+    WIN32_FIND_DATA find_data;
+    hfind = FindFirstFile( path, &find_data );
+    if(hfind != INVALID_HANDLE_VALUE && find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
+      swprintf(result, L":folder:common:");
+      return result;
+    }else{
+      _tcscpy(result, path);
+      return result;
+    }
   }else{
     swprintf(result, L":filetype:%s", file_type);
     return result;
