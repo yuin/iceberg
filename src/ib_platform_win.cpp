@@ -1061,11 +1061,15 @@ bool ib::platform::directory_exists(const ib::oschar *path) { // {{{
 } // }}}
 
 bool ib::platform::file_exists(const ib::oschar *path) { // {{{
-  return PathFileExists(path) && !PathIsDirectory(path);
+  return path_exists(path) && !PathIsDirectory(path);
 } // }}}
 
 bool ib::platform::path_exists(const ib::oschar *path) { // {{{
-  return PathFileExists(path) != 0;
+  if(PathFileExists(path) != 0) return true;
+  HANDLE hfind;
+  WIN32_FIND_DATA find_data;
+  hfind = FindFirstFile( path, &find_data );
+  return hfind != INVALID_HANDLE_VALUE;
 } // }}}
 
 int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
@@ -1261,13 +1265,13 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
   HANDLE hfind;
   WIN32_FIND_DATA find_data;
   hfind = FindFirstFile( path, &find_data );
-  if(find_data.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY){
+  if(hfind != INVALID_HANDLE_VALUE && find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
     swprintf(result, L":folder:common:");
     return result;
   }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
-  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0) {
+  if(_tcscmp(file_type, L"") == 0 || _tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
     _tcscpy(result, path);
     return result;
   }else{
