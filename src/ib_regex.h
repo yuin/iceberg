@@ -3,20 +3,28 @@
 
 #include "ib_constants.h"
 #include "ib_utils.h"
+#include "ib_platform.h"
 
 namespace ib{
   class Regex;
   typedef void (*regsubfunc)(const Regex &regex, std::string *result, void *userdata);
 
-  class OnigrumaDestructor : public Singleton<OnigrumaDestructor> {
-    friend class Singleton<OnigrumaDestructor>;
+  class OnigrumaService: public Singleton<OnigrumaService> {
+    friend class Singleton<OnigrumaService>;
     public:
-      ~OnigrumaDestructor(){
+      ~OnigrumaService(){
         onig_end();
+        ib::platform::destroy_mutex(&mutex_);
       }
+      ib::mutex& getMutex() { return mutex_; }
+
     protected:
-      OnigrumaDestructor(){
+      OnigrumaService() : mutex_(){
+        ib::platform::create_mutex(&mutex_);
       }
+
+    protected:
+      ib::mutex     mutex_;
   };
 
   class Regex : private NonCopyable<Regex> {
@@ -34,11 +42,12 @@ namespace ib{
         strcpy(tmpptr, pattern);
         pattern_ = (unsigned char*)tmpptr;
         //pattern_ = (unsigned char*)strdup(pattern);
-         region_  = onig_region_new();
       }
 
       int init(std::string *error_msg = 0) {
         if(reg_ == 0){
+          ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
+          region_  = onig_region_new();
           onig_set_default_case_fold_flag(0);
           int r = onig_new(&reg_, pattern_, pattern_ + strlen((char* )pattern_),
             flags_, ONIG_ENCODING_UTF8, ONIG_SYNTAX_PERL_NG, &error_info_);
@@ -57,6 +66,7 @@ namespace ib{
       }
 
       ~Regex() {
+        ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
         freeString();
         free(pattern_);
         if(reg_ != 0){ onig_free(reg_); }

@@ -7,6 +7,7 @@ void ib::Regex::escape(std::string &ret, const char*str) { // {{{
 } // }}}
 
 int ib::Regex::match(const char *str, const std::size_t startpos, const std::size_t endpos) { // {{{
+  onig_region_clear(region_);
   setString(str);
 
   const std::size_t len = strlen((char* )str);
@@ -24,6 +25,7 @@ int ib::Regex::match(const char *str, const std::size_t startpos, const std::siz
 } // }}}
 
 int ib::Regex::search(const char *str, const std::size_t startpos, const std::size_t endpos) { // {{{
+  onig_region_clear(region_);
   setString(str);
 
   const std::size_t len = strlen((char* )str);
