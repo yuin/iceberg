@@ -32,7 +32,7 @@ system = {
   },
   completer = {
     command = ibs.COMP_ABBR,
-    path    = ibs.COMP_BEGINSWITH,
+    path    = ibs.COMP_PARTIAL,
     history = ibs.COMP_PARTIAL,
     option  = ibs.COMP_PARTIAL,
 

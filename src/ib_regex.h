@@ -13,8 +13,8 @@ namespace ib{
     friend class Singleton<OnigrumaService>;
     public:
       ~OnigrumaService(){
-        onig_end();
-        ib::platform::destroy_mutex(&mutex_);
+        //onig_end();
+        //ib::platform::destroy_mutex(&mutex_);
       }
       ib::mutex& getMutex() { return mutex_; }
 
