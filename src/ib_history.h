@@ -21,6 +21,8 @@ namespace ib {
       const std::vector<ib::HistoryCommand*>& getOrderedCommands() const { return ordered_commands_; }
       const std::unordered_map<std::string, ib::HistoryCommand*>& getCommands() const { return commands_; }
       void addCommand(ib::HistoryCommand *command);
+      void addBaseCommandHistory(const std::string &value, const ib::BaseCommand* cmd);
+      void addRawInputHistory(const std::string &value);
       void calcRawScore(ib::HistoryCommand *command);
       double calcScore(const std::string &name, double average, double se);
       double calcScoreSe();

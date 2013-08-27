@@ -62,6 +62,7 @@ namespace ib {
     int command_execute(lua_State *L); // name:string, args:[string] -> bool:success, string:message
     int command_output(lua_State *L); // command:string -> bool:success, string:stdout, string:stderr
     int default_after_command_action(lua_State *L); // success:bool, errmessage:text -> void
+    int add_history(lua_State *L); //  input:string [, name:string] -> void
     int open_dir(lua_State *L); // path:string -> bool:success, text:errmessage
     int version(lua_State *L); // void -> string
     int utf82local(lua_State *L); // string -> string

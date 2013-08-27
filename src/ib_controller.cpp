@@ -122,18 +122,10 @@ void ib::Controller::executeCommand() { // {{{
   if(success){
     if(it != commands_.end()){
       if((*it).second->isEnabledHistory()){
-        ib::HistoryCommand *hcmd = new HistoryCommand();
-        hcmd->setName((*it).second->getName());
-        hcmd->setPath(rawvalue);
-        hcmd->addTime(std::time(0));
-        ib::History::inst().addCommand(hcmd);
+        ib::History::inst().addBaseCommandHistory(rawvalue, (*it).second);
       }
     }else{
-      ib::HistoryCommand *hcmd = new HistoryCommand();
-      hcmd->setName(rawvalue);
-      hcmd->setPath(rawvalue);
-      hcmd->addTime(std::time(0));
-      ib::History::inst().addCommand(hcmd);
+      ib::History::inst().addRawInputHistory(rawvalue);
     }
   }
 

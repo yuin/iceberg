@@ -78,6 +78,22 @@ void ib::History::addCommand(ib::HistoryCommand *command) { // {{{
   total_score_ += cmd->getRawScore();
 } // }}}
 
+void ib::History::addBaseCommandHistory(const std::string &value, const ib::BaseCommand* cmd){ // {{{
+   ib::HistoryCommand *hcmd = new HistoryCommand();
+   hcmd->setName(cmd->getName());
+   hcmd->setPath(value);
+   hcmd->addTime(std::time(0));
+   addCommand(hcmd);
+} // }}}
+
+void ib::History::addRawInputHistory(const std::string &value) { // {{{
+   ib::HistoryCommand *hcmd = new HistoryCommand();
+   hcmd->setName(value);
+   hcmd->setPath(value);
+   hcmd->addTime(std::time(0));
+   addCommand(hcmd);
+} // }}}
+
 void ib::History::calcRawScore(ib::HistoryCommand *command){ // {{{
   int score = 0;
   std::time_t now = std::time(0);

@@ -416,6 +416,13 @@ iceberg操作
    :param bool success: コマンドが成功したかどうか
    :param string message: コマンド失敗時のメッセージ
 
+.. lua:function:: icebergsupport.add_history(input [, name])
+
+   ``input`` をヒストリに追加します。登録済みコマンドのヒストリを追加する場合は ``name`` にコマンド名を渡します。 それ以外の場合は ``input`` のみで構いません。
+
+   :param string input: ヒストリに追加する文字列
+   :param string name: ``input`` が登録済みコマンドの場合、コマンド名
+
 .. lua:function:: icebergsupport.open_dir(path)
 
    ``path`` でしめされるディレクトリを ``system.file_browser`` で指定されているアプリケーションで開きます。

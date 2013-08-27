@@ -1,5 +1,6 @@
 #include "ib_lua.h"
 #include "ib_ui.h"
+#include "ib_history.h"
 #include "ib_platform.h"
 #include "ib_controller.h"
 #include "ib_regex.h"
@@ -473,6 +474,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(command_execute);
   REGISTER_FUNCTION(command_output);
   REGISTER_FUNCTION(default_after_command_action);
+  REGISTER_FUNCTION(add_history);
   REGISTER_FUNCTION(open_dir);
   REGISTER_FUNCTION(version);
   REGISTER_FUNCTION(utf82local);
@@ -846,6 +848,28 @@ int ib::luamodule::default_after_command_action(lua_State *L) { // {{{
   const char *message = luaL_checkstring(L, 2);
   ib::Controller::inst().afterExecuteCommand(success, strlen(message) != 0 ? message : 0);
   lua_state.clearStack();
+  return 0;
+} // }}}
+
+int ib::luamodule::add_history(lua_State *L) { // {{{
+  ib::LuaState lua_state(L);
+  const int top = lua_gettop(L);
+  std::string name = "";
+  if(top > 1) {
+    name = luaL_checkstring(L, -1);
+    lua_pop(L, 1);
+  }
+  std::string input = luaL_checkstring(L, -1);
+  lua_state.clearStack();
+
+  if(name.empty()){
+    ib::History::inst().addRawInputHistory(input);
+  }else{
+    auto it = ib::Controller::inst().getCommands().find(name);
+    if(it != ib::Controller::inst().getCommands().end()){
+      ib::History::inst().addBaseCommandHistory(input, (*it).second);
+    }
+  }
   return 0;
 } // }}}
 
