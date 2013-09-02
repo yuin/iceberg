@@ -198,16 +198,17 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   }
 
   ib::oschar osbuf[IB_MAX_PATH];
-  ib::platform::get_self_path(osbuf);
-  ib::unique_char_ptr self_path(ib::platform::oschar2utf8(osbuf));
   ib::platform::get_current_workdir(osbuf);
   ib::unique_char_ptr current_workdir(ib::platform::oschar2utf8(osbuf));
+  ib::platform::get_self_path(osbuf);
+  ib::unique_char_ptr self_path(ib::platform::oschar2utf8(osbuf));
+  ib::unique_oschar_ptr osself_dir(ib::platform::dirname(0, osbuf));
   cfg.setSelfPath(self_path.get());
   cfg.setInitialWorkdir(current_workdir.get());
   setCwd(current_workdir.get(), error);
   if(cfg.getConfigPath().size() == 0) {
     ib::unique_oschar_ptr osconfig_name(ib::platform::utf82oschar("config.lua"));
-    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osbuf, osconfig_name.get()));
+    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osself_dir.get(), osconfig_name.get()));
     ib::unique_char_ptr   cconfig_path(ib::platform::oschar2utf8(oscconfig_path.get()));
     cfg.setConfigPath(cconfig_path.get());
   }
@@ -1119,6 +1120,14 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
       ib::ListWindow::inst()->hide();
       ib::MainWindow::inst()->getInput()->setValue(cmd.c_str());
       return;
+    }
+  }
+
+  {
+    ib::Regex re_activate("activate", ib::Regex::NONE);
+    re_activate.init();
+    if(re_activate.match(message) == 0){
+      showApplication();
     }
   }
 } // }}}

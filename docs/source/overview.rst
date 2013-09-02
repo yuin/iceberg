@@ -104,6 +104,7 @@ iceberg実行ファイルのディレクトリに ``migemo.dll`` を ``dict`` �
 
     iceberg.exe -m "exec 実行したいコマンド"
     iceberg.exe -m "set 入力欄にセットしたい文字列"
+    iceberg.exe -m "activate"
 
 
 より進んだ使い方
