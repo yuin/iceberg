@@ -210,7 +210,7 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
 .. lua:function:: icebergsupport.regex_gsub(pattern, flags, string, repl)
 
    ``string`` から ``pattern`` を検索し ``repl`` で置換します。
-   ``repl`` には後方参照( ``\1, \2 ...`` )が使用できます。以下に例を示します。
+   ``repl`` には後方参照( ``%1, %2 ...`` )が使用できます。以下に例を示します。
 
    .. code-block:: lua
 
