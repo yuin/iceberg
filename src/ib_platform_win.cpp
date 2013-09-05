@@ -1495,7 +1495,7 @@ void ib::platform::win_draw_text(ib::oschar *str, int x, int y, int w, int h){ /
     rect.bottom  = y + h;
   }
   //TextOut(fl_gc, rect.left, rect.top, str, _tcslen(str));
-  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_END_ELLIPSIS);
+  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_PATH_ELLIPSIS);
   SetTextColor(fl_gc, oldColor);
 } // }}}
 
@@ -1508,7 +1508,6 @@ size_t ib::platform::win_calc_text_width(ib::oschar *str){ // {{{
   return (rect.right - rect.left);
 
 } // }}}
-
 //////////////////////////////////////////////////
 // platform specific functions }}}
 //////////////////////////////////////////////////
