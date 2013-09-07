@@ -296,6 +296,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
        cfg.setMaxCandidates(number);
     }
     lua_pop(IB_LUA, 1);
+    GET_FIELD("max_clipboard_histories", number) {
+       READ_UNSIGNED_INT("max_clipboard_histories");
+       cfg.setMaxClipboardHistories(number);
+    }
+    lua_pop(IB_LUA, 1);
 
     GET_FIELD("history_factor", number) {
        ludouble = lua_tonumber(IB_LUA, -1);
@@ -693,6 +698,23 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
         fl_alert("Command must have 'name' and 'path' attibutes.");
         ib::utils::exit_application(1);
       }
+
+      lua_getfield(IB_LUA, -1, "completion"); 
+      if(lua_isfunction(IB_LUA, -1)) { 
+        lua_pop(IB_LUA, 1);
+        lua_getglobal(IB_LUA, "system");
+          lua_getfield(IB_LUA, -1, "completer");
+            lua_getfield(IB_LUA, -1, "option_func");
+              lua_getfield(IB_LUA, -4, "completion");
+              lua_setfield(IB_LUA, -2, command->getName().c_str());
+              ib::Completer::inst().setOptionFuncFlag(command->getName().c_str());
+            lua_pop(IB_LUA, 1);
+          lua_pop(IB_LUA, 1);
+        lua_pop(IB_LUA, 1);
+      }else{
+        lua_pop(IB_LUA, 1);
+      }
+
       addCommand(command->getName(), command);
       lua_pop(IB_LUA, 1);
     }
@@ -1130,5 +1152,23 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
       showApplication();
     }
   }
+} // }}}
+
+void ib::Controller::appendClipboardHistory(const char* text){ // {{{
+  auto &cfg = ib::Config::inst();
+  std::string *data = new std::string(text);
+  for(auto it = clipboard_histories_.begin(), last = clipboard_histories_.end(); it != last; ++it){
+    if(*(*it) == *data) {
+      delete data;
+      return;
+    }
+  }
+
+  if(clipboard_histories_.size() >= cfg.getMaxClipboardHistories()){
+    std::string *front = clipboard_histories_.front();
+    delete front;
+    clipboard_histories_.pop_front();
+  }
+  clipboard_histories_.push_back(data);
 } // }}}
 

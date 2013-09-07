@@ -13,6 +13,7 @@ system = {
   key_event_threshold = 0,
   max_histories = 500,
   max_candidates = 15,
+  max_clipboard_histories = 15,
   history_factor = 0.8,
   file_browser = [[explorer ${1}]],
   server_port = 40000,
@@ -36,28 +37,7 @@ system = {
     history = ibs.COMP_PARTIAL,
     option  = ibs.COMP_PARTIAL,
 
-    option_func = {
-      [":scan_search_path"] = function(values) 
-        local candidates = {"all"}
-        local keys       = {all = true}
-        for i, value in ipairs(system.search_path) do
-          if value.category ~= nil and keys[value.category] == nil then
-            table.insert(candidates, value.category)
-            keys[value.category] = true
-          end
-        end
-        return candidates
-      end, 
-      ["alttab"] = function(values)
-        local candidates = {}
-        for i, tb in ipairs(winalttab.list()) do
-          local title = tb.title .. " (ID:" .. tb.hwnd .. ")"
-          local value = {value = title, description = tb.path, icon=tb.path}
-          table.insert(candidates, value)
-        end
-        return candidates
-      end
-    }
+    option_func = {}
   }
 }
 
@@ -126,13 +106,26 @@ commands = {
       ibs.set_result_text(ibs.get_cwd())
       return 0
     end, history = false},
-  [":scan_search_path"] = {path = function(args) 
-    if #args == 0 then
-      ibs.message("Usage: :scan_search_path CATEGORY")
-      return 1
-    end
-    ibs.scan_search_path(args[1]) 
-  end, description="scan search paths to find commands", history=false},
+  [":scan_search_path"] = {
+    path = function(args) 
+      if #args == 0 then
+        ibs.message("Usage: :scan_search_path CATEGORY")
+        return 1
+      end
+      ibs.scan_search_path(args[1]) 
+    end, 
+    completion = function(values) 
+          local candidates = {"all"}
+          local keys       = {all = true}
+          for i, value in ipairs(system.search_path) do
+            if value.category ~= nil and keys[value.category] == nil then
+              table.insert(candidates, value.category)
+              keys[value.category] = true
+            end
+          end
+          return candidates
+    end, 
+    description="scan search paths to find commands", history=false},
   [":empty"] = {path = function(args) ibs.shell_execute(wins.cmd_path, {}, wins.foreground_explorer_path()) end, description = "open command prompt here", history=false, workdir = wins.foreground_explorer_path},
   [":opendir"] = { path = function(args)
       if #args == 0 then
@@ -183,9 +176,45 @@ commands = {
       if ok then
         winalttab.activate(tonumber(r:_1()))
       end
+      return 0
     end, 
-    description = "ウインドウを切り替えます",
+    completion = function(values)
+        local candidates = {}
+        for i, tb in ipairs(winalttab.list()) do
+          local title = tb.title .. " (ID:" .. tb.hwnd .. ")"
+          local value = {value = title, description = tb.path, icon=tb.path}
+          table.insert(candidates, value)
+        end
+        return candidates
+    end,
+    description = "move between open windows",
     history=false
+  },
+  clipboard = {
+    path = function(args)
+      if #args == 0 then return end
+      local ok, r = ibs.regex_match([[\(([0-9]+)\).*]], Regex.NONE, args[1])
+      if ok then
+        ibs.set_clipboard(ibs.get_clipboard_histories()[tonumber(r:_1())])
+      end
+      return 0
+    end,
+    completion = function(values)
+        local candidates = {}
+        for i, text in ipairs(ibs.get_clipboard_histories()) do
+          local value = ibs.regex_gsub("\n", Regex.NONE, text, " ")
+          value = ibs.regex_gsub("\t", Regex.NONE, value, "    ")
+          local ok, r = ibs.regex_match("(.{50})(.*)", Regex.NONE, value)
+          if ok then
+            value = r:_1() .. " ... "
+          end
+          value = "(" .. tostring(i) .. ") : " .. value
+          table.insert(candidates, value)
+        end
+        return candidates
+    end,
+    description = "clipboard history",
+    history = false
   }
 }
 

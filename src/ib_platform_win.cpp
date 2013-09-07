@@ -32,6 +32,7 @@ static HWND ib_g_hwnd_main;
 static HWND ib_g_hwnd_list;
 static NOTIFYICONDATA ib_g_trayicon;
 static WNDPROC ib_g_wndproc;
+static HWND ib_g_hwnd_clbchain_next;
 
 const char *strcasestr(const char *haystack, const char *needle) { // {{{
   int haypos;
@@ -153,6 +154,8 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
             Shell_NotifyIcon(NIM_ADD,&ib_g_trayicon);
             if(Shell_NotifyIcon(NIM_MODIFY,&ib_g_trayicon)) break;
         }
+
+        ib_g_hwnd_clbchain_next = SetClipboardViewer(hwnd);
       }
       return 0;
 
@@ -179,6 +182,24 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
       }
       return 0;
 
+    case WM_DRAWCLIPBOARD: {
+        OpenClipboard(hwnd);
+        HANDLE htext = GetClipboardData(CF_TEXT);
+        if(htext != NULL) {
+            char *text = (char*)GlobalLock(htext);
+            ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
+            ib::Regex reg("\r\n", ib::Regex::NONE);
+            reg.init();
+            std::string replaced;
+            reg.gsub(replaced, utf8text.get(), "\n");
+            ib::Controller::inst().appendClipboardHistory(replaced.c_str());
+            GlobalUnlock(htext);
+        }
+        CloseClipboard();
+        if(ib_g_hwnd_clbchain_next != NULL) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
+      }
+      break;
+
     case WM_KEYUP: {
       if(m_end_composition){
           m_end_composition = 0;
@@ -187,6 +208,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
         }
       }
       break;
+
     case WM_SYSCOMMAND: {
         if(wparam == SC_CLOSE){
           ib::utils::exit_application(0);
@@ -203,6 +225,18 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
 
     case WM_ENDSESSION: {
         ib::utils::exit_application(0);
+      }
+      break;
+
+    case WM_CHANGECBCHAIN: {
+        if((HWND)wparam == ib_g_hwnd_clbchain_next) ib_g_hwnd_clbchain_next = (HWND)lparam;
+        else if(ib_g_hwnd_clbchain_next != NULL) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
+      }
+      break;
+
+    case WM_DESTROY: {
+        ChangeClipboardChain(hwnd, ib_g_hwnd_clbchain_next);
+        PostQuitMessage(0);
       }
       break;
   }

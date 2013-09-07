@@ -58,6 +58,7 @@ namespace ib {
     int set_input_text(lua_State *L); // string -> void
     int get_clipboard(lua_State *L); // void -> string
     int set_clipboard(lua_State *L); // string -> void
+    int get_clipboard_histories(lua_State *L); // void -> clipboard_histories:list
     int shell_execute(lua_State *L); // path:string, args:[string], workdir:string -> bool:success, string:message
     int command_execute(lua_State *L); // name:string, args:[string] -> bool:success, string:message
     int command_output(lua_State *L); // command:string -> bool:success, string:stdout, string:stderr

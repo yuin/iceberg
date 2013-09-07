@@ -14,6 +14,9 @@ namespace ib {
         for(auto it = commands_.begin(), last = commands_.end(); it != last; ++it) {
           delete (*it).second;
         }
+        for(auto it = clipboard_histories_.begin(), last = clipboard_histories_.end(); it != last; ++it){
+          delete *it;
+        }
       }
       void initFonts();
       void initBoxtypes();
@@ -46,11 +49,14 @@ namespace ib {
       void killWord();
 
       const std::unordered_map<std::string, ib::BaseCommand*>& getCommands() const { return commands_; }
+      const std::deque<std::string*>& getClipboardHistories() const { return clipboard_histories_; }
+      void  appendClipboardHistory(const char *text);
 
     protected:
-      Controller() : commands_(), cwd_("."), history_search_(false), result_text_(){}
+      Controller() : commands_(), clipboard_histories_(), cwd_("."), history_search_(false), result_text_(){}
 
       std::unordered_map<std::string, ib::BaseCommand*> commands_;
+      std::deque<std::string*> clipboard_histories_;
       std::string cwd_;
       bool history_search_;
       std::string result_text_;
