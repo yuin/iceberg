@@ -7,14 +7,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>概要 &mdash; iceberg v0.9.1 documentation</title>
+    <title>概要 &mdash; iceberg v0.9.2 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/print.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.1',
+        VERSION:     '0.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +24,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg v0.9.1 documentation" href="index.html" />
+    <link rel="top" title="iceberg v0.9.2 documentation" href="index.html" />
     <link rel="next" title="環境設定" href="config.html" />
     <link rel="prev" title="icebergドキュメント" href="index.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg v0.9.1 documentation</span></a></h1>
+          <span>iceberg v0.9.2 documentation</span></a></h1>
         <h2 class="heading"><span>概要</span></h2>
       </div>
       <div class="topnav">
@@ -58,7 +58,7 @@
 <li>ヒストリ検索</li>
 <li>Lua関数の呼び出し</li>
 </ul>
-<img alt="_images/screenshot_011.jpg" src="_images/screenshot_011.jpg" />
+<img alt="_images/screenshot_01.jpg" src="_images/screenshot_01.jpg" />
 </div>
 <div class="section" id="id2">
 <h2>使用法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -125,6 +125,7 @@
 <li><cite>cal</cite> : <tt class="docutils literal"><span class="pre">cal</span> <span class="pre">10+2</span></tt> のように計算を行える計算機。</li>
 <li><cite>weather</cite> : 日本の主要都市の天気を表示します(このコマンドはインターネット上から情報を取得するため、インターネット接続不可の場合情報が表示できません）。 <tt class="docutils literal"><span class="pre">weather</span></tt> と入力した後半角スペースを入力すると天気リストが表示されます。</li>
 <li><cite>alttab</cite> : <tt class="docutils literal"><span class="pre">alt+tab</span></tt> キーを押したときのような、ウインドウ切り替えコマンドです。 <tt class="docutils literal"><span class="pre">alttab</span></tt> と入力した後半角スペースを入力するとウインドウリストが表示されます。</li>
+<li><cite>clipboard</cite> : クリップボード履歴一覧を表示します。候補を選択するとクリップボードにコピーされます。</li>
 </ul>
 </div>
 <div class="section" id="id5">
@@ -170,7 +171,8 @@ dict/
 <h3>外部からのコマンド送信<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>以下のように起動することで、外部から起動済みのicebergにコマンドを送信することができます。この機能を利用するためには <tt class="docutils literal"><span class="pre">system.server_port</span></tt> を <tt class="docutils literal"><span class="pre">0</span></tt> 以外に設定しておく必要があります。</p>
 <div class="highlight-python"><pre>iceberg.exe -m "exec 実行したいコマンド"
-iceberg.exe -m "set 入力欄にセットしたい文字列"</pre>
+iceberg.exe -m "set 入力欄にセットしたい文字列"
+iceberg.exe -m "activate"</pre>
 </div>
 </div>
 </div>

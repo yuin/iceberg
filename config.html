@@ -7,14 +7,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>環境設定 &mdash; iceberg v0.9.1 documentation</title>
+    <title>環境設定 &mdash; iceberg v0.9.2 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/print.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9.1',
+        VERSION:     '0.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +24,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg v0.9.1 documentation" href="index.html" />
+    <link rel="top" title="iceberg v0.9.2 documentation" href="index.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="概要" href="overview.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg v0.9.1 documentation</span></a></h1>
+          <span>iceberg v0.9.2 documentation</span></a></h1>
         <h2 class="heading"><span>環境設定</span></h2>
       </div>
       <div class="topnav">
@@ -196,13 +196,18 @@
   <span class="c1">-- 実行ファイル, icebergのカレントディレクトリで実行 --</span>
   <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[notepad.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Notepad&quot;</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.&quot;</span><span class="p">},</span>
 
-  <span class="c1">-- lua関数 --</span>
-  <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">explorer</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">explorer</span> <span class="k">then</span>
-      <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">table_to_string</span><span class="p">(</span><span class="n">explorer</span><span class="p">))</span>
+  <span class="c1">-- lua関数, 補完関数あり --</span>
+  <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+      <span class="kd">local</span> <span class="n">explorer</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
+      <span class="k">if</span> <span class="n">explorer</span> <span class="k">then</span>
+        <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">table_to_string</span><span class="p">(</span><span class="n">explorer</span><span class="p">))</span>
+      <span class="k">end</span>
+    <span class="k">end</span><span class="p">,</span>
+    <span class="n">completion</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+      <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">1&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="s">2&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="s">3&quot;</span><span class="p">}</span>
     <span class="k">end</span>
-  <span class="k">end</span> <span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Sample Lua command&quot;</span><span class="p">},</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Sample Lua command&quot;</span><span class="p">},</span>
 
 
   <span class="c1">-- URL, アイコン画像を指定 --</span>
@@ -235,6 +240,9 @@
 <div class="highlight-python"><pre>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]</pre>
 </div>
 <p>関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">completion:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">system.completer.option_func</span></tt> と同じ形式の補完関数です。補完関数はコマンドでも <tt class="docutils literal"><span class="pre">system.completer.option_func</span></tt> でも登録できます。両方登録した場合はコマンドで定義したものが優先されます。</p>
 </td>
 </tr>
 <tr class="field"><th class="field-name">description:</th><td class="field-body"><p class="first">補完候補ウインドウに表示される説明文です。</p>

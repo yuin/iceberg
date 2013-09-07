@@ -144,13 +144,18 @@ commandsグローバル変数
           -- 実行ファイル, icebergのカレントディレクトリで実行 -- 
           np = {path = [[notepad.exe]], description="Notepad", workdir="."},
 
-          -- lua関数 -- 
-          lua_sample = { path = function(args) 
-            local explorer = wins.foreground_explorer()
-            if explorer then
-              ibs.message(ibs.table_to_string(explorer))
+          -- lua関数, 補完関数あり -- 
+          lua_sample = { 
+            path = function(args) 
+              local explorer = wins.foreground_explorer()
+              if explorer then
+                ibs.message(ibs.table_to_string(explorer))
+              end
+            end,
+            completion = function(values)
+              return {"1","2","3"}
             end
-          end ,description="Sample Lua command"},
+            description="Sample Lua command"},
 
 
           -- URL, アイコン画像を指定 -- 
@@ -178,7 +183,8 @@ commandsグローバル変数
         path = [[http://www.google.com/search?ie=utf8&q=${1}]]
 
     関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。
-
+:completion:
+    ``system.completer.option_func`` と同じ形式の補完関数です。補完関数はコマンドでも ``system.completer.option_func`` でも登録できます。両方登録した場合はコマンドで定義したものが優先されます。
 :description:
     補完候補ウインドウに表示される説明文です。
 :icon:
