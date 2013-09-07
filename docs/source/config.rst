@@ -35,6 +35,9 @@ systemグローバル変数
           -- 補完候補の表示数 -- 
           max_candidates = 15,
 
+          -- クリップボード履歴の保存数 -- 
+          max_clipboard_histories = 15,
+
           -- 補完候補ソート時のヒストリの影響度合い(0.0~1.0)
           history_factor = 0.8,
 
