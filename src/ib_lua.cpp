@@ -470,6 +470,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(set_input_text);
   REGISTER_FUNCTION(get_clipboard);
   REGISTER_FUNCTION(set_clipboard);
+  REGISTER_FUNCTION(get_clipboard_histories);
   REGISTER_FUNCTION(shell_execute);
   REGISTER_FUNCTION(command_execute);
   REGISTER_FUNCTION(command_output);
@@ -741,6 +742,21 @@ int ib::luamodule::set_clipboard(lua_State *L) { // {{{
   ib::utils::set_clipboard(msg);
   lua_state.clearStack();
   return 0;
+} // }}}
+
+int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
+  ib::LuaState lua_state(L);
+  lua_state.clearStack();
+
+  auto &histories  = ib::Controller::inst().getClipboardHistories();
+  int i = 1;
+  lua_newtable(L);
+  for(auto it = histories.rbegin(), last = histories.rend(); it != last; ++it, ++i){
+    lua_pushnumber(L, i);
+    lua_pushstring(L, (*it)->c_str());
+    lua_settable(L, -3);
+  }
+  return 1;
 } // }}}
 
 int ib::luamodule::shell_execute(lua_State *L) { // {{{

@@ -401,6 +401,12 @@ iceberg操作
 
    :param string text: 設定する文字列
 
+.. lua:function:: icebergsupport.get_clipboard_histories()
+
+   クリップボードの履歴文字列のリストを返します。
+
+   :returns: [string:クリップボード文字列]
+
 .. lua:function:: icebergsupport.command_execute(name [, args])
 
    icebergに ``name`` で登録されているコマンドを実行します。

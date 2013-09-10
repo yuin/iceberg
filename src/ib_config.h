@@ -34,6 +34,9 @@ namespace ib {
       unsigned int getMaxCandidates() const { return max_candidates_; }
       void setMaxCandidates(const unsigned int value){ max_candidates_ = value; }
 
+      unsigned int getMaxClipboardHistories() const { return max_clipboard_histories_; }
+      void setMaxClipboardHistories(const unsigned int value){ max_clipboard_histories_ = value; }
+
       double getHistoryFactor() const { return history_factor_; }
       void setHistoryFactor(const double value){ history_factor_ = value; }
 
@@ -226,6 +229,7 @@ namespace ib {
         key_event_threshold_(200),
         max_histories_(200),
         max_candidates_(0),
+        max_clipboard_histories_(0),
         history_factor_(0.3),
         file_browser_(),
         server_port_(0),
@@ -296,6 +300,7 @@ namespace ib {
       unsigned int key_event_threshold_;
       unsigned int max_histories_;
       unsigned int max_candidates_;
+      unsigned int max_clipboard_histories_;
       double       history_factor_;
       std::string  file_browser_;
       unsigned int server_port_;
