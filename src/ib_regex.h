@@ -123,7 +123,7 @@ namespace ib{
       int getEndpos(const int n) const { return region_->end[n]; }
       int getGroupLength(const int n) const { return region_->end[n] - region_->beg[n]; }
       int getFirstpos() const { return region_->beg[0];}
-      int getLastpos() const { return region_->end[getNumGroups()-1]; }
+      int getLastpos() const { return region_->end[0]; }
       int getBytesMatched() const { return last_result_;}
 
       void copyString(const char *value){
