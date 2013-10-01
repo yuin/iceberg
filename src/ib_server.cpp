@@ -37,6 +37,7 @@ int ib::Server::start(ib::Error &error){ // {{{
   if(started_) return 0;
 
   struct sockaddr_in addr;
+  char yes = 1;
 
   socket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (socket_ == INVALID_SOCKET) {
@@ -47,6 +48,7 @@ int ib::Server::start(ib::Error &error){ // {{{
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port);
   addr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+  setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
 
   if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
     error.setMessage("Failed to bind a server socket");
