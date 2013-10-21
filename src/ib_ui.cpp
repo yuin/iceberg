@@ -159,6 +159,19 @@ keyup:
     case FL_KEYDOWN:
       if(getImeComposition()) return 1;
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
+        for(Fl_Window *w = Fl::first_window(); w != 0;w = Fl::next_window(w)){
+          if(w->modal()) { 
+            for(int i = 0; i < w->as_group()->children(); ++i){
+              Fl_Widget *widget = w->as_group()->child(i);
+              Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
+              if(button && button->visible()){
+                button->do_callback();
+                return 1;
+              }
+            }
+          }
+        }
+
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_down");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -183,6 +196,7 @@ keyup:
         }
         
         if(key == FL_Enter){
+
           lua_getglobal(IB_LUA, "on_enter");
           if (lua_pcall(IB_LUA, 0, 1, 0)) {
               fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
