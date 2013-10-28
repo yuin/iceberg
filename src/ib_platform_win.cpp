@@ -1052,7 +1052,7 @@ ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ 
 ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar *dir, const ib::oschar *path) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   if(ib::platform::is_relative_path(path)){
-    ib::platform::join_path(result, dir, path);
+    ib::platform::normalize_join_path(result, dir, path);
   }else{
     _tcscpy(result, path);
   }
