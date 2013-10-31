@@ -119,6 +119,16 @@ icebergではコマンドが入力された際の引数を補完する関数を�
           return {"a", "b", "c"}
         end
 
+        -- もしくは
+
+        function(values)
+          return { 
+           {value="a", icon="path_to/icon.png", description="desc"}, 
+           {value="b", icon="path_to/icon.jpg", description="desc"},
+           {value="c", icon="path_to/icon.gif", description="desc"}
+          }
+        end
+
 ``values`` は入力されているコマンドと引数の配列です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。
 
 :value:
