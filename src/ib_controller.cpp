@@ -123,6 +123,8 @@ void ib::Controller::executeCommand() { // {{{
     if(it != commands_.end()){
       if((*it).second->isEnabledHistory()){
         ib::History::inst().addBaseCommandHistory(rawvalue, (*it).second);
+      }else{
+        ib::History::inst().addRawInputHistory((*it).second->getName());
       }
     }else{
       ib::History::inst().addRawInputHistory(rawvalue);

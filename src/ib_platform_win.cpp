@@ -792,6 +792,10 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   int                 context_id;
   
   abslist = ILCreateFromPath(path);
+  if(abslist == 0) {
+    ret = S_FALSE;
+    goto finalize;
+  }
   SHBindToParent(abslist, IID_IShellFolder, (void **)(&shell_folder), NULL);
   childlist = ILFindLastID(abslist);
 
@@ -823,7 +827,7 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
 finalize:
   if(context_menu != NULL) context_menu->Release();
   if(shell_folder != NULL) shell_folder->Release();
-  ILFree(abslist);
+  if(abslist != NULL) ILFree(abslist);
 
   return ret == S_OK ? 0 : 1;
 } // }}}

@@ -27,6 +27,8 @@ static void ib_input_cut_callback(Fl_Widget*, void *userdata) { // {{{
   ib::Input *in = (ib::Input*)userdata;
   in->copy(1);
   in->cut();
+  in->scan();
+  ib::MainWindow::inst()->updateIconbox();
   ib::Controller::inst().showCompletionCandidates();
 } // }}}
 
@@ -98,12 +100,13 @@ exit_thread:
 
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
+  const ib::Config &cfg = ib::Config::inst();
   const int key = Fl::event_key();
   const int state = Fl::event_state();
   const int mods = state & (FL_META|FL_CTRL|FL_ALT);
   const int shift = state & FL_SHIFT;
   const int selected = (position() != mark()) ? 1 : 0;
-  const int threshold = ib::Config::inst().getKeyEventThreshold();
+  const int threshold = cfg.getKeyEventThreshold();
 
   switch(e){
     case FL_KEYUP:
@@ -123,19 +126,19 @@ keyup:
            (key == FL_Insert && mods==0 && shift) ||
            (key == 'v' && mods==FL_COMMAND) ||
            // cut
-           (mods == 0 && shift && selected) ||
+           //(mods == 0 && shift && selected) ||
            (key == 'x' && mods==FL_COMMAND) ||
            // kill word
-           ib::utils::matches_key(ib::Config::inst().getKillWordKey(), key, state)
+           ib::utils::matches_key(cfg.getKillWordKey(), key, state)
            ){
           if(threshold > 0) cancelKeyEvent();
           ib::Controller::inst().showCompletionCandidates();
           return 1;
         }
 
-        if(ib::utils::matches_key(ib::Config::inst().getListNextKey(), key, state) ||
-           ib::utils::matches_key(ib::Config::inst().getListPrevKey(), key, state) || 
-           ib::utils::matches_key(ib::Config::inst().getToggleModeKey(), key, state) ||
+        if(ib::utils::matches_key(cfg.getListNextKey(), key, state) ||
+           ib::utils::matches_key(cfg.getListPrevKey(), key, state) || 
+           ib::utils::matches_key(cfg.getToggleModeKey(), key, state) ||
            key == FL_Enter
             ){
           if(threshold > 0) cancelKeyEvent();
@@ -151,6 +154,7 @@ keyup:
           return 1;
         }else{
           if(threshold > 0) cancelKeyEvent();
+          Fl_Input::handle(e);
           return 1;
         }
       }
@@ -159,6 +163,7 @@ keyup:
     case FL_KEYDOWN:
       if(getImeComposition()) return 1;
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
+        // close modal window by an enter key
         for(Fl_Window *w = Fl::first_window(); w != 0;w = Fl::next_window(w)){
           if(w->modal()) { 
             for(int i = 0; i < w->as_group()->children(); ++i){
@@ -209,23 +214,23 @@ keyup:
           }
           return 1;
         }
-        if(ib::utils::matches_key(ib::Config::inst().getEscapeKey(), key, state)){
+        if(ib::utils::matches_key(cfg.getEscapeKey(), key, state)){
           ib::Controller::inst().hideApplication();
           return 1;
         }
-        if(ib::utils::matches_key(ib::Config::inst().getListNextKey(), key, state)){
+        if(ib::utils::matches_key(cfg.getListNextKey(), key, state)){
           ib::Controller::inst().selectNextCompletion();
           return 1;
         }
-        if(ib::utils::matches_key(ib::Config::inst().getListPrevKey(), key, state)){
+        if(ib::utils::matches_key(cfg.getListPrevKey(), key, state)){
           ib::Controller::inst().selectPrevCompletion();
           return 1;
         }
-        if(ib::utils::matches_key(ib::Config::inst().getToggleModeKey(), key, state)){
+        if(ib::utils::matches_key(cfg.getToggleModeKey(), key, state)){
           ib::Controller::inst().toggleHistorySearchMode();
           return 1;
         }
-        if(ib::utils::matches_key(ib::Config::inst().getKillWordKey(), key, state)){
+        if(ib::utils::matches_key(cfg.getKillWordKey(), key, state)){
           ib::Controller::inst().killWord();
           return 1;
         }
