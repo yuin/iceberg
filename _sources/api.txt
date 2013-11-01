@@ -210,7 +210,7 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
 .. lua:function:: icebergsupport.regex_gsub(pattern, flags, string, repl)
 
    ``string`` から ``pattern`` を検索し ``repl`` で置換します。
-   ``repl`` には後方参照( ``\1, \2 ...`` )が使用できます。以下に例を示します。
+   ``repl`` には後方参照( ``%1, %2 ...`` )が使用できます。以下に例を示します。
 
    .. code-block:: lua
 
@@ -401,6 +401,12 @@ iceberg操作
 
    :param string text: 設定する文字列
 
+.. lua:function:: icebergsupport.get_clipboard_histories()
+
+   クリップボードの履歴文字列のリストを返します。
+
+   :returns: [string:クリップボード文字列]
+
 .. lua:function:: icebergsupport.command_execute(name [, args])
 
    icebergに ``name`` で登録されているコマンドを実行します。
@@ -415,6 +421,13 @@ iceberg操作
 
    :param bool success: コマンドが成功したかどうか
    :param string message: コマンド失敗時のメッセージ
+
+.. lua:function:: icebergsupport.add_history(input [, name])
+
+   ``input`` をヒストリに追加します。登録済みコマンドのヒストリを追加する場合は ``name`` にコマンド名を渡します。 それ以外の場合は ``input`` のみで構いません。
+
+   :param string input: ヒストリに追加する文字列
+   :param string name: ``input`` が登録済みコマンドの場合、コマンド名
 
 .. lua:function:: icebergsupport.open_dir(path)
 

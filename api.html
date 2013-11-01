@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; iceberg 0.9.0 documentation</title>
+    <title>API &mdash; iceberg 0.9.3 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.0',
+        VERSION:     '0.9.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +25,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg 0.9.0 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.3 documentation" href="index.html" />
     <link rel="next" title="既知の問題" href="knownissues.html" />
     <link rel="prev" title="Tips" href="tips.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.0 documentation</span></a></h1>
+          <span>iceberg 0.9.3 documentation</span></a></h1>
         <h2 class="heading"><span>API</span></h2>
       </div>
       <div class="topnav">
@@ -544,7 +544,7 @@
 <dt id="icebergsupport.regex_gsub">
 <tt class="descclassname">icebergsupport.</tt><tt class="descname">regex_gsub</tt><big>(</big><em>pattern</em>, <em>flags</em>, <em>string</em>, <em>repl</em><big>)</big><a class="headerlink" href="#icebergsupport.regex_gsub" title="Permalink to this definition">¶</a></dt>
 <dd><p><tt class="docutils literal"><span class="pre">string</span></tt> から <tt class="docutils literal"><span class="pre">pattern</span></tt> を検索し <tt class="docutils literal"><span class="pre">repl</span></tt> で置換します。
-<tt class="docutils literal"><span class="pre">repl</span></tt> には後方参照( <tt class="docutils literal"><span class="pre">\1,</span> <span class="pre">\2</span> <span class="pre">...</span></tt> )が使用できます。以下に例を示します。</p>
+<tt class="docutils literal"><span class="pre">repl</span></tt> には後方参照( <tt class="docutils literal"><span class="pre">%1,</span> <span class="pre">%2</span> <span class="pre">...</span></tt> )が使用できます。以下に例を示します。</p>
 <div class="highlight-lua"><div class="highlight"><pre><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span><span class="p">)</span>
 
 <span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span>
@@ -987,6 +987,20 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="icebergsupport.get_clipboard_histories">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">get_clipboard_histories</tt><big>(</big><big>)</big><a class="headerlink" href="#icebergsupport.get_clipboard_histories" title="Permalink to this definition">¶</a></dt>
+<dd><p>クリップボードの履歴文字列のリストを返します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">[string:クリップボード文字列]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="icebergsupport.command_execute">
 <tt class="descclassname">icebergsupport.</tt><tt class="descname">command_execute</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>args</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.command_execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>icebergに <tt class="docutils literal"><span class="pre">name</span></tt> で登録されているコマンドを実行します。</p>
@@ -1018,6 +1032,24 @@
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>success</strong> (<em>bool</em>) &#8211; コマンドが成功したかどうか</li>
 <li><strong>message</strong> (<em>string</em>) &#8211; コマンド失敗時のメッセージ</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.add_history">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">add_history</tt><big>(</big><em>input</em><span class="optional">[</span>, <em>name</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.add_history" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">input</span></tt> をヒストリに追加します。登録済みコマンドのヒストリを追加する場合は <tt class="docutils literal"><span class="pre">name</span></tt> にコマンド名を渡します。 それ以外の場合は <tt class="docutils literal"><span class="pre">input</span></tt> のみで構いません。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input</strong> (<em>string</em>) &#8211; ヒストリに追加する文字列</li>
+<li><strong>name</strong> (<em>string</em>) &#8211; <tt class="docutils literal"><span class="pre">input</span></tt> が登録済みコマンドの場合、コマンド名</li>
 </ul>
 </td>
 </tr>
