@@ -39,16 +39,17 @@ namespace ib{
 
   class CompletionString : public CompletionValue { // {{{
     public:
-      CompletionString(const char *value, const char *description="") : value_(value), description_(description), icon_file_("") {}
+      CompletionString(const char *value, const char *description="", const char *compvalue = "") : value_(value), description_(description), compvalue_(compvalue), icon_file_("") {}
       ~CompletionString() {};
 
       /* virtual methods */
-      const std::string& getCompvalue() const { return value_; }
+      const std::string& getCompvalue() const { return compvalue_.empty() ? value_ : compvalue_; }
       const std::string& getDispvalue() const { return value_; }
       const std::string& getDescription() const { return description_; }
       void setDescription(const std::string &value){ description_ = value; }
       void setDescription(const char *value){ description_ = value; }
       bool hasDescription() const { return description_.size() != 0;}
+      void setCompvalue(const char *value){ compvalue_ = value; }
       const std::string* getContextMenuPath() const;
       const std::string& getIconFile() const { return icon_file_; }
       void setIconFile(const std::string &value){ icon_file_ = value; }
@@ -58,6 +59,7 @@ namespace ib{
     protected:
       std::string value_;
       std::string description_;
+      std::string compvalue_;
       std::string icon_file_;
   }; // }}}
 

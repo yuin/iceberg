@@ -78,9 +78,13 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
       case LUA_TTABLE: {
           lua_getfield(IB_LUA, -1, "value");
           const char *value = luaL_checkstring(IB_LUA, -1);
-          if(!token->isValueToken() || method_option_->match(value, input) > -1){
+          lua_pop(IB_LUA, 1);
+          lua_getfield(IB_LUA, -1, "always_match");
+          bool is_always_match = lua_toboolean(IB_LUA, -1);
+          lua_pop(IB_LUA, 1);
+
+          if(is_always_match || !token->isValueToken() || method_option_->match(value, input) > -1){
             ib::CompletionString *compstr = new ib::CompletionString(value);
-            lua_pop(IB_LUA, 1);
 
             lua_getfield(IB_LUA, -1, "description");
             if(!lua_isnil(IB_LUA, -1)){
@@ -93,9 +97,10 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
               compstr->setIconFile(luaL_checkstring(IB_LUA, -1));
             }
             lua_pop(IB_LUA, 1);
+            if(is_always_match) {
+              compstr->setCompvalue(input.c_str());
+            }
             candidates.push_back(compstr);
-          }else{
-            lua_pop(IB_LUA, 1);
           }
         }
         break;

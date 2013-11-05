@@ -478,6 +478,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(add_history);
   REGISTER_FUNCTION(open_dir);
   REGISTER_FUNCTION(version);
+  REGISTER_FUNCTION(selected_index);
   REGISTER_FUNCTION(utf82local);
   REGISTER_FUNCTION(local2utf8);
   REGISTER_FUNCTION(list_all_windows);
@@ -910,6 +911,11 @@ int ib::luamodule::version(lua_State *L) { // {{{
   char buf[128];
   sprintf(buf, "iceberg %s %s (%s)", ib::Config::inst().getPlatform().c_str(), IB_VERSION, __DATE__);
   lua_pushstring(L, buf);
+  return 1;
+} // }}}
+
+int ib::luamodule::selected_index(lua_State *L) { // {{{
+  lua_pushinteger(L, ib::ListWindow::inst()->getListbox()->value());
   return 1;
 } // }}}
 

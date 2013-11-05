@@ -66,6 +66,7 @@ namespace ib {
     int add_history(lua_State *L); //  input:string [, name:string] -> void
     int open_dir(lua_State *L); // path:string -> bool:success, text:errmessage
     int version(lua_State *L); // void -> string
+    int selected_index(lua_State *L); // void -> int(start from 1)
     int utf82local(lua_State *L); // string -> string
     int local2utf8(lua_State *L); // string -> string
     int list_all_windows(lua_State *L); // void -> window_handles:list

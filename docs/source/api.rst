@@ -407,6 +407,12 @@ iceberg操作
 
    :returns: [string:クリップボード文字列]
 
+.. lua:function:: icebergsupport.selected_index()
+
+   選択されている補完候補のインデックスを返します。インデックスは1からはじまります。選択されていない場合0を返します。
+
+   :returns: number:インデックス
+
 .. lua:function:: icebergsupport.command_execute(name [, args])
 
    icebergに ``name`` で登録されているコマンドを実行します。
