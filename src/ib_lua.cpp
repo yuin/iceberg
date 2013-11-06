@@ -121,16 +121,17 @@ static int Regex_gsub(lua_State *L) {
     std::string result;
     value->gsub(result, string, [](const ib::Regex &reg, std::string *res, void *userdata) {
       lua_State *L = (lua_State*)userdata;
+      int top = lua_gettop(L);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 1);
       if(lua_pcall(L, 1, 1, 0) == 0) {
         if(lua_type(L, -1) == LUA_TSTRING){
           *res += lua_tostring(L, -1);
         }
-        lua_pop(L,2);
       }else{
         fl_alert("%s", lua_tostring(L, lua_gettop(L)));
       }
+      lua_settop(L, top);
     }, L);
     lua_state.clearStack();
     lua_pushstring(L, result.c_str());
