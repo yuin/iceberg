@@ -3,7 +3,7 @@
 0.9.4 (2013-11-05)
 -----------------------
 - NEW: 補完候補の属性に ``always_match`` を追加
-- NEW: ``icebergsupport.selected_index`` を追加
+- NEW: ``icebergsupport.selected_index`` , ``icebergsupport.brshift`` , ``icebergsupport.blshift`` を追加
 
 0.9.3 (2013-11-01)
 -----------------------

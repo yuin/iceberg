@@ -75,6 +75,8 @@ namespace ib {
     int band(lua_State *L); // values:int[...] -> result:int
     int bor(lua_State *L); // values:int[...] -> result:int
     int bxor(lua_State *L); // values:int[...] -> result:int
+    int brshift(lua_State *L); // int,int -> result:int
+    int blshift(lua_State *L); // int,int -> result:int
     int dirname(lua_State *L); // string -> string
     int basename(lua_State *L); // string -> string
     int directory_exists(lua_State *L); // string -> bool

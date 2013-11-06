@@ -97,23 +97,39 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 ~~~~~~~~~~~~~~
 .. lua:function:: icebergsupport.band(number[, number, number ...])
 
-   ``numbers`` の論理積を返します。
+   ``numbers`` の論理積を返します。numberはlua_Integer型として扱われます。
 
    :param [number] number: 数値
    :returns: number: 結果の値
 
 .. lua:function:: icebergsupport.bor(number[, number, number ...])
 
-   ``numbers`` の論理和を返します。
+   ``numbers`` の論理和を返します。numberはlua_Integer型として扱われます。
 
    :param [number] number: 数値
    :returns: number: 結果の値
 
 .. lua:function:: icebergsupport.bxor(number[, number, number ...])
 
-   ``numbers`` の排他的論理和を返します。
+   ``numbers`` の排他的論理和を返します。numberはlua_Integer型として扱われます。
 
    :param [number] number: 数値
+   :returns: number: 結果の値
+
+.. lua:function:: icebergsupport.brshift(number, disp)
+
+   ``number`` を ``disp`` ビット右にシフトした値を返します。numberはlua_Integer型として扱われます。
+
+   :param number number: 数値
+   :param number disp: シフト分
+   :returns: number: 結果の値
+
+.. lua:function:: icebergsupport.blshift(number, disp)
+
+   ``number`` を ``disp`` ビット左にシフトした値を返します。numberはlua_Integer型として扱われます。
+
+   :param number number: 数値
+   :param number disp: シフト分
    :returns: number: 結果の値
 
 

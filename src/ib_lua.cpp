@@ -487,6 +487,8 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(band);
   REGISTER_FUNCTION(bor);
   REGISTER_FUNCTION(bxor);
+  REGISTER_FUNCTION(brshift);
+  REGISTER_FUNCTION(blshift);
   REGISTER_FUNCTION(dirname);
   REGISTER_FUNCTION(basename);
   REGISTER_FUNCTION(directory_exists);
@@ -1001,6 +1003,24 @@ int ib::luamodule::bxor(lua_State *L) { // {{{
   }
   lua_state.clearStack();
   lua_pushnumber(L, value);
+  return 1;
+} // }}}
+
+int ib::luamodule::brshift(lua_State *L) { // {{{
+  ib::LuaState lua_state(L);
+  lua_Integer value = luaL_checkinteger(L, 1);
+  int disp = luaL_checkint(L, 2);
+  lua_state.clearStack();
+  lua_pushnumber(L, value >> disp);
+  return 1;
+} // }}}
+
+int ib::luamodule::blshift(lua_State *L) { // {{{
+  ib::LuaState lua_state(L);
+  lua_Integer value = luaL_checkinteger(L, 1);
+  int disp = luaL_checkint(L, 2);
+  lua_state.clearStack();
+  lua_pushnumber(L, value << disp);
   return 1;
 } // }}}
 
