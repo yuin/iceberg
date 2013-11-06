@@ -1533,7 +1533,7 @@ void ib::platform::win_draw_text(ib::oschar *str, int x, int y, int w, int h){ /
     rect.bottom  = y + h;
   }
   //TextOut(fl_gc, rect.left, rect.top, str, _tcslen(str));
-  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_PATH_ELLIPSIS);
+  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_PATH_ELLIPSIS | DT_NOPREFIX);
   SetTextColor(fl_gc, oldColor);
 } // }}}
 
