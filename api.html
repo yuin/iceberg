@@ -269,7 +269,7 @@
 <dl class="function">
 <dt id="icebergsupport.band">
 <tt class="descclassname">icebergsupport.</tt><tt class="descname">band</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.band" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理積を返します。</p>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理積を返します。numberはlua_Integer型として扱われます。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -289,7 +289,7 @@
 <dl class="function">
 <dt id="icebergsupport.bor">
 <tt class="descclassname">icebergsupport.</tt><tt class="descname">bor</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.bor" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理和を返します。</p>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の論理和を返します。numberはlua_Integer型として扱われます。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -309,13 +309,55 @@
 <dl class="function">
 <dt id="icebergsupport.bxor">
 <tt class="descclassname">icebergsupport.</tt><tt class="descname">bxor</tt><big>(</big><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#icebergsupport.bxor" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の排他的論理和を返します。</p>
+<dd><p><tt class="docutils literal"><span class="pre">numbers</span></tt> の排他的論理和を返します。numberはlua_Integer型として扱われます。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
 <li><strong>number</strong> (<em>[number]</em>) &#8211; 数値</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">number: 結果の値</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.brshift">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">brshift</tt><big>(</big><em>number</em>, <em>disp</em><big>)</big><a class="headerlink" href="#icebergsupport.brshift" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">number</span></tt> を <tt class="docutils literal"><span class="pre">disp</span></tt> ビット右にシフトした値を返します。numberはlua_Integer型として扱われます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>number</em>) &#8211; 数値</li>
+<li><strong>disp</strong> (<em>number</em>) &#8211; シフト分</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">number: 結果の値</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.blshift">
+<tt class="descclassname">icebergsupport.</tt><tt class="descname">blshift</tt><big>(</big><em>number</em>, <em>disp</em><big>)</big><a class="headerlink" href="#icebergsupport.blshift" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">number</span></tt> を <tt class="docutils literal"><span class="pre">disp</span></tt> ビット左にシフトした値を返します。numberはlua_Integer型として扱われます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>number</em>) &#8211; 数値</li>
+<li><strong>disp</strong> (<em>number</em>) &#8211; シフト分</li>
 </ul>
 </td>
 </tr>
