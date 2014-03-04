@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tips &mdash; iceberg 0.9.4 documentation</title>
+    <title>Tips &mdash; iceberg 0.9.5 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.4',
+        VERSION:     '0.9.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,13 +25,13 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg 0.9.4 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.5 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="環境設定" href="config.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.4 documentation</span></a></h1>
+          <span>iceberg 0.9.5 documentation</span></a></h1>
         <h2 class="heading"><span>Tips</span></h2>
       </div>
       <div class="topnav">
@@ -144,6 +144,28 @@
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="scan-search-path">
+<h2>起動時に自動的に:scan_search_pathを行う<a class="headerlink" href="#scan-search-path" title="Permalink to this headline">¶</a></h2>
+<p>以下のように <tt class="docutils literal"><span class="pre">on_initialize</span></tt> を定義することで起動時に自動的に <tt class="docutils literal"><span class="pre">:scan_search_path</span></tt> することができます。 <tt class="docutils literal"><span class="pre">all</span></tt> 以外のカテゴリで実行したい場合は <tt class="docutils literal"><span class="pre">{&quot;all&quot;}</span></tt> となっている場所を書き変えてください。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="kd">local</span> <span class="n">autoscan_file</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">.autoscan&quot;</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">ibs</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span> <span class="k">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">all&quot;</span><span class="p">})</span>
+    <span class="nb">os.remove</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="kd">local</span> <span class="n">fp</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">w&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">1&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+  <span class="k">end</span>
+
+  <span class="k">return</span> <span class="nb">error</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -161,7 +183,7 @@
       </div>
 
     <div class="footer">
-        &copy; Copyright 2012-2013, Yusuke Inuzuka.
+        &copy; Copyright 2012-2014, Yusuke Inuzuka.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
