@@ -112,6 +112,10 @@ int ib::Input::handle(int e){ /* {{{ */
     case FL_KEYUP:
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
 keyup:
+        // ignore shift key up
+        if(key == 65505 && state == 0) { return 1; }
+        // ignore hot key
+        if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_up");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -163,6 +167,10 @@ keyup:
     case FL_KEYDOWN:
       if(getImeComposition()) return 1;
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
+        // ignore shift key down
+        if(key == 65505 && state == 0) { return 1; }
+        // ignore hot key
+        if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
         // close modal window by an enter key
         for(Fl_Window *w = Fl::first_window(); w != 0;w = Fl::next_window(w)){
           if(w->modal()) { 

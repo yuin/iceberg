@@ -9,7 +9,7 @@ local winalttab = require("winalttab")
 system = {
   default_search_path_depth = 2,
   enable_icons = true,
-  max_cached_icons = 3000,
+  max_cached_icons = 999999,
   key_event_threshold = 0,
   max_histories = 500,
   max_candidates = 15,
@@ -153,7 +153,7 @@ commands = {
       if not fexplorer then return 0 end
       local ok, out, err = ibs.command_output([[C:\Windows\System32\cmd.exe /c md "]] .. fexplorer.path.."\\" .. dirname .. [["]])
       if not ok then
-        ibs.message(err)
+        ibs.message(ibs.crlf2lf(ibs.local2utf8(err)))
         return 1
       end
       return 0

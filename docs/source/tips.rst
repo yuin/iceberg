@@ -92,3 +92,25 @@ Tips
         
           return accept
         end
+
+起動時に自動的に:scan_search_pathを行う
+--------------------------------------------------------
+以下のように ``on_initialize`` を定義することで起動時に自動的に ``:scan_search_path`` することができます。 ``all`` 以外のカテゴリで実行したい場合は ``{"all"}`` となっている場所を書き変えてください。
+
+    .. code-block:: lua
+        
+        function on_initialize()
+          local error = 0
+          local autoscan_file = ibs.join_path(ibs.CONFIG_DIR, ".autoscan")
+          if ibs.file_exists(autoscan_file) then
+            ibs.command_execute(":scan_search_path", {"all"})
+            os.remove(autoscan_file)
+          else
+            local fp = io.open(autoscan_file, "w")
+            fp:write("1")
+            fp:close()
+          end
+        
+          return error
+        end
+

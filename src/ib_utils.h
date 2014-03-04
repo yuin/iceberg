@@ -50,13 +50,18 @@ namespace ib {
     void parse_key_bind(int *result, const char *string);
     inline bool matches_key(const int *key_bind, const int key, const int modifiers) {
       int len=0;
+      int mod = modifiers;
       for(;key_bind[len] !=0; ++len){}
-      if(len == 1) return key_bind[0] == key;
+      if(len == 1 && mod == 0) return key_bind[0] == key;
       len--;
       for(int i = 0; i < len; ++i){
-        if(!(modifiers & key_bind[i])) return false;
+        if(!(mod & key_bind[i])){
+          return false;
+        }else{
+          mod = mod & ~key_bind[i];
+        }
       }
-      return key_bind[len] == key;
+      return key_bind[len] == key && mod == 0;
     }
 
     /* clipboard stuff */
