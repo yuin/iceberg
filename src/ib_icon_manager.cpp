@@ -260,11 +260,9 @@ Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ /
       return readGifFileIcon(file, size);
     }else if(ret == "jpg" || ret == "JPG" || ret == "jpeg" || ret == "JPEG") {
       return readJpegFileIcon(file, size);
-    }else{
-      return getAssociatedIcon(file, size, true);
     }
   }
-  return 0;
+  return getAssociatedIcon(file, size, true);
 } // }}}
 
 Fl_RGB_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // {{{
