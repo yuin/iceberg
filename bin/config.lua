@@ -17,6 +17,8 @@ system = {
   history_factor = 0.8,
   file_browser = [[explorer ${1}]],
   server_port = 40000,
+  path_autocomplete = true,
+  option_autocomplete = true,
 
   hot_key = "ctrl-space",
   escape_key = "escape",

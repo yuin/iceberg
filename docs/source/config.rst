@@ -46,6 +46,14 @@ systemグローバル変数
 
           -- 外部からコマンドを受け付けるポート(0: 無効)
           server_port = 13505,
+
+          -- パス補完時に自動補完を有効にする
+          path_autocomplete = true,
+
+          -- 引数の補完時に自動補完を有効にする
+          option_autocomplete = true,
+
+          -- コマンド・ヒストリの補完時は自動補完は常に有効です --
         
           -- キー設定 --
           hot_key = "ctrl-space",

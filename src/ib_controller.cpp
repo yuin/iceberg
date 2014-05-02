@@ -325,6 +325,16 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
+    GET_FIELD("path_autocomplete", boolean) {
+       cfg.setPathAutocomplete(lua_toboolean(IB_LUA, -1) != 0);
+    }
+    lua_pop(IB_LUA, 1);
+
+    GET_FIELD("option_autocomplete", boolean) {
+       cfg.setOptionAutocomplete(lua_toboolean(IB_LUA, -1) != 0);
+    }
+    lua_pop(IB_LUA, 1);
+
     GET_FIELD("hot_key", string) {
       PARSE_KEY_BIND("hot_key");
       cfg.setHotKey(key_buf);

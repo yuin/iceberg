@@ -1,4 +1,5 @@
 #include "ib_comp_value.h"
+#include "ib_config.h"
 #include "ib_utils.h"
 #include "ib_platform.h"
 #include "ib_controller.h"
@@ -26,6 +27,10 @@ const std::string* ib::CompletionPathParts::getContextMenuPath() const { // {{{
   return &path_;
 } // }}}
 
+bool ib::CompletionPathParts::isAutocompleteEnable() const { // {{{
+  return ib::Config::inst().getPathAutocomplete();
+} // }}}
+
 Fl_RGB_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
   return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size, true);
 } // }}}
@@ -34,6 +39,10 @@ Fl_RGB_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
 // class CompletionString {{{
 const std::string* ib::CompletionString::getContextMenuPath() const { // {{{
   return 0;
+} // }}}
+
+bool ib::CompletionString::isAutocompleteEnable() const { // {{{
+  return ib::Config::inst().getOptionAutocomplete();
 } // }}}
 
 Fl_RGB_Image* ib::CompletionString::loadIcon(const int size) { // {{{

@@ -28,6 +28,7 @@ namespace ib{
       const std::string& getDispvalue() const { return basename_; }
       const std::string& getDescription() const { return description_; }
       const std::string* getContextMenuPath() const;
+      bool isAutocompleteEnable() const;
       Fl_RGB_Image* loadIcon(const int size);
 
     protected:
@@ -54,6 +55,7 @@ namespace ib{
       const std::string& getIconFile() const { return icon_file_; }
       void setIconFile(const std::string &value){ icon_file_ = value; }
       void setIconFile(const char *value){ icon_file_ = value; }
+      bool isAutocompleteEnable() const;
       Fl_RGB_Image* loadIcon(const int size);
 
     protected:
