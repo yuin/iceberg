@@ -203,6 +203,9 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
     return getEmptyIcon(size, size);
   }
   icon = ib::platform::get_associated_icon_image(os_path, size);
+  if(icon == 0) {
+    return getEmptyIcon(size, size);
+  }
   if(cache){ 
     createIconCache(cache_key, icon); 
     return copyCache(icon);
