@@ -449,6 +449,15 @@ void ib::utils::parse_key_bind(int *result, const char *string) { // {{{
       result[pos] = 0xef2f;
     }else if(memcmp(string+start, "favorites", ptr-start) == 0){
       result[pos] = 0xef30;
+    }else{
+      std::string keyname = std::string(string+start, ptr-start);
+      ib::Regex re("0x[0-9a-fA-F]+", ib::Regex::NONE);
+      re.init();
+      if(re.match(keyname) == 0) {
+        int num = 0;
+        sscanf(keyname.c_str(), "%x", &num);
+        result[pos] = num;
+      }
     }
   }
 

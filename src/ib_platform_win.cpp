@@ -735,19 +735,11 @@ static const struct {unsigned short vk, key;} vktab[] = {
 };
 
 int ib::platform::ib_key2os_key(const int key){
-  if (key >= '0' && key <= '9') return key;
-  if (key >= 'A' && key <= 'Z') return key;
-  if (key >= 'a' && key <= 'z') return key-('a'-'A');
-  if (key > FL_F && key <= FL_F+16) return key-(FL_F-(VK_F1-1));
-  if (key >= FL_KP+'0' && key<=FL_KP+'9') return key-(FL_KP+'0'-VK_NUMPAD0);
-  int a = 0;
   int b = sizeof(vktab)/sizeof(*vktab);
-  while (a < b) {
-    int c = (a+b)/2;
-    if (vktab[c].key == key) return vktab[c].vk;
-    if (vktab[c].key < key) a = c+1; else b = c;
+  for(int i=0; i < b; i++) {
+    if (vktab[i].key == key) return vktab[i].vk;
   }
-  return 0;
+  return key;
 }
 // }}}
 
