@@ -259,7 +259,171 @@ bool ib::utils::event_key_is_control_key() { // {{{
   return false;
 } // }}}
 
+static int ib_utils_parse_single_keyname(const char *string) { // {{{
+  if(strcmp(string, "space") == 0){
+    return (int)' ';
+  }else if(strcmp(string, "backspace") == 0){
+    return 0xff08;
+  }else if(strcmp(string, "tab") == 0){
+    return 0xff09;
+  }else if(strcmp(string, "iso_key") == 0){
+    return 0xff0c;
+  }else if(strcmp(string, "enter") == 0){
+    return 0xff0d;
+  }else if(strcmp(string, "pause") == 0){
+    return 0xff13;
+  }else if(strcmp(string, "scroll_lock") == 0){
+    return 0xff14;
+  }else if(strcmp(string, "escape") == 0){
+    return 0xff1b;
+  }else if(strcmp(string, "home") == 0){
+    return 0xff50;
+  }else if(strcmp(string, "left") == 0){
+    return 0xff51;
+  }else if(strcmp(string, "up") == 0){
+    return 0xff52;
+  }else if(strcmp(string, "right") == 0){
+    return 0xff53;
+  }else if(strcmp(string, "down") == 0){
+    return 0xff54;
+  }else if(strcmp(string, "page_up") == 0){
+    return 0xff55;
+  }else if(strcmp(string, "page_down") == 0){
+    return 0xff56;
+  }else if(strcmp(string, "end") == 0){
+    return 0xff57;
+  }else if(strcmp(string, "print") == 0){
+    return 0xff61;
+  }else if(strcmp(string, "insert") == 0){
+    return 0xff63;
+  }else if(strcmp(string, "menu") == 0){
+    return 0xff67;
+  }else if(strcmp(string, "help") == 0){
+    return 0xff68;
+  }else if(strcmp(string, "num_lock") == 0){
+    return 0xff7f;
+  }else if(strcmp(string, "kp") == 0){
+    return 0xff80;
+  }else if(strcmp(string, "kp0") == 0){
+    return 0xff80;
+  }else if(strcmp(string, "kp1") == 0){
+    return FL_KP + 1;
+  }else if(strcmp(string, "kp2") == 0){
+    return FL_KP + 2;
+  }else if(strcmp(string, "kp3") == 0){
+    return FL_KP + 3;
+  }else if(strcmp(string, "kp4") == 0){
+    return FL_KP + 4;
+  }else if(strcmp(string, "kp5") == 0){
+    return FL_KP + 5;
+  }else if(strcmp(string, "kp6") == 0){
+    return FL_KP + 6;
+  }else if(strcmp(string, "kp7") == 0){
+    return FL_KP + 7;
+  }else if(strcmp(string, "kp8") == 0){
+    return FL_KP + 8;
+  }else if(strcmp(string, "kp9") == 0){
+    return FL_KP + 9;
+  }else if(strcmp(string, "kp_enter") == 0){
+    return 0xff8d;
+  }else if(strcmp(string, "kp_last") == 0){
+    return 0xffbd;
+  }else if(strcmp(string, "f1") == 0){
+    return FL_F + 1;
+  }else if(strcmp(string, "f2") == 0){
+    return FL_F + 2;
+  }else if(strcmp(string, "f3") == 0){
+    return FL_F + 3;
+  }else if(strcmp(string, "f4") == 0){
+    return FL_F + 4;
+  }else if(strcmp(string, "f5") == 0){
+    return FL_F + 5;
+  }else if(strcmp(string, "f6") == 0){
+    return FL_F + 6;
+  }else if(strcmp(string, "f7") == 0){
+    return FL_F + 7;
+  }else if(strcmp(string, "f8") == 0){
+    return FL_F + 8;
+  }else if(strcmp(string, "f9") == 0){
+    return FL_F + 9;
+  }else if(strcmp(string, "f10") == 0){
+    return FL_F + 10;
+  }else if(strcmp(string, "f11") == 0){
+    return FL_F + 11;
+  }else if(strcmp(string, "f12") == 0){
+    return FL_F + 12;
+  }else if(strcmp(string, "f_last") == 0){
+    return 0xffe0;
+  }else if(strcmp(string, "shift_l") == 0){
+    return 0xffe1;
+  }else if(strcmp(string, "shift_r") == 0){
+    return 0xffe2;
+  }else if(strcmp(string, "control_l") == 0){
+    return 0xffe3;
+  }else if(strcmp(string, "control_r") == 0){
+    return 0xffe4;
+  }else if(strcmp(string, "caps_lock") == 0){
+    return 0xffe5;
+  }else if(strcmp(string, "meta_l") == 0){
+    return 0xffe7;
+  }else if(strcmp(string, "meta_r") == 0){
+    return 0xffe8;
+  }else if(strcmp(string, "alt_l") == 0){
+    return 0xffe9;
+  }else if(strcmp(string, "alt_r") == 0){
+    return 0xffea;
+  }else if(strcmp(string, "delete") == 0){
+    return 0xffff;
+  }else if(strcmp(string, "volume_down") == 0){
+    return 0xef11;
+  }else if(strcmp(string, "volume_mute") == 0){
+    return 0xef12;
+  }else if(strcmp(string, "volume_up") == 0){
+    return 0xef13;
+  }else if(strcmp(string, "media_play") == 0){
+    return 0xef14;
+  }else if(strcmp(string, "media_stop") == 0){
+    return 0xef15;
+  }else if(strcmp(string, "media_prev") == 0){
+    return 0xef16;
+  }else if(strcmp(string, "media_next") == 0){
+    return 0xef17;
+  }else if(strcmp(string, "home_page") == 0){
+    return 0xef18;
+  }else if(strcmp(string, "mail") == 0){
+    return 0xef19;
+  }else if(strcmp(string, "search") == 0){
+    return 0xef1b;
+  }else if(strcmp(string, "back") == 0){
+    return 0xef26;
+  }else if(strcmp(string, "forward") == 0){
+    return 0xef27;
+  }else if(strcmp(string, "stop") == 0){
+    return 0xef28;
+  }else if(strcmp(string, "refresh") == 0){
+    return 0xef29;
+  }else if(strcmp(string, "sleep") == 0){
+    return 0xef2f;
+  }else if(strcmp(string, "favorites") == 0){
+    return 0xef30;
+  }else{
+    ib::Regex re("0x[0-9a-fA-F]+", ib::Regex::NONE);
+    re.init();
+    if(re.match(string) == 0) {
+      int num = 0;
+      sscanf(string, "%x", &num);
+      return num;
+    }
+  }
+  return -1;
+} // }}}
+
 void ib::utils::parse_key_bind(int *result, const char *string) { // {{{
+  int ret = ib_utils_parse_single_keyname(string);
+  if(ret > -1) {
+    result[0] = ret;
+    return;
+  }
   int start = 0, ptr=0, ret_ptr=0;
   for(; string[ptr] != '\0' && ret_ptr != 3; ptr++){
     if(string[ptr] == '-'){
@@ -303,161 +467,9 @@ void ib::utils::parse_key_bind(int *result, const char *string) { // {{{
   if((ptr - start) == 1){
     result[pos] = (int)tolower(string[start]);
   }else if((ptr - start) > 0){
-    if(memcmp(string+start, "space", ptr-start) == 0){
-      result[pos] = (int)' ';
-    }else if(memcmp(string+start, "backspace", ptr-start) == 0){
-      result[pos] = 0xff08;
-    }else if(memcmp(string+start, "tab", ptr-start) == 0){
-      result[pos] = 0xff09;
-    }else if(memcmp(string+start, "iso_key", ptr-start) == 0){
-      result[pos] = 0xff0c;
-    }else if(memcmp(string+start, "enter", ptr-start) == 0){
-      result[pos] = 0xff0d;
-    }else if(memcmp(string+start, "pause", ptr-start) == 0){
-      result[pos] = 0xff13;
-    }else if(memcmp(string+start, "scroll_lock", ptr-start) == 0){
-      result[pos] = 0xff14;
-    }else if(memcmp(string+start, "escape", ptr-start) == 0){
-      result[pos] = 0xff1b;
-    }else if(memcmp(string+start, "home", ptr-start) == 0){
-      result[pos] = 0xff50;
-    }else if(memcmp(string+start, "left", ptr-start) == 0){
-      result[pos] = 0xff51;
-    }else if(memcmp(string+start, "up", ptr-start) == 0){
-      result[pos] = 0xff52;
-    }else if(memcmp(string+start, "right", ptr-start) == 0){
-      result[pos] = 0xff53;
-    }else if(memcmp(string+start, "down", ptr-start) == 0){
-      result[pos] = 0xff54;
-    }else if(memcmp(string+start, "page_up", ptr-start) == 0){
-      result[pos] = 0xff55;
-    }else if(memcmp(string+start, "page_down", ptr-start) == 0){
-      result[pos] = 0xff56;
-    }else if(memcmp(string+start, "end", ptr-start) == 0){
-      result[pos] = 0xff57;
-    }else if(memcmp(string+start, "print", ptr-start) == 0){
-      result[pos] = 0xff61;
-    }else if(memcmp(string+start, "insert", ptr-start) == 0){
-      result[pos] = 0xff63;
-    }else if(memcmp(string+start, "menu", ptr-start) == 0){
-      result[pos] = 0xff67;
-    }else if(memcmp(string+start, "help", ptr-start) == 0){
-      result[pos] = 0xff68;
-    }else if(memcmp(string+start, "num_lock", ptr-start) == 0){
-      result[pos] = 0xff7f;
-    }else if(memcmp(string+start, "kp", ptr-start) == 0){
-      result[pos] = 0xff80;
-    }else if(memcmp(string+start, "kp0", ptr-start) == 0){
-      result[pos] = 0xff80;
-    }else if(memcmp(string+start, "kp1", ptr-start) == 0){
-      result[pos] = FL_KP + 1;
-    }else if(memcmp(string+start, "kp2", ptr-start) == 0){
-      result[pos] = FL_KP + 2;
-    }else if(memcmp(string+start, "kp3", ptr-start) == 0){
-      result[pos] = FL_KP + 3;
-    }else if(memcmp(string+start, "kp4", ptr-start) == 0){
-      result[pos] = FL_KP + 4;
-    }else if(memcmp(string+start, "kp5", ptr-start) == 0){
-      result[pos] = FL_KP + 5;
-    }else if(memcmp(string+start, "kp6", ptr-start) == 0){
-      result[pos] = FL_KP + 6;
-    }else if(memcmp(string+start, "kp7", ptr-start) == 0){
-      result[pos] = FL_KP + 7;
-    }else if(memcmp(string+start, "kp8", ptr-start) == 0){
-      result[pos] = FL_KP + 8;
-    }else if(memcmp(string+start, "kp9", ptr-start) == 0){
-      result[pos] = FL_KP + 9;
-    }else if(memcmp(string+start, "kp_enter", ptr-start) == 0){
-      result[pos] = 0xff8d;
-    }else if(memcmp(string+start, "kp_last", ptr-start) == 0){
-      result[pos] = 0xffbd;
-    }else if(memcmp(string+start, "f1", ptr-start) == 0){
-      result[pos] = FL_F + 1;
-    }else if(memcmp(string+start, "f2", ptr-start) == 0){
-      result[pos] = FL_F + 2;
-    }else if(memcmp(string+start, "f3", ptr-start) == 0){
-      result[pos] = FL_F + 3;
-    }else if(memcmp(string+start, "f4", ptr-start) == 0){
-      result[pos] = FL_F + 4;
-    }else if(memcmp(string+start, "f5", ptr-start) == 0){
-      result[pos] = FL_F + 5;
-    }else if(memcmp(string+start, "f6", ptr-start) == 0){
-      result[pos] = FL_F + 6;
-    }else if(memcmp(string+start, "f7", ptr-start) == 0){
-      result[pos] = FL_F + 7;
-    }else if(memcmp(string+start, "f8", ptr-start) == 0){
-      result[pos] = FL_F + 8;
-    }else if(memcmp(string+start, "f9", ptr-start) == 0){
-      result[pos] = FL_F + 9;
-    }else if(memcmp(string+start, "f10", ptr-start) == 0){
-      result[pos] = FL_F + 10;
-    }else if(memcmp(string+start, "f11", ptr-start) == 0){
-      result[pos] = FL_F + 11;
-    }else if(memcmp(string+start, "f12", ptr-start) == 0){
-      result[pos] = FL_F + 12;
-    }else if(memcmp(string+start, "f_last", ptr-start) == 0){
-      result[pos] = 0xffe0;
-    }else if(memcmp(string+start, "shift_l", ptr-start) == 0){
-      result[pos] = 0xffe1;
-    }else if(memcmp(string+start, "shift_r", ptr-start) == 0){
-      result[pos] = 0xffe2;
-    }else if(memcmp(string+start, "control_l", ptr-start) == 0){
-      result[pos] = 0xffe3;
-    }else if(memcmp(string+start, "control_r", ptr-start) == 0){
-      result[pos] = 0xffe4;
-    }else if(memcmp(string+start, "caps_lock", ptr-start) == 0){
-      result[pos] = 0xffe5;
-    }else if(memcmp(string+start, "meta_l", ptr-start) == 0){
-      result[pos] = 0xffe7;
-    }else if(memcmp(string+start, "meta_r", ptr-start) == 0){
-      result[pos] = 0xffe8;
-    }else if(memcmp(string+start, "alt_l", ptr-start) == 0){
-      result[pos] = 0xffe9;
-    }else if(memcmp(string+start, "alt_r", ptr-start) == 0){
-      result[pos] = 0xffea;
-    }else if(memcmp(string+start, "delete", ptr-start) == 0){
-      result[pos] = 0xffff;
-    }else if(memcmp(string+start, "volume_down", ptr-start) == 0){
-      result[pos] = 0xef11;
-    }else if(memcmp(string+start, "volume_mute", ptr-start) == 0){
-      result[pos] = 0xef12;
-    }else if(memcmp(string+start, "volume_up", ptr-start) == 0){
-      result[pos] = 0xef13;
-    }else if(memcmp(string+start, "media_play", ptr-start) == 0){
-      result[pos] = 0xef14;
-    }else if(memcmp(string+start, "media_stop", ptr-start) == 0){
-      result[pos] = 0xef15;
-    }else if(memcmp(string+start, "media_prev", ptr-start) == 0){
-      result[pos] = 0xef16;
-    }else if(memcmp(string+start, "media_next", ptr-start) == 0){
-      result[pos] = 0xef17;
-    }else if(memcmp(string+start, "home_page", ptr-start) == 0){
-      result[pos] = 0xef18;
-    }else if(memcmp(string+start, "mail", ptr-start) == 0){
-      result[pos] = 0xef19;
-    }else if(memcmp(string+start, "search", ptr-start) == 0){
-      result[pos] = 0xef1b;
-    }else if(memcmp(string+start, "back", ptr-start) == 0){
-      result[pos] = 0xef26;
-    }else if(memcmp(string+start, "forward", ptr-start) == 0){
-      result[pos] = 0xef27;
-    }else if(memcmp(string+start, "stop", ptr-start) == 0){
-      result[pos] = 0xef28;
-    }else if(memcmp(string+start, "refresh", ptr-start) == 0){
-      result[pos] = 0xef29;
-    }else if(memcmp(string+start, "sleep", ptr-start) == 0){
-      result[pos] = 0xef2f;
-    }else if(memcmp(string+start, "favorites", ptr-start) == 0){
-      result[pos] = 0xef30;
-    }else{
-      std::string keyname = std::string(string+start, ptr-start);
-      ib::Regex re("0x[0-9a-fA-F]+", ib::Regex::NONE);
-      re.init();
-      if(re.match(keyname) == 0) {
-        int num = 0;
-        sscanf(keyname.c_str(), "%x", &num);
-        result[pos] = num;
-      }
+    ret = ib_utils_parse_single_keyname(string+start);
+    if(ret > -1) {
+      result[pos] = ret;
     }
   }
 

@@ -726,7 +726,7 @@ static const struct {unsigned short vk, key;} vktab[] = {
   {VK_RSHIFT,    FL_Shift_R},
   {VK_LCONTROL,    FL_Control_L},
   {VK_RCONTROL,    FL_Control_R},
-  {VK_CAPITAL,    FL_Caps_Lock},
+  {0xf0,       FL_Caps_Lock},
   {VK_LWIN,    FL_Meta_L},
   {VK_RWIN,    FL_Meta_R},
   {VK_LMENU,    FL_Alt_L},
