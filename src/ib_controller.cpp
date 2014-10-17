@@ -58,7 +58,7 @@ void ib::Controller::initBoxtypes(){ // {{{
   v = FL_PLASTIC_THIN_DOWN_BOX;
   v = FL_PLASTIC_ROUND_UP_BOX;
   v = FL_PLASTIC_ROUND_DOWN_BOX;
-
+  (void)v;
 } // }}}
 
 void ib::Controller::executeCommand() { // {{{

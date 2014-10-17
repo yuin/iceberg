@@ -21,15 +21,6 @@
 #  define _UNICODE 1
 #  define _WIN32_DCOM 1
 #  define sleep(n) Sleep(1000 * n)
-#  ifdef __MINGW32__
-#    define FindExInfoBasic ((FINDEX_INFO_LEVELS)1)
-#    define MINGW_HAS_SECURE_API 1
-#  else
-#    pragma comment(lib, "lua51.lib")
-#    pragma warning( disable : 4351)
-#    pragma warning( disable : 4996)
-#  endif
-#  define snprintf    _snprintf
 #endif
 #if defined linux || defined __linux__
 #  define IB_OS_LINUX 1 

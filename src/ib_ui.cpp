@@ -590,7 +590,7 @@ void ib::Listbox::initLayout(){ // {{{
   selection_color(cfg.getStyleListSelectionBgColor1());
   has_scrollbar(Fl_Browser_::VERTICAL);
   box(FL_FLAT_BOX);
-  static int widths[] = { cfg.getStyleListFontSize()*2+3, 1, 0};
+  static int widths[] = { (int)cfg.getStyleListFontSize()*2+3, 1, 0};
   column_widths(widths);
   scrollbar.selection_color(cfg.getStyleListBgColor1());
   scrollbar.color(cfg.getStyleListBgColor1());
@@ -682,12 +682,12 @@ void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
     if(use_max_candidates && i > max_candidates) break;
 
     if((*it)->hasDescription()) {
-      add(((*it)->getDispvalue() + "\t    " + (*it)->getDescription()).c_str(), (void*)i);
+      add(((*it)->getDispvalue() + "\t    " + (*it)->getDescription()).c_str(), (void*)(intptr_t)i);
       // char scorebuf[124];
       // sprintf(scorebuf, "%1.2f", ((ib::BaseCommand*)(*it))->getScore());
       // add(((*it)->getDispvalue() + "(score:" + scorebuf + ")\n \t\n    " + (*it)->getDescription()).c_str(), (void*)i);
     }else{
-      add((*it)->getDispvalue().c_str(), (void*)i);
+      add((*it)->getDispvalue().c_str(), (void*)(intptr_t)i);
     }
     width = item_width(item_last());
     max_width_ = (max_width_ > width) ? max_width_ : width;

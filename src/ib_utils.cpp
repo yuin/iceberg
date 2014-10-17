@@ -32,7 +32,7 @@ void __my_free(void *ptr) {
   //Fl::unlock();
 } 
 void *operator new(size_t size) { return __my_malloc(size); }
-void operator delete(void *p) { __my_free(p); }
+void operator delete(void *p) noexcept { __my_free(p); }
 #define malloc(size) __my_malloc(size)
 #define free(ptr) __my_free(ptr)
 #endif

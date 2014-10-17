@@ -13,7 +13,8 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.2" ]; then
   rm -f fltk-1.3.2-source.tar.gz
   
   echo "make FLTK libraries"
-  cd fltk-1.3.2
+  cd fltk-1.3.2/
+  patch -p1 < ../001_fltk-1.3.2_LLP64.patch
   autoconf
   ./configure --enable-threads
   make
@@ -129,22 +130,21 @@ else
 fi
 
 
-
-if [ ! -d "${BASE_DIR}/ext/onig-5.9.3" ]; then
-  echo "Downloading Oniguruma 5.9.3"
+if [ ! -d "${BASE_DIR}/ext/onig-5.9.5" ]; then
+  echo "Downloading Oniguruma 5.9.5"
   cd ${BASE_DIR}/ext
-  wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.3.tar.gz
+  wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.5.tar.gz
 
-  echo "explode Oniguruma 5.9.3"
-  tar zxvf onig-5.9.3.tar.gz
-  rm -f onig-5.9.3.tar.gz
+  echo "explode Oniguruma 5.9.5"
+  tar zxvf onig-5.9.5.tar.gz
+  rm -f onig-5.9.5.tar.gz
 
-  echo "make Oniguruma 5.9.3"
-  cd onig-5.9.3
+  echo "make Oniguruma 5.9.5"
+  cd onig-5.9.5
   ./configure
   make
 else
-  echo "Oniguruma 5.9.3: installed"
+  echo "Oniguruma 5.9.5: installed"
 fi
 
 if [ ! -d "${BASE_DIR}/ext/cmigemo-1.3c-MIT" ]; then

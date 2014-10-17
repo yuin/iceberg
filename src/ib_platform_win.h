@@ -13,7 +13,7 @@
 #include <lm.h>
 
 namespace ib{
-  typedef unsigned long thread;
+  typedef intptr_t thread;
   typedef void (*threadfunc) (void *);
   typedef CRITICAL_SECTION mutex;
   typedef HANDLE condition;

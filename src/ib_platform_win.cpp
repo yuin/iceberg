@@ -1158,7 +1158,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
   }
 
   ib::oschar pattern[IB_MAX_PATH];
-  swprintf(pattern, L"%s%s*", dir, sep);
+  swprintf(pattern, L"%ls%ls*", dir, sep);
   ib::oschar *tmp_full_path;
 
   WIN32_FIND_DATA fd;
@@ -1184,25 +1184,25 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
         if(_tcscmp(fd.cFileName, L".") && _tcscmp(fd.cFileName, L"..")){
           if(recursive){
             tmp_full_path = new ib::oschar[dir_length+1+file_name_length+1];
-            swprintf(tmp_full_path, L"%s%s%s", dir, sep, fd.cFileName);
+            swprintf(tmp_full_path, L"%ls%ls%ls", dir, sep, fd.cFileName);
             result.push_back(ib::unique_oschar_ptr(tmp_full_path));
             if(ib::platform::walk_dir(result, tmp_full_path, error, recursive) != 0){
               return 1;
             };
           }else{
             tmp_full_path = new ib::oschar[file_name_length+1];
-            swprintf(tmp_full_path, L"%s", fd.cFileName);
+            swprintf(tmp_full_path, L"%ls", fd.cFileName);
             result.push_back(ib::unique_oschar_ptr(tmp_full_path));
           }
         }
       }else {
         if(recursive){
           tmp_full_path = new ib::oschar[dir_length+1+file_name_length+1];
-          swprintf(tmp_full_path, L"%s%s%s", dir, sep, fd.cFileName);
+          swprintf(tmp_full_path, L"%ls%ls%ls", dir, sep, fd.cFileName);
           result.push_back(ib::unique_oschar_ptr(tmp_full_path));
         }else{
           tmp_full_path = new ib::oschar[file_name_length+1];
-          swprintf(tmp_full_path, L"%s", fd.cFileName);
+          swprintf(tmp_full_path, L"%ls", fd.cFileName);
           result.push_back(ib::unique_oschar_ptr(tmp_full_path));
         }
       }
@@ -1298,7 +1298,7 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
   for(ptr = buf; *ptr != L'\0' ; ptr++){
     length = _tcslen(ptr);
     tmp = new ib::oschar[length+1];
-    swprintf(tmp, L"%s", ptr);
+    swprintf(tmp, L"%ls", ptr);
     result.push_back(ib::unique_oschar_ptr(tmp));
     ptr += length;
   }
@@ -1309,24 +1309,23 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
-  if(_tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
+  // PathIsDirectory returns true even if path is a drive.
+  // Because of it, should use FindFirstFile & FILE_ATTRIBUTE_DIRECTORY
+  HANDLE hfind;
+  WIN32_FIND_DATA find_data;
+  hfind = FindFirstFile( path, &find_data );
+  if(hfind != INVALID_HANDLE_VALUE && find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
+    _tcscpy(result, L":folder:common");
+  }else if(_tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
     _tcscpy(result, path);
-    return result;
-  }else if(_tcscmp(file_type, L"") == 0){
-    HANDLE hfind;
-    WIN32_FIND_DATA find_data;
-    hfind = FindFirstFile( path, &find_data );
-    if(hfind != INVALID_HANDLE_VALUE && find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-      swprintf(result, L":folder:common:");
-      return result;
-    }else{
-      _tcscpy(result, path);
-      return result;
-    }
   }else{
-    swprintf(result, L":filetype:%s", file_type);
-    return result;
+    if(_tcslen(path) == 2 && iswalpha(path[0]) && path[1] == L':' && (path[2] == L'/' || path[2] == L'\\')){
+      swprintf(result, L":folder:drives");
+    }else {
+      swprintf(result, L":filetype:%ls", file_type);
+    }
   }
+  return result;
 } // }}}
 
 //////////////////////////////////////////////////
@@ -1377,7 +1376,7 @@ ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::basename(tmp, path);
   ib::oschar *ptr = PathFindExtensionW(tmp);
-  memset(result, 0, sizeof(result));
+  memset(result, 0, 1);
   if(ptr != tmp && *ptr != L'\0') { 
     ptr++; 
     _tcscpy(result, ptr);

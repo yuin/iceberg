@@ -36,8 +36,8 @@ CC=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
 LD=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
 WINDRES=windres
 
-CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc $(DEBUG) -I./ext/onig-5.9.3 -I./ext/cmigemo-1.3c-MIT/src -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x -mthreads -D_MT 
-LDFLAGS=-static-libgcc -static-libstdc++ -lshlwapi -lnetapi32 -lws2_32 -lfltk_images $(FLTK_LDFLAGS) -lfltk_png -lfltk_jpeg -lfltk_z $(LUA_DLL) -L./ext/onig-5.9.3/.libs/ -lonig 
+CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc $(DEBUG) -I./ext/onig-5.9.5 -I./ext/cmigemo-1.3c-MIT/src -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x -mthreads -D_MT 
+LDFLAGS=-static-libgcc -static-libstdc++ -lshlwapi -lnetapi32 -lws2_32 -lfltk_images $(FLTK_LDFLAGS) -lfltk_png -lfltk_jpeg -lz -L./ext/onig-5.9.5/.libs/ -lonig -static $(LUA_DLL) 
 
 .SUFFIXES: .o .cpp .rc
 .PHONY: clean run venv pip docs
