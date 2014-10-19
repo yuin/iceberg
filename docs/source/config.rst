@@ -6,6 +6,104 @@
 
 設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。
 
+キー名称
+--------------------
+この後の章で示す設定には以下のキー名称が使用できます。また、修飾キーと通常キーを ``-`` でつなぎ合わせることで同時押しを表現します。同時押しのキーは3つまでです。また、ホットキーの設定のみOSネイティブの仮想キーコードを受け付けます。
+
+例：
+
+    .. code-block:: lua
+
+        "alt-space"
+        "shift-ctrl-a"
+        "0x1d" -- Windowsにおける「無変換」キー
+        "0x1c" -- Windowsにおける「変換」キー
+
+- 修飾キー
+    - ``shift``
+    - ``caps_lock``
+    - ``ctrl``
+    - ``alt``
+    - ``num_lock``
+    - ``meta``
+    - ``scroll_lock``
+
+- 通常キー
+    - ``a`` ～ ``z``
+    - ``0`` ～ ``9``
+    - ``space``
+    - ``backspace``
+    - ``tab``
+    - ``iso_key``
+    - ``enter``
+    - ``pause``
+    - ``scroll_lock``
+    - ``escape``
+    - ``home``
+    - ``left``
+    - ``up``
+    - ``right``
+    - ``down``
+    - ``page_up``
+    - ``page_down``
+    - ``end``
+    - ``print``
+    - ``insert``
+    - ``menu``
+    - ``help``
+    - ``num_lock``
+    - ``kp0`` : kpから始まるキーはテンキー上のキーです。
+    - ``kp1``
+    - ``kp2``
+    - ``kp3``
+    - ``kp4``
+    - ``kp5``
+    - ``kp6``
+    - ``kp7``
+    - ``kp8``
+    - ``kp9``
+    - ``kp_enter``
+    - ``kp_last``
+    - ``f1``
+    - ``f2``
+    - ``f3``
+    - ``f4``
+    - ``f5``
+    - ``f6``
+    - ``f7``
+    - ``f8``
+    - ``f9``
+    - ``f10``
+    - ``f11``
+    - ``f12``
+    - ``f_last``
+    - ``shift_l``
+    - ``shift_r``
+    - ``control_l``
+    - ``control_r``
+    - ``caps_lock``
+    - ``meta_l``
+    - ``meta_r``
+    - ``alt_l``
+    - ``alt_r``
+    - ``delete``
+    - ``volume_down``
+    - ``volume_mute``
+    - ``volume_up``
+    - ``media_play``
+    - ``media_stop``
+    - ``media_prev``
+    - ``media_next``
+    - ``home_page``
+    - ``mail``
+    - ``search``
+    - ``back``
+    - ``forward``
+    - ``stop``
+    - ``refresh``
+    - ``sleep``
+    - ``favorites``
+
 systemグローバル変数
 ---------------------
 設定例
@@ -56,6 +154,8 @@ systemグローバル変数
           -- コマンド・ヒストリの補完時は自動補完は常に有効です --
         
           -- キー設定 --
+          -- hot_keyはOS仮想キーコードでも可、単一キーも可。 --
+          --   例: hot_key = "0x1d"  無変換 --
           hot_key = "ctrl-space",
           escape_key = "escape",
           list_next_key = "ctrl-n",
