@@ -1322,7 +1322,7 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
     }else if(_tcslen(file_type) > 0){
       swprintf(result, L":filetype:%ls", file_type);
     }else{
-      swprintf(result, L":filetype:%ls", path);
+      _tcscpy(result, path);
     }
   }
   return result;
