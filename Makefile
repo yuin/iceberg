@@ -82,7 +82,7 @@ run:
 	$(PACKAGE)
 
 package:
-	(echo "$$(gmake --version)" | grep i686-w64 > /dev/null 2>&1; \
+	(echo "$$(gcc --version)" | grep i686 > /dev/null 2>&1; \
 	 _IB_32=$$?;                                                  \
 	 if [ $${_IB_32} == 0 ]; then                                 \
 	   _IB_ARCH=x86_32;                                           \
