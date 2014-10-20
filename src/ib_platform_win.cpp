@@ -1311,7 +1311,9 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
   }else if(_tcsicmp(file_type, L"exe") == 0 || _tcsicmp(file_type, L"lnk") == 0 || _tcsicmp(file_type, L"ico") == 0) {
     _tcscpy(result, path);
   }else{
-    if(_tcslen(path) == 2 && iswalpha(path[0]) && path[1] == L':' && (path[2] == L'/' || path[2] == L'\\')){
+    if(_tcslen(path) == 3 && iswalpha(path[0]) && path[1] == L':' && (path[2] == L'/' || path[2] == L'\\')){
+      swprintf(result, L":folder:drives");
+    }else if(_tcslen(path) == 2 && iswalpha(path[0]) && path[1] == L':'){
       swprintf(result, L":folder:drives");
     }else {
       swprintf(result, L":filetype:%ls", file_type);
