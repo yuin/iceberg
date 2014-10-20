@@ -908,6 +908,10 @@ Fl_RGB_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, co
      special_folder = CSIDL_NETWORK;
    }else if(_tcscmp(path, L"::{645FF040-5081-101B-9F08-00AA002F954E}") == 0){
      special_folder = CSIDL_BITBUCKET;
+   }else if(_tcscmp(path, L"::{450D8FBA-AD25-11D0-98A8-0800361B1103}") == 0){
+     special_folder = CSIDL_PERSONAL;
+   }else if(_tcscmp(path, L"::{2227A280-3AEA-1069-A2DE-08002B30309D}") == 0){
+     special_folder = CSIDL_PRINTERS;
    }
 
    const int size_flag = size > 16 ? SHGFI_LARGEICON : SHGFI_SMALLICON;
@@ -1315,8 +1319,10 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
       swprintf(result, L":folder:drives");
     }else if(_tcslen(path) == 2 && iswalpha(path[0]) && path[1] == L':'){
       swprintf(result, L":folder:drives");
-    }else {
+    }else if(_tcslen(file_type) > 0){
       swprintf(result, L":filetype:%ls", file_type);
+    }else{
+      swprintf(result, L":filetype:%ls", path);
     }
   }
   return result;

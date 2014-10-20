@@ -197,7 +197,9 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
     ib::oschar tmp[IB_MAX_PATH];
     memcpy(tmp, os_path, sizeof(ib::oschar)*IB_MAX_PATH);
     memset(os_path, 0, sizeof(ib::oschar)*IB_MAX_PATH);
-    ib::platform::which(os_path, tmp);
+    if(!ib::platform::which(os_path, tmp)) {
+      memcpy(os_path, tmp, sizeof(ib::oschar)*IB_MAX_PATH);
+    }
   }
   if(ib::platform::is_path(os_path) && !ib::platform::path_exists(os_path)) {
     return getEmptyIcon(size, size);
