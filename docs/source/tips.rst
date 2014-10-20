@@ -6,7 +6,7 @@ Tips
 
 ポチエス連携
 --------------------------------------------
-`ポチエス <http://www.geocities.jp/pochi_s2004/pochi.html>`_ はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 ``ctrl-e`` を押すことでポスエスで実行する設定例を示します。
+`ポチエス <http://www.geocities.jp/pochi_s2004/pochi.html>`_ はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 ``shift-enter`` を押すことでポスエスで実行する設定例を示します。
 
 コマンド定義
 
@@ -29,7 +29,7 @@ Tips
     .. code-block:: lua
         
         shortcuts = {
-          { key = "ctrl-e", name = "esExt5" }
+          { key = "shift-enter", name = "esExt5" }
         }
 
 
