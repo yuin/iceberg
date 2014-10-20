@@ -6,16 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>環境設定 &mdash; iceberg 0.9.5 documentation</title>
+    <title>環境設定 &mdash; iceberg 0.9.6 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.5',
+        VERSION:     '0.9.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,14 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg 0.9.5 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.6 documentation" href="index.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="概要" href="overview.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.5 documentation</span></a></h1>
+          <span>iceberg 0.9.6 documentation</span></a></h1>
         <h2 class="heading"><span>環境設定</span></h2>
       </div>
       <div class="topnav">
@@ -55,10 +53,120 @@
 <p>設定は <a class="reference external" href="http://www.lua.org">Lua</a> による設定ファイルに記載します。デフォルトではiceberg実行ファイルと同一ディレクトリの <tt class="docutils literal"><span class="pre">config.lua</span></tt> が読み込まれますが、起動時に <tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIGFILE</span></tt> と指定することで別のファイルを読み込むことができます。ヒストリファイルなどは設定ファイルと同一のディレクトリに保存されます。</p>
 <p>設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。</p>
 </div>
+<div class="section" id="id3">
+<h2>キー名称<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>この後の章で示す設定には以下のキー名称が使用できます。また、修飾キーと通常キーを <tt class="docutils literal"><span class="pre">-</span></tt> でつなぎ合わせることで同時押しを表現します。同時押しのキーは3つまでです。また、ホットキーの設定のみOSネイティブの仮想キーコードを受け付けます。</p>
+<p>例：</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="s2">&quot;</span><span class="s">alt-space&quot;</span>
+<span class="s2">&quot;</span><span class="s">shift-ctrl-a&quot;</span>
+<span class="s2">&quot;</span><span class="s">0x1d&quot;</span> <span class="c1">-- Windowsにおける「無変換」キー</span>
+<span class="s2">&quot;</span><span class="s">0x1c&quot;</span> <span class="c1">-- Windowsにおける「変換」キー</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul>
+<li><dl class="first docutils">
+<dt>修飾キー</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">shift</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">caps_lock</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">ctrl</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">alt</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">num_lock</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">meta</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">scroll_lock</span></tt></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>通常キー</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">a</span></tt> ～ <tt class="docutils literal"><span class="pre">z</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">0</span></tt> ～ <tt class="docutils literal"><span class="pre">9</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">space</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">backspace</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">tab</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">iso_key</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">enter</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">pause</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">scroll_lock</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">escape</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">home</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">left</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">up</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">right</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">down</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">page_up</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">page_down</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">end</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">print</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">insert</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">menu</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">help</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">num_lock</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp0</span></tt> : kpから始まるキーはテンキー上のキーです。</li>
+<li><tt class="docutils literal"><span class="pre">kp1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp3</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp4</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp5</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp6</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp7</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp8</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp9</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp_enter</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">kp_last</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f3</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f4</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f5</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f6</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f7</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f8</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f9</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f10</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f11</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f12</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">f_last</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">shift_l</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">shift_r</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">control_l</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">control_r</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">caps_lock</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">meta_l</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">meta_r</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">alt_l</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">alt_r</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">delete</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">volume_down</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">volume_mute</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">volume_up</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">media_play</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">media_stop</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">media_prev</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">media_next</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">home_page</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">mail</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">search</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">back</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">forward</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">stop</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">refresh</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">sleep</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">favorites</span></tt></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
 <div class="section" id="system">
 <h2>systemグローバル変数<a class="headerlink" href="#system" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>設定例<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>設定例<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>以下に設定例と値の意味を示します。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
@@ -94,7 +202,17 @@
   <span class="c1">-- 外部からコマンドを受け付けるポート(0: 無効)</span>
   <span class="n">server_port</span> <span class="o">=</span> <span class="mi">13505</span><span class="p">,</span>
 
+  <span class="c1">-- パス補完時に自動補完を有効にする</span>
+  <span class="n">path_autocomplete</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+
+  <span class="c1">-- 引数の補完時に自動補完を有効にする</span>
+  <span class="n">option_autocomplete</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+
+  <span class="c1">-- コマンド・ヒストリの補完時は自動補完は常に有効です --</span>
+
   <span class="c1">-- キー設定 --</span>
+  <span class="c1">-- hot_keyはOS仮想キーコードでも可、単一キーも可。 --</span>
+  <span class="c1">--   例: hot_key = &quot;0x1d&quot;  無変換 --</span>
   <span class="n">hot_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-space&quot;</span><span class="p">,</span>
   <span class="n">escape_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">escape&quot;</span><span class="p">,</span>
   <span class="n">list_next_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-n&quot;</span><span class="p">,</span>
@@ -143,8 +261,8 @@
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="id4">
-<h3>サーチパス<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>サーチパス<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>サーチパスは、指定したディレクトリ配下を検索し自動的にコマンドとして登録する機能です。サーチパスの構成要素は以下です。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -161,8 +279,8 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="id5">
-<h3>補完関数<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>補完関数<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>icebergではコマンドが入力された際の引数を補完する関数を定義できます。補完関数は以下のシグネチャです。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
@@ -201,8 +319,8 @@
 </div>
 <div class="section" id="commands">
 <h2>commandsグローバル変数<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>設定例<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>設定例<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>以下に代表的なコマンドの定義例を示します。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
@@ -238,8 +356,8 @@
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="id7">
-<h3>コマンド<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>コマンド<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>コマンドは以下の要素から構成されます。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -250,10 +368,12 @@
 </tr>
 <tr class="field-even field"><th class="field-name">path:</th><td class="field-body"><p class="first">実行対象のパスもしくはLuaの関数です。
 パスの場合、以下のように引数を含めることができます。また空白を含む場合は <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲う必要があります。:</p>
-<div class="highlight-python"><pre>path = [["C:\s p a c e\bin.exe" arg1 arg2]]</pre>
+<div class="highlight-python"><div class="highlight"><pre>path = [[&quot;C:\s p a c e\bin.exe&quot; arg1 arg2]]
+</pre></div>
 </div>
 <p>また入力された変数を参照することができます。 <tt class="docutils literal"><span class="pre">google</span> <span class="pre">iceberg</span></tt> と入力された場合、 <tt class="docutils literal"><span class="pre">google</span></tt> コマンドの <tt class="docutils literal"><span class="pre">path</span></tt> が以下の場合、 <tt class="docutils literal"><span class="pre">${1}</span></tt> に <tt class="docutils literal"><span class="pre">iceberg</span></tt> が代入されます。:</p>
-<div class="highlight-python"><pre>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]</pre>
+<div class="highlight-python"><div class="highlight"><pre>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]
+</pre></div>
 </div>
 <p>関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。</p>
 </td>
@@ -284,8 +404,8 @@
 </div>
 <div class="section" id="shortcuts">
 <h2>shortcutsグローバル変数<a class="headerlink" href="#shortcuts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id8">
-<h3>設定例<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>設定例<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p>以下に代表的なショートカットの定義例を示します。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
@@ -296,7 +416,8 @@
 </div>
 </div></blockquote>
 <p>上記のようにショートカットを定義し、 <tt class="docutils literal"><span class="pre">c:\</span></tt> と入力欄に入力された状態で <tt class="docutils literal"><span class="pre">ctrl-l</span></tt> を押下したとします。その時以下のようにコマンドが実行されます。:</p>
-<div class="highlight-python"><pre>:cd c:\</pre>
+<div class="highlight-python"><div class="highlight"><pre>:cd c:\
+</pre></div>
 </div>
 <p>つまり、コマンドの引数として入力欄に入力されている値が渡されます。</p>
 </div>
@@ -371,7 +492,7 @@
 
     <div class="footer">
         &copy; Copyright 2012-2014, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

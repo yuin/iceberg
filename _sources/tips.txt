@@ -6,7 +6,7 @@ Tips
 
 ポチエス連携
 --------------------------------------------
-`ポチエス <http://www.geocities.jp/pochi_s2004/pochi.html>`_ はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 ``ctrl-e`` を押すことでポスエスで実行する設定例を示します。
+`ポチエス <http://www.geocities.jp/pochi_s2004/pochi.html>`_ はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 ``shift-enter`` を押すことでポスエスで実行する設定例を示します。
 
 コマンド定義
 
@@ -29,7 +29,7 @@ Tips
     .. code-block:: lua
         
         shortcuts = {
-          { key = "ctrl-e", name = "esExt5" }
+          { key = "shift-enter", name = "esExt5" }
         }
 
 
@@ -53,13 +53,7 @@ Tips
         
           ibs.bind_key("ctrl-m", function()
             local ex = wins.foreground_explorer()
-            local ok, err = ibs.command_execute("vim", {ex.path .. [[\]] .. ex.selected[1]})
-            if ok then
-              ibs.set_input_text("")
-              ibs.hide_application()
-            else
-              ibs.message(err)
-            end
+            ibs.default_after_command_action(ibs.command_execute("vim", {ex.path .. [[\]] .. ex.selected[1]}))
             accept = 1
           end)
         
@@ -114,3 +108,28 @@ Tips
           return error
         end
 
+foobar2000を操作する
+--------------------------------------------------------
+以下の様に定義するとicebergからfoobar2000が操作できます。
+
+
+    .. code-block:: lua
+        
+        foobar2000 = { 
+          path=[[foobar2000のパス]],
+          completion = function(values) 
+            return {
+              {value="/playpause", description = "再生/一時停止"},
+              {value="/stop", description = "停止"},
+              {value="/pause", description = "一時停止"},
+              {value="/play", description = "再生"},
+              {value="/prev", description = "前へ"},
+              {value="/next", description = "次へ"},
+              {value="/rand", description = "ランダム再生"},
+              {value="/exit", description = "終了"},
+              {value="/show", description = "表示"},
+              {value="/hide", description = "最小化"}
+            }
+          end,
+          history = false
+        }

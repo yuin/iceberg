@@ -6,16 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>変更履歴 &mdash; iceberg 0.9.5 documentation</title>
+    <title>変更履歴 &mdash; iceberg 0.9.6 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.5',
+        VERSION:     '0.9.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,14 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
-    <link rel="top" title="iceberg 0.9.5 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.6 documentation" href="index.html" />
     <link rel="next" title="謝辞" href="acknowledgements.html" />
     <link rel="prev" title="既知の問題" href="knownissues.html" /> 
   </head>
   <body>
       <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.5 documentation</span></a></h1>
+          <span>iceberg 0.9.6 documentation</span></a></h1>
         <h2 class="heading"><span>変更履歴</span></h2>
       </div>
       <div class="topnav">
@@ -51,21 +49,56 @@
   <div class="section" id="id1">
 <h1>変更履歴<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id2">
-<h2>0.9.5 (2014-03-04)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>0.9.6 (2014-10-20)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>FIXED: 一部のパスでアイコンが正しく読み込まれない問題を修正</li>
+<li>NEW: パス補完とオプション補完でオートコンプリートを有効にする <tt class="docutils literal"><span class="pre">path_autocomplete</span></tt> と <tt class="docutils literal"><span class="pre">option_autocomplete</span></tt> を追加</li>
+<li>FIXED: 一部のパスを読み込んだ際にクラッシュする問題を修正</li>
+<li>CHANGED: 使用するコンパイラをMinGW-W64 4.9.1にアップグレード</li>
+<li>IMPROVED: 単一キーをホットキーに割り当てられるようになった</li>
+</ul>
+<div class="section" id="id3">
+<h3>0.9.5からのアップグレード方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">0.9.6をダウンロードしてください。</p>
+</li>
+<li><p class="first">0.9.6から <tt class="docutils literal"><span class="pre">iceberg.exe</span></tt> をコピーして既存の0.9.5側に上書きしてください。</p>
+</li>
+<li><p class="first">アイコン周りの修正が入っているので <tt class="docutils literal"><span class="pre">icons.cache</span></tt> を削除することをお勧めします。</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">config.lua</span></tt> の <tt class="docutils literal"><span class="pre">system</span></tt> グローバル変数に以下のように <tt class="docutils literal"><span class="pre">path_autocomplete</span></tt> と <tt class="docutils literal"><span class="pre">option_autocomplete</span></tt> を追加してください。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre>system = {
+  (他の設定)
+  -- パス補完時にオートコンプリートを行うか
+  path_autocomplete = true,
+  -- オプション補完時にオートコンプリートを行うか
+  option_autocomplete = true,
+  (他の設定)
+}
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>0.9.5 (2014-03-04)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>FIXED: 補完候補ウインドウに <tt class="docutils literal"><span class="pre">'&amp;'</span></tt> が描画できなかった問題を修正</li>
 <li>FIXED: 一部のキー組み合わせで動作しなかった問題を修正( <tt class="docutils literal"><span class="pre">shift-tab</span></tt> など )</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>0.9.4 (2013-11-05)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.9.4 (2013-11-05)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>NEW: 補完候補の属性に <tt class="docutils literal"><span class="pre">always_match</span></tt> を追加</li>
 <li>NEW: <tt class="docutils literal"><span class="pre">icebergsupport.selected_index</span></tt> , <tt class="docutils literal"><span class="pre">icebergsupport.brshift</span></tt> , <tt class="docutils literal"><span class="pre">icebergsupport.blshift</span></tt> を追加</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>0.9.3 (2013-11-01)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>0.9.3 (2013-11-01)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>FIXED: shift+矢印キーが動作しない問題を修正</li>
 <li>FIEED: 特定のアイテム上でコンテキストメニューを開こうとした時に落ちる問題を修正</li>
@@ -75,8 +108,8 @@
 <li>IMPROVED: モーダルウインドウの扱いを改善(Enterキー押下でクローズできるようになった)</li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>0.9.2 (2013-09-07)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.9.2 (2013-09-07)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first">FIXED: スレッドセーフではない関数がマルチスレッド下で保護されていない問題を修正</p>
 </li>
@@ -98,8 +131,8 @@
 </li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>0.9.1 (2013-08-24)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>0.9.1 (2013-08-24)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>FIXED: ショートカット実行時、入力欄に <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲われた空白を含む値が合った場合の問題を修正</li>
 <li>FIXED: 補完関数がテーブルを返した場合、補完リストが入力に従いフィルタリングされなかった問題を修正</li>
@@ -110,8 +143,8 @@
 <li>NEW: <tt class="docutils literal"><span class="pre">alttab</span></tt> コマンドをデフォルトコマンドに追加</li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>0.9.0 (2013-08-15)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>0.9.0 (2013-08-15)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>公開開始</li>
 </ul>
@@ -134,7 +167,7 @@
 
     <div class="footer">
         &copy; Copyright 2012-2014, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
