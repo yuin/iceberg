@@ -14,7 +14,8 @@
 
 namespace ib{
   typedef intptr_t thread;
-  typedef void (*threadfunc) (void *);
+  typedef unsigned (*threadfunc) (void *);
+  typedef unsigned threadret;
   typedef CRITICAL_SECTION mutex;
   typedef HANDLE condition;
   typedef HWND   whandle;

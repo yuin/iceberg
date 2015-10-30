@@ -61,14 +61,14 @@ void ib::utils::exit_application(const int code) { // {{{
   if(ib::MainWindow::inst() != 0){
     auto input = ib::MainWindow::inst()->getInput();
     if(input != 0 && ib::Config::inst().getKeyEventThreshold() > 0){
-      input->stopKeyEventThread();
+      input->getKeyEvent().stopThread();
     }
     ib::MainWindow::inst()->close();
     delete ib::MainWindow::inst();
   }
   if(ib::IconManager::inst() != 0){
     ib::IconManager::inst()->deleteCachedIcons();
-    ib::IconManager::inst()->stopLoaderThread();
+    ib::IconManager::inst()->getLoaderEvent().stopThread();
     delete ib::IconManager::inst();
   }
   ib::Migemo::inst().destroy();
@@ -88,7 +88,7 @@ void ib::utils::reboot_application() { // {{{
   auto &cfg = ib::Config::inst();
   ib::Error error;
   if(ib::platform::shell_execute(cfg.getSelfPath(), params, cfg.getInitialWorkdir(), error) != 0) {
-    fl_alert(error.getMessage().c_str());
+    fl_alert("%s", error.getMessage().c_str());
   }else{
     ib::utils::exit_application(0);
   }
@@ -107,7 +107,7 @@ static void scan_search_path_awaker1(void *p){
   ib::MainWindow::inst()->getInput()->readonly(1);
 }
 static void scan_search_path_awaker2(void *p){ ib::utils::reboot_application(); }
-static void scan_search_path_thread(void *p){
+static ib::threadret scan_search_path_thread(void *p){
   const char *category = (const char*)p;
   ib::platform::on_thread_start();
   sleep(1);
@@ -115,6 +115,7 @@ static void scan_search_path_thread(void *p){
   ib::Controller::inst().cacheCommandsInSearchPath(category);
   Fl::awake(scan_search_path_awaker2, 0);
   ib::platform::exit_thread(0);
+  return (ib::threadret)0;
 }
 
 void ib::utils::scan_search_path(const char *category) {
@@ -124,7 +125,7 @@ void ib::utils::scan_search_path(const char *category) {
   if(ib::platform::file_exists(oscache_path)){
     ib::Error error;
     if(ib::platform::remove_file(oscache_path, error) != 0){
-      fl_alert(error.getMessage().c_str());
+      fl_alert("%s", error.getMessage().c_str());
       return;
     }
   }
@@ -186,7 +187,7 @@ void ib::utils::alert_lua_stack(lua_State *L) { // {{{
       break;
     }
   }
-  fl_alert(str.c_str());
+  fl_alert("%s", str.c_str());
 } // }}}
 
 void ib::utils::expand_vars(std::string &ret, const std::string &tpl, const ib::string_map &values) { // {{{
@@ -539,7 +540,11 @@ int ib::utils::ipc_message(const char *message) { // {{{
 
   server.sin_family = AF_INET;
   server.sin_port = htons(ib::Config::inst().getServerPort());
+#ifdef IB_OS_WIN
   server.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+#else
+  server.sin_addr.s_addr = inet_addr("127.0.0.1");
+#endif
   if(connect(sock, (struct sockaddr *)&server, sizeof(server)) != 0) {
     return 2;
   }

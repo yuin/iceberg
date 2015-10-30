@@ -3,6 +3,7 @@
 
 #include "ib_constants.h"
 #include "ib_utils.h"
+#include "ib_event.h"
 #include "ib_platform.h"
 
 static const unsigned char blank_png[] = { // {{{
@@ -600,23 +601,17 @@ namespace ib{
       static IconManager* inst() { return instance_; }
       static void init() { instance_ = new IconManager(); }
 
-      IconManager() :loader_thread_(), loader_mutex_(), loader_condition_(), running_(false),cache_mutex_(), cached_icons_(), cached_icons_reverse_(), cached_icons_queue_() {
-        ib::platform::create_mutex(&loader_mutex_);
-        ib::platform::create_condition(&loader_condition_);
+      IconManager() :loader_event_(0, _icon_loader), cache_mutex_(), cached_icons_(), cached_icons_reverse_(), cached_icons_queue_() {
         ib::platform::create_mutex(&cache_mutex_);
       }
 
-      ~IconManager() {}
-      void startLoaderThread();
-      void stopLoaderThread();
-      bool isRunning() const { return running_; }
-      void setRunning(const  bool value){ running_ = value; }
-      ib::mutex& getLoaderMutex() { return loader_mutex_; }
-      ib::mutex& getCacheMutex()  { return cache_mutex_; }
-      ib::condition& getLoaderCondition() { return loader_condition_; }
+      ~IconManager() {
+        ib::platform::destroy_mutex(&cache_mutex_);
+      }
       void loadCompletionListIcons();
       void dump();
       void load();
+      ib::CancelableEvent& getLoaderEvent() { return loader_event_; }
       Fl_RGB_Image* getAssociatedIcon(const char *path, const int size, const bool cache);
       Fl_RGB_Image* readPngFileIcon(const char *png_file, const int size);
       Fl_RGB_Image* readJpegFileIcon(const char *jpeg_file, const int size);
@@ -638,10 +633,7 @@ namespace ib{
       Fl_RGB_Image* copyCache(Fl_RGB_Image* image);
       Fl_RGB_Image* getEmbededIcon(const unsigned char *data, const char* cache_prefix, const int embsize, const int reqsize);
 
-      ib::thread loader_thread_;
-      ib::mutex  loader_mutex_;
-      ib::condition loader_condition_;
-      bool running_;
+      ib::CancelableEvent loader_event_;
       ib::mutex cache_mutex_;
       std::unordered_map<std::string, Fl_RGB_Image*> cached_icons_;
       std::unordered_map<Fl_RGB_Image*, std::string> cached_icons_reverse_;

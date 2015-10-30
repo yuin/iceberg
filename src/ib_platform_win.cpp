@@ -87,6 +87,103 @@ static void ib_platform_set_error(ib::Error &error){ // {{{
   error.setMessage(msg.get());
 } // }}}
 
+// ib_platform_key2os_key {{{
+// code from fltk1.3: Fl_get_key_win32.cxx
+static const struct {unsigned short vk, key;} vktab[] = {
+  {VK_SPACE,    ' '},
+  {'1',        '!'},
+  {0xde,    '\"'},
+  {'3',        '#'},
+  {'4',        '$'},
+  {'5',        '%'},
+  {'7',        '&'},
+  {0xde,    '\''},
+  {'9',        '('},
+  {'0',        ')'},
+  {'8',        '*'},
+  {0xbb,    '+'},
+  {0xbc,    ','},
+  {0xbd,    '-'},
+  {0xbe,    '.'},
+  {0xbf,    '/'},
+  {0xba,    ':'},
+  {0xba,    ';'},
+  {0xbc,    '<'},
+  {0xbb,    '='},
+  {0xbe,    '>'},
+  {0xbf,    '?'},
+  {'2',        '@'},
+  {0xdb,    '['},
+  {0xdc,    '\\'},
+  {0xdd,    ']'},
+  {'6',        '^'},
+  {0xbd,    '_'},
+  {0xc0,    '`'},
+  {0xdb,    '{'},
+  {0xdc,    '|'},
+  {0xdd,    '}'},
+  {0xc0,    '~'},
+  {VK_BACK,    FL_BackSpace},
+  {VK_TAB,    FL_Tab},
+  {VK_CLEAR,    0xff0b/*XK_Clear*/},
+  {0xe2 /*VK_OEM_102*/,    FL_Iso_Key},
+  {VK_RETURN,    FL_Enter},
+  {VK_PAUSE,    FL_Pause},
+  {VK_SCROLL,    FL_Scroll_Lock},
+  {VK_ESCAPE,    FL_Escape},
+  {VK_HOME,    FL_Home},
+  {VK_LEFT,    FL_Left},
+  {VK_UP,    FL_Up},
+  {VK_RIGHT,    FL_Right},
+  {VK_DOWN,    FL_Down},
+  {VK_PRIOR,    FL_Page_Up},
+  {VK_NEXT,    FL_Page_Down},
+  {VK_END,    FL_End},
+  {VK_SNAPSHOT,    FL_Print},
+  {VK_INSERT,    FL_Insert},
+  {VK_APPS,    FL_Menu},
+  {VK_NUMLOCK,    FL_Num_Lock},
+//{VK_???,    FL_KP_Enter},
+  {VK_MULTIPLY,    FL_KP+'*'},
+  {VK_ADD,    FL_KP+'+'},
+  {VK_SUBTRACT,    FL_KP+'-'},
+  {VK_DECIMAL,    FL_KP+'.'},
+  {VK_DIVIDE,    FL_KP+'/'},
+  {VK_LSHIFT,    FL_Shift_L},
+  {VK_RSHIFT,    FL_Shift_R},
+  {VK_LCONTROL,    FL_Control_L},
+  {VK_RCONTROL,    FL_Control_R},
+  {0xf0,       FL_Caps_Lock},
+  {VK_LWIN,    FL_Meta_L},
+  {VK_RWIN,    FL_Meta_R},
+  {VK_LMENU,    FL_Alt_L},
+  {VK_RMENU,    FL_Alt_R},
+  {VK_DELETE,    FL_Delete}
+};
+
+static int ib_platform_key2os_key(const int key){
+  int b = sizeof(vktab)/sizeof(*vktab);
+  for(int i=0; i < b; i++) {
+    if (vktab[i].key == key) return vktab[i].vk;
+  }
+  return key;
+}
+// }}}
+
+static int ib_platform_modkey2os_modkey(const int key){ // {{{
+  switch(key){
+    case FL_SHIFT:
+      return MOD_SHIFT;
+    case FL_ALT:
+      return MOD_ALT;
+    case FL_CTRL:
+      return MOD_CONTROL;
+    case FL_META:
+      return MOD_WIN;
+  }
+  return 0;
+} // }}}
+
 static int ib_platform_register_hotkey() { /* {{{ */
   int mod, len;
   const int* hot_key = ib::Config::inst().getHotKey();
@@ -95,9 +192,9 @@ static int ib_platform_register_hotkey() { /* {{{ */
   len--;
   mod = 0;
   for(int i = 0; i < len; ++i){
-    mod |= ib::platform::ib_modkey2os_modkey(hot_key[i]);
+    mod |= ib_platform_modkey2os_modkey(hot_key[i]);
   }
-  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, ib::platform::ib_key2os_key(hot_key[len])) == 0){
+  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, ib_platform_key2os_key(hot_key[len])) == 0){
     return -1;
   }
   return 0;
@@ -660,103 +757,6 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   return funcret;
 } // }}}
 
-// ib_key2os_key {{{
-// code from fltk1.3: Fl_get_key_win32.cxx
-static const struct {unsigned short vk, key;} vktab[] = {
-  {VK_SPACE,    ' '},
-  {'1',        '!'},
-  {0xde,    '\"'},
-  {'3',        '#'},
-  {'4',        '$'},
-  {'5',        '%'},
-  {'7',        '&'},
-  {0xde,    '\''},
-  {'9',        '('},
-  {'0',        ')'},
-  {'8',        '*'},
-  {0xbb,    '+'},
-  {0xbc,    ','},
-  {0xbd,    '-'},
-  {0xbe,    '.'},
-  {0xbf,    '/'},
-  {0xba,    ':'},
-  {0xba,    ';'},
-  {0xbc,    '<'},
-  {0xbb,    '='},
-  {0xbe,    '>'},
-  {0xbf,    '?'},
-  {'2',        '@'},
-  {0xdb,    '['},
-  {0xdc,    '\\'},
-  {0xdd,    ']'},
-  {'6',        '^'},
-  {0xbd,    '_'},
-  {0xc0,    '`'},
-  {0xdb,    '{'},
-  {0xdc,    '|'},
-  {0xdd,    '}'},
-  {0xc0,    '~'},
-  {VK_BACK,    FL_BackSpace},
-  {VK_TAB,    FL_Tab},
-  {VK_CLEAR,    0xff0b/*XK_Clear*/},
-  {0xe2 /*VK_OEM_102*/,    FL_Iso_Key},
-  {VK_RETURN,    FL_Enter},
-  {VK_PAUSE,    FL_Pause},
-  {VK_SCROLL,    FL_Scroll_Lock},
-  {VK_ESCAPE,    FL_Escape},
-  {VK_HOME,    FL_Home},
-  {VK_LEFT,    FL_Left},
-  {VK_UP,    FL_Up},
-  {VK_RIGHT,    FL_Right},
-  {VK_DOWN,    FL_Down},
-  {VK_PRIOR,    FL_Page_Up},
-  {VK_NEXT,    FL_Page_Down},
-  {VK_END,    FL_End},
-  {VK_SNAPSHOT,    FL_Print},
-  {VK_INSERT,    FL_Insert},
-  {VK_APPS,    FL_Menu},
-  {VK_NUMLOCK,    FL_Num_Lock},
-//{VK_???,    FL_KP_Enter},
-  {VK_MULTIPLY,    FL_KP+'*'},
-  {VK_ADD,    FL_KP+'+'},
-  {VK_SUBTRACT,    FL_KP+'-'},
-  {VK_DECIMAL,    FL_KP+'.'},
-  {VK_DIVIDE,    FL_KP+'/'},
-  {VK_LSHIFT,    FL_Shift_L},
-  {VK_RSHIFT,    FL_Shift_R},
-  {VK_LCONTROL,    FL_Control_L},
-  {VK_RCONTROL,    FL_Control_R},
-  {0xf0,       FL_Caps_Lock},
-  {VK_LWIN,    FL_Meta_L},
-  {VK_RWIN,    FL_Meta_R},
-  {VK_LMENU,    FL_Alt_L},
-  {VK_RMENU,    FL_Alt_R},
-  {VK_DELETE,    FL_Delete}
-};
-
-int ib::platform::ib_key2os_key(const int key){
-  int b = sizeof(vktab)/sizeof(*vktab);
-  for(int i=0; i < b; i++) {
-    if (vktab[i].key == key) return vktab[i].vk;
-  }
-  return key;
-}
-// }}}
-
-int ib::platform::ib_modkey2os_modkey(const int key){ // {{{
-  switch(key){
-    case FL_SHIFT:
-      return MOD_SHIFT;
-    case FL_ALT:
-      return MOD_ALT;
-    case FL_CTRL:
-      return MOD_CONTROL;
-    case FL_META:
-      return MOD_WIN;
-  }
-  return 0;
-} // }}}
-
 // void ib::platform::list_all_windows(std::vector<ib::whandle> &result){ // {{{
 static void list_all_windows_iter(std::vector<ib::whandle> &result, const ib::whandle parent){
   HWND hwnd = FindWindowEx(parent, NULL, NULL, NULL);
@@ -1220,7 +1220,7 @@ ib::oschar* ib::platform::get_current_workdir(ib::oschar *result){ // {{{
   return result;
 } // }}}
 
-int ib::platform::set_current_workdir(ib::oschar *dir, ib::Error &error){ // {{{
+int ib::platform::set_current_workdir(const ib::oschar *dir, ib::Error &error){ // {{{
   if(SetCurrentDirectory(dir) == 0){
     ib_platform_set_error(error);
     return -1;

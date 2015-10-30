@@ -1,8 +1,12 @@
-EXT=dll
-SOCKET_SO=socket.$(EXT)
-MIME_SO=mime.$(EXT)
-
-LUADLL=../../lua-5.1.4/src/lua51.dll
+ifeq ($(OS),Windows_NT)
+SOCKET_SO=socket.dll
+MIME_SO=mime.dll
+LIBS=-lwsock32
+else
+SOCKET_SO=libsocket.so
+MIME_SO=libmime.so
+LIBS=
+endif
 
 LUAINC=-I../../lua-5.1.4/src
 
@@ -47,10 +51,10 @@ MIME_OBJS:=\
 all: $(SOCKET_SO) $(MIME_SO) 
 
 $(SOCKET_SO): $(SOCKET_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(SOCKET_OBJS) $(LUADLL) -lwsock32
+	$(LD) $(LDFLAGS) -o $@ $(SOCKET_OBJS) $(LIBS)
 
 $(MIME_SO): $(MIME_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(MIME_OBJS) $(LUADLL)
+	$(LD) $(LDFLAGS) -o $@ $(MIME_OBJS)
 
 #------
 # List of dependencies

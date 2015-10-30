@@ -2,6 +2,12 @@
 
 T= lfs
 PREFIX=/usr/local
+ifeq ($(OS),Windows_NT)
+LIB=src/lfs.dll
+else
+LIB=src/liblfs.so
+endif
+
 LIB_OPTION= -shared #for Linux
 WARN= -O2 -Wall -fPIC -W -Waggregate-return -Wcast-align -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings -pedantic
 INCS= -I../lua-5.1.4/src
@@ -10,8 +16,8 @@ CC= gcc
 SRCS= src/$T.c
 OBJS= src/$T.o
 
-lib: src/lfs.dll
+lib: $(LIB)
 
-src/lfs.dll: $(OBJS)
-	$(CC) $(CFLAGS) $(LIB_OPTION) -o src/lfs.dll $(OBJS) ../lua-5.1.4/src/lua51.dll
+$(LIB): $(OBJS)
+	$(CC) $(CFLAGS) $(LIB_OPTION) -o $(LIB) $(OBJS)
 

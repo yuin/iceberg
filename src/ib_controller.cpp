@@ -154,22 +154,20 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
     }
   }
   if(message != 0){
-    fl_alert(message);
+    fl_alert("%s", message);
   }
 } // }}}
 
 void ib::Controller::hideApplication() { // {{{
-  ib::platform::hide_window(ib::MainWindow::inst());
-  if(ib::ListWindow::inst()->visible()) {
-    ib::platform::hide_window(ib::ListWindow::inst());
-    ib::ListWindow::inst()->set_visible();
-  }
+  ib::MainWindow::inst()->hide();
+  ib::ListWindow::inst()->hide();
 } // }}}
 
 void ib::Controller::showApplication() { // {{{
   if(ib::ListWindow::inst()->getListbox()->isEmpty()) {
-    ib::platform::hide_window(ib::ListWindow::inst());
-  }else if(ib::ListWindow::inst()->visible()) {
+    ib::ListWindow::inst()->hide();
+  }else {
+    ib::ListWindow::inst()->show();
     ib::platform::show_window(ib::ListWindow::inst());
   }
   ib::platform::show_window(ib::MainWindow::inst());
@@ -194,7 +192,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
 
     if(error) {
-      fl_alert(usage);
+      fl_alert("%s", usage);
       ib::utils::exit_application(1);
     }
   }
@@ -242,9 +240,8 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
   cfg.setPlatform(IB_OS_STRING);
 
-
   ib::MainLuaState::inst().init();
-
+  
   ib::SearchPath *search_path = 0;
   lua_Integer luint = 0;
   lua_Number  ludouble = 0.0;
@@ -949,6 +946,7 @@ void ib::Controller::showCompletionCandidates() {
 
   if(input->isEmpty()) {
     ib::ListWindow::inst()->hide();
+    input->take_focus();
     return;
   }
   listbox->startUpdate();
@@ -958,8 +956,8 @@ void ib::Controller::showCompletionCandidates() {
   std::vector<ib::CompletionValue*> candidates;
 
   bool use_max_candidates = false;
-  if(first_value == "/" || first_value == "\\"){
 #ifdef IB_OS_WIN
+  if(first_value == "/" || first_value == "\\"){
     std::vector<ib::unique_oschar_ptr> os_drives;
     ib::Error error;
     char drive[16];
@@ -969,8 +967,10 @@ void ib::Controller::showCompletionCandidates() {
         candidates.push_back(new ib::CompletionString(drive));
       }
     }
+
+  }else 
 #endif
-  }else if(isHistorySearchMode()){
+  if(isHistorySearchMode()){
     use_max_candidates = true;
     ib::Completer::inst().completeHistory(candidates, first_value);
     std::stable_sort(candidates.begin(), candidates.end(), cmp_command);
@@ -1019,7 +1019,7 @@ void ib::Controller::showCompletionCandidates() {
   listbox->endUpdate(use_max_candidates);
 
   if(!listbox->isEmpty()) {
-    ib::platform::show_window(ib::ListWindow::inst());
+    ib::ListWindow::inst()->show();
   }else{
     listbox->clearAll();
     ib::ListWindow::inst()->hide();
@@ -1085,7 +1085,7 @@ void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{
 void ib::Controller::setResultText(const char *value){ // {{{
   result_text_ = value;
   auto input   = ib::MainWindow::inst()->getInput();
-  input->cancelKeyEvent();
+  input->getKeyEvent().cancelEvent();
 } // }}}
 
 void ib::Controller::killWord() { // {{{
@@ -1122,7 +1122,7 @@ void ib::Controller::killWord() { // {{{
   input->value(buf.c_str());
   input->position((int)position);
   input->adjustSize();
-  input->queueKeyEvent();
+  input->getKeyEvent().queueEvent((void*)1);
 } // }}}
 
 void ib::Controller::handleIpcMessage(const char* message){ // {{{

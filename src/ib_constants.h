@@ -52,7 +52,7 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Select_Browser.H>
-#include <FL/x.h>
+#include <FL/x.H>
 #include <FL/fl_ask.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_PNG_Image.H>
@@ -60,6 +60,7 @@
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/Fl_Menu.H>
 #include "Fl_Font.H"
+#include <FL/filename.H>
 
 #include <lua.hpp>
 #include <oniguruma.h>

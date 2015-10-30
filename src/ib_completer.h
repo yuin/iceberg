@@ -16,9 +16,9 @@ namespace ib {
       CompletionMethod(){}
       virtual ~CompletionMethod(){}
 
-      virtual void   beforeMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input);
-      virtual double match(const std::string &name, const std::string &input);
-      virtual void   afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input);
+      virtual void   beforeMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input){};
+      virtual double match(const std::string &name, const std::string &input){return 0.0;};
+      virtual void   afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input){};
   }; // }}}
 
   class CompletionMethodMigemoMixin : public CompletionMethod { // {{{

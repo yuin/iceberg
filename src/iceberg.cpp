@@ -69,13 +69,13 @@ int main(int argc, char **argv) { // {{{
 
   Fl::visual(FL_DOUBLE|FL_INDEX);
   ib::MainWindow::init();
-  ib::MainWindow::inst()->callback(ib_window_callback);
+  ib::MainWindow::inst()->initLayout();
   ib::ListWindow::init();
+  ib::ListWindow::inst()->initLayout();
+  ib::MainWindow::inst()->callback(ib_window_callback);
   ib::ListWindow::inst()->callback(ib_window_callback);
 
-  ib::MainWindow::inst()->initLayout();
   ib::MainWindow::inst()->show();
-  ib::ListWindow::inst()->initLayout();
   ib::ListWindow::inst()->show();
 
   if(ib::platform::init_system() < 0) {
@@ -100,9 +100,13 @@ int main(int argc, char **argv) { // {{{
   ib::Migemo::inst().init();
 
   Fl::lock();
-  ib::IconManager::inst()->startLoaderThread();
+  ib::CancelableEvent &event = ib::IconManager::inst()->getLoaderEvent();
+  event.setMs(1);
+  event.startThread();
   if(ib::Config::inst().getKeyEventThreshold() > 0){
-    ib::MainWindow::inst()->getInput()->startKeyEventThread();
+    ib::CancelableEvent &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
+    event.setMs(ib::Config::inst().getKeyEventThreshold());
+    event.startThread();
   }
   lua_getglobal(IB_LUA, "on_initialize");
   if (lua_pcall(IB_LUA, 0, 1, 0)) {

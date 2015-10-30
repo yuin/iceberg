@@ -414,7 +414,7 @@ void ib::LuaState::init() { // {{{
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
   if(luaL_dofile(l_, cfg.getConfigPath().c_str())) {
-    fl_alert(lua_tostring(l_, lua_gettop(l_)));
+    fl_alert("%s", lua_tostring(l_, lua_gettop(l_)));
     exit(1);
   }
 } // }}}
@@ -668,7 +668,7 @@ int ib::luamodule::message(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
   const char *msg = luaL_checkstring(L, 1);
-  fl_message(msg);
+  fl_message("%s", msg);
   lua_state.clearStack();
   return 0;
 } // }}}

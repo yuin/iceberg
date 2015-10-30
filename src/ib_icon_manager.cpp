@@ -9,10 +9,8 @@ ib::IconManager *ib::IconManager::instance_ = 0;
 
 // icon_loader_thread {{{
 void ib::_icon_loader(void *p) {
-  ib::platform::on_thread_start();
   const int MAX_FLUSH = 200;
 
-  auto manager = ib::IconManager::inst();
   auto listbox = ib::ListWindow::inst()->getListbox();
 
    std::vector<Fl_RGB_Image*> buf;
@@ -21,81 +19,45 @@ void ib::_icon_loader(void *p) {
   int pos;
   int loaded_to_flush;
 
+  { ib::platform::ScopedLock lock(listbox->getMutex());
+    current_operation_count = listbox->getOperationCount();
+    listsize = listbox->size();
+    pos = 1;
+    loaded_to_flush= 2;
+    ib::utils::delete_pointer_vectors(buf);
+  }
 
-#define CHECK_THREAD_STATE \
-    { ib::platform::ScopedLock lock(manager->getLoaderMutex()); \
-      if(!manager->isRunning()) goto exit_thread; \
+  for(int i=1;i <= listsize; ++i){
+    { ib::platform::ScopedLock lock(listbox->getMutex());
+      if(current_operation_count != listbox->getOperationCount()){ break; }
+      int icon_size = listbox->getValues().at(i-1)->hasDescription() ? 32 : 16;
+      buf.push_back(listbox->getValues().at(i-1)->loadIcon(icon_size));
     }
 
-  while(1){
-    { ib::platform::ScopedCondition cond(manager->getLoaderCondition(), 0);
-
-      CHECK_THREAD_STATE;
-      { ib::platform::ScopedLock lock(listbox->getMutex());
-        current_operation_count = listbox->getOperationCount();
-        listsize = listbox->size();
-        pos = 1;
-        loaded_to_flush= 2;
-        ib::utils::delete_pointer_vectors(buf);
-      }
-
-      for(int i=1;i <= listsize; ++i){
-        CHECK_THREAD_STATE;
+    if((i != 1 && (i-pos) % loaded_to_flush == 0) || i == listsize){
+      { ib::FlScopedLock fflock;
         { ib::platform::ScopedLock lock(listbox->getMutex());
-          if(current_operation_count != listbox->getOperationCount()){ break; }
-          int icon_size = listbox->getValues().at(i-1)->hasDescription() ? 32 : 16;
-          buf.push_back(listbox->getValues().at(i-1)->loadIcon(icon_size));
-        }
-
-        if((i != 1 && (i-pos) % loaded_to_flush == 0) || i == listsize){
-          { ib::FlScopedLock fflock;
-            { ib::platform::ScopedLock lock(listbox->getMutex());
-              if(current_operation_count != listbox->getOperationCount()){
-                ib::utils::delete_pointer_vectors(buf);
-                break;
-              }
-              for(auto it = buf.begin(), last = buf.end(); it != last; ++it, ++pos){
-                if(*it != 0) {
-                  listbox->destroyIcon(pos);
-                  listbox->icon(pos, *it);
-                }
-              }
-              buf.clear();
-              loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
-              Fl::awake((void*)0);
+          if(current_operation_count != listbox->getOperationCount()){
+            ib::utils::delete_pointer_vectors(buf);
+            break;
+          }
+          for(auto it = buf.begin(), last = buf.end(); it != last; ++it, ++pos){
+            if(*it != 0) {
+              listbox->destroyIcon(pos);
+              listbox->icon(pos, *it);
             }
           }
+          buf.clear();
+          loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
+          Fl::awake((void*)0);
         }
       }
     }
   }
-exit_thread:
-  ib::platform::exit_thread(0);
-#undef CHECK_THREAD_STATE
-} // }}}
-
-void ib::IconManager::startLoaderThread() { // {{{
-  running_ = true;
-  ib::platform::create_thread(&loader_thread_, _icon_loader, 0);
-} // }}}
-
-void ib::IconManager::stopLoaderThread() { // {{{
-  bool running = true;
-  {
-    ib::platform::ScopedLock lock(loader_mutex_);
-    running = running_;
-    if(running_) { running_ = false; }
-  }
-  if(!running) return;
-  ib::platform::notify_condition(&loader_condition_);
-  ib::platform::join_thread(&loader_thread_);
-  ib::platform::destroy_mutex(&loader_mutex_);
-  ib::platform::destroy_condition(&loader_condition_);
-  ib::platform::destroy_mutex(&cache_mutex_);
 } // }}}
 
 void ib::IconManager::loadCompletionListIcons() { // {{{
-  ib::platform::notify_condition(&loader_condition_);
+  loader_event_.queueEvent((void*)1);
 } // }}}
 
 void ib::IconManager::load() { // {{{

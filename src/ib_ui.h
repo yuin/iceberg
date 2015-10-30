@@ -5,10 +5,11 @@
 #include "ib_utils.h"
 #include "ib_lexer.h"
 #include "ib_comp_value.h"
+#include "ib_event.h"
 #include "ib_platform.h"
 
 namespace ib {
-  void _key_event_thread(void *p);
+  void _key_event_handler(void *);
   class MainWindow;
   class Input : public Fl_Input, private NonCopyable<Input> { // {{{
     friend class MainWindow;
@@ -34,47 +35,10 @@ namespace ib {
       const std::string& getFirstValue() const { return lexer_.getTokens().at(0)->getValue(); }
       const std::string& getPrevCursorValue() const { return prev_cursor_value_; }
       bool isUsingCwd() const { return lexer_.isUsingCwd(); }
-      void queueKeyEvent() {ib::platform::notify_condition(&key_event_condition_);}
-      void cancelKeyEvent(){
-        ib::platform::ScopedLock lock(key_event_mutex_);
-        if(key_event_state_ == 2){
-          key_event_state_ = 0;
-        }
-      }
-      void resetKeyEvent(){
-        ib::platform::ScopedLock lock(key_event_mutex_);
-        if(key_event_state_ == 1) return;
-        if(key_event_state_ == 2) {key_event_state_ = 0;}
-      }
-      bool isKeyEventCanceled() { return key_event_state_ == 0;}
-      void setKeyEventState(const int value){ key_event_state_ = value;}
-      ib::condition& getKeyEventCondition() { return key_event_condition_; }
-      ib::mutex& getKeyEventMutex() { return key_event_mutex_; }
-      bool isKeyEventThreadRunning() const { return key_event_thread_running_; }
-      void setKeyEventThreadRunning(const  bool value){ key_event_thread_running_ = value; }
-      void startKeyEventThread() { 
-        setKeyEventThreadRunning(true);
-        ib::platform::create_thread(&key_event_thread_, _key_event_thread, 0);
-      }
-      void stopKeyEventThread(){
-        bool key_event_thread_running;
-        ib::platform::notify_condition(&key_event_condition_);
-        { ib::platform::ScopedLock lock(key_event_mutex_);
-          key_event_thread_running = key_event_thread_running_;
-          setKeyEventThreadRunning(false);
-        }
-        if(!key_event_thread_running) return;
-        ib::platform::notify_condition(&key_event_condition_);
-        ib::platform::join_thread(&key_event_thread_);
-        ib::platform::destroy_mutex(&key_event_mutex_);
-        ib::platform::destroy_condition(&key_event_condition_);
-      }
+      ib::CancelableEvent& getKeyEvent() { return key_event_; }
 
     protected:
-      Input(const int x, const int y, const int w, const int h) : Fl_Input(x,y,w,h), ime_composition_(0), lexer_(), cursor_token_index_(0), prev_cursor_token_index_(0), prev_cursor_value_(""), key_event_thread_(), key_event_condition_(), key_event_mutex_(), key_event_thread_running_(false),key_event_state_(0) {
-        ib::platform::create_mutex(&key_event_mutex_);
-        ib::platform::create_condition(&key_event_condition_);
-      };
+      Input(const int x, const int y, const int w, const int h) : Fl_Input(x,y,w,h), ime_composition_(0), lexer_(), cursor_token_index_(0), prev_cursor_token_index_(0), prev_cursor_value_(""), key_event_(0, _key_event_handler) {};
       void draw();
 
       int ime_composition_;
@@ -83,12 +47,7 @@ namespace ib {
       int prev_cursor_token_index_;
       std::string prev_cursor_value_;
 
-      ib::thread    key_event_thread_;
-      ib::condition key_event_condition_;
-      ib::mutex     key_event_mutex_;
-      bool key_event_thread_running_;
-      int key_event_state_;
-
+      ib::CancelableEvent key_event_;
     private:
       int handle(int e);
 
@@ -187,13 +146,15 @@ namespace ib {
       void initLayout();
 
       void hide();
+      void show();
       void close();
 
     protected:
-      ListWindow() : Fl_Double_Window(0, 0, "ListWindow"), listbox_(0) {};
+      ListWindow() : Fl_Double_Window(0, 0, "ListWindow"), listbox_(0), show_init_(false) {};
 
       static ListWindow *instance_;
       Listbox *listbox_;
+      bool show_init_;
 
     private:
       int handle(int e);

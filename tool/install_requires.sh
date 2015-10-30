@@ -16,7 +16,11 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.2" ]; then
   cd fltk-1.3.2/
   patch -p1 < ../001_fltk-1.3.2_LLP64.patch
   autoconf
-  ./configure --enable-threads
+  if [ "${IB_OSTYPE}" != "windows" ]; then
+    ./configure --enable-threads --enable-xft --enable-xdbe
+  else
+    ./configure --enable-threads
+  fi
   make
 else
  echo "FLTK 1.3.2: installed"
@@ -34,7 +38,11 @@ if [ ! -d "${BASE_DIR}/ext/lua-5.1.4" ]; then
   echo "make the Lua"
   cd lua-5.1.4
   # aix ansi bsd freebsd generic linux macosx mingw posix solaris
-  make mingw
+  if [ "${IB_OSTYPE}" = "windows" ]; then
+    make mingw
+  else
+    make "${IB_OSTYPE}"
+  fi
 else
   echo "Lua 5.1.4: installed"
 fi
@@ -113,58 +121,66 @@ else
   echo "LuaXML 1.7.4: installed"
 fi
 
-if [ ! -d "${BASE_DIR}/ext/luawinalttab-1.0.0" ]; then
-  echo "Downloading luawinalttab 1.0.0"
-  cd ${BASE_DIR}/ext/
-  wget --no-check-certificate https://github.com/yuin/luawinalttab/archive/v1.0.0.zip -O luawinalttab-1.0.0.zip
+if [ "${IB_OSTYPE}" = "windows" ]; then
+  if [ ! -d "${BASE_DIR}/ext/luawinalttab-1.0.0" ]; then
+    echo "Downloading luawinalttab 1.0.0"
+    cd ${BASE_DIR}/ext/
+    wget --no-check-certificate https://github.com/yuin/luawinalttab/archive/v1.0.0.zip -O luawinalttab-1.0.0.zip
+    
+    echo "explode luawinalttab 1.0.0"
+    unzip luawinalttab-1.0.0.zip
+    rm -f luawinalttab-1.0.0.zip
   
-  echo "explode luawinalttab 1.0.0"
-  unzip luawinalttab-1.0.0.zip
-  rm -f luawinalttab-1.0.0.zip
-
-  echo "make the luawinalttab 1.0.0"
-  cd ${BASE_DIR}/ext/luawinalttab-1.0.0
-  make INCDIR=-I../lua-5.1.4/src LIBS=../lua-5.1.4/src/lua51.dll
-else
-  echo "luawinalttab 1.0.0: installed"
-fi
-
-
-if [ ! -d "${BASE_DIR}/ext/onig-5.9.5" ]; then
-  echo "Downloading Oniguruma 5.9.5"
-  cd ${BASE_DIR}/ext
-  wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.5.tar.gz
-
-  echo "explode Oniguruma 5.9.5"
-  tar zxvf onig-5.9.5.tar.gz
-  rm -f onig-5.9.5.tar.gz
-
-  echo "make Oniguruma 5.9.5"
-  cd onig-5.9.5
-  ./configure
-  make
-else
-  echo "Oniguruma 5.9.5: installed"
-fi
-
-if [ ! -d "${BASE_DIR}/ext/cmigemo-1.3c-MIT" ]; then
-  echo "Downloading cmigemo sources"
-  cd ${BASE_DIR}/ext
-  wget http://pkgs.fedoraproject.org/repo/pkgs/cmigemo/cmigemo-1.3c-MIT.tar.bz2/e411e678985f42501982c050e959035f/cmigemo-1.3c-MIT.tar.bz2
-
-  echo "explode cmigemo sources"
-  tar jvxf cmigemo-1.3c-MIT.tar.bz2
-  rm -f cmigemo-1.3c-MIT.tar.bz2
-
-  if [ "${IB_ARCH}" = "x86_64" ]; then
-    # TODO download dll
-    :
+    echo "make the luawinalttab 1.0.0"
+    cd ${BASE_DIR}/ext/luawinalttab-1.0.0
+    make INCDIR=-I../lua-5.1.4/src LIBS=../lua-5.1.4/src/lua51.dll
   else
-    # TODO download dll
-    :
+    echo "luawinalttab 1.0.0: installed"
   fi
-else
-  echo "cmigemo-1.3c: installed"
 fi
 
+#####################################################
+# We build following packages only under the windows. 
+# On *nix platforms uses distribution packages.
+#####################################################
+
+if [ "${IB_OSTYPE}" = "windows" ]; then
+
+  if [ ! -d "${BASE_DIR}/ext/onig-5.9.6" ]; then
+    echo "Downloading Oniguruma 5.9.6"
+    cd ${BASE_DIR}/ext
+    wget https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz
+  
+    echo "explode Oniguruma 5.9.6"
+    tar zxvf onig-5.9.6.tar.gz
+    rm -f onig-5.9.6.tar.gz
+  
+    echo "make Oniguruma 5.9.6"
+    cd onig-5.9.6
+    ./configure
+    make
+  else
+    echo "Oniguruma 5.9.6: installed"
+  fi
+
+  if [ ! -d "${BASE_DIR}/ext/cmigemo-1.3c-MIT" ]; then
+    echo "Downloading cmigemo sources"
+    cd ${BASE_DIR}/ext
+    wget http://pkgs.fedoraproject.org/repo/pkgs/cmigemo/cmigemo-1.3c-MIT.tar.bz2/e411e678985f42501982c050e959035f/cmigemo-1.3c-MIT.tar.bz2
+  
+    echo "explode cmigemo sources"
+    tar jvxf cmigemo-1.3c-MIT.tar.bz2
+    rm -f cmigemo-1.3c-MIT.tar.bz2
+  
+    if [ "${IB_ARCH}" = "x86_64" ]; then
+      # TODO download dll
+      :
+    else
+      # TODO download dll
+      :
+    fi
+  else
+    echo "cmigemo-1.3c: installed"
+  fi
+fi
 
