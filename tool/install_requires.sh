@@ -121,6 +121,11 @@ else
   echo "LuaXML 1.7.4: installed"
 fi
 
+#####################################################
+# We build following packages only under the windows. 
+# On *nix platforms uses distribution packages.
+#####################################################
+
 if [ "${IB_OSTYPE}" = "windows" ]; then
   if [ ! -d "${BASE_DIR}/ext/luawinalttab-1.0.0" ]; then
     echo "Downloading luawinalttab 1.0.0"
@@ -137,19 +142,11 @@ if [ "${IB_OSTYPE}" = "windows" ]; then
   else
     echo "luawinalttab 1.0.0: installed"
   fi
-fi
-
-#####################################################
-# We build following packages only under the windows. 
-# On *nix platforms uses distribution packages.
-#####################################################
-
-if [ "${IB_OSTYPE}" = "windows" ]; then
 
   if [ ! -d "${BASE_DIR}/ext/onig-5.9.6" ]; then
     echo "Downloading Oniguruma 5.9.6"
     cd ${BASE_DIR}/ext
-    wget https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz
+    wget --no-check-certificate https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz -O onig-5.9.6.tar.gz
   
     echo "explode Oniguruma 5.9.6"
     tar zxvf onig-5.9.6.tar.gz

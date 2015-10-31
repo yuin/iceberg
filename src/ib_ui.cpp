@@ -756,15 +756,23 @@ void ib::Listbox::adjustSize() { // {{{
 
 // class ListWindow {{{
 void ib::ListWindow::hide(){ /* {{{ */
+#ifdef IB_OS_WIN
+  ib::platform::hide_window(this);
+#else
   show_init_ = true;
   resize(0, 0, 1, 1);
+#endif
 } /* }}} */
 
 void ib::ListWindow::show(){ /* {{{ */
+#ifdef IB_OS_WIN
+  return Fl_Window::show();
+#else
   if(!show_init_) {
     return Fl_Window::show();
   }
   listbox_->adjustSize();
+#endif
 } /* }}} */
 
 void ib::ListWindow::close() { // {{{

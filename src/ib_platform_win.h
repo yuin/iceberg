@@ -13,11 +13,21 @@
 #include <lm.h>
 
 namespace ib{
-  typedef intptr_t thread;
-  typedef unsigned (*threadfunc) (void *);
-  typedef unsigned threadret;
+  typedef int          socklen;
+
+  typedef HANDLE       thread;
   typedef CRITICAL_SECTION mutex;
-  typedef HANDLE condition;
+  typedef HANDLE cmutex;
+  typedef struct {
+    int waiters;
+    CRITICAL_SECTION waiters_lock;
+    HANDLE sema;
+    HANDLE waiters_done;
+    size_t was_broadcast;
+  } condition;
+  typedef void threadret;
+  typedef void (*threadfunc)(void*);
+
   typedef HWND   whandle;
   typedef HMODULE module;
   namespace platform {

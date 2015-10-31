@@ -1403,6 +1403,11 @@ void ib::platform::join_thread(ib::thread *t){ /* {{{ */
   WaitForSingleObject((void*)*t, INFINITE);
 } /* }}} */
 
+void ib::platform::exit_thread(int exit_code) { // {{{
+  CoUninitialize();
+  _endthread();
+} // }}}
+
 void ib::platform::create_mutex(ib::mutex *m) { /* {{{ */
   InitializeCriticalSection(m);
 } /* }}} */
@@ -1411,38 +1416,75 @@ void ib::platform::destroy_mutex(ib::mutex *m) { /* {{{ */
   DeleteCriticalSection(m);
 } /* }}} */
 
-void ib::platform::acquire_lock(ib::mutex *m) { /* {{{ */
+void ib::platform::lock_mutex(ib::mutex *m) { /* {{{ */
   EnterCriticalSection(m);
 } /* }}} */
 
-void ib::platform::release_lock(ib::mutex *m) { /* {{{ */
+void ib::platform::unlock_mutex(ib::mutex *m) { /* {{{ */
   LeaveCriticalSection(m);
 } /* }}} */
 
-void ib::platform::exit_thread(int exit_code) { // {{{
-  CoUninitialize();
-  _endthread();
-} // }}}
+void ib::platform::create_cmutex(ib::cmutex *m) { /* {{{ */
+  *m = CreateMutex(NULL,FALSE,NULL);
+} /* }}} */
+
+void ib::platform::destroy_cmutex(ib::cmutex *m) { /* {{{ */
+  ReleaseMutex(*m);
+} /* }}} */
+
+void ib::platform::lock_cmutex(ib::cmutex *m) { /* {{{ */
+  WaitForSingleObject(*m, INFINITE); 
+} /* }}} */
+
+void ib::platform::unlock_cmutex(ib::cmutex *m) { /* {{{ */
+  ReleaseMutex(*m);
+} /* }}} */
 
 void ib::platform::create_condition(ib::condition *c) { /* {{{ */
-  *c = CreateEvent(NULL,FALSE,FALSE,NULL);
+  c->waiters = 0;
+  c->was_broadcast = 0;
+  c->sema = CreateSemaphore (NULL, 0, LONG_MAX, NULL);
+  InitializeCriticalSection (&c->waiters_lock);
+  c->waiters_done = CreateEvent (NULL, FALSE, FALSE, NULL);
 } /* }}} */
 
 void ib::platform::destroy_condition(ib::condition *c) { /* {{{ */
-   CloseHandle(*c);
+  CloseHandle(c->sema);
+  CloseHandle(c->waiters_done);
+  DeleteCriticalSection(&c->waiters_lock);
 } /* }}} */
 
-bool ib::platform::wait_condition(ib::condition *c, int ms) { /* {{{ */
-  DWORD ret = WaitForSingleObject(*c, ms == 0 ? INFINITE : ms);
-  if(ret == WAIT_OBJECT_0) return true;
-  return false;
+int ib::platform::wait_condition(ib::condition *c, ib::cmutex *m, int ms) { /* {{{ */
+  EnterCriticalSection (&c->waiters_lock);
+  c->waiters++;
+  LeaveCriticalSection (&c->waiters_lock);
+  int ret = (SignalObjectAndWait (*m, c->sema, ms==0?INFINITE:ms, FALSE) == WAIT_TIMEOUT) ? 1 : 0;
+  EnterCriticalSection (&c->waiters_lock);
+  c->waiters--;
+  int last_waiter = c->was_broadcast && c->waiters == 0;
+  LeaveCriticalSection (&c->waiters_lock);
+  if (last_waiter)
+    SignalObjectAndWait (c->waiters_done, *m, INFINITE, FALSE);
+  else
+    WaitForSingleObject (*m, INFINITE);
+  return ret;
 } /* }}} */
 
 void ib::platform::notify_condition(ib::condition *c) { /* {{{ */
-  SetEvent(*c);
-} /* }}} */
-
-void ib::platform::reset_condition(ib::condition *c) { /* {{{ */
+  EnterCriticalSection (&c->waiters_lock);
+  int have_waiters = 0;
+  if (c->waiters > 0) {
+    c->was_broadcast = 1;
+    have_waiters = 1;
+  }
+  if (have_waiters) {
+    ReleaseSemaphore(c->sema, 1, 0);
+    LeaveCriticalSection (&c->waiters_lock);
+    WaitForSingleObject(c->waiters_done, INFINITE);
+    c->was_broadcast = 0;
+  } else {
+    LeaveCriticalSection (&c->waiters_lock);
+  }
 } /* }}} */
 
 //////////////////////////////////////////////////

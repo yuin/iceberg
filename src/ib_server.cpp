@@ -8,7 +8,7 @@ void ib::Server::accept(FL_SOCKET fd, void *data) { // {{{
   FL_SOCKET client_socket;
   sockaddr_in client;
   int s = sizeof(client);
-  client_socket = ::accept(fd, (sockaddr*)&client, (unsigned int*)&s);
+  client_socket = ::accept(fd, (sockaddr*)&client, (ib::socklen*)&s);
   if(client_socket < 0){
     return;
   }

@@ -20,6 +20,8 @@
 #define SOCKET_ERROR   -1
 
 namespace ib{
+  typedef socklen_t       socklen;
+
   typedef pthread_t       thread;
   typedef pthread_mutex_t mutex;
   typedef pthread_mutex_t cmutex;

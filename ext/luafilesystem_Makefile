@@ -4,8 +4,10 @@ T= lfs
 PREFIX=/usr/local
 ifeq ($(OS),Windows_NT)
 LIB=src/lfs.dll
+LIBS=../lua-5.1.4/src/lua51.dll
 else
 LIB=src/liblfs.so
+LIBS=
 endif
 
 LIB_OPTION= -shared #for Linux
@@ -19,5 +21,5 @@ OBJS= src/$T.o
 lib: $(LIB)
 
 $(LIB): $(OBJS)
-	$(CC) $(CFLAGS) $(LIB_OPTION) -o $(LIB) $(OBJS)
+	$(CC) $(CFLAGS) $(LIB_OPTION) -o $(LIB) $(OBJS) $(LIBS)
 
