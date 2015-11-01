@@ -141,7 +141,7 @@ namespace ib {
 
   class FlScopedLock : private NonCopyable<FlScopedLock> { // {{{
     public:
-      FlScopedLock () { Fl::lock(); }
+      FlScopedLock () { printf("fllock-1\n");Fl::lock();printf("fllock-2\n"); }
       ~FlScopedLock();
   }; // }}}
 

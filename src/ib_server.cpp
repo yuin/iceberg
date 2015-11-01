@@ -53,6 +53,9 @@ int ib::Server::start(ib::Error &error){ // {{{
   addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 #endif
   setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
+#ifdef SO_REUSEPORT
+  setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, (const char *)&yes, sizeof(yes));
+#endif
 
   if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
     error.setMessage("Failed to bind a server socket");

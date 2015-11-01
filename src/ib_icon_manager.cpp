@@ -8,12 +8,30 @@
 ib::IconManager *ib::IconManager::instance_ = 0;
 
 // icon_loader_thread {{{
+struct iconlist {
+  std::vector<Fl_RGB_Image*> icons;
+  int pos;
+};
+
+static void _main_thread_awaker(void *p){
+  auto listbox = ib::ListWindow::inst()->getListbox();
+  struct iconlist *ilist = (struct iconlist*)p;
+  int pos = ilist->pos;
+  for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
+    if(*it != 0) {
+      listbox->destroyIcon(pos);
+      listbox->icon(pos, *it);
+    }
+  }
+  delete ilist;
+}
+
 void ib::_icon_loader(void *p) {
   const int MAX_FLUSH = 200;
 
   auto listbox = ib::ListWindow::inst()->getListbox();
 
-   std::vector<Fl_RGB_Image*> buf;
+  std::vector<Fl_RGB_Image*> buf;
   int current_operation_count = -1;
   int listsize;
   int pos;
@@ -24,7 +42,6 @@ void ib::_icon_loader(void *p) {
     listsize = listbox->size();
     pos = 1;
     loaded_to_flush= 2;
-    ib::utils::delete_pointer_vectors(buf);
   }
 
   for(int i=1;i <= listsize; ++i){
@@ -35,22 +52,18 @@ void ib::_icon_loader(void *p) {
     }
 
     if((i != 1 && (i-pos) % loaded_to_flush == 0) || i == listsize){
-      { ib::FlScopedLock fflock;
-        { ib::platform::ScopedLock lock(listbox->getMutex());
-          if(current_operation_count != listbox->getOperationCount()){
-            ib::utils::delete_pointer_vectors(buf);
-            break;
-          }
-          for(auto it = buf.begin(), last = buf.end(); it != last; ++it, ++pos){
-            if(*it != 0) {
-              listbox->destroyIcon(pos);
-              listbox->icon(pos, *it);
-            }
-          }
-          buf.clear();
-          loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
-          Fl::awake((void*)0);
+      { ib::platform::ScopedLock lock(listbox->getMutex());
+        if(current_operation_count != listbox->getOperationCount()){
+          ib::utils::delete_pointer_vectors(buf);
+          break;
         }
+        struct iconlist *ilist = new iconlist;
+        std::copy(buf.begin(), buf.end(), std::back_inserter(ilist->icons));
+        ilist->pos = pos;
+        Fl::awake(_main_thread_awaker, ilist);
+        pos += buf.size();
+        buf.clear();
+        loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
       }
     }
   }

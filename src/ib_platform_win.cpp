@@ -889,6 +889,14 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
   }
 } // }}}
 
+ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  ib::oschar osbuf[IB_MAX_PATH];
+  ib::platform::get_self_path(osbuf);
+  ib::platform::dirname(result, osbuf);
+  return result;
+} // }}}
+
 //////////////////////////////////////////////////
 // path functions {{{
 //////////////////////////////////////////////////

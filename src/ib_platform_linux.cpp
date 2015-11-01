@@ -429,6 +429,12 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
 void ib::platform::on_command_init(ib::Command *cmd) { // {{{
 } // }}}
 
+ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  snprintf(result, IB_MAX_PATH-1, "%s/%s", getenv("HOME"), ".iceberg");
+  return result;
+} // }}}
+
 //////////////////////////////////////////////////
 // path functions {{{
 //////////////////////////////////////////////////
@@ -823,12 +829,15 @@ void ib::platform::notify_condition(ib::condition *c) { /* {{{ */
 // process functions {{{
 //////////////////////////////////////////////////
 int ib::platform::wait_pid(const int pid) { // {{{
-  int status;
-  pid_t ret = waitpid(pid, &status, 0);
-  if (ret < 0) {
-    return -1;
+  for(int limit = 0; limit < 10; limit++){
+    if(kill(pid, 0) < 0 && errno == ESRCH) {
+      return 0;
+    }
+    struct timespec ts = {0};
+    ts.tv_nsec = 500 * 1000000;
+    nanosleep(&ts, 0);
   }
-  return 0;
+  return -1;
 } // }}}
 
 int ib::platform::get_pid() { // {{{

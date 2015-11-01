@@ -152,6 +152,7 @@ keyup:
               Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
               if(button && button->visible()){
                 button->do_callback();
+                ib::platform::show_window(ib::MainWindow::inst());
                 return 1;
               }
             }
@@ -759,8 +760,8 @@ void ib::ListWindow::hide(){ /* {{{ */
 #ifdef IB_OS_WIN
   ib::platform::hide_window(this);
 #else
-  show_init_ = true;
   resize(0, 0, 1, 1);
+  show_init_ = true;
 #endif
 } /* }}} */
 
@@ -771,6 +772,7 @@ void ib::ListWindow::show(){ /* {{{ */
   if(!show_init_) {
     return Fl_Window::show();
   }
+  XRaiseWindow(fl_display, fl_xid(this));
   listbox_->adjustSize();
 #endif
 } /* }}} */

@@ -197,7 +197,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   const char *usage = "Usage: iceberg.exe [-c CONFIG_FILE] [-m message]";
   for(int i = 0; i < argc; ++i) {
     int error = 0;
-    if(strcmp(argv[i], "-r") == 0){
+    if(strcmp(argv[i], "-p") == 0){
       if(i == argc-1) { error = 1; }
       else{ cfg.setOldPid(atoi(argv[++i]));}
     }else if(strcmp(argv[i], "-c") == 0) {
@@ -224,8 +224,10 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   cfg.setInitialWorkdir(current_workdir.get());
   setCwd(current_workdir.get(), error);
   if(cfg.getConfigPath().size() == 0) {
+    ib::oschar osconf_dir[IB_MAX_PATH];
+    ib::platform::default_config_path(osconf_dir);
     ib::unique_oschar_ptr osconfig_name(ib::platform::utf82oschar("config.lua"));
-    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osself_dir.get(), osconfig_name.get()));
+    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osconf_dir, osconfig_name.get()));
     ib::unique_char_ptr   cconfig_path(ib::platform::oschar2utf8(oscconfig_path.get()));
     cfg.setConfigPath(cconfig_path.get());
   }

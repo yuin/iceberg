@@ -67,8 +67,10 @@ void ib::utils::exit_application(const int code) { // {{{
     delete ib::MainWindow::inst();
   }
   if(ib::IconManager::inst() != 0){
-    ib::IconManager::inst()->deleteCachedIcons();
-    ib::IconManager::inst()->getLoaderEvent().stopThread();
+    if(ib::Config::inst().getEnableIcons()){
+      ib::IconManager::inst()->deleteCachedIcons();
+      ib::IconManager::inst()->getLoaderEvent().stopThread();
+    }
     delete ib::IconManager::inst();
   }
   ib::Migemo::inst().destroy();
@@ -84,6 +86,9 @@ void ib::utils::reboot_application() { // {{{
   char options[32];
   snprintf(options, 32, "%d", ib::platform::get_pid());
   params.push_back(ib::unique_string_ptr(new std::string(options)));
+#ifndef IB_OS
+  params.push_back(ib::unique_string_ptr(new std::string("&")));
+#endif
 
   auto &cfg = ib::Config::inst();
   ib::Error error;
@@ -574,7 +579,5 @@ ib::u32 ib::utils::bebytes2u32int(const char *bytes){ // {{{
 
 ib::FlScopedLock::~FlScopedLock() { // {{{
   Fl::unlock();
-  Fl::awake(ib::MainWindow::inst());
-  Fl::awake(ib::ListWindow::inst());
 } // }}}
 

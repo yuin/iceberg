@@ -43,6 +43,8 @@ __attribute__ ((constructor)) void pre_main() { // {{{
 #endif
 
 int main(int argc, char **argv) { // {{{
+  Fl::lock();
+  fl_message_hotspot(0);
   auto &cfg = ib::Config::inst();
   setlocale(LC_ALL, "");
 
@@ -52,6 +54,13 @@ int main(int argc, char **argv) { // {{{
   }
 
   ib::Controller::inst().loadConfig(argc, argv);
+  if(cfg.getOldPid() > -1){
+    if(ib::platform::wait_pid(cfg.getOldPid()) != 0){
+      fl_alert("Failed to reboot iceberg.");
+      ib::utils::exit_application(1);
+    }
+  }
+
   if(!cfg.getIpcMessage().empty()){
     int code = ib::utils::ipc_message(cfg.getIpcMessage());
     ib::platform::finalize_system();
@@ -60,12 +69,6 @@ int main(int argc, char **argv) { // {{{
 
   ib::Controller::inst().initFonts();
   ib::Controller::inst().initBoxtypes();
-  if(cfg.getOldPid() > -1){
-    if(ib::platform::wait_pid(cfg.getOldPid()) != 0){
-      fl_alert("Failed to reboot iceberg.");
-      ib::utils::exit_application(1);
-    }
-  }
 
   Fl::visual(FL_DOUBLE|FL_INDEX);
   ib::MainWindow::init();
@@ -84,7 +87,7 @@ int main(int argc, char **argv) { // {{{
   }
   ib::Error error;
   if(ib::Server::inst().start(error) != 0){
-    fl_alert("Failed to initialize the application.(start_server)");
+    fl_alert("%s", error.getMessage().c_str());
     ib::utils::exit_application(1);
   }
 
@@ -96,15 +99,14 @@ int main(int argc, char **argv) { // {{{
   ib::History::inst().load();
   if(ib::Config::inst().getEnableIcons()){
     ib::IconManager::inst()->load();
+    ib::CancelableEvent &event = ib::IconManager::inst()->getLoaderEvent();
+    event.setMs(1);
+    event.startThread();
   }
   ib::Migemo::inst().init();
 
-  Fl::lock();
-  ib::CancelableEvent &event = ib::IconManager::inst()->getLoaderEvent();
-  event.setMs(1);
-  event.startThread();
   if(ib::Config::inst().getKeyEventThreshold() > 0){
-    ib::CancelableEvent &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
+    auto &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
     event.setMs(ib::Config::inst().getKeyEventThreshold());
     event.startThread();
   }

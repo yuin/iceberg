@@ -13,6 +13,7 @@
 # libasound2-dev
 # libxft-dev
 # libonig-dev
+# libmigemo-dev
 
 COMMONHEADS	= $(shell find src -name '*h' -not -name '*win*')
 COMMONSRCS	= $(shell find src -name '*cpp' -not -name '*iceberg*' -not -name '*win*')
@@ -28,7 +29,8 @@ TESTHEADS	= $(COMMONHEADS) $(shell find tests -name '*h')
 TESTSRCS	= $(COMMONSRCS) $(shell find tests -name '*cpp')
 TESTOBJS	= $(COMMONOBJS) $(TESTSRCS:.cpp=.o)
 
-DEBUG=-DDEBUG -g
+# DEBUG=-DDEBUG -g
+DEBUG= -g
 RM=rm -rf
 CP=cp
 VIRTUALENV=virtualenv

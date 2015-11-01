@@ -41,6 +41,7 @@ namespace ib {
     void list_all_windows(std::vector<ib::whandle> &result);
     int show_context_menu(ib::oschar *path);
     void on_command_init(ib::Command *command);
+    ib::oschar* default_config_path(ib::oschar *result);
 
     /* path functions */
     Fl_RGB_Image* get_associated_icon_image(const ib::oschar *path, const int size);
