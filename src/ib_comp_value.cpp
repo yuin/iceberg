@@ -103,7 +103,11 @@ void ib::Command::init() { // {{{
     ib::platform::dirname(os_dirname, os_command_path);
     char dirname[IB_MAX_PATH_BYTE];
     ib::platform::oschar2utf8_b(dirname, IB_MAX_PATH_BYTE, os_dirname);
-    setWorkdir(dirname);
+    if(ib::platform::directory_exists(os_dirname)) {
+      setWorkdir(dirname);
+    } else {
+      setWorkdir(".");
+    }
   }
   ib::platform::on_command_init(this);
 } // }}}

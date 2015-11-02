@@ -35,6 +35,7 @@ namespace ib{
 
     void win_draw_text(ib::oschar *str, int x, int y, int w = 0, int h = 0);
     size_t win_calc_text_width(ib::oschar *str);
+    int list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error);
   }
 }
 const char *strcasestr(const char *haystack, const char *needle);

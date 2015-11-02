@@ -15,6 +15,35 @@ static bool string_startswith(const char *str, const char *pre) {
   return strncmp(pre, str, strlen(pre)) == 0;
 }
 
+static bool string_endswith(const char *str, const char *pre) {
+  const char *dot = strrchr(str, '.');
+  return (dot && !strcmp(dot, pre));
+}
+
+static void parse_desktop_entry_value(std::string &result, std::string &value) {
+  ib::Regex re("(\\\\s|\\\\n|\\\\t|\\\\r|\\\\\\\\)", ib::Regex::NONE);
+  re.init();
+  re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+      std::string escape;
+      reg._1(escape);
+      if(escape == "\\s") *res += " ";
+      else if(escape == "\\n") *res += "\n";
+      else if(escape == "\\t") *res += "\t";
+      else if(escape == "\\r") *res += "\r";
+      else if(escape == "\\\\") *res += "\\";
+  }, 0);
+}
+
+static void normalize_desktop_entry_value(std::string &result, std::string &value) {
+  ib::Regex re("(\\n|\\r|\\t)", ib::Regex::NONE);
+  re.init();
+  re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+      std::string escape;
+      reg._1(escape);
+      if(escape == "\t") *res += "    ";
+  }, 0);
+}
+
 static int read_fd_all(int fd, std::string &out) {
   char buf[1024];
   do{
@@ -277,12 +306,14 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     return -1;
   };
 
-
   ib::Regex proto_reg("^(\\w+)://.*", ib::Regex::I);
   proto_reg.init();
   ret = 0;
   if(proto_reg.match(path) == 0){
+    cmd += "xdg-open '";
     cmd += path;
+    cmd += "' ";
+    cmd += strparams;
   } else {
     if(-1 == access(path.c_str(), R_OK)) {
       set_errno(error);
@@ -294,31 +325,16 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       cmd += path;
       cmd += " ";
       cmd += strparams;
-      ret = system(cmd.c_str());
-      if(ret < 0) {
-        std::string message;
-        message += "Failed to start ";
-        message += path;
-        error.setCode(1);
-        error.setMessage(message.c_str());
-        goto finally;
-      }else{
-        goto finally;
-      }
     }
-    cmd += "file://";
-    ib::oschar abspath[IB_MAX_PATH];
-    ib::platform::to_absolute_path(abspath, cwd.c_str(), path.c_str());
-    cmd += abspath;
   }
 
-  cmd += strparams;
-
-  char errmsg[512];
-  if (!fl_open_uri(cmd.c_str(), errmsg, sizeof(errmsg)) ) {
+  ret = system((cmd + " &").c_str());
+  if(ret < 0) {
+    std::string message;
+    message += "Failed to start ";
+    message += path;
     error.setCode(1);
-    error.setMessage(errmsg);
-    ret = -1;
+    error.setMessage(message.c_str());
     goto finally;
   }
 
@@ -427,6 +443,73 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
 } // }}}
 
 void ib::platform::on_command_init(ib::Command *cmd) { // {{{
+  const char *path = cmd->getCommandPath().c_str();
+  if(string_endswith(path, ".desktop")){
+    std::ifstream ifs(path);
+    std::string   line;
+    if (ifs.fail()) {
+      return; // ignore errors;
+    }
+    ib::Regex kv_reg("^([^#][^=\\s]+)\\s*=\\s*(.*)$", ib::Regex::I);
+    kv_reg.init();
+    ib::Regex section_reg("^\\s*\\[([^\\]]+)]", ib::Regex::I);
+    section_reg.init();
+
+    ib::string_map props;
+    std::string current_section;
+    while(std::getline(ifs, line)) {
+      if(section_reg.match(line.c_str()) == 0) {
+        section_reg._1(current_section);
+      } if(kv_reg.match(line.c_str()) == 0 && current_section == "Desktop Entry") {
+        std::string   key;
+        std::string   raw_value;
+        std::string   value;
+        kv_reg._1(key);
+        kv_reg._2(raw_value);
+        parse_desktop_entry_value(value, raw_value);
+        props.insert(ib::string_pair(key, value));
+      }
+    }
+    // TODO support localizations.
+
+    auto prop_type = props.find("Type");
+    if(prop_type == props.end()) return; // Type is a required value. ignore errors;
+
+    auto prop_hidden = props.find("Hidden");
+    if(prop_hidden != props.end() &&
+       (*prop_hidden).second == "true" ) {
+      cmd->setName("/");
+      return; // ignore this command. '/' is treated as a path, thus this command will never be shown in the completion lists.
+    }
+
+    auto prop_name = props.find("Name");
+    if(prop_name == props.end()) return; // Name is a required value. ignore errors;
+    std::string name;
+    ib::utils::to_command_name(name, (*prop_name).second);
+    cmd->setName(name);
+
+    auto prop_comment = props.find("Comment");
+    if(prop_comment != props.end()) {
+      std::string normalized;
+      normalize_desktop_entry_value(normalized, (*prop_comment).second);
+      cmd->setDescription(normalized);
+    }
+
+    auto prop_icon = props.find("Icon");
+    if(prop_icon != props.end()) {
+      //TODO resolve icon file path?
+      cmd->setIconFile((*prop_icon).second);
+    }
+
+    if((*prop_type).second == "Application") {
+      auto prop_path = props.find("Path");
+      if(prop_path != props.end()) {
+        cmd->setWorkdir((*prop_path).second);
+      }
+    } else if((*prop_type).second == "Directory") {
+    } else if((*prop_type).second == "Link") {
+    }
+  }
 } // }}}
 
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
@@ -665,11 +748,6 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
     if (!access(filename, X_OK)) return true;
   }
   return false;
-} // }}}
-
-int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
-  // linux has no drives.
-  return 0;
 } // }}}
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{

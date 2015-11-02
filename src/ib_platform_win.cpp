@@ -1287,28 +1287,6 @@ finalize:
   return found;
 } // }}}
 
-int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
-  ib::oschar buf[128]; 
-  ib::oschar *ptr;
-  ib::oschar *tmp;
-  size_t     length;
-
-  SetLastError(NO_ERROR);
-  if(GetLogicalDriveStrings(sizeof(buf), buf) == 0){
-    ib_platform_set_error(error);
-    return 1;
-  }
-
-  for(ptr = buf; *ptr != L'\0' ; ptr++){
-    length = _tcslen(ptr);
-    tmp = new ib::oschar[length+1];
-    swprintf(tmp, L"%ls", ptr);
-    result.push_back(ib::unique_oschar_ptr(tmp));
-    ptr += length;
-  }
-  return 0;
-} // }}}
-
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar file_type[IB_MAX_PATH];
@@ -1595,6 +1573,29 @@ size_t ib::platform::win_calc_text_width(ib::oschar *str){ // {{{
   return (rect.right - rect.left);
 
 } // }}}
+
+int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
+  ib::oschar buf[128]; 
+  ib::oschar *ptr;
+  ib::oschar *tmp;
+  size_t     length;
+
+  SetLastError(NO_ERROR);
+  if(GetLogicalDriveStrings(sizeof(buf), buf) == 0){
+    ib_platform_set_error(error);
+    return 1;
+  }
+
+  for(ptr = buf; *ptr != L'\0' ; ptr++){
+    length = _tcslen(ptr);
+    tmp = new ib::oschar[length+1];
+    swprintf(tmp, L"%ls", ptr);
+    result.push_back(ib::unique_oschar_ptr(tmp));
+    ptr += length;
+  }
+  return 0;
+} // }}}
+
 //////////////////////////////////////////////////
 // platform specific functions }}}
 //////////////////////////////////////////////////

@@ -151,8 +151,12 @@ keyup:
               Fl_Widget *widget = w->as_group()->child(i);
               Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
               if(button && button->visible()){
-                button->do_callback();
+#ifndef IB_OS_WIN
+                // In XLib, closing visible windows lost the main window focus .
+                ib::platform::hide_window(w);
                 ib::platform::show_window(ib::MainWindow::inst());
+#endif
+                button->do_callback();
                 return 1;
               }
             }

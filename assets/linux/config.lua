@@ -27,6 +27,8 @@ system = {
 
   search_path = {
     {category="shortcuts", path = dot_iceberg .. [[\shortcuts]], depth = 5, pattern=[[^.*\.(desktop)$]]},
+    {category="applications(usr/share)", path = [[/usr/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]},
+    {category="applications(usr/local)", path = [[/usr/local/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]}
   },
   completer = {
     command = ibs.COMP_ABBR,
@@ -124,7 +126,7 @@ commands = {
       assert(ibs.open_dir(path))
       return 0
     end, history = false},
-  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[\images\google256.png]]},
+  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
   cal = { path = function(args)
       local script = "ret = (" .. table.concat(args, " ") .. ")"
       local func = loadstring(script)
