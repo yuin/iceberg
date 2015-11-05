@@ -11,6 +11,8 @@ static char ib_g_lang[32];
 static int  ib_g_hotkey;
 
 // utilities {{{
+
+// small functions {{{
 static bool string_startswith(const char *str, const char *pre) {
   return strncmp(pre, str, strlen(pre)) == 0;
 }
@@ -99,6 +101,323 @@ static void set_errno(ib::Error &error) {
 
 // }}}
 
+class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
+  public:
+    explicit FreeDesktopKVFile(const char *path) : path_(), lang_(""), country_(""), modifier_(""), map_() {
+      strncpy(path_, path, IB_MAX_PATH-1);
+    };
+    int parse() {
+      std::ifstream ifs(path_);
+      std::string   line;
+      if (ifs.fail()) {
+        return -1;
+      }
+      ib::Regex kv_reg("^([^#][^=\\s]+)\\s*=\\s*(.*)$", ib::Regex::I);
+      kv_reg.init();
+      ib::Regex section_reg("^\\s*\\[([^\\]]+)]", ib::Regex::I);
+      section_reg.init();
+
+      std::string current_section;
+      while(std::getline(ifs, line)) {
+        if(section_reg.match(line.c_str()) == 0) {
+          section_reg._1(current_section);
+        } if(kv_reg.match(line.c_str()) == 0) {
+          if(current_section.empty()) {
+            return -1;
+          }
+          std::string   key;
+          std::string   raw_value;
+          std::string   value;
+          kv_reg._1(key);
+          kv_reg._2(raw_value);
+          parse_desktop_entry_value(value, raw_value);
+          map_[std::make_tuple(current_section, key)] = value;
+        }
+      }
+      const char *locale = getenv("LC_MESSAGES");
+      if(locale == 0) locale = getenv("LANGUAGE");
+      if(locale == 0) locale = getenv("LANG");
+      if(locale != 0) {
+        ib::Regex locale_reg("(([^\\._@]+)((\\.)([^_]*))?)(_(\\w+))?(@(\\w+))?", ib::Regex::I);
+        locale_reg.init();
+        if(locale_reg.match(locale) == 0){
+          locale_reg._2(lang_);
+          locale_reg._7(country_);
+          locale_reg._9(modifier_);
+        }
+      }
+      return 0;
+    }
+    ~FreeDesktopKVFile() { }
+
+    std::string get(const char *section, const char *key, bool l18n = true) {
+      std::string skey(key);
+      if(!l18n) {
+        auto value = map_.find(std::make_tuple(section, skey));
+        if(value != map_.end()) return (*value).second;
+        return "";
+      }
+
+      auto value = map_.find(std::make_tuple(section, skey+"["+lang_+"_"+country_+"@"+modifier_+"]"));
+      if(value != map_.end()) return (*value).second;
+
+      value = map_.find(std::make_tuple(section, skey+"["+lang_+"_"+country_+"]"));
+      if(value != map_.end()) return (*value).second;
+
+      value = map_.find(std::make_tuple(section, skey+"["+lang_+"@"+modifier_+"]"));
+      if(value != map_.end()) return (*value).second;
+
+      value = map_.find(std::make_tuple(section, skey+"["+lang_+"]"));
+      if(value != map_.end()) return (*value).second;
+
+      value = map_.find(std::make_tuple(section, skey));
+      if(value != map_.end()) return (*value).second;
+      return "";
+    }
+
+    const char* getPath() const { return path_; }
+
+  protected:
+    char           path_[IB_MAX_PATH];
+    std::string    lang_;
+    std::string    country_;
+    std::string    modifier_;
+    std::map<std::tuple<std::string, std::string>, std::string> map_;
+}; // }}}
+
+class FreeDesktopThemeRepos : private ib::NonCopyable<FreeDesktopThemeRepos> { // {{{
+  public:
+    static FreeDesktopThemeRepos *instance_;
+    static FreeDesktopThemeRepos* inst() { return instance_; }
+    static void init() { instance_ = new FreeDesktopThemeRepos(); instance_->build();}
+
+    FreeDesktopThemeRepos() : indicies_() {};
+    void build();
+    FreeDesktopKVFile* getTheme(const char *name) const;
+    void findIcon(std::string &result, const char *name, const char *theme, int size);
+
+  protected:
+    std::map<std::string, std::unique_ptr<FreeDesktopKVFile> > indicies_;
+    void buildHelper(const char *basepath);
+
+};
+
+class FreeDesktopIconFinder : private ib::NonCopyable<FreeDesktopIconFinder> { // {{{
+  public:
+    FreeDesktopIconFinder(const char *name, const int size) : name_(name), size_(size) {};
+
+    void find(std::string &result);
+  protected:
+    const char *name_;
+    const int   size_;
+
+    void findHelper(std::string &result, const char *theme);
+    void lookup(std::string &result, const char *theme);
+    bool directoryMatchSize(const char *dir, const char *theme);
+    int directorySizeDistance(const char *dir, const char *theme);
+    std::tuple<std::string, int,int,int,int> getDirectorySizes(const char *dir, const char *theme);
+};
+
+void FreeDesktopIconFinder::find(std::string &result) {
+  findHelper(result, "Lubuntu");
+  if(!result.empty()) return;
+  findHelper(result, "Hicolor");
+  if(!result.empty()) return;
+
+  const char *pixmaps = "/usr/share/pixmaps";
+  char icon_file[IB_MAX_PATH];
+  const char *exts[] = {"png", "svg", "xpm"};
+  for(int i = 0; i < 3; i++) {
+    const char *ext = exts[i];
+    snprintf(icon_file, IB_MAX_PATH, "%s/%s.%s", pixmaps, name_, ext);
+    if(ib::platform::path_exists(icon_file)) {
+      result = icon_file;
+      return;
+    }
+  }
+}
+
+void FreeDesktopIconFinder::findHelper(std::string &result, const char *theme) {
+  lookup(result, theme);
+  if(!result.empty()) return;
+  auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
+  if(kvf == NULL) return;
+  auto parents = kvf->get("Icon Theme", "Inherits", false);
+  if(parents.empty() && strcmp(theme, "Hicolor") != 0) parents = "Hicolor";
+  std::istringstream stream(parents);
+  std::string parent;
+  while (std::getline(stream, parent, ',')) {
+    findHelper(result, parent.c_str());
+    if(!result.empty()) return;
+  }
+}
+
+void FreeDesktopIconFinder::lookup(std::string &result, const char *theme) {
+  auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
+  if(kvf == NULL) return;
+  auto dirs = kvf->get("Icon Theme", "Directories", false);
+  char theme_dir[IB_MAX_PATH];
+  ib::platform::dirname(theme_dir, kvf->getPath());
+  std::istringstream stream(dirs);
+  std::string dir;
+  char icon_file[IB_MAX_PATH];
+  while (std::getline(stream, dir, ',')) {
+    if(directoryMatchSize(dir.c_str(), theme)) {
+      const char *exts[] = {"png", "svg", "xpm"};
+      for(int i = 0; i < 3; i++) {
+        const char *ext = exts[i];
+        snprintf(icon_file, IB_MAX_PATH, "%s/%s/%s.%s", theme_dir, dir.c_str(), name_, ext);
+        if(ib::platform::path_exists(icon_file)) {
+          result = icon_file;
+          return;
+        }
+      }
+    }
+  }
+
+  int minsize = INT_MAX;
+  std::istringstream stream2(dirs);
+  while (std::getline(stream2, dir, ',')) {
+    const char *exts[] = {"png", "svg", "xpm"};
+    for(int i = 0; i < 3; i++) {
+      const char *ext = exts[i];
+      snprintf(icon_file, IB_MAX_PATH, "%s/%s/%s.%s", theme_dir, dir.c_str(), name_, ext);
+      if(ib::platform::path_exists(icon_file)){
+        auto distance = directorySizeDistance(dir.c_str(), theme);
+        if(distance < minsize) {
+          result = icon_file;
+          minsize = distance;
+        }
+      }
+    }
+  }
+
+}
+
+std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySizes(const char *dir, const char *theme) {
+  std::string typ;
+  int size, min, max, th = 0;
+  auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
+  if(kvf != NULL) {
+    auto typ = kvf->get(dir, "Type", false);
+    if(typ.empty()) typ = "Threshold";
+    size = std::atoi(kvf->get(dir, "Size", false).c_str());
+    min = size;
+    max = size;
+    auto minstr = kvf->get(dir, "MinSize", false);
+    auto maxstr = kvf->get(dir, "MaxSize", false);
+    if(!minstr.empty()) min = std::atoi(minstr.c_str());
+    if(!maxstr.empty()) max = std::atoi(maxstr.c_str());
+    th = 2;
+    auto thstr = kvf->get(dir, "Threshold", false);
+    if(!thstr.empty()) th = std::atoi(thstr.c_str());
+  }
+
+  return std::make_tuple(typ, size, min, max, th);
+
+}
+
+bool FreeDesktopIconFinder::directoryMatchSize(const char *dir, const char *theme) {
+  auto sizedata = getDirectorySizes(dir, theme);
+  auto &typ = std::get<0>(sizedata);
+  auto size = std::get<1>(sizedata);
+  auto min = std::get<2>(sizedata);
+  auto max = std::get<3>(sizedata);
+  auto th  = std::get<4>(sizedata);
+
+  if(typ == "Fixed") {
+    return size == size_;
+  } else if(typ == "Scalable") {
+    return min <= size_ && size_ <= max;
+  } else if(typ == "Threshold"){
+    return (size - th) <= size_ && size_ <= (size + th);
+  }
+  return false;
+}
+
+int FreeDesktopIconFinder::directorySizeDistance(const char *dir, const char *theme) {
+  auto sizedata = getDirectorySizes(dir, theme);
+  auto &typ = std::get<0>(sizedata);
+  auto size = std::get<1>(sizedata);
+  auto min = std::get<2>(sizedata);
+  auto max = std::get<3>(sizedata);
+  auto th  = std::get<4>(sizedata);
+  if(typ == "Fixed") {
+    return std::abs(size - size_);
+  } else if(typ == "Scalable") {
+    if(size_ < min) return min- size_;
+    if(size_ > max) return size_ - max;
+    return 0;
+  } else if(typ == "Threshold"){
+    if(size_ < (size - th)) return (size - th) - size_;
+    if(size_ > (size + th)) return size_ - (size + th);
+    return 0;
+  }
+  return 0;
+}
+// }}}
+
+FreeDesktopThemeRepos *FreeDesktopThemeRepos::instance_ = 0;
+
+void FreeDesktopThemeRepos::build() {
+  char path[IB_MAX_PATH];
+  snprintf(path, IB_MAX_PATH, "%s/.icons", getenv("HOME"));
+  buildHelper(path);
+
+  if(getenv("XDG_DATA_DIRS") == 0) {
+    snprintf(path, IB_MAX_PATH, "/usr/share/icons");
+  }else{
+    snprintf(path, IB_MAX_PATH, "%s/icons", getenv("XDG_DATA_DIRS"));
+  }
+  buildHelper(path);
+
+  snprintf(path, IB_MAX_PATH, "/usr/share/pixmaps");
+  buildHelper(path);
+}
+
+void FreeDesktopThemeRepos::buildHelper(const char *basepath) {
+  char path[IB_MAX_PATH];
+  char index_path[IB_MAX_PATH];
+  ib::Error error;
+  std::vector<ib::unique_oschar_ptr> files;
+
+  if(ib::platform::walk_dir(files, basepath, error, false) != 0) {
+    return; //ignore errors
+  }
+  for(auto it = files.begin(), last = files.end(); it != last; ++it){
+    snprintf(path, IB_MAX_PATH, "%s/%s", basepath, (const char*)((*it).get()));
+    if(ib::platform::is_directory(path)) {
+      snprintf(index_path, IB_MAX_PATH, "%s/%s", path, "index.theme");
+      if(ib::platform::file_exists(index_path)) {
+        FreeDesktopKVFile *kvf = new FreeDesktopKVFile(index_path);
+        if(kvf->parse() < 0) { delete kvf; continue; /* ignore errors */ }
+        auto name = kvf->get("Icon Theme", "Name", false);
+        if(name.empty()) {
+          delete kvf; 
+          continue;
+          // TODO How we should handle an inheritance?
+        }
+        indicies_.insert(std::make_pair(name, std::unique_ptr<FreeDesktopKVFile>(kvf)));
+      }
+    }
+  }
+}
+
+FreeDesktopKVFile* FreeDesktopThemeRepos::getTheme(const char *name) const {
+  auto themeptr = indicies_.find(name);
+  if(themeptr == indicies_.end()) return 0;
+  return themeptr->second.get();
+}
+
+
+void FreeDesktopThemeRepos::findIcon(std::string &result, const char *theme, const char *name, int size) {
+  FreeDesktopIconFinder ficon(name, size);
+  ficon.find(result);
+}
+
+// }}}
+// }}}
+
 //////////////////////////////////////////////////
 // X11 functions {{{
 //////////////////////////////////////////////////
@@ -149,6 +468,7 @@ int ib::platform::startup_system() { // {{{
    XSetErrorHandler(xerror_handler);
   // TODO get user LANG from ENV.
   strncpy(ib_g_lang, "UTF-8", 32 - 1);
+  FreeDesktopThemeRepos::init();
   return 0;
 } // }}}
 
@@ -163,6 +483,7 @@ int ib::platform::init_system() { // {{{
 
   Fl::add_handler(xevent_handler);
   XFlush(fl_display);
+
   return 0;
 } // }}}
 
@@ -173,6 +494,8 @@ void ib::platform::finalize_system(){ // {{{
   XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|2,  root); // CapsLock
   XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|16, root); // NumLock
   XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root); // both
+  
+  delete FreeDesktopThemeRepos::inst();
 } // }}}
 
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
@@ -444,77 +767,48 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
 
 void ib::platform::on_command_init(ib::Command *cmd) { // {{{
   const char *path = cmd->getCommandPath().c_str();
+  static const char *SECTION_KEY = "Desktop Entry";
+
   if(string_endswith(path, ".desktop")){
-    std::ifstream ifs(path);
-    std::string   line;
-    if (ifs.fail()) {
-      return; // ignore errors;
-    }
-    ib::Regex kv_reg("^([^#][^=\\s]+)\\s*=\\s*(.*)$", ib::Regex::I);
-    kv_reg.init();
-    ib::Regex section_reg("^\\s*\\[([^\\]]+)]", ib::Regex::I);
-    section_reg.init();
+    FreeDesktopKVFile kvf(path);
+    if(kvf.parse() < 0) return; // ignore errors;
 
-    ib::string_map props;
-    std::string current_section;
-    while(std::getline(ifs, line)) {
-      if(section_reg.match(line.c_str()) == 0) {
-        section_reg._1(current_section);
-      } if(kv_reg.match(line.c_str()) == 0 && current_section == "Desktop Entry") {
-        std::string   key;
-        std::string   raw_value;
-        std::string   value;
-        kv_reg._1(key);
-        kv_reg._2(raw_value);
-        parse_desktop_entry_value(value, raw_value);
-        props.insert(ib::string_pair(key, value));
-      }
-    }
-    // TODO support localizations.
+    auto prop_type = kvf.get(SECTION_KEY, "Type");
+    if(prop_type.empty()) return; // Type is a required value. ignore errors;
 
-    auto prop_type = props.find("Type");
-    if(prop_type == props.end()) return; // Type is a required value. ignore errors;
-
-    auto prop_hidden = props.find("Hidden");
-    if(prop_hidden != props.end() &&
-       (*prop_hidden).second == "true" ) {
+    auto prop_hidden = kvf.get(SECTION_KEY, "Hidden");
+    if(prop_hidden == "true") {
       cmd->setName("/");
       return; // ignore this command. '/' is treated as a path, thus this command will never be shown in the completion lists.
     }
 
-    auto prop_name = props.find("Name");
-    if(prop_name == props.end()) return; // Name is a required value. ignore errors;
+    auto prop_name = kvf.get(SECTION_KEY, "Name");
+    if(prop_name.empty()) return; // Name is a required value. ignore errors;
     std::string name;
-    ib::utils::to_command_name(name, (*prop_name).second);
+    ib::utils::to_command_name(name, prop_name);
     cmd->setName(name);
 
-    auto prop_comment = props.find("Comment");
-    if(prop_comment != props.end()) {
+    auto prop_comment = kvf.get(SECTION_KEY, "Comment");
+    if(!prop_comment.empty()){
       std::string normalized;
-      normalize_desktop_entry_value(normalized, (*prop_comment).second);
+      normalize_desktop_entry_value(normalized, prop_comment);
       cmd->setDescription(normalized);
     }
 
-    auto prop_icon = props.find("Icon");
-    if(prop_icon != props.end()) {
-      //TODO resolve icon file path?
-      cmd->setIconFile((*prop_icon).second);
-    }
-
-    if((*prop_type).second == "Application") {
-      auto prop_path = props.find("Path");
-      if(prop_path != props.end()) {
-        cmd->setWorkdir((*prop_path).second);
+    if(prop_type == "Application") {
+      auto prop_path = kvf.get(SECTION_KEY, "Path");
+      if(!prop_path.empty()){
+        cmd->setWorkdir(prop_path);
       }
-    } else if((*prop_type).second == "Directory") {
-    } else if((*prop_type).second == "Link") {
+    } else if(prop_type == "Directory") {
+    } else if(prop_type == "Link") {
     }
   }
 } // }}}
 
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  snprintf(result, IB_MAX_PATH-1, "%s/%s", getenv("HOME"), ".iceberg");
+  snprintf(result, IB_MAX_PATH, "%s/%s", getenv("HOME"), ".iceberg");
   return result;
 } // }}}
 
@@ -673,9 +967,9 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
                 strcmp (d_name, ".") != 0) {
                 ib::oschar *path = new ib::oschar[IB_MAX_PATH];
                 if(recursive){
-                  snprintf(path, IB_MAX_PATH-1, "%s/%s", dir, d_name);
+                  snprintf(path, IB_MAX_PATH, "%s/%s", dir, d_name);
                 } else {
-                  snprintf(path, IB_MAX_PATH-1, "%s", d_name);
+                  snprintf(path, IB_MAX_PATH, "%s", d_name);
                 }
                 result.push_back(ib::unique_oschar_ptr(path));
                 if(recursive) {
@@ -685,9 +979,9 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
         } else {
           ib::oschar *path = new ib::oschar[IB_MAX_PATH];
           if(recursive){
-            snprintf(path, IB_MAX_PATH-1, "%s/%s", dir, d_name);
+            snprintf(path, IB_MAX_PATH, "%s/%s", dir, d_name);
           } else {
-            snprintf(path, IB_MAX_PATH-1, "%s", d_name);
+            snprintf(path, IB_MAX_PATH, "%s", d_name);
           }
           result.push_back(ib::unique_oschar_ptr(path));
         }

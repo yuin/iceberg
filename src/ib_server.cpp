@@ -56,6 +56,7 @@ int ib::Server::start(ib::Error &error){ // {{{
 #ifdef SO_REUSEPORT
   setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, (const char *)&yes, sizeof(yes));
 #endif
+  // TODO: Failed to bind a socket when rebooting the application, even though set SO_REUSEADDR
 
   if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
     error.setMessage("Failed to bind a server socket");
