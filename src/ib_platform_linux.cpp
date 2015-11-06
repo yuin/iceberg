@@ -6,6 +6,7 @@
 #include "ib_config.h"
 #include "ib_regex.h"
 #include "ib_comp_value.h"
+#include "ib_icon_manager.h"
 
 static char ib_g_lang[32];
 static int  ib_g_hotkey;
@@ -13,6 +14,12 @@ static int  ib_g_hotkey;
 // utilities {{{
 
 // small functions {{{
+char* strncpy_s(char *dest, const char *src, const std::size_t size) {
+  strncpy(dest, src, size-1);
+  dest[size-1] = '\0';
+  return dest;
+}
+
 static bool string_startswith(const char *str, const char *pre) {
   return strncmp(pre, str, strlen(pre)) == 0;
 }
@@ -104,7 +111,7 @@ static void set_errno(ib::Error &error) {
 class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
   public:
     explicit FreeDesktopKVFile(const char *path) : path_(), lang_(""), country_(""), modifier_(""), map_() {
-      strncpy(path_, path, IB_MAX_PATH-1);
+      strncpy_s(path_, path, IB_MAX_PATH);
     };
     int parse() {
       std::ifstream ifs(path_);
@@ -185,6 +192,65 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
     std::map<std::tuple<std::string, std::string>, std::string> map_;
 }; // }}}
 
+
+class FreeDesktopMime: private ib::NonCopyable<FreeDesktopMime> { // {{{
+  public:
+    static FreeDesktopMime *instance_;
+    static FreeDesktopMime* inst() { return instance_; }
+    static void init() { instance_ = new FreeDesktopMime(); instance_->build();}
+    
+    FreeDesktopMime() : globs_() {};
+    void build();
+    bool findByPath(std::string &typ, std::string &subtyp, const char *path);
+  protected:
+    std::vector<std::tuple<int, std::string, std::string, std::string> > globs_;
+}; 
+
+FreeDesktopMime* FreeDesktopMime::instance_ = 0;
+
+void FreeDesktopMime::build() {
+  const char *files[] = {"/usr/share/mime/globs2", "/usr/share/mime/globs"};
+  for(int i = 0; i < 2; i++) {
+    const char *file = files[i];
+    std::ifstream ifs(file);
+    std::string   line;
+    if (ifs.fail()) {
+      continue;
+    }
+    ib::Regex reg("\\s*(?:([0-9]+):)?([^:/]+)/([^:/]+):(.*)", ib::Regex::I);
+    reg.init();
+
+    while(std::getline(ifs, line)) {
+      if(reg.match(line) == 0) {
+        std::string scorestr, typ, subtyp, glob;
+        reg._1(scorestr); reg._2(typ); reg._3(subtyp); reg._4(glob);
+        int score = 0;
+        if(!scorestr.empty()) score = std::atoi(scorestr.c_str());
+        globs_.push_back(std::make_tuple(score, typ, subtyp, glob));
+      }
+    }
+    break;
+  }
+}
+
+bool FreeDesktopMime::findByPath(std::string &typ, std::string &subtyp, const char *path) {
+  char name[IB_MAX_PATH];
+  ib::platform::basename(name, path);
+  // TODO: scoring
+  for(auto it = globs_.begin(), last = globs_.end(); it != last; ++it) {
+    auto tup  = (*it);
+    auto &glob = std::get<3>(tup);
+    if(fl_filename_match(name, glob.c_str())) {
+      typ = std::get<1>(tup);
+      subtyp = std::get<2>(tup);
+      return true;
+    }
+  }
+  return false;
+}
+
+//}}}
+
 class FreeDesktopThemeRepos : private ib::NonCopyable<FreeDesktopThemeRepos> { // {{{
   public:
     static FreeDesktopThemeRepos *instance_;
@@ -194,7 +260,7 @@ class FreeDesktopThemeRepos : private ib::NonCopyable<FreeDesktopThemeRepos> { /
     FreeDesktopThemeRepos() : indicies_() {};
     void build();
     FreeDesktopKVFile* getTheme(const char *name) const;
-    void findIcon(std::string &result, const char *name, const char *theme, int size);
+    void findIcon(std::string &result, const char *theme, const char *name, int size);
 
   protected:
     std::map<std::string, std::unique_ptr<FreeDesktopKVFile> > indicies_;
@@ -467,8 +533,9 @@ static int xregister_hotkey() {
 int ib::platform::startup_system() { // {{{
    XSetErrorHandler(xerror_handler);
   // TODO get user LANG from ENV.
-  strncpy(ib_g_lang, "UTF-8", 32 - 1);
+  strncpy_s(ib_g_lang, "UTF-8", 32);
   FreeDesktopThemeRepos::init();
+  FreeDesktopMime::init();
   return 0;
 } // }}}
 
@@ -496,6 +563,7 @@ void ib::platform::finalize_system(){ // {{{
   XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root); // both
   
   delete FreeDesktopThemeRepos::inst();
+  delete FreeDesktopMime::inst();
 } // }}}
 
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
@@ -508,7 +576,7 @@ ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
 } // }}}
 
 void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, const char *src) { // {{{
-  strncpy(buf, src, bufsize-1);
+  strncpy_s(buf, src, bufsize);
 } // }}}
 
 char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
@@ -518,7 +586,7 @@ char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
 } // }}}
 
 void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  strncpy(buf, src, bufsize-1);
+  strncpy_s(buf, src, bufsize);
 } // }}}
 
 char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
@@ -528,7 +596,7 @@ char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
 } // }}}
 
 void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  strncpy(buf, src, bufsize-1);
+  strncpy_s(buf, src, bufsize);
 } // }}}
 
 char* ib::platform::utf82local(const char *src) { // {{{
@@ -550,7 +618,7 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
     if(isspace(*tmp)) { need_quote = true; break; }
   }
   if((strlen(str) != 0 && str[0] == '"') || !need_quote) {
-    strncpy(result, str, IB_MAX_PATH-1);
+    strncpy_s(result, str, IB_MAX_PATH);
     return result;
   }
 
@@ -575,7 +643,7 @@ ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *s
   if(len == 0) { result[0] = '\0'; return result; }
   if(len == 1) { strcpy(result, str); return result; }
   if(*str == '"') str++;
-  strncpy(result, str, IB_MAX_PATH-1);
+  strncpy_s(result, str, IB_MAX_PATH);
   len = strlen(result);
   if(result[len-1] == '"') {
     result[len-1] = '\0';
@@ -644,7 +712,6 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       goto finally;
     }
     if(!strparams.empty() || access(path.c_str(), X_OK) == 0) {
-      std::string cmd;
       cmd += path;
       cmd += " ";
       cmd += strparams;
@@ -652,10 +719,10 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   }
 
   ret = system((cmd + " &").c_str());
-  if(ret < 0) {
+  if(ret != 0) {
     std::string message;
     message += "Failed to start ";
-    message += path;
+    message += cmd;
     error.setCode(1);
     error.setMessage(message.c_str());
     goto finally;
@@ -765,11 +832,9 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   return 0;
 } // }}}
 
-void ib::platform::on_command_init(ib::Command *cmd) { // {{{
-  const char *path = cmd->getCommandPath().c_str();
+void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
   static const char *SECTION_KEY = "Desktop Entry";
-
-  if(string_endswith(path, ".desktop")){
+  if(!string_endswith(path, ".desktop")) return;
     FreeDesktopKVFile kvf(path);
     if(kvf.parse() < 0) return; // ignore errors;
 
@@ -795,14 +860,68 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
       cmd->setDescription(normalized);
     }
 
+    auto prop_icon = kvf.get(SECTION_KEY, "Icon");
+    if(!prop_icon.empty()){
+      std::string path;
+      FreeDesktopThemeRepos::inst()->findIcon(path, "Hicolor", prop_icon.c_str(), 32);
+      if(!path.empty()) {
+        cmd->setIconFile(path);
+      }
+    }
+
     if(prop_type == "Application") {
       auto prop_path = kvf.get(SECTION_KEY, "Path");
       if(!prop_path.empty()){
         cmd->setWorkdir(prop_path);
       }
+      auto prop_exec = kvf.get(SECTION_KEY, "Exec");
+      if(!prop_exec.empty()) {
+        std::vector<ib::unique_oschar_ptr> cmdline;
+        std::string command;
+        parse_cmdline(cmdline, prop_exec.c_str());
+        if(cmdline.size() != 0) {
+          if(!string_startswith(cmdline.at(0).get(), "/")) {
+              ib::oschar abs[IB_MAX_PATH];
+              if(ib::platform::which(abs, cmdline.at(0).get())) {
+                cmd->setCommandPath(abs);
+              }
+          } else {
+            cmd->setCommandPath(cmdline.at(0).get());
+          }
+          ib::oschar quoted[IB_MAX_PATH];
+          auto it = cmdline.begin();
+          it++;
+          int argc = 0;
+          for(auto last = cmdline.end(); it != last; ++it){
+            command += " ";
+            const ib::oschar *v = it->get();
+            if(strcmp(v, "%f") == 0 || strcmp(v, "%F") == 0 || strcmp(v, "%u") == 0 ||
+               strcmp(v, "%U") == 0){
+              snprintf(quoted, IB_MAX_PATH, "${%d}",  ++argc);
+            } else if(strcmp(v, "%i") == 0 && !prop_icon.empty()) {
+              ib::platform::quote_string(quoted, prop_icon.c_str());
+            } else if(strcmp(v, "%c") == 0) {
+              ib::platform::quote_string(quoted, prop_name.c_str());
+            } else if(strcmp(v, "%k") == 0) {
+              ib::platform::quote_string(quoted, path);
+            }else{
+              ib::platform::quote_string(quoted, v);
+            }
+            command += quoted;
+          }
+        }
+        cmd->setPath(command);
+      }
     } else if(prop_type == "Directory") {
     } else if(prop_type == "Link") {
     }
+} // }}}
+
+void ib::platform::on_command_init(ib::Command *cmd) { // {{{
+  const char *path = cmd->getCommandPath().c_str();
+
+  if(string_endswith(path, ".desktop")){
+    desktop_entry2command(cmd, path);
   }
 } // }}}
 
@@ -816,6 +935,34 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
 // path functions {{{
 //////////////////////////////////////////////////
 Fl_RGB_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const int size){ // {{{
+  auto repos = FreeDesktopThemeRepos::inst();
+  std::string iconpath;
+
+  if(ib::platform::directory_exists(path)) {
+    repos->findIcon(iconpath, "Hicolor", "folder", size);
+  }
+
+  if(iconpath.empty() && string_endswith(path, ".desktop")){
+    FreeDesktopKVFile kvf(path);
+    if(kvf.parse() == 0) {
+      auto prop_icon = kvf.get("Desktop Entry", "Icon");
+      repos->findIcon(iconpath, "Hicolor", prop_icon.c_str(), size);
+    }
+  }
+
+  if(iconpath.empty()){
+    std::string mtype, msubtype;
+    if(FreeDesktopMime::inst()->findByPath(mtype, msubtype, path)) {
+      repos->findIcon(iconpath, "Hicolor", msubtype.c_str(), size);
+      if(iconpath.empty()) {
+        repos->findIcon(iconpath, "Hicolor", (mtype + "-" + msubtype).c_str(), size);
+      }
+    }
+  }
+
+  if(!iconpath.empty() && ib::platform::file_exists(iconpath.c_str())) {
+    return ib::IconManager::inst()->readFileIcon(iconpath.c_str(), size);
+  }
   return 0;
 } /* }}} */
 
@@ -823,7 +970,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  strncpy(result, parent, IB_MAX_PATH-1);
+  strncpy_s(result, parent, IB_MAX_PATH);
   std::size_t length = strlen(result);
   const ib::oschar *sep;
   if(result[length-1] != '/') {
@@ -842,7 +989,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   ib::oschar tmp[IB_MAX_PATH];
   bool is_dot_path = string_startswith(path, "./") || strcmp(path, ".") == 0;
   bool is_dot_dot_path = string_startswith(path, "../") || strcmp(path, "..") == 0;
-  strncpy(tmp, path, IB_MAX_PATH-1);
+  strncpy_s(tmp, path, IB_MAX_PATH);
   if(is_dot_path){
     tmp[0] = '_';
   }else if(is_dot_dot_path){
@@ -903,9 +1050,9 @@ ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ /
 ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
-  strncpy(tmp, path, IB_MAX_PATH-1);
+  strncpy_s(tmp, path, IB_MAX_PATH);
   const char *basename = fl_filename_name(tmp);
-  strncpy(result, basename, IB_MAX_PATH-1);
+  strncpy_s(result, basename, IB_MAX_PATH);
   return result;
 } // }}}
 
@@ -914,21 +1061,17 @@ ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar 
   if(ib::platform::is_relative_path(path)){
     ib::platform::normalize_join_path(result, dir, path);
   } else {
-    strncpy(result, path, IB_MAX_PATH-1);
+    strncpy_s(result, path, IB_MAX_PATH);
   }
   return result;
 } // }}}
 
 bool ib::platform::is_directory(const ib::oschar *path) { // {{{
-  const std::size_t length = strlen(path);
-  return (path[length-1] == '/' || fl_filename_isdir(path) != 0);
+  return (string_endswith(path, "/") || fl_filename_isdir(path) != 0);
 } // }}}
 
 bool ib::platform::is_path(const ib::oschar *str){ // {{{
-  const std::size_t length = strlen(str);
-  return (length > 0 && str[0] == '/') || 
-         (length > 1 && str[0] == '.' && str[1] == '/') ||
-         (length > 2 && str[0] == '.' && str[1] == '.' && str[2] == '/');
+  return string_startswith(str, "/") || string_startswith(str, "./") || string_startswith(str, "../");
 } // }}}
 
 bool ib::platform::is_relative_path(const ib::oschar *path) { // {{{
@@ -941,7 +1084,7 @@ bool ib::platform::is_relative_path(const ib::oschar *path) { // {{{
 } // }}}
 
 bool ib::platform::directory_exists(const ib::oschar *path) { // {{{
-  return fl_filename_isdir(path) ? true : false;
+  return fl_filename_isdir(path);
 } // }}}
 
 bool ib::platform::file_exists(const ib::oschar *path) { // {{{
@@ -1031,21 +1174,35 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
   for (ptr = filename, end = filename + filesize - 1; *path; path ++) {
     if (*path == ':') {
       if (ptr > filename && ptr[-1] != '/' && ptr < end) *ptr++ = '/';
-      strncpy(ptr, program, end - ptr);
+      strncpy_s(ptr, program, end - ptr + 1);
       if (!access(filename, X_OK)) return true;
       ptr = filename;
     } else if (ptr < end) *ptr++ = *path;
   }
   if (ptr > filename) {
     if (ptr[-1] != '/' && ptr < end) *ptr++ = '/';
-    strncpy(ptr, program, end - ptr);
+    strncpy_s(ptr, program, end - ptr + 1);
     if (!access(filename, X_OK)) return true;
   }
   return false;
 } // }}}
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
-  return NULL;
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  ib::oschar file_type[IB_MAX_PATH];
+  ib::platform::file_type(file_type, path);
+  if(ib::platform::directory_exists(path)) {
+    strncpy_s(result, ":folder:common:", IB_MAX_PATH);
+  } else if(string_endswith(path, ".desktop")) {
+    strncpy_s(result, path, IB_MAX_PATH);
+  } else if(strlen(file_type) > 0) {
+    snprintf(result, IB_MAX_PATH, ":filetype:%s", file_type);
+  } else if(access(path, X_OK) == 0) {
+    snprintf(result, IB_MAX_PATH, ":filetype:executable");
+  } else {
+    snprintf(result, IB_MAX_PATH, ":filetype:file");
+  }
+  return result;
 } // }}}
 
 //////////////////////////////////////////////////

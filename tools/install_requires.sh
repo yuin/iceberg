@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OLD_PWD=`pwd`; cd $(dirname $(dirname $0)); BASE_DIR=`pwd`; cd ${OLD_PWD}
-source ${BASE_DIR}/tool/common.sh
+source ${BASE_DIR}/tools/common.sh
 
 if [ ! -d "${BASE_DIR}/ext/fltk-1.3.2" ]; then
   echo "Downloading FLTK 1.3.2"
@@ -45,6 +45,18 @@ if [ ! -d "${BASE_DIR}/ext/lua-5.1.4" ]; then
   fi
 else
   echo "Lua 5.1.4: installed"
+fi
+
+if [ ! -d "${BASE_DIR}/ext/nanosvg-master" ]; then
+  echo "Downloading "
+  cd ${BASE_DIR}/ext/
+  wget --no-check-certificate https://github.com/memononen/nanosvg/archive/master.zip -O nanosvg.zip
+  
+  echo "explode nanosvg"
+  unzip nanosvg.zip
+  rm -f nanosvg.zip
+else
+  echo "nanosvg: installed"
 fi
 
 if [ ! -d "${BASE_DIR}/ext/luasocket-2.0.2" ]; then

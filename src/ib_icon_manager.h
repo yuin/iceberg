@@ -616,6 +616,8 @@ namespace ib{
       Fl_RGB_Image* readPngFileIcon(const char *png_file, const int size);
       Fl_RGB_Image* readJpegFileIcon(const char *jpeg_file, const int size);
       Fl_RGB_Image* readGifFileIcon(const char *gif_file, const int size);
+      Fl_RGB_Image* readSvgFileIcon(const char *svg_file, const int size);
+      Fl_RGB_Image* readXpmFileIcon(const char *xpm_file, const int size);
       Fl_RGB_Image* readFileIcon(const char *file, const int size);
       Fl_RGB_Image* getEmptyIcon(const int width, const int height);
       Fl_RGB_Image* getLuaIcon(const int size);

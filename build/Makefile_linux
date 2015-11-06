@@ -14,6 +14,7 @@
 # libxft-dev
 # libonig-dev
 # libmigemo-dev
+# libmagic-dev
 
 COMMONHEADS	= $(shell find src -name '*h' -not -name '*win*')
 COMMONSRCS	= $(shell find src -name '*cpp' -not -name '*iceberg*' -not -name '*win*')
@@ -52,7 +53,7 @@ FLTK_LDFLAGS=$(shell ./ext/fltk-1.3.2/fltk-config --ldflags)
 CC=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
 LD=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
 
-CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc $(DEBUG) -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x
+CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc -I./ext/nanosvg-master/src $(DEBUG) -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x
 
 LDFLAGS=$(LUA_DIR)/src/liblua.a -lfltk_images $(FLTK_LDFLAGS) -lpng -ljpeg -lz -lonig
 

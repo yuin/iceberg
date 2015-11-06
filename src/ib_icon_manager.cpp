@@ -4,6 +4,7 @@
 #include "ib_ui.h"
 #include "ib_regex.h"
 #include "ib_config.h"
+#include "ib_svg.h"
 
 ib::IconManager *ib::IconManager::instance_ = 0;
 
@@ -228,6 +229,25 @@ Fl_RGB_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int s
   return result_image;
 } // }}}
 
+Fl_RGB_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(svg_file));
+  unsigned char *buf = ib::rasterize_svg_file(svg_file, size);
+  if(buf == 0) return 0;
+  Fl_RGB_Image *result_image = new Fl_RGB_Image(buf, size, size, 4);
+  return result_image;
+} // }}}
+
+Fl_RGB_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(xpm_file));
+  Fl_XPM_Image *tmp_image = new Fl_XPM_Image(lopath.get());
+  Fl_RGB_Image *result_image;
+  result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
+  delete tmp_image;
+  return result_image;
+} // }}}
+
 Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ // {{{
   ib::Regex re("(.*)\\.(\\w+)", ib::Regex::NONE);
   re.init();
@@ -240,6 +260,10 @@ Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ /
       return readGifFileIcon(file, size);
     }else if(ret == "jpg" || ret == "JPG" || ret == "jpeg" || ret == "JPEG") {
       return readJpegFileIcon(file, size);
+    } else if(ret == "svg" || ret == "SVG"){
+      return readSvgFileIcon(file, size);
+    } else if(ret == "xpm" || ret == "XPM"){
+      return readXpmFileIcon(file, size);
     }
   }
   return getAssociatedIcon(file, size, true);
