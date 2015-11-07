@@ -107,6 +107,7 @@ namespace ib{
       void group(std::string &ret, const int n) const {
         if(n >= region_->num_regs) { return; }
         const char *string = getString();
+        ret.clear();
         ret.append(string+region_->beg[n], region_->end[n] - region_->beg[n]);
       };
       void _0(std::string &ret) const { return group(ret, 0); }

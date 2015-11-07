@@ -4,12 +4,14 @@
 #include "ib_constants.h"
 
 #ifdef DEBUG
+#ifdef IB_OS_WIN
 void *__my_malloc(size_t size);
 void __my_free(void *ptr);
 void *operator new(size_t size);
 void operator delete(void *p);
 #define malloc(size) __my_malloc(size)
 #define free(ptr) __my_free(ptr)
+#endif
 #endif
 
 namespace ib {
@@ -141,7 +143,7 @@ namespace ib {
 
   class FlScopedLock : private NonCopyable<FlScopedLock> { // {{{
     public:
-      FlScopedLock () { printf("fllock-1\n");Fl::lock();printf("fllock-2\n"); }
+      FlScopedLock () { Fl::lock(); }
       ~FlScopedLock();
   }; // }}}
 

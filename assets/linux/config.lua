@@ -7,6 +7,7 @@ local ibs = require("icebergsupport")
 system = {
   default_search_path_depth = 2,
   enable_icons = true,
+  icon_theme = "nuoveXT.2.2",
   max_cached_icons = 999999,
   key_event_threshold = 500,
   max_histories = 500,
@@ -79,7 +80,6 @@ styles = {
 
 commands = { 
   home = {path = os.getenv("HOME"), description="Home directory"},
-  gvim = {path = "/usr/share/applications/gvim.desktop", description="gvim"},
 
   -- default commands --
   [":version"] = {path = function(args) ibs.message(ibs.version()) end, description="show iceberg version", history=false},
@@ -137,33 +137,7 @@ commands = {
       func()
       ibs.set_result_text(ret)
       return 0
-    end, description = "inline calculator", history = false},
-  clipboard = {
-    path = function(args)
-      if #args == 0 then return end
-      local ok, r = ibs.regex_match([[\(([0-9]+)\).*]], Regex.NONE, args[1])
-      if ok then
-        ibs.set_clipboard(ibs.get_clipboard_histories()[tonumber(r:_1())])
-      end
-      return 0
-    end,
-    completion = function(values)
-        local candidates = {}
-        for i, text in ipairs(ibs.get_clipboard_histories()) do
-          local value = ibs.regex_gsub("\n", Regex.NONE, text, " ")
-          value = ibs.regex_gsub("\t", Regex.NONE, value, "    ")
-          local ok, r = ibs.regex_match("(.{50})(.*)", Regex.NONE, value)
-          if ok then
-            value = r:_1() .. " ... "
-          end
-          value = "(" .. tostring(i) .. ") : " .. value
-          table.insert(candidates, value)
-        end
-        return candidates
-    end,
-    description = "clipboard history",
-    history = false
-  }
+    end, description = "inline calculator", history = false}
 }
 
 shortcuts = {

@@ -13,6 +13,7 @@
 
 // DEBUG {{{
 #ifdef DEBUG 
+#ifdef IB_OS_WIN
 #undef malloc
 #undef free
 static long __malloc_count = 0;
@@ -36,14 +37,16 @@ void operator delete(void *p) noexcept { __my_free(p); }
 #define malloc(size) __my_malloc(size)
 #define free(ptr) __my_free(ptr)
 #endif
+#endif
 // }}}
 
 long ib::utils::malloc_count() { // {{{
 #ifdef DEBUG 
+#ifdef IB_OS_WIN
   return __malloc_count;
-#else
-  return 0;
 #endif
+#endif
+  return 0;
 } // }}}
 
 void ib::utils::exit_application(const int code) { // {{{
@@ -86,13 +89,12 @@ void ib::utils::reboot_application() { // {{{
   char options[32];
   snprintf(options, 32, "%d", ib::platform::get_pid());
   params.push_back(ib::unique_string_ptr(new std::string(options)));
-#ifndef IB_OS
-  params.push_back(ib::unique_string_ptr(new std::string("&")));
-#endif
 
   auto &cfg = ib::Config::inst();
   ib::Error error;
+  ib::Server::inst().shutdown();
   if(ib::platform::shell_execute(cfg.getSelfPath(), params, cfg.getInitialWorkdir(), error) != 0) {
+    ib::Server::inst().start(error);
     fl_alert("%s", error.getMessage().c_str());
   }else{
     ib::utils::exit_application(0);

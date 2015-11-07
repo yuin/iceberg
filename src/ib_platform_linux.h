@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dlfcn.h>
+#include <signal.h>
 #include <pthread.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>

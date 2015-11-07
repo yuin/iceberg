@@ -22,6 +22,10 @@ namespace ib {
       bool getEnableIcons() const { return enable_icons_; }
       void setEnableIcons(const bool value){ enable_icons_ = value; }
 
+      const std::string& getIconTheme() const { return icon_theme_; }
+      void setIconTheme(const std::string &value){ icon_theme_ = value; }
+      void setIconTheme(const char *value){ icon_theme_ = value; }
+
       unsigned int getMaxCachedIcons() const { return max_cached_icons_; }
       void setMaxCachedIcons(const unsigned int value){ max_cached_icons_ = value; }
 
@@ -231,6 +235,7 @@ namespace ib {
       Config() :
         default_search_path_depth_(5),
         enable_icons_(true),
+        icon_theme_("Hicolor"),
         max_cached_icons_(1000),
         key_event_threshold_(200),
         max_histories_(200),
@@ -304,6 +309,7 @@ namespace ib {
 
       unsigned int default_search_path_depth_;
       bool         enable_icons_;
+      std::string  icon_theme_;
       unsigned int max_cached_icons_;
       unsigned int key_event_threshold_;
       unsigned int max_histories_;

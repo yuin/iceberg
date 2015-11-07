@@ -294,6 +294,10 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
        cfg.setEnableIcons(lua_toboolean(IB_LUA, -1) != 0);
     }
     lua_pop(IB_LUA, 1);
+    GET_FIELD("icon_theme", string) {
+      cfg.setIconTheme(lua_tostring(IB_LUA, -1));
+    }
+    lua_pop(IB_LUA, 1);
     GET_FIELD("max_cached_icons", number) {
        READ_UNSIGNED_INT_M("max_cached_icons", 1000000000);
        cfg.setMaxCachedIcons(number);
@@ -800,6 +804,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
           ib::platform::oschar2utf8_b(quoted_path, IB_MAX_PATH_BYTE, tmp_path);
           command->setPath(quoted_path);
           command->init();
+          ib::platform::on_command_init(command);
           commands.push_back(command);
         }
       }
@@ -846,6 +851,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     ofs << (*it)->getRawWorkdir() << std::endl;
     ofs << (*it)->getDescription() << std::endl;
     ofs << (*it)->getCommandPath() << std::endl;
+    ofs << (*it)->getIconFile() << std::endl;
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
@@ -876,6 +882,8 @@ void ib::Controller::loadCachedCommands() {
     cmd->setDescription(buf);
     getline(ifs, buf);
     cmd->setCommandPath(buf);
+    getline(ifs, buf);
+    cmd->setIconFile(buf);
     cmd->setInitialized(true);
     addCommand(cmd->getName(), cmd);
   }

@@ -419,7 +419,7 @@ iceberg操作
 
 .. lua:function:: icebergsupport.get_clipboard_histories()
 
-   クリップボードの履歴文字列のリストを返します。
+   クリップボードの履歴文字列のリストを返します(この関数はWindowsでのみサポートされます)。
 
    :returns: [string:クリップボード文字列]
 

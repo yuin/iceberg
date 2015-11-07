@@ -192,7 +192,6 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
     std::map<std::tuple<std::string, std::string>, std::string> map_;
 }; // }}}
 
-
 class FreeDesktopMime: private ib::NonCopyable<FreeDesktopMime> { // {{{
   public:
     static FreeDesktopMime *instance_;
@@ -285,7 +284,8 @@ class FreeDesktopIconFinder : private ib::NonCopyable<FreeDesktopIconFinder> { /
 };
 
 void FreeDesktopIconFinder::find(std::string &result) {
-  findHelper(result, "Lubuntu");
+  const char *theme = ib::Config::inst().getIconTheme().c_str();
+  findHelper(result, theme);
   if(!result.empty()) return;
   findHelper(result, "Hicolor");
   if(!result.empty()) return;
@@ -365,7 +365,7 @@ std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySize
   int size, min, max, th = 0;
   auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
   if(kvf != NULL) {
-    auto typ = kvf->get(dir, "Type", false);
+    typ = kvf->get(dir, "Type", false);
     if(typ.empty()) typ = "Threshold";
     size = std::atoi(kvf->get(dir, "Size", false).c_str());
     min = size;
@@ -385,7 +385,7 @@ std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySize
 
 bool FreeDesktopIconFinder::directoryMatchSize(const char *dir, const char *theme) {
   auto sizedata = getDirectorySizes(dir, theme);
-  auto &typ = std::get<0>(sizedata);
+  auto typ = std::get<0>(sizedata);
   auto size = std::get<1>(sizedata);
   auto min = std::get<2>(sizedata);
   auto max = std::get<3>(sizedata);
@@ -493,7 +493,6 @@ static int xerror_handler(Display* d, XErrorEvent* e) {
   sprintf(buf1, "XRequest.%d", e->request_code);
   XGetErrorDatabaseText(d,"",buf1,buf1,buf2,128);
   XGetErrorText(d, e->error_code, buf1, 128);
-  //Fl::warning("%s: %s: %s 0x%lx", program_name, buf2, buf1, e->resourceid);
   printf("xerror: %s(%d): %s 0x%lx\n", buf2, e->error_code, buf1, e->resourceid);
   return 0;
 }
@@ -526,12 +525,19 @@ static int xregister_hotkey() {
   XGrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root, 1, GrabModeAsync, GrabModeAsync); // both
   return 0;
 }
+
+void signal_handler(int s){
+  ib::utils::exit_application(0);
+}
+
 //////////////////////////////////////////////////
 // }}}
 //////////////////////////////////////////////////
 
 int ib::platform::startup_system() { // {{{
-   XSetErrorHandler(xerror_handler);
+  XSetErrorHandler(xerror_handler);
+  signal( SIGINT, signal_handler );
+  signal( SIGTERM, signal_handler );
   // TODO get user LANG from ENV.
   strncpy_s(ib_g_lang, "UTF-8", 32);
   FreeDesktopThemeRepos::init();
@@ -690,6 +696,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, ib::Error &error) { // {{{
   std::string cmd;
   int ret;
+  // TODO quote and escape
 
   ib::oschar wd[IB_MAX_PATH];
   ib::platform::get_current_workdir(wd);
@@ -715,7 +722,11 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       cmd += path;
       cmd += " ";
       cmd += strparams;
-    }
+    } else {
+      cmd += "xdg-open '";
+      cmd += path;
+      cmd += "'";
+      }
   }
 
   ret = system((cmd + " &").c_str());
@@ -863,7 +874,8 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
     auto prop_icon = kvf.get(SECTION_KEY, "Icon");
     if(!prop_icon.empty()){
       std::string path;
-      FreeDesktopThemeRepos::inst()->findIcon(path, "Hicolor", prop_icon.c_str(), 32);
+      const char *theme = ib::Config::inst().getIconTheme().c_str();
+      FreeDesktopThemeRepos::inst()->findIcon(path, theme, prop_icon.c_str(), 32);
       if(!path.empty()) {
         cmd->setIconFile(path);
       }
@@ -937,27 +949,36 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
 Fl_RGB_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const int size){ // {{{
   auto repos = FreeDesktopThemeRepos::inst();
   std::string iconpath;
+  bool isdir = ib::platform::directory_exists(path);
+  const char *theme = ib::Config::inst().getIconTheme().c_str();
 
-  if(ib::platform::directory_exists(path)) {
-    repos->findIcon(iconpath, "Hicolor", "folder", size);
+  if(isdir) {
+    repos->findIcon(iconpath, theme, "folder", size);
   }
 
   if(iconpath.empty() && string_endswith(path, ".desktop")){
     FreeDesktopKVFile kvf(path);
     if(kvf.parse() == 0) {
       auto prop_icon = kvf.get("Desktop Entry", "Icon");
-      repos->findIcon(iconpath, "Hicolor", prop_icon.c_str(), size);
+      repos->findIcon(iconpath, theme, prop_icon.c_str(), size);
     }
   }
 
   if(iconpath.empty()){
     std::string mtype, msubtype;
     if(FreeDesktopMime::inst()->findByPath(mtype, msubtype, path)) {
-      repos->findIcon(iconpath, "Hicolor", msubtype.c_str(), size);
+      repos->findIcon(iconpath, theme, msubtype.c_str(), size);
       if(iconpath.empty()) {
-        repos->findIcon(iconpath, "Hicolor", (mtype + "-" + msubtype).c_str(), size);
+        repos->findIcon(iconpath, theme, (mtype + "-" + msubtype).c_str(), size);
+        if(iconpath.empty()) {
+          repos->findIcon(iconpath, theme, ("gnome-mime-" + mtype + "-" + msubtype).c_str(), size);
+        }
       }
     }
+  }
+
+  if(iconpath.empty() && !isdir){
+    repos->findIcon(iconpath, theme, "misc", size);
   }
 
   if(!iconpath.empty() && ib::platform::file_exists(iconpath.c_str())) {
@@ -970,7 +991,6 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  strncpy_s(result, parent, IB_MAX_PATH);
   std::size_t length = strlen(result);
   const ib::oschar *sep;
   if(result[length-1] != '/') {
@@ -978,8 +998,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   }else{
     sep = "";
   }
-  strncat(result, sep, IB_MAX_PATH-length);
-  strncat(result, child, IB_MAX_PATH-length-1);
+  snprintf(result, IB_MAX_PATH, "%s%s%s", parent, sep, child);
   return result;
 } // }}}
 
@@ -1034,7 +1053,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  strcpy(result, path);
+  strncpy_s(result, path, IB_MAX_PATH);
   const std::size_t len = strlen(path);
   if(len == 0) return result;
   std::size_t i = len -1;
@@ -1381,9 +1400,14 @@ int ib::platform::get_pid() { // {{{
 // dynamic loading functions {{{
 //////////////////////////////////////////////////
 int ib::platform::load_library(ib::module &dl, const ib::oschar *name, ib::Error &error) { // {{{
-  dl = dlopen(name, RTLD_LAZY);
+  std::string lib;
+  lib += "lib";
+  lib += name;
+  lib += ".so";
+  dl = dlopen(lib.c_str(), RTLD_LAZY);
   if(dl == 0) {
     error.setMessage(dlerror());
+    std::cout << error.getMessage() << std::endl;
     error.setCode(1);
     return 1;
   }

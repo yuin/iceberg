@@ -24,6 +24,7 @@ static void ib_window_callback(Fl_Widget* w){ // {{{
 #ifdef __GNUC__
 __attribute__ ((destructor)) void after_main() { // {{{
 #ifdef DEBUG
+#ifdef IB_OS_WIN
   // simple memory leaak check tool...
   std::cout << "\n\n=====================================" << std::endl;
   long ignore = 12;
@@ -34,10 +35,13 @@ __attribute__ ((destructor)) void after_main() { // {{{
   }
   std::cout << "=====================================" << std::endl;
 #endif
+#endif
 } // }}}
 
 __attribute__ ((constructor)) void pre_main() { // {{{
 #ifdef DEBUG
+#ifdef IB_OS_WIN
+#endif
 #endif
 } // }}}
 #endif
