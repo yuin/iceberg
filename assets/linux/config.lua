@@ -27,7 +27,7 @@ system = {
   kill_word_key = "ctrl-w",
 
   search_path = {
-    {category="shortcuts", path = dot_iceberg .. [[\shortcuts]], depth = 5, pattern=[[^.*\.(desktop)$]]},
+    {category="shortcuts", path = dot_iceberg .. [[/shortcuts]], depth = 5, pattern=[[^.*\.(desktop)$]]},
     {category="applications(usr/share)", path = [[/usr/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]},
     {category="applications(usr/local)", path = [[/usr/local/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]}
   },

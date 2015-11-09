@@ -1018,9 +1018,8 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   sep.init();
   std::vector<std::string*> parts;
   std::vector<std::string*>  st;
-  sep.split(parts, path);
+  sep.split(parts, tmp);
   for(auto part : parts) {
-    if(*part == ".") continue;
     if(*part == ".." && st.size() > 0){
       st.pop_back();
     } else {
@@ -1031,7 +1030,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
     strcat(result, part->c_str());
     strcat(result, "/");
   }
-  if(path[strlen(path)-1] != '/') {
+  if(!string_endswith(path, "/")) {
     result[strlen(result)-1] = '\0';
   }
   if(is_dot_path){
@@ -1156,10 +1155,13 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
 
 ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  std::size_t ret = readlink("/proc/self/exe", result, IB_MAX_PATH-1);
+  char buf[64];
+  snprintf(buf, 64, "/proc/%d/exe", getpid());
+  std::size_t ret = readlink(buf, result, IB_MAX_PATH-1);
   if(ret < 0) {
     fl_alert("Failed to get self path.");
   }
+  result[ret] = '\0';
   return result;
 } // }}}
 
