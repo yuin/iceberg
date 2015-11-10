@@ -9,14 +9,13 @@ system = {
   enable_icons = true,
   icon_theme = "nuoveXT.2.2",
   max_cached_icons = 999999,
-  key_event_threshold = 500,
+  key_event_threshold = 0,
   max_histories = 500,
   max_candidates = 15,
-  max_clipboard_histories = 15,
   history_factor = 0.8,
   file_browser = [[/usr/bin/pcmanfm ${1}]],
   server_port = 4501,
-  path_autocomplete = true,
+  path_autocomplete = false,
   option_autocomplete = true,
 
   hot_key = "f12",
@@ -45,8 +44,8 @@ styles = {
   window_boxtype = ibs.BOXTYPE_BORDER_BOX, 
   window_posx  = nil,
   window_posy  = nil,
-  window_width = 300,
-  window_height = 40,
+  window_width = 400,
+  window_height = 50,
   window_padx  = 7,
   window_pady  = 7,
   window_bg_color = {238, 238, 238},
@@ -55,7 +54,7 @@ styles = {
 
   input_boxtype = ibs.BOXTYPE_FLAT_BOX,
   input_font  = "Sans",
-  input_font_size  = 14,
+  input_font_size  = 24,
   input_font_color  = {238, 238, 238},
   input_bg_color  = {33, 33, 33},
   input_selection_bg_color = {99,99,99},
@@ -137,7 +136,31 @@ commands = {
       func()
       ibs.set_result_text(ret)
       return 0
-    end, description = "inline calculator", history = false}
+    end, description = "inline calculator", history = false},
+
+  -- linux default commands --
+  locate = { path = function(args)
+      local index = ibs.selected_index()
+      if index > 0 then
+        local value = commands.locate._list[index]
+        ibs.shell_execute(value.description)
+      end
+      commands.locate._list = {}
+    end, 
+    completion = function(values)
+      commands.locate._list = {}
+      if #values == 0 or values[1] == "" then return commands.locate._list end
+      local ok, stdout, stderr =  ibs.command_output([[locate ]] .. ibs.quote_path(values[1]) .. [[ -l 20]])
+      if ok then
+        local lines = ibs.regex_split("\n", Regex.NONE, ibs.local2utf8(stdout))
+        for i, line in ipairs(lines) do
+          if line ~= "" then
+            table.insert(commands.locate._list, {value=ibs.basename(line), description=line, icon=line, always_match=true})
+          end
+        end
+      end
+      return commands.locate._list
+    end, decription = "search files", history = false}
 }
 
 shortcuts = {

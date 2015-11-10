@@ -728,6 +728,13 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   ib::platform::quote_string(quoted_path, path.c_str());
   int ret;
 
+  if(ib::platform::directory_exists(path.c_str())) {
+    if(ib::utils::open_directory(path, error) != 0) {
+      return -1;
+    }
+    return 0;
+  }
+
   ib::oschar wd[IB_MAX_PATH];
   ib::platform::get_current_workdir(wd);
   if(ib::platform::set_current_workdir(cwd.c_str(), error) != 0) {

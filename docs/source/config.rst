@@ -119,6 +119,9 @@ systemグローバル変数
           -- 補完候補のアイコンを表示するか(true:する, false:しない) --
           enable_icons = true,
 
+          -- アイコンテーマ名:Linuxでのみ有効 --
+          icon_theme = "nuoveXT.2.2",
+
           -- 補完候補のアイコンのキャッシュ数 -- 
           max_cached_icons = 9999,
 
@@ -133,7 +136,7 @@ systemグローバル変数
           -- 補完候補の表示数 -- 
           max_candidates = 15,
 
-          -- クリップボード履歴の保存数 -- 
+          -- クリップボード履歴の保存数:Windowsでのみ有効 -- 
           max_clipboard_histories = 15,
 
           -- 補完候補ソート時のヒストリの影響度合い(0.0~1.0)
