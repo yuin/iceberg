@@ -15,7 +15,7 @@ system = {
   max_clipboard_histories = 15,
   history_factor = 0.8,
   file_browser = [[/usr/bin/pcmanfm ${1}]],
-  server_port = 40000,
+  server_port = 4501,
   path_autocomplete = true,
   option_autocomplete = true,
 

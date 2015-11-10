@@ -193,7 +193,7 @@ void ib::Controller::showApplication() { // {{{
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   ib::Config &cfg = ib::Config::inst();
   ib::Error error;
-  
+
   const char *usage = "Usage: iceberg.exe [-c CONFIG_FILE] [-m message]";
   for(int i = 0; i < argc; ++i) {
     int error = 0;

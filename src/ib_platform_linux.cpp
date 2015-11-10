@@ -56,7 +56,7 @@ static void normalize_desktop_entry_value(std::string &result, std::string &valu
 static int read_fd_all(int fd, std::string &out) {
   char buf[1024];
   do{
-    ssize_t ret = read(fd, buf, 1024);
+    ssize_t ret = read(fd, buf, 1023);
     if(ret < 0) {
       return -1;
     } else {
@@ -104,6 +104,31 @@ static void set_errno(ib::Error &error) {
   char buf[1024];
   error.setMessage(strerror_r(errno, buf, 1024));
   error.setCode(errno);
+}
+
+static bool xdg_mime_filetype(std::string &result, const char *path, ib::Error &e) {
+  std::string out, err;
+  char quoted[IB_MAX_PATH];
+  ib::platform::quote_string(quoted, path);
+  if(ib::platform::command_output(out, err, ("xdg-mime query filetype " + std::string(quoted)).c_str(), e) == 0) {
+    ib::Regex re("([^;]+);.*", ib::Regex::NONE);
+    re.init();
+    if(re.match(out) == 0) {
+      re._1(result);
+      return true;
+    }
+  }
+  return false;
+}
+
+
+static bool xdg_mime_default_app(std::string &result, const char *mime, ib::Error &e) {
+  std::string out, err;
+  if(ib::platform::command_output(out, err, ("xdg-mime query default " + std::string(mime)).c_str(), e) == 0) {
+    result = out;
+    return true;
+  }
+  return false;
 }
 
 // }}}
@@ -235,7 +260,11 @@ void FreeDesktopMime::build() {
 bool FreeDesktopMime::findByPath(std::string &typ, std::string &subtyp, const char *path) {
   char name[IB_MAX_PATH];
   ib::platform::basename(name, path);
-  // TODO: scoring
+  if(ib::platform::directory_exists(path)) {
+    typ = "inode";
+    subtyp = "directory";
+    return true;
+  }
   for(auto it = globs_.begin(), last = globs_.end(); it != last; ++it) {
     auto tup  = (*it);
     auto &glob = std::get<3>(tup);
@@ -695,8 +724,9 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, ib::Error &error) { // {{{
   std::string cmd;
+  ib::oschar quoted_path[IB_MAX_PATH];
+  ib::platform::quote_string(quoted_path, path.c_str());
   int ret;
-  // TODO quote and escape
 
   ib::oschar wd[IB_MAX_PATH];
   ib::platform::get_current_workdir(wd);
@@ -708,9 +738,9 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   proto_reg.init();
   ret = 0;
   if(proto_reg.match(path) == 0){
-    cmd += "xdg-open '";
+    cmd += "xdg-open ";
     cmd += path;
-    cmd += "' ";
+    cmd += " ";
     cmd += strparams;
   } else {
     if(-1 == access(path.c_str(), R_OK)) {
@@ -719,23 +749,47 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       goto finally;
     }
     if(!strparams.empty() || access(path.c_str(), X_OK) == 0) {
-      cmd += path;
+      cmd += quoted_path;
       cmd += " ";
       cmd += strparams;
     } else {
-      cmd += "xdg-open '";
-      cmd += path;
-      cmd += "'";
+      std::string mime, app;
+      if(!xdg_mime_filetype(mime, quoted_path, error)) {
+        ret = -1;
+        goto finally;
       }
+      if(!mime.empty()) {
+        if(!xdg_mime_default_app(app, mime.c_str(), error)) {
+            ret = -1;
+            goto finally;
+        }
+        if(app.empty()){
+          std::ostringstream message;
+          message << "No associated applications found for " << quoted_path << " (mimetype: " << mime << ").";
+          error.setCode(1);
+          error.setMessage(message.str().c_str());
+          ret = -1;
+          goto finally;
+        }
+      } else {
+        std::ostringstream message;
+        message << "No mime types found for "<<quoted_path;
+        error.setCode(1);
+        error.setMessage(message.str().c_str());
+        ret = -1;
+        goto finally;
+      }
+      cmd += "xdg-open ";
+      cmd += quoted_path;
+    }
   }
 
   ret = system((cmd + " &").c_str());
   if(ret != 0) {
-    std::string message;
-    message += "Failed to start ";
-    message += cmd;
+    std::ostringstream message;
+    message << "Failed to start " << cmd;
     error.setCode(1);
-    error.setMessage(message.c_str());
+    error.setMessage(message.str().c_str());
     goto finally;
   }
 
@@ -769,9 +823,9 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
   int outfd[2];
+  int efd[2];
   int infd[2];
-  int einfd[2];
-  int oldstdin, oldstdout, oldstderr;
+  pid_t pid;
 
   std::vector<ib::unique_char_ptr> argv;
   if(parse_cmdline(argv, cmd) != 0) {
@@ -785,52 +839,53 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   }
   cargv[argv.size()] = NULL;
 
-  if(pipe(outfd) != 0 || pipe(infd) != 0 || pipe(einfd) != 0) {
+  if(pipe(outfd) != 0 || pipe(infd) != 0 || pipe(efd) != 0) {
     error.setMessage("Failed to create pipes.");
     error.setCode(1);
     return 1;
   }
-  oldstdin = dup(0);
-  oldstdout = dup(1);
-  oldstderr = dup(2);
-  close(0);
-  close(1);
-  close(2);
-  dup2(outfd[0], 0);
-  dup2(infd[1],1);
-  dup2(einfd[1],2);
-  pid_t pid = fork();
+
+  pid = fork();
   if(pid < 0) {
     set_errno(error);
     return 1;
-  } else if(!pid){
-    close(outfd[0]);
-    close(outfd[1]);
-    close(infd[0]);
+  } else if(pid == 0) {
+    if(infd[0] != STDIN_FILENO) {
+      dup2(infd[0], STDIN_FILENO);
+      close(infd[0]);
+    }
+    if(outfd[1] != STDOUT_FILENO) {
+      dup2(outfd[1], STDOUT_FILENO);
+      close(outfd[1]);
+    }
+    if(efd[1] != STDERR_FILENO) {
+      dup2(efd[1], STDERR_FILENO);
+      close(efd[1]);
+    }
     close(infd[1]);
-    close(einfd[0]);
-    close(einfd[1]);
-    execv(cargv.get()[0],cargv.get());
+    close(outfd[0]);
+    close(efd[0]);
+    execvp(cargv.get()[0],cargv.get());
+    exit(127);
   } else {
-    close(0);
-    close(1);
-    close(2);
-    dup2(oldstdin, 0);
-    dup2(oldstdout, 1);
-    dup2(oldstderr, 2);
-    
-    close(outfd[0]);
-    close(infd[1]);
-    close(einfd[1]);
-    
+    close(infd[0]);
+    close(outfd[1]);
+    close(efd[1]);
+
+    read_fd_all(outfd[0], sstdout); // ignore errors
+    read_fd_all(efd[0], sstderr); // ignore errors
     int status;
-    pid_t ret = waitpid(pid, &status, 0);
+    pid_t ret = waitpid(pid, &status, WUNTRACED|WNOHANG);
     if (ret < 0) {
+      close(infd[1]);
+      close(outfd[0]);
+      close(efd[0]);
       set_errno(error);
       return 1;
     }
-    read_fd_all(infd[0], sstdout); // ignore errors
-    read_fd_all(einfd[0], sstderr); // ignore errors
+    close(infd[1]);
+    close(outfd[0]);
+    close(efd[0]);
     return WEXITSTATUS(status);
   }
   return 1;
@@ -840,6 +895,7 @@ void ib::platform::list_all_windows(std::vector<ib::whandle> &result){ // {{{
 } // }}}
 
 int ib::platform::show_context_menu(ib::oschar *path){ // {{{
+  // TODO
   return 0;
 } // }}}
 
@@ -925,7 +981,9 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
         cmd->setPath(command);
       }
     } else if(prop_type == "Directory") {
+      // TODO
     } else if(prop_type == "Link") {
+      // TODO
     }
 } // }}}
 
@@ -991,14 +1049,18 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  std::size_t length = strlen(result);
+  std::size_t length = strlen(parent);
   const ib::oschar *sep;
-  if(result[length-1] != '/') {
+  if(parent[length-1] != '/') {
     sep = "/";
   }else{
     sep = "";
   }
-  snprintf(result, IB_MAX_PATH, "%s%s%s", parent, sep, child);
+  const ib::oschar *c = child;
+  if(string_startswith(child, "./")) {
+    c += 2;
+  }
+  snprintf(result, IB_MAX_PATH, "%s%s%s", parent, sep, c);
   return result;
 } // }}}
 
@@ -1062,6 +1124,9 @@ ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ /
     }
   }
   result[i] = '\0';
+  if(i == 0) {
+    strncpy_s(result, "/", IB_MAX_PATH);
+  }
   return result;
 } // }}}
 
@@ -1150,6 +1215,10 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
     if(closedir(d)){
       // ignore errors...
     }
+    std::sort(result.begin(), result.end(), [](const ib::unique_oschar_ptr &left, const ib::unique_oschar_ptr &right) {
+        return strcmp(left.get(), right.get()) < 0;
+    });
+
     return 0;
 } // }}}
 
@@ -1409,7 +1478,6 @@ int ib::platform::load_library(ib::module &dl, const ib::oschar *name, ib::Error
   dl = dlopen(lib.c_str(), RTLD_LAZY);
   if(dl == 0) {
     error.setMessage(dlerror());
-    std::cout << error.getMessage() << std::endl;
     error.setCode(1);
     return 1;
   }
