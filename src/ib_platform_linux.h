@@ -32,6 +32,10 @@ namespace ib{
 
   typedef Window          whandle;
   typedef void*           module;
+
+  namespace platform {
+    void move_to_current_desktop(Fl_Window *w);
+  }
 }
 
 #endif

@@ -69,7 +69,6 @@ namespace ib {
     int selected_index(lua_State *L); // void -> int(start from 1)
     int utf82local(lua_State *L); // string -> string
     int local2utf8(lua_State *L); // string -> string
-    int list_all_windows(lua_State *L); // void -> window_handles:list
     int lock(lua_State *L); // void -> void;
     int unlock(lua_State *L); // void -> void;
     int band(lua_State *L); // values:int[...] -> result:int

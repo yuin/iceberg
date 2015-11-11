@@ -38,7 +38,6 @@ namespace ib {
     int  shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, ib::Error& error);
     int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, ib::Error& error);
     int command_output(std::string &sstdout, std::string &sstderr, const char *command, ib::Error &error);
-    void list_all_windows(std::vector<ib::whandle> &result);
     int show_context_menu(ib::oschar *path);
     void on_command_init(ib::Command *command);
     ib::oschar* default_config_path(ib::oschar *result);

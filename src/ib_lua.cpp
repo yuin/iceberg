@@ -482,7 +482,6 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(selected_index);
   REGISTER_FUNCTION(utf82local);
   REGISTER_FUNCTION(local2utf8);
-  REGISTER_FUNCTION(list_all_windows);
   REGISTER_FUNCTION(lock);
   REGISTER_FUNCTION(unlock);
   REGISTER_FUNCTION(band);
@@ -939,25 +938,6 @@ int ib::luamodule::local2utf8(lua_State *L) { // {{{
 
   lua_state.clearStack();
   lua_pushstring(L, ret.get());
-  return 1;
-} // }}}
-
-int ib::luamodule::list_all_windows(lua_State *L) { // {{{
-  ib::LuaState lua_state(L);
-  std::vector<ib::whandle> result;
-  ib::platform::list_all_windows(result);
-  lua_state.clearStack();
-  lua_newtable(L);
-  int i = 1;
-  for(auto it = result.begin(), last = result.end(); it != last; ++it, ++i){
-    lua_pushinteger(L, i);
-#if defined IB_64BIT
-    lua_pushnumber(L, (lua_Number)((long long)(*it)));
-#else
-    lua_pushnumber(L, (long)(*it));
-#endif
-    lua_settable(L, -3);
-  }
   return 1;
 } // }}}
 

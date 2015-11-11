@@ -757,21 +757,6 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   return funcret;
 } // }}}
 
-// void ib::platform::list_all_windows(std::vector<ib::whandle> &result){ // {{{
-static void list_all_windows_iter(std::vector<ib::whandle> &result, const ib::whandle parent){
-  HWND hwnd = FindWindowEx(parent, NULL, NULL, NULL);
-  result.push_back(hwnd);
-  while (hwnd != NULL){
-    list_all_windows_iter(result, hwnd);
-    hwnd = FindWindowEx(parent, hwnd, NULL, NULL);
-    result.push_back(hwnd);
-  }
-}
-
-void ib::platform::list_all_windows(std::vector<ib::whandle> &result){
-  list_all_windows_iter(result, GetDesktopWindow());
-} // }}}
-
 int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   HRESULT             ret;
   POINT               pt;

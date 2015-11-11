@@ -555,8 +555,48 @@ static int xregister_hotkey() {
   return 0;
 }
 
-void signal_handler(int s){
+static void signal_handler(int s){
   ib::utils::exit_application(0);
+}
+
+static void* xget_property(Window w, const char *prop, Atom typ) {
+  Atom aret;
+  int f = 0;
+  unsigned long n, b;
+  long *ptr = 0;
+
+  if (XGetWindowProperty(fl_display, w, XInternAtom(fl_display, prop, False), 0, 1, False, typ, &aret, &f, &n, &b, (unsigned char**)&ptr) != Success) {
+      return 0;
+  }
+  if (aret != typ || n == 0) {
+    return 0;
+  }
+  return ptr;
+}
+
+static void xsend_message_l(Window w, const char *msg, long d0, long d1, long d2, long d3, long d4) {
+  XClientMessageEvent ev = {0};
+  ev.type = ClientMessage;
+  ev.window = w;
+  ev.message_type = XInternAtom(fl_display, msg, False);
+  ev.format = 32;
+  ev.data.l[0] = d0;
+  ev.data.l[1] = d1;
+  ev.data.l[2] = d2;
+  ev.data.l[3] = d3;
+  ev.data.l[4] = d4;
+  XSendEvent(fl_display, DefaultRootWindow(fl_display), 0,
+    SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+}
+
+static int xcurrent_desktop() {
+  long *desktop = (long*)xget_property(DefaultRootWindow(fl_display), "_NET_CURRENT_DESKTOP", XA_CARDINAL);
+  if(desktop == 0) {
+    return -1;
+  }
+  int ret = (int)desktop[0];
+  XFree(desktop);
+  return (int)ret;
 }
 
 //////////////////////////////////////////////////
@@ -697,16 +737,8 @@ void ib::platform::show_window(Fl_Window *window){ // {{{
   wm_state = XInternAtom(fl_display, "_NET_WM_STATE", False);
   wm_states[1] = XInternAtom(fl_display, "_NET_WM_STATE_SKIP_TASKBAR", False);
   XChangeProperty(fl_display, fl_xid(window), wm_state, XA_ATOM, 32, PropModeReplace,(unsigned char *) wm_states, 3);
-  XClientMessageEvent ev = {0};
-  ev.type = ClientMessage;
-  ev.window = fl_xid(window);
-  ev.message_type = XInternAtom(fl_display, "_NET_ACTIVE_WINDOW", True);
-  ev.format = 32;
-  ev.data.l[0] = 1;
-  ev.data.l[1] = CurrentTime;
-  ev.data.l[2] = ev.data.l[3] = ev.data.l[4] = 0;
-  XSendEvent (fl_display, RootWindow(fl_display, fl_screen), 0,
-    SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+
+  xsend_message_l(fl_xid(window), "_NET_ACTIVE_WINDOW", 1, CurrentTime, 0,0,0);
 
   XFlush(fl_display);
 } // }}}
@@ -896,9 +928,6 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     return WEXITSTATUS(status);
   }
   return 1;
-} // }}}
-
-void ib::platform::list_all_windows(std::vector<ib::whandle> &result){ // {{{
 } // }}}
 
 int ib::platform::show_context_menu(ib::oschar *path){ // {{{
@@ -1526,7 +1555,12 @@ int ib::platform::get_num_of_cpu(){ // {{{
 //////////////////////////////////////////////////
 // platform specific functions {{{
 //////////////////////////////////////////////////
-
+void ib::platform::move_to_current_desktop(Fl_Window *w) {
+  int desktop = xcurrent_desktop();
+  if(desktop >= 0) {
+    xsend_message_l(fl_xid(w), "_NET_WM_DESKTOP", desktop,0,0,0,0);
+  }
+}
 //////////////////////////////////////////////////
 // platform specific functions }}}
 //////////////////////////////////////////////////

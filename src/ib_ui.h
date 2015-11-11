@@ -70,7 +70,7 @@ namespace ib {
       void updateIconbox();
 
     protected:
-      MainWindow(): Fl_Double_Window(0,0,"MainWindow"){};
+      MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"){};
 
       static MainWindow *instance_;
       Input *input_;
@@ -134,7 +134,7 @@ namespace ib {
     private:
       int handle(int e);
   }; // }}}
-  
+ 
   class ListWindow : public Fl_Double_Window, private NonCopyable<ListWindow> { // {{{
 
     public:
@@ -150,7 +150,7 @@ namespace ib {
       void close();
 
     protected:
-      ListWindow() : Fl_Double_Window(0, 0, "ListWindow"), listbox_(0), show_init_(false) {};
+      ListWindow() : Fl_Double_Window(0, 0, "icebergListWindow"), listbox_(0), show_init_(false) {};
 
       static ListWindow *instance_;
       Listbox *listbox_;

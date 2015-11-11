@@ -773,6 +773,7 @@ void ib::ListWindow::show(){ /* {{{ */
 #ifdef IB_OS_WIN
   return Fl_Window::show();
 #else
+  ib::platform::move_to_current_desktop(this);
   if(!show_init_) {
     return Fl_Window::show();
   }

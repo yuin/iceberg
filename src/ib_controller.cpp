@@ -180,6 +180,8 @@ void ib::Controller::showApplication() { // {{{
   }
   ib::platform::show_window(ib::MainWindow::inst());
 #else
+  ib::platform::move_to_current_desktop(ib::ListWindow::inst());
+  ib::platform::move_to_current_desktop(ib::MainWindow::inst());
   if(ib::ListWindow::inst()->getListbox()->isEmpty()) {
     ib::ListWindow::inst()->hide();
   }else {
