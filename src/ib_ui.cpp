@@ -74,7 +74,7 @@ void ib::_key_event_handler(void *p) {
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
   const ib::Config &cfg = ib::Config::inst();
-  const int key = Fl::event_key();
+  int key = Fl::event_key();
   const int state = Fl::event_state();
   const int mods = state & (FL_META|FL_CTRL|FL_ALT);
   const int shift = state & FL_SHIFT;
@@ -83,6 +83,10 @@ int ib::Input::handle(int e){ /* {{{ */
 
   switch(e){
     case FL_KEYUP:
+#ifndef IB_OS_WIN
+        // end of xim composition. change the keycode to a harmless dummy code.
+        if(key == 0xff0d) key = '_';
+#endif
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
 keyup:
         // ignore shift key up
