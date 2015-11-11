@@ -83,10 +83,7 @@ int ib::Input::handle(int e){ /* {{{ */
 
   switch(e){
     case FL_KEYUP:
-#ifndef IB_OS_WIN
-        // end of xim composition. change the keycode to a harmless dummy code.
-        if(key == 0xff0d) key = '_';
-#endif
+      key = ib::platform::convert_keysym(key);
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
 keyup:
         // ignore shift key up

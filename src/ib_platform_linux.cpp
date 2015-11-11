@@ -1548,6 +1548,16 @@ void ib::platform::close_socket(FL_SOCKET s){ // {{{
 int ib::platform::get_num_of_cpu(){ // {{{
   return (int)sysconf(_SC_NPROCESSORS_ONLN);
 } // }}}
+
+int ib::platform::convert_keysym(int key){ // {{{
+  // end of composition. converts original keysym to a harmless keysym.
+  if(key == 0xff0d) return (int)'_';
+  return key;
+} // }}}
+
+#ifndef IB_OS_WIN
+        // end of xim composition. change the keycode to a harmless dummy code.
+#endif
 //////////////////////////////////////////////////
 // system functions }}}
 //////////////////////////////////////////////////

@@ -1527,6 +1527,11 @@ int ib::platform::get_num_of_cpu(){ // {{{
   GetSystemInfo(&info);
   return (int)info.dwNumberOfProcessors;
 } // }}}
+
+int ib::platform::convert_keysym(int key){ // {{{
+  return key;
+} // }}}
+
 //////////////////////////////////////////////////
 // system functions }}}
 //////////////////////////////////////////////////

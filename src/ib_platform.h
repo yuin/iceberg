@@ -102,6 +102,7 @@ namespace ib {
 
     /* system functions */
     int get_num_of_cpu();
+    int convert_keysym(int key);
 
     class ScopedLock : private NonCopyable<ScopedLock> { // {{{
       public:
