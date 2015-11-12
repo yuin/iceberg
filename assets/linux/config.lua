@@ -14,6 +14,7 @@ system = {
   max_candidates = 15,
   history_factor = 0.8,
   file_browser = [[/usr/bin/pcmanfm ${1}]],
+  terminal  = [[/usr/bin/lxterminal -l -e ${1}]],
   server_port = 4501,
   path_autocomplete = false,
   option_autocomplete = true,
