@@ -41,7 +41,21 @@ Linux(Ubuntu)
 - libonig-dev
 - libmigemo-dev
 
+`Release <https://github.com/yuin/iceberg/releases>`_ で配布されているソースコードを任意の場所に解凍してください。その後
+
+    .. code-block:: lua
+    
+        % ./tools/install_requires.sh
+        % make
+        % sudo make install
+
+と実行してください。
+
 Linux上での文字コードはutf-8のみがサポートされています。
+
+Linux(その他)
+~~~~~~~~~~~~~~~
+動作確認されていませんが、Ubuntuと同等のライブラリをインストールすればコンパイルできる可能性があります。g++は4.9以上を利用してください。また、動作が確認できましたらぜひ作者までお知らせください。
 
 使用法
 -------------------------

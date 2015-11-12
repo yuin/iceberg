@@ -7,6 +7,7 @@
 #include "ib_regex.h"
 #include "ib_comp_value.h"
 #include "ib_icon_manager.h"
+#include "ib_server.h"
 
 static char ib_g_lang[32];
 static int  ib_g_hotkey;
@@ -599,6 +600,23 @@ static int xcurrent_desktop() {
   return (int)ret;
 }
 
+static bool xis_gui_app(const char *path) {
+  std::string out, err;
+  ib::Error e;
+  char quoted[IB_MAX_PATH];
+  ib::platform::quote_string(quoted, path);
+  if(ib::platform::command_output(out, err, ("ldd " + std::string(quoted)).c_str(), e) == 0) {
+      std::istringstream stream(out);
+      std::string   line;
+      while(std::getline(stream, line)) {
+        if(line.find("libX11") != std::string::npos) {
+          return true;
+        }
+      }
+  }
+  return false;
+}
+
 //////////////////////////////////////////////////
 // }}}
 //////////////////////////////////////////////////
@@ -773,6 +791,8 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     return -1;
   };
 
+  // shutdown the server to prevent socket fd passing.
+  ib::Server::inst().shutdown();
   ib::Regex proto_reg("^(\\w+)://.*", ib::Regex::I);
   proto_reg.init();
   ret = 0;
@@ -789,8 +809,18 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     }
     if(!strparams.empty() || access(path.c_str(), X_OK) == 0) {
       cmd += quoted_path;
-      cmd += " ";
-      cmd += strparams;
+      if(!strparams.empty()){
+        cmd += " ";
+        cmd += strparams;
+      }
+      if(!xis_gui_app(path.c_str())) {
+        ib::string_map values;
+        cmd += ";";
+        cmd += getenv("SHELL");
+        values.insert(ib::string_pair("1", ("'" + cmd + "'")));
+        cmd.clear();
+        ib::utils::expand_vars(cmd, ib::Config::inst().getTerminal(), values);
+      }
     } else {
       std::string mime, app;
       if(!xdg_mime_filetype(mime, quoted_path, error)) {
@@ -833,7 +863,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   }
 
 finally:
-  
+  if(ib::Server::inst().start(error) != 0) ret = -1;
   ib::platform::set_current_workdir(wd, error);
   return ret;
 } // }}}

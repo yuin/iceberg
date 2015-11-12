@@ -48,6 +48,10 @@ namespace ib {
       void setFileBrowser(const std::string &value){ file_browser_ = value; }
       void setFileBrowser(const char *value){ file_browser_ = value; }
 
+      const std::string& getTerminal() const { return terminal_; }
+      void setTerminal(const std::string &value){ terminal_ = value; }
+      void setTerminal(const char *value){ terminal_ = value; }
+
       unsigned int getServerPort() const { return server_port_; }
       void setServerPort(const unsigned int value){ server_port_ = value; }
 
@@ -243,6 +247,7 @@ namespace ib {
         max_clipboard_histories_(0),
         history_factor_(0.3),
         file_browser_(),
+        terminal_(),
         server_port_(0),
         path_autocomplete_(false),
         option_autocomplete_(false),
@@ -317,6 +322,7 @@ namespace ib {
       unsigned int max_clipboard_histories_;
       double       history_factor_;
       std::string  file_browser_;
+      std::string  terminal_;
       unsigned int server_port_;
       bool         path_autocomplete_;
       bool         option_autocomplete_;

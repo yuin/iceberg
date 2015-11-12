@@ -341,6 +341,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
+    GET_FIELD("terminal", string) {
+      cfg.setTerminal(lua_tostring(IB_LUA, -1));
+    }
+    lua_pop(IB_LUA, 1);
+
     GET_FIELD("server_port", number) {
        luint = lua_tointeger(IB_LUA, -1);
        cfg.setServerPort(luint);
