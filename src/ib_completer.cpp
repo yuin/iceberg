@@ -98,7 +98,11 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
             }
             lua_pop(IB_LUA, 1);
             if(is_always_match) {
-              compstr->setCompvalue(input.c_str());
+              if(token->isValueToken()) {
+                compstr->setCompvalue(input.c_str());
+              }else {
+                compstr->setCompvalue(value);
+              }
             }
             candidates.push_back(compstr);
           }

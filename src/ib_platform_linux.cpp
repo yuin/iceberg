@@ -707,10 +707,19 @@ char* ib::platform::local2utf8(const char *src) { // {{{
 ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   bool need_quote = false;
+  bool all_space = true;
+
   for(const ib::oschar *tmp = str; *tmp != '\0'; tmp++) {
-    if(isspace(*tmp)) { need_quote = true; break; }
+    if(!isspace(*tmp)) { all_space = false; break; }
   }
-  if((strlen(str) != 0 && str[0] == '"') || !need_quote) {
+
+  if(!all_space) {
+    for(const ib::oschar *tmp = str; *tmp != '\0'; tmp++) {
+      if(isspace(*tmp)) { need_quote = true; break; }
+    }
+  }
+
+  if((strlen(str) != 0 && str[0] == '"') || !need_quote || all_space) {
     strncpy_s(result, str, IB_MAX_PATH);
     return result;
   }
@@ -726,6 +735,8 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
     *cur = *str;
   }
   *cur = '"';
+  cur++;
+  *cur = '\0';
 
   return result;
 } // }}}
@@ -944,8 +955,8 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     read_fd_all(outfd[0], sstdout); // ignore errors
     read_fd_all(efd[0], sstderr); // ignore errors
     int status;
-    pid_t ret = waitpid(pid, &status, WUNTRACED|WNOHANG);
-    if (ret < 0) {
+    pid_t ret = waitpid(pid, &status, WUNTRACED);
+    if (ret < 0 || !WIFEXITED(status)) {
       close(infd[1]);
       close(outfd[0]);
       close(efd[0]);
