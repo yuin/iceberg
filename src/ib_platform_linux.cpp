@@ -112,13 +112,14 @@ static bool xdg_mime_filetype(std::string &result, const char *path, ib::Error &
   char quoted[IB_MAX_PATH];
   ib::platform::quote_string(quoted, path);
   if(ib::platform::command_output(out, err, ("xdg-mime query filetype " + std::string(quoted)).c_str(), e) == 0) {
-    ib::Regex re("([^;]+);.*", ib::Regex::NONE);
+    ib::Regex re("([^;]+)(;.*)?", ib::Regex::NONE);
     re.init();
     if(re.match(out) == 0) {
       re._1(result);
       return true;
     }
   }
+  result.clear();
   return false;
 }
 
@@ -129,6 +130,7 @@ static bool xdg_mime_default_app(std::string &result, const char *mime, ib::Erro
     result = out;
     return true;
   }
+  result.clear();
   return false;
 }
 
@@ -834,15 +836,9 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       }
     } else {
       std::string mime, app;
-      if(!xdg_mime_filetype(mime, quoted_path, error)) {
-        ret = -1;
-        goto finally;
-      }
+      xdg_mime_filetype(mime, quoted_path, error);
       if(!mime.empty()) {
-        if(!xdg_mime_default_app(app, mime.c_str(), error)) {
-            ret = -1;
-            goto finally;
-        }
+        xdg_mime_default_app(app, mime.c_str(), error);
         if(app.empty()){
           std::ostringstream message;
           message << "No associated applications found for " << quoted_path << " (mimetype: " << mime << ").";

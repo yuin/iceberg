@@ -144,7 +144,7 @@ commands = {
       local index = ibs.selected_index()
       if index > 0 then
         local value = commands.locate._list[index]
-        ibs.shell_execute(value.description)
+        assert(ibs.shell_execute(value.description))
       end
       commands.locate._list = {}
     end, 

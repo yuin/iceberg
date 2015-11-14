@@ -482,7 +482,9 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(selected_index);
   REGISTER_FUNCTION(utf82local);
   REGISTER_FUNCTION(local2utf8);
+#ifdef IB_OS_WIN
   REGISTER_FUNCTION(list_all_windows);
+#endif
   REGISTER_FUNCTION(lock);
   REGISTER_FUNCTION(unlock);
   REGISTER_FUNCTION(band);
