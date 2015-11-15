@@ -249,7 +249,7 @@ Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ /
   std::string cache_key;
 
   ib::oschar osresolved_path[IB_MAX_PATH];
-  ib::oschar resolved_path[IB_MAX_PATH_BYTE];
+  char resolved_path[IB_MAX_PATH_BYTE];
   ib::oschar osfile[IB_MAX_PATH];
   ib::platform::utf82oschar_b(osfile, IB_MAX_PATH, file);
   ib::platform::resolve_icon(osresolved_path, osfile, size);

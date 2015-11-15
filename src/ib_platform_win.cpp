@@ -53,6 +53,10 @@ const char *strcasestr(const char *haystack, const char *needle) { // {{{
   return NULL;
 } // }}}
 
+void tcsncpy_s(ib::oschar *dest, const ib::oschar *src, std::size_t bufsize) {
+  _tcsncpy_s(dest, bufsize, src, _TRUNCATE);
+}
+
 ib::oschar* tcstokread(ib::oschar *buf, const ib::oschar sep) { // {{{
   while(1){
     if(*buf == sep){
@@ -584,14 +588,14 @@ char* ib::platform::local2utf8(const char *src) { // {{{
 
 ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(result != str) { _tcscpy(result, str); }
+  if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathQuoteSpaces(result);
   return result;
 } // }}}
 
 ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(result != str) { _tcscpy(result, str); }
+  if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathUnquoteSpaces(result);
   return result;
 } // }}}
@@ -884,7 +888,7 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
 
 ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  strncpy_s(result, file, IB_MAX_PATH);
+  tcsncpy_s(result, file, IB_MAX_PATH);
   return result;
 } // }}}
 
@@ -962,7 +966,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  _tcsncpy(result, parent, IB_MAX_PATH);
+  tcsncpy_s(result, parent, IB_MAX_PATH);
   result[IB_MAX_PATH-1]= '\0';
   std::size_t length = _tcslen(result);
   const ib::oschar *sep;
@@ -998,7 +1002,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   if(!is_dot_path && !is_dot_dot_path){
     PathCanonicalize(result, tmp);
   }else{
-    _tcscpy(result, tmp);
+    tcsncpy_s(result, tmp, IB_MAX_PATH);
   }
   if(is_dot_path){
     result[0] = L'.';
@@ -1018,7 +1022,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  _tcscpy(result, path);
+  tcsncpy_s(result, path, IB_MAX_PATH);
   const std::size_t len = _tcslen(path);
   if(len == 0) return result;
   std::size_t i = len -1;
@@ -1053,7 +1057,7 @@ ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar 
   if(ib::platform::is_relative_path(path)){
     ib::platform::normalize_join_path(result, dir, path);
   }else{
-    _tcscpy(result, path);
+    tcsncpy_s(result, path, IB_MAX_PATH);
   }
   return result;
 } // }}}
@@ -1137,7 +1141,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
         if(!recursive){
           std::vector<ib::oschar*> shares;
           ib::oschar not_const_dir[IB_MAX_PATH];
-          _tcscpy(not_const_dir, dir);
+          tcsncpy_s(not_const_dir, dir, IB_MAX_PATH);
           ib_platform_list_network_shares(shares, not_const_dir);
           for(auto it = shares.begin(), last = shares.end(); it != last; ++it){
             result.push_back(ib::unique_oschar_ptr(*it));
@@ -1250,14 +1254,14 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
       ib::oschar *ext_next = 0;
       ib::oschar *ext_current = 0;
       ib::oschar ext_buf2[MAX_ENV_SIZE];
-      _tcscpy(ext_buf2, ext_buf);
+      tcsncpy_s(ext_buf2, ext_buf, MAX_ENV_SIZE);
       ext_current = ext_buf2;
       do {
         ext_next = tcstokread(ext_current, L';');
         ib::platform::normalize_join_path(fullpath_buf, path_current, name);
         _tcscat(fullpath_buf, ext_current);
         if(ib::platform::file_exists(fullpath_buf)){
-          _tcscpy(result, fullpath_buf);
+          tcsncpy_s(result, fullpath_buf, IB_MAX_PATH);
           found = true;
           goto finalize;
         }
@@ -1266,7 +1270,7 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
     }else{
       ib::platform::normalize_join_path(fullpath_buf, path_current, name);
       if(ib::platform::file_exists(fullpath_buf)){
-        _tcscpy(result, fullpath_buf);
+        tcsncpy_s(result, fullpath_buf, IB_MAX_PATH);
         found = true;
         goto finalize;
       }
