@@ -75,11 +75,11 @@
 #      define IB_EXPORT extern
 #endif
 #ifdef IB_OS_WIN
-#  define IB_MAX_PATH_BYTE (MAX_PATH*5+1)
-#  define IB_MAX_PATH MAX_PATH+3
+#  define IB_MAX_PATH_BYTE (MAX_PATH*5)
+#  define IB_MAX_PATH MAX_PATH
 #else
-#  define IB_MAX_PATH_BYTE (PATH_MAX+1)
-#  define IB_MAX_PATH (PATH_MAX+1)
+#  define IB_MAX_PATH_BYTE (PATH_MAX)
+#  define IB_MAX_PATH (PATH_MAX)
 #endif
 #define IB_EVENT_END_COMPOSITION 100
 #define IB_LOCALE "ja_JP.UTF-8"

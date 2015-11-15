@@ -32,7 +32,7 @@ bool ib::CompletionPathParts::isAutocompleteEnable() const { // {{{
 } // }}}
 
 Fl_RGB_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
-  return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size, true);
+  return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size);
 } // }}}
 // }}}
 
@@ -50,7 +50,7 @@ Fl_RGB_Image* ib::CompletionString::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, value_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size, true);
+      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size);
     }else{
       return 0;
     }
@@ -118,7 +118,7 @@ const std::string* ib::Command::getContextMenuPath() const { // {{{
 
 Fl_RGB_Image* ib::Command::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
-    return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size, true);
+    return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size);
   }else{
     return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
   }
@@ -199,7 +199,7 @@ Fl_RGB_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     return ib::IconManager::inst()->getLuaIcon(size);
   }else{
-    return ib::IconManager::inst()->readPngFileIcon(icon_file_.c_str(), size);
+    return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
   }
 } // }}}
 
@@ -292,7 +292,7 @@ Fl_RGB_Image* ib::HistoryCommand::loadIcon(const int size) { // {{{
   if(org_cmd_){
     return org_cmd_->loadIcon(size);
   }
-  return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size, true);
+  return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size);
 } // }}}
 // }}}
 

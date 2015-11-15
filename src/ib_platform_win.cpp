@@ -746,7 +746,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     CloseHandle(process_info.hThread);
   }else{
     ib_platform_set_error(error);
-    funcret = 2;
+    funcret = -1;
   }
   
 
@@ -879,6 +879,12 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
   ib::oschar osbuf[IB_MAX_PATH];
   ib::platform::get_self_path(osbuf);
   ib::platform::dirname(result, osbuf);
+  return result;
+} // }}}
+
+ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  strncpy_s(result, file, IB_MAX_PATH);
   return result;
 } // }}}
 

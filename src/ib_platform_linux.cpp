@@ -907,7 +907,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   if(parse_cmdline(argv, cmd) != 0) {
     error.setMessage("Invalid command line.");
     error.setCode(1);
-    return 1;
+    return -1;
   }
   std::unique_ptr<char*[]> cargv(new char*[argv.size()+1]);
   for(std::size_t i = 0; i < argv.size(); i++) {
@@ -918,13 +918,13 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   if(pipe(outfd) != 0 || pipe(infd) != 0 || pipe(efd) != 0) {
     error.setMessage("Failed to create pipes.");
     error.setCode(1);
-    return 1;
+    return -1;
   }
 
   pid = fork();
   if(pid < 0) {
     set_errno(error);
-    return 1;
+    return -1;
   } else if(pid == 0) {
     if(infd[0] != STDIN_FILENO) {
       dup2(infd[0], STDIN_FILENO);
@@ -957,14 +957,14 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
       close(outfd[0]);
       close(efd[0]);
       set_errno(error);
-      return 1;
+      return -1;
     }
     close(infd[1]);
     close(outfd[0]);
     close(efd[0]);
     return WEXITSTATUS(status);
   }
-  return 1;
+  return -1;
 } // }}}
 
 int ib::platform::show_context_menu(ib::oschar *path){ // {{{
@@ -1071,6 +1071,21 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   snprintf(result, IB_MAX_PATH, "%s/%s", getenv("HOME"), ".iceberg");
+  return result;
+} // }}}
+
+
+ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(ib::platform::file_exists(file)) {
+    strncpy_s(result, file, IB_MAX_PATH);
+  } else {
+    auto repos = FreeDesktopThemeRepos::inst();
+    const char *theme = ib::Config::inst().getIconTheme().c_str();
+    std::string iconpath;
+    repos->findIcon(iconpath, theme, file, size);
+    strncpy_s(result, iconpath.c_str(), IB_MAX_PATH);
+  }
   return result;
 } // }}}
 
@@ -1591,10 +1606,6 @@ int ib::platform::convert_keysym(int key){ // {{{
   if(key == 0xff0d) return (int)'_';
   return key;
 } // }}}
-
-#ifndef IB_OS_WIN
-        // end of xim composition. change the keycode to a harmless dummy code.
-#endif
 //////////////////////////////////////////////////
 // system functions }}}
 //////////////////////////////////////////////////

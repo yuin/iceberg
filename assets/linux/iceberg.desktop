@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=iceberg
+Comment=Simple and extensible keystroke application launcher
+TryExec=iceberg
+Exec=iceberg
+Icon=iceberg
+Type=Application
+Categories=Utility;

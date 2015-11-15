@@ -1,4 +1,4 @@
-#include "ib_completer.h"
+# //.}}}include "ib_completer.h"
 #include "ib_platform.h"
 #include "ib_ui.h"
 #include "ib_lua.h"
@@ -329,6 +329,5 @@ notmatch:
 
 void ib::AbbrMatchCompletionMethod::afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input) { // {{{
 } // }}}
-
 // }}}
 

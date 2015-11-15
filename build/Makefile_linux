@@ -84,6 +84,8 @@ install:
 	fi
 	$(MAKE)
 	install -o root -g root -m 0755 $(MAINPACKAGE) /usr/bin/
+	install -o root -g root -m 0755 $(ASSETDIR)/linux/iceberg.desktop /usr/share/applications/
+	install -o root -g root -m 0755 ./src/iceberg.svg /usr/share/pixmaps/
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/shortcuts
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/luamodule

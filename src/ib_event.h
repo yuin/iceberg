@@ -29,7 +29,7 @@ namespace ib {
 
       ib::cmutex trigger_cmutex_;
       ib::condition trigger_cond_;
-  };
+  }; //.}}}
 }
 
 #endif
