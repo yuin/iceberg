@@ -611,6 +611,11 @@ void ib::platform::activate_window(Fl_Window *window){ // {{{
   SetForegroundWindow(fl_xid(window));
 } // }}}
 
+void ib::platform::raise_window(Fl_Window *window){ // {{{
+  window->set_visible();
+  ShowWindow(fl_xid(window), SW_SHOWNA);
+} // }}}
+
 void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   SetLayeredWindowAttributes(fl_xid(window), 0, alpha, LWA_ALPHA);
 } // }}}

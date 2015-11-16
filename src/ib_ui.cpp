@@ -748,7 +748,7 @@ void ib::Listbox::adjustSize() { // {{{
   int screen_x, screen_y, screen_w, screen_h;
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
   const int width_a = screen_w - main_window->x() - font_size;
-  int width_b = getMaxWidth() + font_size*2;
+  int width_b = getMaxWidth() + font_size*3;
   if(has_scrollbar() & Fl_Browser_::VERTICAL){
     width_b -= Fl::scrollbar_size();
   }
@@ -770,7 +770,7 @@ void ib::Listbox::adjustSize() { // {{{
 // class ListWindow {{{
 void ib::ListWindow::hide(){ /* {{{ */
   clear_visible();
-  resize(0, 0, 1, 1);
+  resize(-1, -1, 1, 1);
 } /* }}} */
 
 void ib::ListWindow::show(){ /* {{{ */

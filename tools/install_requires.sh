@@ -14,7 +14,9 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.3" ]; then
   
   echo "make FLTK libraries"
   cd fltk-1.3.3/
-  # patch -p1 < ../001_fltk-1.3.3_LLP64.patch
+  if [ "${IB_OSTYPE}" = "windows" ]; then
+    patch -p1 < ../001_fltk-1.3.3_LLP64.patch
+  fi
   autoconf
   if [ "${IB_OSTYPE}" != "windows" ]; then
     ./configure --enable-threads --enable-xft --enable-xdbe
