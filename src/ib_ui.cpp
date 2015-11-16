@@ -155,7 +155,7 @@ keyup:
 #ifndef IB_OS_WIN
                 // In XLib, closing visible windows lost the main window focus .
                 ib::platform::hide_window(w);
-                ib::platform::show_window(ib::MainWindow::inst());
+                ib::platform::activate_window(ib::MainWindow::inst());
 #endif
                 button->do_callback();
                 return 1;
@@ -372,11 +372,18 @@ void ib::MainWindow::initLayout(){ /* {{{ */
 } /* }}} */
 
 int ib::MainWindow::handle(int e){ /* {{{ */
-  input_->take_focus();
   return Fl_Window::handle(e);
 } /* }}} */
 
+void ib::MainWindow::show(){ /* {{{ */
+#ifndef IB_OS_WIN
+  ib::platform::move_to_current_desktop(this);
+#endif
+  return Fl_Window::show();
+} /* }}} */
+
 void ib::MainWindow::hide(){ /* {{{ */
+  clear_visible();
   ib::platform::hide_window(this);
 } /* }}} */
 
@@ -762,25 +769,23 @@ void ib::Listbox::adjustSize() { // {{{
 
 // class ListWindow {{{
 void ib::ListWindow::hide(){ /* {{{ */
-#ifdef IB_OS_WIN
-  ib::platform::hide_window(this);
-#else
+  clear_visible();
   resize(0, 0, 1, 1);
-  show_init_ = true;
-#endif
 } /* }}} */
 
 void ib::ListWindow::show(){ /* {{{ */
-#ifdef IB_OS_WIN
-  return Fl_Window::show();
-#else
+#ifndef IB_OS_WIN
   ib::platform::move_to_current_desktop(this);
-  if(!show_init_) {
-    return Fl_Window::show();
-  }
-  XRaiseWindow(fl_display, fl_xid(this));
-  listbox_->adjustSize();
 #endif
+  if(!show_init_){
+    show_init_ = true;
+    return Fl_Window::show();
+  }else{
+    if(w() == 1) {
+      listbox_->adjustSize();
+    }
+    ib::platform::raise_window(this);
+  }
 } /* }}} */
 
 void ib::ListWindow::close() { // {{{

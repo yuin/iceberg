@@ -601,10 +601,12 @@ ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *s
 } // }}}
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
+  window->clear_visible();
   ShowWindow(fl_xid(window), SW_HIDE);
 } // }}}
 
-void ib::platform::show_window(Fl_Window *window){ // {{{
+void ib::platform::activate_window(Fl_Window *window){ // {{{
+  window->set_visible_focus();
   ShowWindow(fl_xid(window), SW_SHOW);
   SetForegroundWindow(fl_xid(window));
 } // }}}

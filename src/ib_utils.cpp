@@ -496,6 +496,10 @@ void ib::utils::set_clipboard(const std::string &text) { // {{{
 
 void ib::utils::set_clipboard(const char *text) { // {{{
   Fl::copy(text, (int)strlen(text), 1);
+#ifndef IB_OS_WIN
+  std::string tmp;
+  ib::utils::get_clipboard(tmp);
+#endif
 } // }}}
 
 void ib::utils::to_command_name(std::string &ret, const std::string &string){ // {{{

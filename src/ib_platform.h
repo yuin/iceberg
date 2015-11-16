@@ -33,7 +33,8 @@ namespace ib {
 
     /* application functions */
     void hide_window(Fl_Window *window);
-    void show_window(Fl_Window *window);
+    void activate_window(Fl_Window *window);
+    void raise_window(Fl_Window *window);
     void set_window_alpha(Fl_Window *window, int alpha);
     int  shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, ib::Error& error);
     int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, ib::Error& error);

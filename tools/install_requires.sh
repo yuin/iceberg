@@ -3,18 +3,18 @@
 OLD_PWD=`pwd`; cd $(dirname $(dirname $0)); BASE_DIR=`pwd`; cd ${OLD_PWD}
 source ${BASE_DIR}/tools/common.sh
 
-if [ ! -d "${BASE_DIR}/ext/fltk-1.3.2" ]; then
-  echo "Downloading FLTK 1.3.2"
+if [ ! -d "${BASE_DIR}/ext/fltk-1.3.3" ]; then
+  echo "Downloading FLTK 1.3.3"
   cd ${BASE_DIR}/ext
-  wget http://fltk.org/pub/fltk/1.3.2/fltk-1.3.2-source.tar.gz
+  wget http://fltk.org/pub/fltk/1.3.3/fltk-1.3.3-source.tar.gz
   
-  echo "explode FLTK 1.3.2"
-  tar zxvf fltk-1.3.2-source.tar.gz
-  rm -f fltk-1.3.2-source.tar.gz
+  echo "explode FLTK 1.3.3"
+  tar zxvf fltk-1.3.3-source.tar.gz
+  rm -f fltk-1.3.3-source.tar.gz
   
   echo "make FLTK libraries"
-  cd fltk-1.3.2/
-  patch -p1 < ../001_fltk-1.3.2_LLP64.patch
+  cd fltk-1.3.3/
+  # patch -p1 < ../001_fltk-1.3.3_LLP64.patch
   autoconf
   if [ "${IB_OSTYPE}" != "windows" ]; then
     ./configure --enable-threads --enable-xft --enable-xdbe
@@ -23,7 +23,7 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.2" ]; then
   fi
   make
 else
- echo "FLTK 1.3.2: installed"
+ echo "FLTK 1.3.3: installed"
 fi
 
 if [ ! -d "${BASE_DIR}/ext/lua-5.1.4" ]; then

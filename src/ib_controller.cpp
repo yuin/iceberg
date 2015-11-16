@@ -159,37 +159,23 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
 } // }}}
 
 void ib::Controller::hideApplication() { // {{{
-#ifdef IB_OS_WIN
   ib::platform::hide_window(ib::MainWindow::inst());
   if(ib::ListWindow::inst()->visible()) {
     ib::platform::hide_window(ib::ListWindow::inst());
     ib::ListWindow::inst()->set_visible();
   }
-#else
-  ib::MainWindow::inst()->hide();
-  ib::ListWindow::inst()->hide();
-#endif
+  //ib::MainWindow::inst()->hide();
+  //ib::ListWindow::inst()->hide();
 } // }}}
 
 void ib::Controller::showApplication() { // {{{
-#ifdef IB_OS_WIN
-  if(ib::ListWindow::inst()->getListbox()->isEmpty()) {
-    ib::platform::hide_window(ib::ListWindow::inst());
-  }else if(ib::ListWindow::inst()->visible()) {
-    ib::platform::show_window(ib::ListWindow::inst());
-  }
-  ib::platform::show_window(ib::MainWindow::inst());
-#else
-  ib::platform::move_to_current_desktop(ib::ListWindow::inst());
-  ib::platform::move_to_current_desktop(ib::MainWindow::inst());
   if(ib::ListWindow::inst()->getListbox()->isEmpty()) {
     ib::ListWindow::inst()->hide();
   }else {
     ib::ListWindow::inst()->show();
-    ib::platform::show_window(ib::ListWindow::inst());
   }
-  ib::platform::show_window(ib::MainWindow::inst());
-#endif
+  ib::MainWindow::inst()->show();
+  ib::platform::activate_window(ib::MainWindow::inst());
 } // }}}
 
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
@@ -980,7 +966,6 @@ void ib::Controller::showCompletionCandidates() {
 
   if(input->isEmpty()) {
     ib::ListWindow::inst()->hide();
-    input->take_focus();
     return;
   }
   listbox->startUpdate();
@@ -1053,17 +1038,11 @@ void ib::Controller::showCompletionCandidates() {
   listbox->endUpdate(use_max_candidates);
 
   if(!listbox->isEmpty()) {
-#ifdef IB_OS_WIN
-    ib::platform::show_window(ib::ListWindow::inst());
-#else
     ib::ListWindow::inst()->show();
-#endif
   }else{
     listbox->clearAll();
     ib::ListWindow::inst()->hide();
   }
-  input->take_focus();
-
 } // }}}
 
 void ib::Controller::selectNextCompletion(){ // {{{

@@ -192,3 +192,15 @@ function on_initialize()
   local error = 0
   return error
 end
+
+-- load configurations from ~/.iceberg/config.d/*.lua --
+local function load_config_d()
+  local configd = ibs.join_path(dot_iceberg, "config.d")
+  local _, files = assert(ibs.list_dir(configd))
+  for i, file in ipairs(files) do
+    if ibs.regex_match("^[^_].*\\.lua$", Regex.NONE, file) then
+      dofile(ibs.join_path(configd, file))
+    end
+  end
+end
+load_config_d()

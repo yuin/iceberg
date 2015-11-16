@@ -1,3 +1,4 @@
+#include "ib_constants.h"
 #include "ib_platform.h"
 #include "ib_resource.h"
 #include "ib_utils.h"
@@ -643,6 +644,14 @@ int ib::platform::init_system() { // {{{
     ib::utils::exit_application(1);
   }
 
+  // first call of get_clipboard sometime fails for unknown reasons.
+  std::string tmp;
+  ib::utils::get_clipboard(tmp);
+  Fl::add_clipboard_notify([](int source, void *data){
+    std::string tmp;
+    ib::utils::get_clipboard(tmp);
+  }, (void*)0);
+
   Fl::add_handler(xevent_handler);
   XFlush(fl_display);
 
@@ -758,20 +767,25 @@ ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *s
 } // }}}
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
+  window->clear_visible();
   XIconifyWindow(fl_display, fl_xid(window), fl_screen);
   XFlush(fl_display);
 } // }}}
 
-void ib::platform::show_window(Fl_Window *window){ // {{{
-  Atom wm_states[3];
-  Atom wm_state;
-  wm_state = XInternAtom(fl_display, "_NET_WM_STATE", False);
-  wm_states[1] = XInternAtom(fl_display, "_NET_WM_STATE_SKIP_TASKBAR", False);
-  XChangeProperty(fl_display, fl_xid(window), wm_state, XA_ATOM, 32, PropModeReplace,(unsigned char *) wm_states, 3);
-
+void ib::platform::activate_window(Fl_Window *window){ // {{{
+  //Atom wm_states[3];
+  //Atom wm_state;
+  //wm_state = XInternAtom(fl_display, "_NET_WM_STATE", False);
+  //wm_states[1] = XInternAtom(fl_display, "_NET_WM_STATE_SKIP_TASKBAR", False);
+  //XChangeProperty(fl_display, fl_xid(window), wm_state, XA_ATOM, 32, PropModeReplace,(unsigned char *) wm_states, 3);
+  window->set_visible_focus();
   xsend_message_l(fl_xid(window), "_NET_ACTIVE_WINDOW", 1, CurrentTime, 0,0,0);
-
   XFlush(fl_display);
+} // }}}
+
+void ib::platform::raise_window(Fl_Window *window){ // {{{
+  window->set_visible();
+  XRaiseWindow(fl_display, fl_xid(window));
 } // }}}
 
 void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
@@ -1073,7 +1087,6 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
   snprintf(result, IB_MAX_PATH, "%s/%s", getenv("HOME"), ".iceberg");
   return result;
 } // }}}
-
 
 ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }

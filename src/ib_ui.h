@@ -63,6 +63,7 @@ namespace ib {
       Fl_Input *_getClipboard() const { return clipboard_;}
       Fl_Box   * getIconbox() const { return iconbox_;}
       void initLayout();
+      void show();
       void hide();
       void close();
       void clearIconbox();
@@ -70,7 +71,7 @@ namespace ib {
       void updateIconbox();
 
     protected:
-      MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"){};
+      MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"), input_(0), clipboard_(0), iconbox_(0) {};
 
       static MainWindow *instance_;
       Input *input_;
