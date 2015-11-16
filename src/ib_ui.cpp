@@ -152,11 +152,6 @@ keyup:
               Fl_Widget *widget = w->as_group()->child(i);
               Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
               if(button && button->visible()){
-#ifndef IB_OS_WIN
-                // In XLib, closing visible windows lost the main window focus .
-                ib::platform::hide_window(w);
-                ib::platform::activate_window(ib::MainWindow::inst());
-#endif
                 button->do_callback();
                 return 1;
               }
@@ -770,7 +765,11 @@ void ib::Listbox::adjustSize() { // {{{
 // class ListWindow {{{
 void ib::ListWindow::hide(){ /* {{{ */
   clear_visible();
+#ifdef IB_OS_WIN
   resize(-1, -1, 1, 1);
+#else
+  resize(0, 0, 1, 1);
+#endif
 } /* }}} */
 
 void ib::ListWindow::show(){ /* {{{ */
