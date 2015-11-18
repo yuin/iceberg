@@ -126,15 +126,7 @@ commands = {
       assert(ibs.open_dir(path))
       return 0
     end, history = false},
-  google = { path = function(args)
-      local url = args[1]
-      url = string.gsub (url, "\n", "\r\n")
-      url = string.gsub (url, "([^%w ])",
-         function (c) return string.format ("%%%02X", string.byte(c)) end)
-      url = string.gsub (url, " ", "+")
-      assert(ibs.shell_execute([[http://www.google.com/search?ie=utf8&q=]]..url))
-    end,
-    description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
+  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
   cal = { path = function(args)
       local script = "ret = (" .. table.concat(args, " ") .. ")"
       local func = loadstring(script)
