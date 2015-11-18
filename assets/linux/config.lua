@@ -19,7 +19,7 @@ system = {
   path_autocomplete = false,
   option_autocomplete = true,
 
-  hot_key = "f12",
+  hot_key = "ctrl-space",
   escape_key = "escape",
   list_next_key = "ctrl-n",
   list_prev_key = "ctrl-p",
@@ -126,7 +126,15 @@ commands = {
       assert(ibs.open_dir(path))
       return 0
     end, history = false},
-  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
+  google = { path = function(args)
+      local url = args[1]
+      url = string.gsub (url, "\n", "\r\n")
+      url = string.gsub (url, "([^%w ])",
+         function (c) return string.format ("%%%02X", string.byte(c)) end)
+      url = string.gsub (url, " ", "+")
+      assert(ibs.shell_execute([[http://www.google.com/search?ie=utf8&q=]]..url))
+    end,
+    description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
   cal = { path = function(args)
       local script = "ret = (" .. table.concat(args, " ") .. ")"
       local func = loadstring(script)
@@ -147,6 +155,7 @@ commands = {
         assert(ibs.shell_execute(value.description))
       end
       commands.locate._list = {}
+      return 0
     end, 
     completion = function(values)
       commands.locate._list = {}
@@ -161,7 +170,47 @@ commands = {
         end
       end
       return commands.locate._list
-    end, decription = "search files", history = false}
+    end, decription = "search files", history = false},
+  kill = { path = function(args)
+      local buf = {"/bin/kill"}
+      for i, v in ipairs(args) do
+        local ok, m = ibs.regex_match(".*\\(pid:(\\d+)\\)", Regex.NONE, v)
+        if ok then
+          table.insert(buf, m:_1())
+        else
+          table.insert(buf, v)
+        end
+      end
+      local ok, stdout, stderr = ibs.command_output(table.concat(buf, " "))
+      if not ok then
+        ibs.message("Failed to send given signal.")
+        return 1
+      end
+      return 0
+    end, 
+    completion = function(values)
+      local candidates = {}
+      if #values ~= 0 then
+        if values[#values] == "-" then
+          return {
+            {value="-1", description="HUP"}, {value="-2", description="INT"},
+            {value="-3", description="QUIT"}, {value="-9", description="KILL"},
+            {value="-10", description="USR1"}, {value="-15", description="TERM"}}
+        end
+      end
+      local ok, stdout, stderr =  ibs.command_output([[ps ux]])
+      if ok then
+        local lines = ibs.regex_split("\n", Regex.NONE, ibs.local2utf8(stdout))
+        for i, line in ipairs(lines) do
+          if ibs.regex_match("[\\w\\-_]+\\s+\\d+.*", Regex.NONE, line) then
+            local cols = ibs.regex_split("\\s+", Regex.NONE, line)
+            local proc = table.concat({select(11, unpack(cols))}, " ")
+            table.insert(candidates, proc .. "(pid:" .. cols[2] ..")")
+          end
+        end
+      end
+      return candidates
+    end, decription = "send a signal to a process", history = false}
 }
 
 shortcuts = {

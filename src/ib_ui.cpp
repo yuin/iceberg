@@ -145,20 +145,6 @@ keyup:
         if(key == 65505 && state == 0) { return 1; }
         // ignore hot key
         if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
-        // close modal window by an enter key
-        for(Fl_Window *w = Fl::first_window(); w != 0;w = Fl::next_window(w)){
-          if(w->modal()) { 
-            for(int i = 0; i < w->as_group()->children(); ++i){
-              Fl_Widget *widget = w->as_group()->child(i);
-              Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
-              if(button && button->visible()){
-                button->do_callback();
-                return 1;
-              }
-            }
-          }
-        }
-
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_down");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -296,6 +282,7 @@ void ib::Input::adjustSize() { // {{{
   unsigned int tsize = cfg.getStyleInputFontSize();
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
   ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(value()));
   int isize = (int)ib::platform::win_calc_text_width(osstr.get()) + tsize;
 #else
@@ -540,6 +527,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   Fl_Font font = textfont();
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
   ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(str));
   size_t w1 = ib::platform::win_calc_text_width(osstr.get()) + tsize*2;
 #else
@@ -552,6 +540,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
     tsize = cfg.getStyleListDescFontSize();
     fl_font(font, tsize);
 #ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
     ib::unique_oschar_ptr osdesc(ib::platform::utf82oschar(description));
     w2 = ib::platform::win_calc_text_width(osdesc.get()) + tsize*2;
 #else
@@ -768,7 +757,7 @@ void ib::ListWindow::hide(){ /* {{{ */
 #ifdef IB_OS_WIN
   resize(-1, -1, 1, 1);
 #else
-  resize(0, 0, 1, 1);
+  resize(x(), y(), 0, 0);
 #endif
 } /* }}} */
 
