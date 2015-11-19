@@ -13,10 +13,21 @@
 #include <lm.h>
 
 namespace ib{
-  typedef intptr_t thread;
-  typedef void (*threadfunc) (void *);
+  typedef int          socklen;
+
+  typedef HANDLE       thread;
   typedef CRITICAL_SECTION mutex;
-  typedef HANDLE condition;
+  typedef HANDLE cmutex;
+  typedef struct {
+    int waiters;
+    CRITICAL_SECTION waiters_lock;
+    HANDLE sema;
+    HANDLE waiters_done;
+    size_t was_broadcast;
+  } condition;
+  typedef void threadret;
+  typedef void (*threadfunc)(void*);
+
   typedef HWND   whandle;
   typedef HMODULE module;
   namespace platform {
@@ -24,6 +35,7 @@ namespace ib{
 
     void win_draw_text(ib::oschar *str, int x, int y, int w = 0, int h = 0);
     size_t win_calc_text_width(ib::oschar *str);
+    int list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error);
   }
 }
 const char *strcasestr(const char *haystack, const char *needle);

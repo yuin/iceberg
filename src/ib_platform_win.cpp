@@ -53,6 +53,10 @@ const char *strcasestr(const char *haystack, const char *needle) { // {{{
   return NULL;
 } // }}}
 
+void tcsncpy_s(ib::oschar *dest, const ib::oschar *src, std::size_t bufsize) {
+  _tcsncpy_s(dest, bufsize, src, _TRUNCATE);
+}
+
 ib::oschar* tcstokread(ib::oschar *buf, const ib::oschar sep) { // {{{
   while(1){
     if(*buf == sep){
@@ -87,6 +91,103 @@ static void ib_platform_set_error(ib::Error &error){ // {{{
   error.setMessage(msg.get());
 } // }}}
 
+// ib_platform_key2os_key {{{
+// code from fltk1.3: Fl_get_key_win32.cxx
+static const struct {unsigned short vk, key;} vktab[] = {
+  {VK_SPACE,    ' '},
+  {'1',        '!'},
+  {0xde,    '\"'},
+  {'3',        '#'},
+  {'4',        '$'},
+  {'5',        '%'},
+  {'7',        '&'},
+  {0xde,    '\''},
+  {'9',        '('},
+  {'0',        ')'},
+  {'8',        '*'},
+  {0xbb,    '+'},
+  {0xbc,    ','},
+  {0xbd,    '-'},
+  {0xbe,    '.'},
+  {0xbf,    '/'},
+  {0xba,    ':'},
+  {0xba,    ';'},
+  {0xbc,    '<'},
+  {0xbb,    '='},
+  {0xbe,    '>'},
+  {0xbf,    '?'},
+  {'2',        '@'},
+  {0xdb,    '['},
+  {0xdc,    '\\'},
+  {0xdd,    ']'},
+  {'6',        '^'},
+  {0xbd,    '_'},
+  {0xc0,    '`'},
+  {0xdb,    '{'},
+  {0xdc,    '|'},
+  {0xdd,    '}'},
+  {0xc0,    '~'},
+  {VK_BACK,    FL_BackSpace},
+  {VK_TAB,    FL_Tab},
+  {VK_CLEAR,    0xff0b/*XK_Clear*/},
+  {0xe2 /*VK_OEM_102*/,    FL_Iso_Key},
+  {VK_RETURN,    FL_Enter},
+  {VK_PAUSE,    FL_Pause},
+  {VK_SCROLL,    FL_Scroll_Lock},
+  {VK_ESCAPE,    FL_Escape},
+  {VK_HOME,    FL_Home},
+  {VK_LEFT,    FL_Left},
+  {VK_UP,    FL_Up},
+  {VK_RIGHT,    FL_Right},
+  {VK_DOWN,    FL_Down},
+  {VK_PRIOR,    FL_Page_Up},
+  {VK_NEXT,    FL_Page_Down},
+  {VK_END,    FL_End},
+  {VK_SNAPSHOT,    FL_Print},
+  {VK_INSERT,    FL_Insert},
+  {VK_APPS,    FL_Menu},
+  {VK_NUMLOCK,    FL_Num_Lock},
+//{VK_???,    FL_KP_Enter},
+  {VK_MULTIPLY,    FL_KP+'*'},
+  {VK_ADD,    FL_KP+'+'},
+  {VK_SUBTRACT,    FL_KP+'-'},
+  {VK_DECIMAL,    FL_KP+'.'},
+  {VK_DIVIDE,    FL_KP+'/'},
+  {VK_LSHIFT,    FL_Shift_L},
+  {VK_RSHIFT,    FL_Shift_R},
+  {VK_LCONTROL,    FL_Control_L},
+  {VK_RCONTROL,    FL_Control_R},
+  {0xf0,       FL_Caps_Lock},
+  {VK_LWIN,    FL_Meta_L},
+  {VK_RWIN,    FL_Meta_R},
+  {VK_LMENU,    FL_Alt_L},
+  {VK_RMENU,    FL_Alt_R},
+  {VK_DELETE,    FL_Delete}
+};
+
+static int ib_platform_key2os_key(const int key){
+  int b = sizeof(vktab)/sizeof(*vktab);
+  for(int i=0; i < b; i++) {
+    if (vktab[i].key == key) return vktab[i].vk;
+  }
+  return key;
+}
+// }}}
+
+static int ib_platform_modkey2os_modkey(const int key){ // {{{
+  switch(key){
+    case FL_SHIFT:
+      return MOD_SHIFT;
+    case FL_ALT:
+      return MOD_ALT;
+    case FL_CTRL:
+      return MOD_CONTROL;
+    case FL_META:
+      return MOD_WIN;
+  }
+  return 0;
+} // }}}
+
 static int ib_platform_register_hotkey() { /* {{{ */
   int mod, len;
   const int* hot_key = ib::Config::inst().getHotKey();
@@ -95,9 +196,9 @@ static int ib_platform_register_hotkey() { /* {{{ */
   len--;
   mod = 0;
   for(int i = 0; i < len; ++i){
-    mod |= ib::platform::ib_modkey2os_modkey(hot_key[i]);
+    mod |= ib_platform_modkey2os_modkey(hot_key[i]);
   }
-  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, ib::platform::ib_key2os_key(hot_key[len])) == 0){
+  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, ib_platform_key2os_key(hot_key[len])) == 0){
     return -1;
   }
   return 0;
@@ -487,25 +588,32 @@ char* ib::platform::local2utf8(const char *src) { // {{{
 
 ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(result != str) { _tcscpy(result, str); }
+  if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathQuoteSpaces(result);
   return result;
 } // }}}
 
 ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(result != str) { _tcscpy(result, str); }
+  if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathUnquoteSpaces(result);
   return result;
 } // }}}
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
+  window->clear_visible();
   ShowWindow(fl_xid(window), SW_HIDE);
 } // }}}
 
-void ib::platform::show_window(Fl_Window *window){ // {{{
+void ib::platform::activate_window(Fl_Window *window){ // {{{
+  window->set_visible_focus();
   ShowWindow(fl_xid(window), SW_SHOW);
   SetForegroundWindow(fl_xid(window));
+} // }}}
+
+void ib::platform::raise_window(Fl_Window *window){ // {{{
+  window->set_visible();
+  ShowWindow(fl_xid(window), SW_SHOWNA);
 } // }}}
 
 void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
@@ -649,7 +757,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     CloseHandle(process_info.hThread);
   }else{
     ib_platform_set_error(error);
-    funcret = 2;
+    funcret = -1;
   }
   
 
@@ -658,118 +766,6 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   CloseHandle(err_write_pipe);
   CloseHandle(err_read_pipe);
   return funcret;
-} // }}}
-
-// ib_key2os_key {{{
-// code from fltk1.3: Fl_get_key_win32.cxx
-static const struct {unsigned short vk, key;} vktab[] = {
-  {VK_SPACE,    ' '},
-  {'1',        '!'},
-  {0xde,    '\"'},
-  {'3',        '#'},
-  {'4',        '$'},
-  {'5',        '%'},
-  {'7',        '&'},
-  {0xde,    '\''},
-  {'9',        '('},
-  {'0',        ')'},
-  {'8',        '*'},
-  {0xbb,    '+'},
-  {0xbc,    ','},
-  {0xbd,    '-'},
-  {0xbe,    '.'},
-  {0xbf,    '/'},
-  {0xba,    ':'},
-  {0xba,    ';'},
-  {0xbc,    '<'},
-  {0xbb,    '='},
-  {0xbe,    '>'},
-  {0xbf,    '?'},
-  {'2',        '@'},
-  {0xdb,    '['},
-  {0xdc,    '\\'},
-  {0xdd,    ']'},
-  {'6',        '^'},
-  {0xbd,    '_'},
-  {0xc0,    '`'},
-  {0xdb,    '{'},
-  {0xdc,    '|'},
-  {0xdd,    '}'},
-  {0xc0,    '~'},
-  {VK_BACK,    FL_BackSpace},
-  {VK_TAB,    FL_Tab},
-  {VK_CLEAR,    0xff0b/*XK_Clear*/},
-  {0xe2 /*VK_OEM_102*/,    FL_Iso_Key},
-  {VK_RETURN,    FL_Enter},
-  {VK_PAUSE,    FL_Pause},
-  {VK_SCROLL,    FL_Scroll_Lock},
-  {VK_ESCAPE,    FL_Escape},
-  {VK_HOME,    FL_Home},
-  {VK_LEFT,    FL_Left},
-  {VK_UP,    FL_Up},
-  {VK_RIGHT,    FL_Right},
-  {VK_DOWN,    FL_Down},
-  {VK_PRIOR,    FL_Page_Up},
-  {VK_NEXT,    FL_Page_Down},
-  {VK_END,    FL_End},
-  {VK_SNAPSHOT,    FL_Print},
-  {VK_INSERT,    FL_Insert},
-  {VK_APPS,    FL_Menu},
-  {VK_NUMLOCK,    FL_Num_Lock},
-//{VK_???,    FL_KP_Enter},
-  {VK_MULTIPLY,    FL_KP+'*'},
-  {VK_ADD,    FL_KP+'+'},
-  {VK_SUBTRACT,    FL_KP+'-'},
-  {VK_DECIMAL,    FL_KP+'.'},
-  {VK_DIVIDE,    FL_KP+'/'},
-  {VK_LSHIFT,    FL_Shift_L},
-  {VK_RSHIFT,    FL_Shift_R},
-  {VK_LCONTROL,    FL_Control_L},
-  {VK_RCONTROL,    FL_Control_R},
-  {0xf0,       FL_Caps_Lock},
-  {VK_LWIN,    FL_Meta_L},
-  {VK_RWIN,    FL_Meta_R},
-  {VK_LMENU,    FL_Alt_L},
-  {VK_RMENU,    FL_Alt_R},
-  {VK_DELETE,    FL_Delete}
-};
-
-int ib::platform::ib_key2os_key(const int key){
-  int b = sizeof(vktab)/sizeof(*vktab);
-  for(int i=0; i < b; i++) {
-    if (vktab[i].key == key) return vktab[i].vk;
-  }
-  return key;
-}
-// }}}
-
-int ib::platform::ib_modkey2os_modkey(const int key){ // {{{
-  switch(key){
-    case FL_SHIFT:
-      return MOD_SHIFT;
-    case FL_ALT:
-      return MOD_ALT;
-    case FL_CTRL:
-      return MOD_CONTROL;
-    case FL_META:
-      return MOD_WIN;
-  }
-  return 0;
-} // }}}
-
-// void ib::platform::list_all_windows(std::vector<ib::whandle> &result){ // {{{
-static void list_all_windows_iter(std::vector<ib::whandle> &result, const ib::whandle parent){
-  HWND hwnd = FindWindowEx(parent, NULL, NULL, NULL);
-  result.push_back(hwnd);
-  while (hwnd != NULL){
-    list_all_windows_iter(result, hwnd);
-    hwnd = FindWindowEx(parent, hwnd, NULL, NULL);
-    result.push_back(hwnd);
-  }
-}
-
-void ib::platform::list_all_windows(std::vector<ib::whandle> &result){
-  list_all_windows_iter(result, GetDesktopWindow());
 } // }}}
 
 int ib::platform::show_context_menu(ib::oschar *path){ // {{{
@@ -889,6 +885,20 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
   }
 } // }}}
 
+ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  ib::oschar osbuf[IB_MAX_PATH];
+  ib::platform::get_self_path(osbuf);
+  ib::platform::dirname(result, osbuf);
+  return result;
+} // }}}
+
+ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
+  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  tcsncpy_s(result, file, IB_MAX_PATH);
+  return result;
+} // }}}
+
 //////////////////////////////////////////////////
 // path functions {{{
 //////////////////////////////////////////////////
@@ -963,7 +973,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  _tcsncpy(result, parent, IB_MAX_PATH);
+  tcsncpy_s(result, parent, IB_MAX_PATH);
   result[IB_MAX_PATH-1]= '\0';
   std::size_t length = _tcslen(result);
   const ib::oschar *sep;
@@ -999,7 +1009,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   if(!is_dot_path && !is_dot_dot_path){
     PathCanonicalize(result, tmp);
   }else{
-    _tcscpy(result, tmp);
+    tcsncpy_s(result, tmp, IB_MAX_PATH);
   }
   if(is_dot_path){
     result[0] = L'.';
@@ -1019,7 +1029,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  _tcscpy(result, path);
+  tcsncpy_s(result, path, IB_MAX_PATH);
   const std::size_t len = _tcslen(path);
   if(len == 0) return result;
   std::size_t i = len -1;
@@ -1054,7 +1064,7 @@ ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar 
   if(ib::platform::is_relative_path(path)){
     ib::platform::normalize_join_path(result, dir, path);
   }else{
-    _tcscpy(result, path);
+    tcsncpy_s(result, path, IB_MAX_PATH);
   }
   return result;
 } // }}}
@@ -1138,7 +1148,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
         if(!recursive){
           std::vector<ib::oschar*> shares;
           ib::oschar not_const_dir[IB_MAX_PATH];
-          _tcscpy(not_const_dir, dir);
+          tcsncpy_s(not_const_dir, dir, IB_MAX_PATH);
           ib_platform_list_network_shares(shares, not_const_dir);
           for(auto it = shares.begin(), last = shares.end(); it != last; ++it){
             result.push_back(ib::unique_oschar_ptr(*it));
@@ -1220,7 +1230,7 @@ ib::oschar* ib::platform::get_current_workdir(ib::oschar *result){ // {{{
   return result;
 } // }}}
 
-int ib::platform::set_current_workdir(ib::oschar *dir, ib::Error &error){ // {{{
+int ib::platform::set_current_workdir(const ib::oschar *dir, ib::Error &error){ // {{{
   if(SetCurrentDirectory(dir) == 0){
     ib_platform_set_error(error);
     return -1;
@@ -1251,14 +1261,14 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
       ib::oschar *ext_next = 0;
       ib::oschar *ext_current = 0;
       ib::oschar ext_buf2[MAX_ENV_SIZE];
-      _tcscpy(ext_buf2, ext_buf);
+      tcsncpy_s(ext_buf2, ext_buf, MAX_ENV_SIZE);
       ext_current = ext_buf2;
       do {
         ext_next = tcstokread(ext_current, L';');
         ib::platform::normalize_join_path(fullpath_buf, path_current, name);
         _tcscat(fullpath_buf, ext_current);
         if(ib::platform::file_exists(fullpath_buf)){
-          _tcscpy(result, fullpath_buf);
+          tcsncpy_s(result, fullpath_buf, IB_MAX_PATH);
           found = true;
           goto finalize;
         }
@@ -1267,7 +1277,7 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
     }else{
       ib::platform::normalize_join_path(fullpath_buf, path_current, name);
       if(ib::platform::file_exists(fullpath_buf)){
-        _tcscpy(result, fullpath_buf);
+        tcsncpy_s(result, fullpath_buf, IB_MAX_PATH);
         found = true;
         goto finalize;
       }
@@ -1277,28 +1287,6 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
 
 finalize:
   return found;
-} // }}}
-
-int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
-  ib::oschar buf[128]; 
-  ib::oschar *ptr;
-  ib::oschar *tmp;
-  size_t     length;
-
-  SetLastError(NO_ERROR);
-  if(GetLogicalDriveStrings(sizeof(buf), buf) == 0){
-    ib_platform_set_error(error);
-    return 1;
-  }
-
-  for(ptr = buf; *ptr != L'\0' ; ptr++){
-    length = _tcslen(ptr);
-    tmp = new ib::oschar[length+1];
-    swprintf(tmp, L"%ls", ptr);
-    result.push_back(ib::unique_oschar_ptr(tmp));
-    ptr += length;
-  }
-  return 0;
 } // }}}
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
@@ -1403,6 +1391,11 @@ void ib::platform::join_thread(ib::thread *t){ /* {{{ */
   WaitForSingleObject((void*)*t, INFINITE);
 } /* }}} */
 
+void ib::platform::exit_thread(int exit_code) { // {{{
+  CoUninitialize();
+  _endthread();
+} // }}}
+
 void ib::platform::create_mutex(ib::mutex *m) { /* {{{ */
   InitializeCriticalSection(m);
 } /* }}} */
@@ -1411,38 +1404,75 @@ void ib::platform::destroy_mutex(ib::mutex *m) { /* {{{ */
   DeleteCriticalSection(m);
 } /* }}} */
 
-void ib::platform::acquire_lock(ib::mutex *m) { /* {{{ */
+void ib::platform::lock_mutex(ib::mutex *m) { /* {{{ */
   EnterCriticalSection(m);
 } /* }}} */
 
-void ib::platform::release_lock(ib::mutex *m) { /* {{{ */
+void ib::platform::unlock_mutex(ib::mutex *m) { /* {{{ */
   LeaveCriticalSection(m);
 } /* }}} */
 
-void ib::platform::exit_thread(int exit_code) { // {{{
-  CoUninitialize();
-  _endthread();
-} // }}}
+void ib::platform::create_cmutex(ib::cmutex *m) { /* {{{ */
+  *m = CreateMutex(NULL,FALSE,NULL);
+} /* }}} */
+
+void ib::platform::destroy_cmutex(ib::cmutex *m) { /* {{{ */
+  ReleaseMutex(*m);
+} /* }}} */
+
+void ib::platform::lock_cmutex(ib::cmutex *m) { /* {{{ */
+  WaitForSingleObject(*m, INFINITE); 
+} /* }}} */
+
+void ib::platform::unlock_cmutex(ib::cmutex *m) { /* {{{ */
+  ReleaseMutex(*m);
+} /* }}} */
 
 void ib::platform::create_condition(ib::condition *c) { /* {{{ */
-  *c = CreateEvent(NULL,FALSE,FALSE,NULL);
+  c->waiters = 0;
+  c->was_broadcast = 0;
+  c->sema = CreateSemaphore (NULL, 0, LONG_MAX, NULL);
+  InitializeCriticalSection (&c->waiters_lock);
+  c->waiters_done = CreateEvent (NULL, FALSE, FALSE, NULL);
 } /* }}} */
 
 void ib::platform::destroy_condition(ib::condition *c) { /* {{{ */
-   CloseHandle(*c);
+  CloseHandle(c->sema);
+  CloseHandle(c->waiters_done);
+  DeleteCriticalSection(&c->waiters_lock);
 } /* }}} */
 
-bool ib::platform::wait_condition(ib::condition *c, int ms) { /* {{{ */
-  DWORD ret = WaitForSingleObject(*c, ms == 0 ? INFINITE : ms);
-  if(ret == WAIT_OBJECT_0) return true;
-  return false;
+int ib::platform::wait_condition(ib::condition *c, ib::cmutex *m, int ms) { /* {{{ */
+  EnterCriticalSection (&c->waiters_lock);
+  c->waiters++;
+  LeaveCriticalSection (&c->waiters_lock);
+  int ret = (SignalObjectAndWait (*m, c->sema, ms==0?INFINITE:ms, FALSE) == WAIT_TIMEOUT) ? 1 : 0;
+  EnterCriticalSection (&c->waiters_lock);
+  c->waiters--;
+  int last_waiter = c->was_broadcast && c->waiters == 0;
+  LeaveCriticalSection (&c->waiters_lock);
+  if (last_waiter)
+    SignalObjectAndWait (c->waiters_done, *m, INFINITE, FALSE);
+  else
+    WaitForSingleObject (*m, INFINITE);
+  return ret;
 } /* }}} */
 
 void ib::platform::notify_condition(ib::condition *c) { /* {{{ */
-  SetEvent(*c);
-} /* }}} */
-
-void ib::platform::reset_condition(ib::condition *c) { /* {{{ */
+  EnterCriticalSection (&c->waiters_lock);
+  int have_waiters = 0;
+  if (c->waiters > 0) {
+    c->was_broadcast = 1;
+    have_waiters = 1;
+  }
+  if (have_waiters) {
+    ReleaseSemaphore(c->sema, 1, 0);
+    LeaveCriticalSection (&c->waiters_lock);
+    WaitForSingleObject(c->waiters_done, INFINITE);
+    c->was_broadcast = 0;
+  } else {
+    LeaveCriticalSection (&c->waiters_lock);
+  }
 } /* }}} */
 
 //////////////////////////////////////////////////
@@ -1514,6 +1544,11 @@ int ib::platform::get_num_of_cpu(){ // {{{
   GetSystemInfo(&info);
   return (int)info.dwNumberOfProcessors;
 } // }}}
+
+int ib::platform::convert_keysym(int key){ // {{{
+  return key;
+} // }}}
+
 //////////////////////////////////////////////////
 // system functions }}}
 //////////////////////////////////////////////////
@@ -1545,6 +1580,29 @@ size_t ib::platform::win_calc_text_width(ib::oschar *str){ // {{{
   return (rect.right - rect.left);
 
 } // }}}
+
+int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
+  ib::oschar buf[128]; 
+  ib::oschar *ptr;
+  ib::oschar *tmp;
+  size_t     length;
+
+  SetLastError(NO_ERROR);
+  if(GetLogicalDriveStrings(sizeof(buf), buf) == 0){
+    ib_platform_set_error(error);
+    return 1;
+  }
+
+  for(ptr = buf; *ptr != L'\0' ; ptr++){
+    length = _tcslen(ptr);
+    tmp = new ib::oschar[length+1];
+    swprintf(tmp, L"%ls", ptr);
+    result.push_back(ib::unique_oschar_ptr(tmp));
+    ptr += length;
+  }
+  return 0;
+} // }}}
+
 //////////////////////////////////////////////////
 // platform specific functions }}}
 //////////////////////////////////////////////////

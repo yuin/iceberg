@@ -52,32 +52,34 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Select_Browser.H>
-#include <FL/x.h>
+#include <FL/x.H>
 #include <FL/fl_ask.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_PNG_Image.H>
+#include <FL/Fl_XPM_Image.H>
 #include <FL/Fl_GIF_Image.H>
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/Fl_Menu.H>
 #include "Fl_Font.H"
+#include <FL/filename.H>
 
 #include <lua.hpp>
 #include <oniguruma.h>
 #include <migemo.h>
 
 // constants {{{
-#define IB_VERSION "0.9.6"
+#define IB_VERSION "0.9.7"
 #ifdef IB_PUBLIC
 #      define IB_EXPORT
 #else
 #      define IB_EXPORT extern
 #endif
 #ifdef IB_OS_WIN
-#  define IB_MAX_PATH_BYTE (MAX_PATH*5+1)
-#  define IB_MAX_PATH MAX_PATH+3
+#  define IB_MAX_PATH_BYTE (MAX_PATH*5)
+#  define IB_MAX_PATH MAX_PATH
 #else
-#  define IB_MAX_PATH_BYTE (PATH_MAX*5+1)
-#  define IB_MAX_PATH PATH_MAX+3
+#  define IB_MAX_PATH_BYTE (PATH_MAX)
+#  define IB_MAX_PATH (PATH_MAX)
 #endif
 #define IB_EVENT_END_COMPOSITION 100
 #define IB_LOCALE "ja_JP.UTF-8"

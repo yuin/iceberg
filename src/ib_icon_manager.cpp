@@ -4,98 +4,74 @@
 #include "ib_ui.h"
 #include "ib_regex.h"
 #include "ib_config.h"
+#include "ib_svg.h"
 
 ib::IconManager *ib::IconManager::instance_ = 0;
 
 // icon_loader_thread {{{
+struct iconlist {
+  std::vector<Fl_RGB_Image*> icons;
+  int pos;
+};
+
+static void _main_thread_awaker(void *p){
+  auto listbox = ib::ListWindow::inst()->getListbox();
+  struct iconlist *ilist = (struct iconlist*)p;
+  int pos = ilist->pos;
+  for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
+    if(*it != 0) {
+      listbox->destroyIcon(pos);
+      listbox->icon(pos, *it);
+    }
+  }
+  delete ilist;
+}
+
 void ib::_icon_loader(void *p) {
-  ib::platform::on_thread_start();
   const int MAX_FLUSH = 200;
 
-  auto manager = ib::IconManager::inst();
   auto listbox = ib::ListWindow::inst()->getListbox();
 
-   std::vector<Fl_RGB_Image*> buf;
+  std::vector<Fl_RGB_Image*> buf;
   int current_operation_count = -1;
   int listsize;
   int pos;
   int loaded_to_flush;
 
+  { ib::platform::ScopedLock lock(listbox->getMutex());
+    current_operation_count = listbox->getOperationCount();
+    listsize = listbox->size();
+    pos = 1;
+    loaded_to_flush= 2;
+  }
 
-#define CHECK_THREAD_STATE \
-    { ib::platform::ScopedLock lock(manager->getLoaderMutex()); \
-      if(!manager->isRunning()) goto exit_thread; \
+  for(int i=1;i <= listsize; ++i){
+    { ib::platform::ScopedLock lock(listbox->getMutex());
+      if(current_operation_count != listbox->getOperationCount()){ break; }
+      int icon_size = listbox->getValues().at(i-1)->hasDescription() ? 32 : 16;
+      buf.push_back(listbox->getValues().at(i-1)->loadIcon(icon_size));
     }
 
-  while(1){
-    { ib::platform::ScopedCondition cond(manager->getLoaderCondition(), 0);
-
-      CHECK_THREAD_STATE;
+    if((i != 1 && (i-pos) % loaded_to_flush == 0) || i == listsize){
       { ib::platform::ScopedLock lock(listbox->getMutex());
-        current_operation_count = listbox->getOperationCount();
-        listsize = listbox->size();
-        pos = 1;
-        loaded_to_flush= 2;
-        ib::utils::delete_pointer_vectors(buf);
-      }
-
-      for(int i=1;i <= listsize; ++i){
-        CHECK_THREAD_STATE;
-        { ib::platform::ScopedLock lock(listbox->getMutex());
-          if(current_operation_count != listbox->getOperationCount()){ break; }
-          int icon_size = listbox->getValues().at(i-1)->hasDescription() ? 32 : 16;
-          buf.push_back(listbox->getValues().at(i-1)->loadIcon(icon_size));
+        if(current_operation_count != listbox->getOperationCount()){
+          ib::utils::delete_pointer_vectors(buf);
+          break;
         }
-
-        if((i != 1 && (i-pos) % loaded_to_flush == 0) || i == listsize){
-          { ib::FlScopedLock fflock;
-            { ib::platform::ScopedLock lock(listbox->getMutex());
-              if(current_operation_count != listbox->getOperationCount()){
-                ib::utils::delete_pointer_vectors(buf);
-                break;
-              }
-              for(auto it = buf.begin(), last = buf.end(); it != last; ++it, ++pos){
-                if(*it != 0) {
-                  listbox->destroyIcon(pos);
-                  listbox->icon(pos, *it);
-                }
-              }
-              buf.clear();
-              loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
-              Fl::awake((void*)0);
-            }
-          }
-        }
+        struct iconlist *ilist = new iconlist;
+        std::copy(buf.begin(), buf.end(), std::back_inserter(ilist->icons));
+        ilist->pos = pos;
+        Fl::awake(_main_thread_awaker, ilist);
+        pos += buf.size();
+        buf.clear();
+        loaded_to_flush = std::min<int>(loaded_to_flush*3, MAX_FLUSH);
       }
     }
   }
-exit_thread:
-  ib::platform::exit_thread(0);
-#undef CHECK_THREAD_STATE
-} // }}}
-
-void ib::IconManager::startLoaderThread() { // {{{
-  running_ = true;
-  ib::platform::create_thread(&loader_thread_, _icon_loader, 0);
-} // }}}
-
-void ib::IconManager::stopLoaderThread() { // {{{
-  bool running = true;
-  {
-    ib::platform::ScopedLock lock(loader_mutex_);
-    running = running_;
-    if(running_) { running_ = false; }
-  }
-  if(!running) return;
-  ib::platform::notify_condition(&loader_condition_);
-  ib::platform::join_thread(&loader_thread_);
-  ib::platform::destroy_mutex(&loader_mutex_);
-  ib::platform::destroy_condition(&loader_condition_);
-  ib::platform::destroy_mutex(&cache_mutex_);
 } // }}}
 
 void ib::IconManager::loadCompletionListIcons() { // {{{
-  ib::platform::notify_condition(&loader_condition_);
+  loader_event_.queueEvent((void*)1);
 } // }}}
 
 void ib::IconManager::load() { // {{{
@@ -171,27 +147,26 @@ void ib::IconManager::dump() { // {{{
   ofs.close();
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size, const bool cache){ // {{{
+Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   Fl_RGB_Image *icon;
-  std::string cache_key;
+  std::string cache_key("");
   ib::oschar os_path[IB_MAX_PATH];
   ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path);
 
-  if(cache){
-    ib::oschar os_key[IB_MAX_PATH];
-    ib::platform::icon_cache_key(os_key, os_path);
-    char key[IB_MAX_PATH_BYTE];
-    ib::platform::oschar2utf8_b(key, IB_MAX_PATH_BYTE, os_key);
-    cache_key = key;
-    char buf[24] = {};
-    snprintf(buf, 24, "_%d", size);
-    cache_key += buf;
-    icon = getIconCache(cache_key);
-    if(icon != 0){
-      return copyCache(icon);
-    }
+  ib::oschar os_key[IB_MAX_PATH];
+  ib::platform::icon_cache_key(os_key, os_path);
+  char key[IB_MAX_PATH_BYTE];
+  ib::platform::oschar2utf8_b(key, IB_MAX_PATH_BYTE, os_key);
+  cache_key = key;
+  char buf[24] = {0};
+  snprintf(buf, 24, "_%d", size);
+  cache_key += buf;
+  icon = getIconCache(cache_key);
+  if(icon != 0){
+    return copyCache(icon);
   }
+  
 
   if(!ib::platform::is_path(os_path)){
     ib::oschar tmp[IB_MAX_PATH];
@@ -208,11 +183,8 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
   if(icon == 0) {
     return getEmptyIcon(size, size);
   }
-  if(cache){ 
-    createIconCache(cache_key, icon); 
-    return copyCache(icon);
-  }
-  return icon;
+  createIconCache(cache_key, icon); 
+  return copyCache(icon);
 } // }}}
 
 Fl_RGB_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int size){ // {{{
@@ -253,21 +225,67 @@ Fl_RGB_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int s
   return result_image;
 } // }}}
 
+Fl_RGB_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(svg_file));
+  unsigned char *buf = ib::rasterize_svg_file(svg_file, size);
+  if(buf == 0) return 0;
+  Fl_RGB_Image *result_image = new Fl_RGB_Image(buf, size, size, 4);
+  return result_image;
+} // }}}
+
+Fl_RGB_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(xpm_file));
+  Fl_XPM_Image *tmp_image = new Fl_XPM_Image(lopath.get());
+  Fl_RGB_Image *result_image;
+  result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
+  delete tmp_image;
+  return result_image;
+} // }}}
+
 Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  std::string cache_key;
+
+  ib::oschar osresolved_path[IB_MAX_PATH];
+  char resolved_path[IB_MAX_PATH_BYTE];
+  ib::oschar osfile[IB_MAX_PATH];
+  ib::platform::utf82oschar_b(osfile, IB_MAX_PATH, file);
+  ib::platform::resolve_icon(osresolved_path, osfile, size);
+  ib::platform::oschar2utf8_b(resolved_path, IB_MAX_PATH_BYTE, osresolved_path);
+  Fl_RGB_Image *icon;
+  cache_key += resolved_path;
+  cache_key += "_";
+  cache_key += size;
+  icon = getIconCache(cache_key);
+  if(icon != 0){
+    return copyCache(icon);
+  }
+
   ib::Regex re("(.*)\\.(\\w+)", ib::Regex::NONE);
   re.init();
-  if(re.match(file) == 0){
+  if(re.match(resolved_path) == 0){
     std::string ret;
     re._2(ret);
     if(ret == "png" || ret == "PNG") {
-      return readPngFileIcon(file, size);
+      icon = readPngFileIcon(resolved_path, size);
     }else if(ret == "gif" || ret == "GIF") {
-      return readGifFileIcon(file, size);
+      icon = readGifFileIcon(resolved_path, size);
     }else if(ret == "jpg" || ret == "JPG" || ret == "jpeg" || ret == "JPEG") {
-      return readJpegFileIcon(file, size);
+      icon =  readJpegFileIcon(resolved_path, size);
+    } else if(ret == "svg" || ret == "SVG"){
+      icon = readSvgFileIcon(resolved_path, size);
+    } else if(ret == "xpm" || ret == "XPM"){
+      icon = readXpmFileIcon(resolved_path, size);
     }
   }
-  return getAssociatedIcon(file, size, true);
+  if(icon != 0) {
+    createIconCache(cache_key, icon); 
+    return copyCache(icon);
+  } else {
+    return getAssociatedIcon(file, size);
+  }
 } // }}}
 
 Fl_RGB_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // {{{

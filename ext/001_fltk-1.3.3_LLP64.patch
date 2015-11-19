@@ -1,0 +1,113 @@
+diff -uprN fltk-1.3.3/FL/Fl_Menu_Item.H fltk-1.3.3_LLP_fix/FL/Fl_Menu_Item.H
+--- fltk-1.3.3/FL/Fl_Menu_Item.H	2014-09-07 04:03:43 +0900
++++ fltk-1.3.3_LLP_fix/FL/Fl_Menu_Item.H	2015-11-16 22:42:52 +0900
+@@ -240,7 +240,7 @@ struct FL_EXPORT Fl_Menu_Item {
+     for the menu item's callback function.
+     \see Fl_Callback_p Fl_MenuItem::callback() const
+    */
+-  void callback(Fl_Callback1*c, long p=0) {callback_=(Fl_Callback*)c; user_data_=(void*)p;}
++  void callback(Fl_Callback1*c, fl_intptr_t p=0) {callback_=(Fl_Callback*)c; user_data_=(void*)p;}
+ 
+   /**
+     Gets the user_data() argument that is sent to the callback function.
+@@ -256,7 +256,7 @@ struct FL_EXPORT Fl_Menu_Item {
+     argument.  This method casts the stored userdata() argument to long
+     and returns it as a \e long value.
+   */
+-  long argument() const {return (long)(fl_intptr_t)user_data_;}
++  fl_intptr_t argument() const {return (fl_intptr_t)user_data_;}
+   /**
+     Sets the user_data() argument that is sent to the callback function.
+     For convenience you can also define the callback as taking a long
+@@ -264,7 +264,7 @@ struct FL_EXPORT Fl_Menu_Item {
+     and stores it in the menu item's userdata() member.
+     This may not be portable to some machines.
+   */
+-  void argument(long v) {user_data_ = (void*)v;}
++  void argument(fl_intptr_t v) {user_data_ = (void*)v;}
+ 
+   /** Gets what key combination shortcut will trigger the menu item. */
+   int shortcut() const {return shortcut_;}
+@@ -394,7 +394,7 @@ struct FL_EXPORT Fl_Menu_Item {
+     the callback.
+     You must first check that callback() is non-zero before calling this.
+   */
+-  void do_callback(Fl_Widget* o,long arg) const {callback_(o, (void*)arg);}
++  void do_callback(Fl_Widget* o,fl_intptr_t arg) const {callback_(o, (void*)arg);}
+ 
+   // back-compatibility, do not use:
+ 
+diff -uprN fltk-1.3.3/FL/Fl_Widget.H fltk-1.3.3_LLP_fix/FL/Fl_Widget.H
+--- fltk-1.3.3/FL/Fl_Widget.H	2014-09-08 17:55:49 +0900
++++ fltk-1.3.3_LLP_fix/FL/Fl_Widget.H	2015-11-16 22:45:22 +0900
+@@ -573,7 +573,7 @@ public:
+       \param[in] cb new callback
+       \param[in] p user data
+    */
+-  void callback(Fl_Callback1*cb, long p=0) {callback_=(Fl_Callback*)cb; user_data_=(void*)p;}
++  void callback(Fl_Callback1*cb, fl_intptr_t p=0) {callback_=(Fl_Callback*)cb; user_data_=(void*)p;}
+ 
+   /** Gets the user data for this widget.
+       Gets the current user data (void *) argument that is passed to the callback function.
+@@ -589,13 +589,13 @@ public:
+ 
+   /** Gets the current user data (long) argument that is passed to the callback function.
+    */
+-  long argument() const {return (long)(fl_intptr_t)user_data_;}
++  fl_intptr_t argument() const {return (fl_intptr_t)user_data_;}
+ 
+   /** Sets the current user data (long) argument that is passed to the callback function.
+       \todo The user data value must be implemented using \em intptr_t or similar
+       to avoid 64-bit machine incompatibilities.
+    */
+-  void argument(long v) {user_data_ = (void*)v;}
++  void argument(fl_intptr_t v) {user_data_ = (void*)v;}
+ 
+   /** Returns the conditions under which the callback is called.
+ 
+@@ -845,7 +845,7 @@ public:
+       \param[in] arg call the callback with \p arg as the user data argument
+       \see callback()
+    */
+-  void do_callback(Fl_Widget* o,long arg) {do_callback(o,(void*)arg);}
++  void do_callback(Fl_Widget* o,fl_intptr_t arg) {do_callback(o,(void*)arg);}
+ 
+   // Causes a widget to invoke its callback function with arbitrary arguments.
+   // Documentation and implementation in Fl_Widget.cxx
+
+diff -uprN fltk-1.3.3/FL/forms.H fltk-1.3.3_LLP_fix/FL/forms.H
+--- fltk-1.3.3/FL/forms.H	2014-10-30 05:17:38 +0900
++++ fltk-1.3.3_LLP_fix/FL/forms.H	2015-11-16 22:45:55 +0900
+@@ -219,7 +219,7 @@ inline void fl_get_object_position(Fl_Wi
+   *x = o->x(); *y = o->y();}
+ 
+ typedef void (*Forms_CB)(Fl_Widget*, long);
+-inline void fl_set_object_callback(Fl_Widget*o,Forms_CB c,long a) {o->callback(c,a);}
++inline void fl_set_object_callback(Fl_Widget*o,Forms_CB c,fl_intptr_t a) {o->callback(c,a);}
+ #define fl_set_call_back      fl_set_object_callback
+ inline void fl_call_object_callback(Fl_Widget* o) {o->do_callback();}
+ inline void fl_trigger_object(Fl_Widget* o) {o->do_callback();}
+diff -uprN fltk-1.3.3/FL/glut.H fltk-1.3.3_LLP_fix/FL/glut.H
+--- fltk-1.3.3/FL/glut.H	2012-04-22 11:45:09 +0900
++++ fltk-1.3.3_LLP_fix/FL/glut.H	2015-11-16 22:43:29 +0900
+@@ -236,7 +236,7 @@ inline void glutTimerFunc(unsigned int m
+ #if defined(__LP64__)
+   Fl::add_timeout(msec*.001, (void (*)(void *))f, (void *) (long long) value);
+ #else
+-  Fl::add_timeout(msec*.001, (void (*)(void *))f, (void *)value);
++  Fl::add_timeout(msec*.001, (void (*)(void *))f, (void *)(fl_intptr_t)value);
+ #endif
+ }
+ 
+diff -uprN fltk-1.3.3/src/fl_ask.cxx fltk-1.3.3_LLP_fix/src/fl_ask.cxx
+--- fltk-1.3.3/src/fl_ask.cxx	2014-08-21 21:13:47 +0900
++++ fltk-1.3.3_LLP_fix/src/fl_ask.cxx	2015-11-16 22:47:00 +0900
+@@ -104,7 +104,7 @@ static Fl_Window *makeform() {
+      else
+        button[b] = new Fl_Button(x, 70, 90, 23);
+      button[b]->align(FL_ALIGN_INSIDE|FL_ALIGN_WRAP);
+-     button[b]->callback(button_cb, b);
++     button[b]->callback(button_cb, (fl_intptr_t)b);
+    }
+  }
+  button[0]->shortcut(FL_Escape);

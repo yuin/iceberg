@@ -154,7 +154,7 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
     }
   }
   if(message != 0){
-    fl_alert(message);
+    fl_alert("%s", message);
   }
 } // }}}
 
@@ -164,25 +164,28 @@ void ib::Controller::hideApplication() { // {{{
     ib::platform::hide_window(ib::ListWindow::inst());
     ib::ListWindow::inst()->set_visible();
   }
+  //ib::MainWindow::inst()->hide();
+  //ib::ListWindow::inst()->hide();
 } // }}}
 
 void ib::Controller::showApplication() { // {{{
   if(ib::ListWindow::inst()->getListbox()->isEmpty()) {
-    ib::platform::hide_window(ib::ListWindow::inst());
-  }else if(ib::ListWindow::inst()->visible()) {
-    ib::platform::show_window(ib::ListWindow::inst());
+    ib::ListWindow::inst()->hide();
+  }else {
+    ib::ListWindow::inst()->show();
   }
-  ib::platform::show_window(ib::MainWindow::inst());
+  ib::MainWindow::inst()->show();
+  ib::platform::activate_window(ib::MainWindow::inst());
 } // }}}
 
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   ib::Config &cfg = ib::Config::inst();
   ib::Error error;
-  
+
   const char *usage = "Usage: iceberg.exe [-c CONFIG_FILE] [-m message]";
   for(int i = 0; i < argc; ++i) {
     int error = 0;
-    if(strcmp(argv[i], "-r") == 0){
+    if(strcmp(argv[i], "-p") == 0){
       if(i == argc-1) { error = 1; }
       else{ cfg.setOldPid(atoi(argv[++i]));}
     }else if(strcmp(argv[i], "-c") == 0) {
@@ -194,7 +197,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
 
     if(error) {
-      fl_alert(usage);
+      fl_alert("%s", usage);
       ib::utils::exit_application(1);
     }
   }
@@ -209,8 +212,10 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   cfg.setInitialWorkdir(current_workdir.get());
   setCwd(current_workdir.get(), error);
   if(cfg.getConfigPath().size() == 0) {
+    ib::oschar osconf_dir[IB_MAX_PATH];
+    ib::platform::default_config_path(osconf_dir);
     ib::unique_oschar_ptr osconfig_name(ib::platform::utf82oschar("config.lua"));
-    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osself_dir.get(), osconfig_name.get()));
+    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osconf_dir, osconfig_name.get()));
     ib::unique_char_ptr   cconfig_path(ib::platform::oschar2utf8(oscconfig_path.get()));
     cfg.setConfigPath(cconfig_path.get());
   }
@@ -242,9 +247,8 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
   cfg.setPlatform(IB_OS_STRING);
 
-
   ib::MainLuaState::inst().init();
-
+  
   ib::SearchPath *search_path = 0;
   lua_Integer luint = 0;
   lua_Number  ludouble = 0.0;
@@ -276,6 +280,10 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     lua_pop(IB_LUA, 1);
     GET_FIELD("enable_icons", boolean) {
        cfg.setEnableIcons(lua_toboolean(IB_LUA, -1) != 0);
+    }
+    lua_pop(IB_LUA, 1);
+    GET_FIELD("icon_theme", string) {
+      cfg.setIconTheme(lua_tostring(IB_LUA, -1));
     }
     lua_pop(IB_LUA, 1);
     GET_FIELD("max_cached_icons", number) {
@@ -316,6 +324,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
     GET_FIELD("file_browser", string) {
       cfg.setFileBrowser(lua_tostring(IB_LUA, -1));
+    }
+    lua_pop(IB_LUA, 1);
+
+    GET_FIELD("terminal", string) {
+      cfg.setTerminal(lua_tostring(IB_LUA, -1));
     }
     lua_pop(IB_LUA, 1);
 
@@ -784,6 +797,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
           ib::platform::oschar2utf8_b(quoted_path, IB_MAX_PATH_BYTE, tmp_path);
           command->setPath(quoted_path);
           command->init();
+          ib::platform::on_command_init(command);
           commands.push_back(command);
         }
       }
@@ -830,6 +844,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     ofs << (*it)->getRawWorkdir() << std::endl;
     ofs << (*it)->getDescription() << std::endl;
     ofs << (*it)->getCommandPath() << std::endl;
+    ofs << (*it)->getIconFile() << std::endl;
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
@@ -860,6 +875,8 @@ void ib::Controller::loadCachedCommands() {
     cmd->setDescription(buf);
     getline(ifs, buf);
     cmd->setCommandPath(buf);
+    getline(ifs, buf);
+    cmd->setIconFile(buf);
     cmd->setInitialized(true);
     addCommand(cmd->getName(), cmd);
   }
@@ -902,12 +919,13 @@ void ib::Controller::completionInput() { // {{{
           ib::oschar os_dirname[IB_MAX_PATH];
           ib::platform::dirname(os_dirname, os_value.get());
           ib::oschar os_compvalue[IB_MAX_PATH];
+          ib::oschar os_quoted_compvalue[IB_MAX_PATH];
           ib::platform::utf82oschar_b(os_compvalue, IB_MAX_PATH, listbox->selectedValue()->getCompvalue().c_str());
           ib::oschar os_completed_path[IB_MAX_PATH];
           ib::platform::normalize_join_path(os_completed_path, os_dirname, os_compvalue);
-          ib::platform::quote_string(os_completed_path, os_completed_path);
+          ib::platform::quote_string(os_quoted_compvalue, os_completed_path);
           char completed_path[IB_MAX_PATH_BYTE];
-          ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_completed_path);
+          ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_quoted_compvalue);
           buf += completed_path;
         }else{
           const std::string &comp_value = listbox->selectedValue()->getCompvalue();
@@ -958,8 +976,8 @@ void ib::Controller::showCompletionCandidates() {
   std::vector<ib::CompletionValue*> candidates;
 
   bool use_max_candidates = false;
-  if(first_value == "/" || first_value == "\\"){
 #ifdef IB_OS_WIN
+  if(first_value == "/" || first_value == "\\"){
     std::vector<ib::unique_oschar_ptr> os_drives;
     ib::Error error;
     char drive[16];
@@ -969,8 +987,10 @@ void ib::Controller::showCompletionCandidates() {
         candidates.push_back(new ib::CompletionString(drive));
       }
     }
+
+  }else 
 #endif
-  }else if(isHistorySearchMode()){
+  if(isHistorySearchMode()){
     use_max_candidates = true;
     ib::Completer::inst().completeHistory(candidates, first_value);
     std::stable_sort(candidates.begin(), candidates.end(), cmp_command);
@@ -1019,13 +1039,11 @@ void ib::Controller::showCompletionCandidates() {
   listbox->endUpdate(use_max_candidates);
 
   if(!listbox->isEmpty()) {
-    ib::platform::show_window(ib::ListWindow::inst());
+    ib::ListWindow::inst()->show();
   }else{
     listbox->clearAll();
     ib::ListWindow::inst()->hide();
   }
-  input->take_focus();
-
 } // }}}
 
 void ib::Controller::selectNextCompletion(){ // {{{
@@ -1085,7 +1103,7 @@ void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{
 void ib::Controller::setResultText(const char *value){ // {{{
   result_text_ = value;
   auto input   = ib::MainWindow::inst()->getInput();
-  input->cancelKeyEvent();
+  input->getKeyEvent().cancelEvent();
 } // }}}
 
 void ib::Controller::killWord() { // {{{
@@ -1122,7 +1140,7 @@ void ib::Controller::killWord() { // {{{
   input->value(buf.c_str());
   input->position((int)position);
   input->adjustSize();
-  input->queueKeyEvent();
+  input->getKeyEvent().queueEvent((void*)1);
 } // }}}
 
 void ib::Controller::handleIpcMessage(const char* message){ // {{{

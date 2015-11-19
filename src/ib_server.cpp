@@ -8,7 +8,7 @@ void ib::Server::accept(FL_SOCKET fd, void *data) { // {{{
   FL_SOCKET client_socket;
   sockaddr_in client;
   int s = sizeof(client);
-  client_socket = ::accept(fd, (sockaddr*)&client, &s);
+  client_socket = ::accept(fd, (sockaddr*)&client, (ib::socklen*)&s);
   if(client_socket < 0){
     return;
   }
@@ -47,8 +47,15 @@ int ib::Server::start(ib::Error &error){ // {{{
 
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port);
+#ifdef IB_OS_WIN
   addr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+#else
+  addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+#endif
   setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
+#ifdef SO_REUSEPORT
+  setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, (const char *)&yes, sizeof(yes));
+#endif
 
   if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
     error.setMessage("Failed to bind a server socket");

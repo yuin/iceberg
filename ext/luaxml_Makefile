@@ -4,11 +4,17 @@
 CC     = gcc
 INCDIR = -I../lua-5.1.4/src
 LIB    = 
-CFLAGS = -Os -Wall -c #-g
+CFLAGS = -Os -Wall -c -fPIC
 LFLAGS =  -shared
-LIBS          = ../lua-5.1.4/src/lua51.dll
+ifeq ($(OS),Windows_NT)
+LIBS = ../lua-5.1.4/src/lua51.dll
 EXESUFFIX = .exe
 SHLIBSUFFIX = .dll
+else
+EXESUFFIX =
+SHLIBSUFFIX = .so
+EXESUFFIX =
+endif
 
 # project specific targets:
 all:  LuaXML_lib$(SHLIBSUFFIX)

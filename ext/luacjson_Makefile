@@ -44,12 +44,14 @@ LUA_BIN_DIR =       $(PREFIX)/bin
 #CJSON_CFLAGS =      -fpic -DUSE_INTERNAL_ISINF
 
 ## Windows (MinGW)
+ifeq ($(OS),Windows_NT)
 CC     = gcc
 TARGET =            cjson.dll
 PREFIX =            /home/user/opt
 CJSON_CFLAGS =      -DDISABLE_INVALID_NUMBERS
 CJSON_LDFLAGS =     -shared ../lua-5.1.4/src/lua51.dll
 LUA_BIN_SUFFIX =    .lua
+endif
 
 ##### Number conversion configuration #####
 

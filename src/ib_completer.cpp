@@ -1,4 +1,4 @@
-#include "ib_completer.h"
+# //.}}}include "ib_completer.h"
 #include "ib_platform.h"
 #include "ib_ui.h"
 #include "ib_lua.h"
@@ -98,7 +98,11 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
             }
             lua_pop(IB_LUA, 1);
             if(is_always_match) {
-              compstr->setCompvalue(input.c_str());
+              if(token->isValueToken()) {
+                compstr->setCompvalue(input.c_str());
+              }else {
+                compstr->setCompvalue(value);
+              }
             }
             candidates.push_back(compstr);
           }
@@ -325,6 +329,5 @@ notmatch:
 
 void ib::AbbrMatchCompletionMethod::afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input) { // {{{
 } // }}}
-
 // }}}
 

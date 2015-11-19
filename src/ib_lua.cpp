@@ -414,7 +414,7 @@ void ib::LuaState::init() { // {{{
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
   if(luaL_dofile(l_, cfg.getConfigPath().c_str())) {
-    fl_alert(lua_tostring(l_, lua_gettop(l_)));
+    fl_alert("%s", lua_tostring(l_, lua_gettop(l_)));
     exit(1);
   }
 } // }}}
@@ -482,7 +482,9 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(selected_index);
   REGISTER_FUNCTION(utf82local);
   REGISTER_FUNCTION(local2utf8);
+#ifdef IB_OS_WIN
   REGISTER_FUNCTION(list_all_windows);
+#endif
   REGISTER_FUNCTION(lock);
   REGISTER_FUNCTION(unlock);
   REGISTER_FUNCTION(band);
@@ -668,7 +670,7 @@ int ib::luamodule::message(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
   const char *msg = luaL_checkstring(L, 1);
-  fl_message(msg);
+  fl_message("%s", msg);
   lua_state.clearStack();
   return 0;
 } // }}}
@@ -942,10 +944,26 @@ int ib::luamodule::local2utf8(lua_State *L) { // {{{
   return 1;
 } // }}}
 
+// int ib::luamodule::list_all_windows(lua_State *L) { // {{{
+#ifdef IB_OS_WIN
+static void list_all_windows_iter(std::vector<ib::whandle> &result, const ib::whandle parent){
+  HWND hwnd = FindWindowEx(parent, NULL, NULL, NULL);
+  result.push_back(hwnd);
+  while (hwnd != NULL){
+    list_all_windows_iter(result, hwnd);
+    hwnd = FindWindowEx(parent, hwnd, NULL, NULL);
+    result.push_back(hwnd);
+  }
+}
+
+void list_all_windows(std::vector<ib::whandle> &result){
+  list_all_windows_iter(result, GetDesktopWindow());
+}
+
 int ib::luamodule::list_all_windows(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   std::vector<ib::whandle> result;
-  ib::platform::list_all_windows(result);
+  list_all_windows(result);
   lua_state.clearStack();
   lua_newtable(L);
   int i = 1;
@@ -960,6 +978,7 @@ int ib::luamodule::list_all_windows(lua_State *L) { // {{{
   }
   return 1;
 } // }}}
+#endif
 
 int ib::luamodule::lock(lua_State *L) { // {{{
   Fl::lock();

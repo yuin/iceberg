@@ -22,6 +22,10 @@ namespace ib {
       bool getEnableIcons() const { return enable_icons_; }
       void setEnableIcons(const bool value){ enable_icons_ = value; }
 
+      const std::string& getIconTheme() const { return icon_theme_; }
+      void setIconTheme(const std::string &value){ icon_theme_ = value; }
+      void setIconTheme(const char *value){ icon_theme_ = value; }
+
       unsigned int getMaxCachedIcons() const { return max_cached_icons_; }
       void setMaxCachedIcons(const unsigned int value){ max_cached_icons_ = value; }
 
@@ -43,6 +47,10 @@ namespace ib {
       const std::string& getFileBrowser() const { return file_browser_; }
       void setFileBrowser(const std::string &value){ file_browser_ = value; }
       void setFileBrowser(const char *value){ file_browser_ = value; }
+
+      const std::string& getTerminal() const { return terminal_; }
+      void setTerminal(const std::string &value){ terminal_ = value; }
+      void setTerminal(const char *value){ terminal_ = value; }
 
       unsigned int getServerPort() const { return server_port_; }
       void setServerPort(const unsigned int value){ server_port_ = value; }
@@ -231,6 +239,7 @@ namespace ib {
       Config() :
         default_search_path_depth_(5),
         enable_icons_(true),
+        icon_theme_("Hicolor"),
         max_cached_icons_(1000),
         key_event_threshold_(200),
         max_histories_(200),
@@ -238,6 +247,7 @@ namespace ib {
         max_clipboard_histories_(0),
         history_factor_(0.3),
         file_browser_(),
+        terminal_(),
         server_port_(0),
         path_autocomplete_(false),
         option_autocomplete_(false),
@@ -304,6 +314,7 @@ namespace ib {
 
       unsigned int default_search_path_depth_;
       bool         enable_icons_;
+      std::string  icon_theme_;
       unsigned int max_cached_icons_;
       unsigned int key_event_threshold_;
       unsigned int max_histories_;
@@ -311,6 +322,7 @@ namespace ib {
       unsigned int max_clipboard_histories_;
       double       history_factor_;
       std::string  file_browser_;
+      std::string  terminal_;
       unsigned int server_port_;
       bool         path_autocomplete_;
       bool         option_autocomplete_;

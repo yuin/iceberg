@@ -7,6 +7,9 @@
 #ifdef IB_OS_WIN
 #  include "ib_platform_win.h"
 #endif
+#ifdef IB_OS_LINUX
+#  include "ib_platform_linux.h"
+#endif
 
 #include "ib_comp_value.h"
 
@@ -30,16 +33,16 @@ namespace ib {
 
     /* application functions */
     void hide_window(Fl_Window *window);
-    void show_window(Fl_Window *window);
+    void activate_window(Fl_Window *window);
+    void raise_window(Fl_Window *window);
     void set_window_alpha(Fl_Window *window, int alpha);
     int  shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, ib::Error& error);
     int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, ib::Error& error);
     int command_output(std::string &sstdout, std::string &sstderr, const char *command, ib::Error &error);
-    int ib_key2os_key(const int key);
-    int ib_modkey2os_modkey(const int key);
-    void list_all_windows(std::vector<ib::whandle> &result);
     int show_context_menu(ib::oschar *path);
     void on_command_init(ib::Command *command);
+    ib::oschar* default_config_path(ib::oschar *result);
+    ib::oschar* resolve_icon(ib::oschar *result, ib::oschar *file, int size);
 
     /* path functions */
     Fl_RGB_Image* get_associated_icon_image(const ib::oschar *path, const int size);
@@ -58,7 +61,7 @@ namespace ib {
     int walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive = false);
     ib::oschar* get_self_path(ib::oschar *result);
     ib::oschar* get_current_workdir(ib::oschar *result);
-    int set_current_workdir(ib::oschar *dir, ib::Error &error);
+    int set_current_workdir(const ib::oschar *dir, ib::Error &error);
     bool which(ib::oschar *result, const ib::oschar *name);
     int list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error);
     ib::oschar* icon_cache_key(ib::oschar *result, const ib::oschar *path);
@@ -76,13 +79,16 @@ namespace ib {
     void exit_thread(int exit_code);
     void create_mutex(ib::mutex *m);
     void destroy_mutex(ib::mutex *m);
-    void acquire_lock(ib::mutex *m);
-    void release_lock(ib::mutex *m);
+    void lock_mutex(ib::mutex *m);
+    void unlock_mutex(ib::mutex *m);
+    void create_cmutex(ib::cmutex *m);
+    void destroy_cmutex(ib::cmutex *m);
+    void lock_cmutex(ib::cmutex *m);
+    void unlock_cmutex(ib::cmutex *m);
     void create_condition(ib::condition *c);
     void destroy_condition(ib::condition *c);
-    bool wait_condition(ib::condition *c, int ms);
+    int  wait_condition(ib::condition *c, ib::cmutex *m, int ms);
     void notify_condition(ib::condition *c);
-    void reset_condition(ib::condition *c);
 
     /* process functions */
     int wait_pid(const int pid);
@@ -98,25 +104,14 @@ namespace ib {
 
     /* system functions */
     int get_num_of_cpu();
+    int convert_keysym(int key);
 
     class ScopedLock : private NonCopyable<ScopedLock> { // {{{
       public:
-        ScopedLock(ib::mutex &mutex) : mutex_(mutex) { ib::platform::acquire_lock(&mutex_); }
-        ~ScopedLock(){ ib::platform::release_lock(&mutex_); }
+        ScopedLock(ib::mutex &mutex) : mutex_(mutex) { ib::platform::lock_mutex(&mutex_); }
+        ~ScopedLock(){ ib::platform::unlock_mutex(&mutex_); }
       protected:
         ib::mutex mutex_;
-    }; // }}}
-
-    class ScopedCondition : private NonCopyable<ScopedCondition> { // {{{
-      public:
-        ScopedCondition(ib::condition &condition, int ms) : condition_(condition), timeout_(false) { timeout_ = !ib::platform::wait_condition(&condition_, ms); }
-        ~ScopedCondition(){ ib::platform::reset_condition(&condition_); }
-        bool timeout() const { return timeout_; }
-
-      protected:
-        ib::condition condition_;
-        bool timeout_;
-
     }; // }}}
 
   }

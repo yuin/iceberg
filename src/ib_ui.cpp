@@ -61,47 +61,20 @@ bool ib::Input::isEmpty() const { // {{{
   return length == 0 || (isUsingCwd() && length == 1);
 } // }}}
 
-// key_event_thread {{{
+// key_event_handler {{{
 static void _main_thread_awaker(void *p){
   ib::Controller::inst().showCompletionCandidates();
 }
 
-void ib::_key_event_thread(void *p) {
-  ib::platform::on_thread_start();
-  auto input = ib::MainWindow::inst()->getInput();
-  unsigned int key_event_threshold = ib::Config::inst().getKeyEventThreshold();
-  while(1){
-    { ib::platform::ScopedLock lock(input->getKeyEventMutex());
-      if(!input->isKeyEventThreadRunning()) goto exit_thread;
-      input->setKeyEventState(1);
-    }
-    { ib::platform::ScopedCondition cond(input->getKeyEventCondition(), 0); }
-    while(1) {
-      { ib::platform::ScopedLock lock(input->getKeyEventMutex());
-        if(!input->isKeyEventThreadRunning()) goto exit_thread;
-        input->setKeyEventState(2);
-      }
-      { ib::platform::ScopedCondition cond(input->getKeyEventCondition(), key_event_threshold);
-        { ib::platform::ScopedLock lock(input->getKeyEventMutex());
-          if(input->isKeyEventCanceled()){break;}
-          if(cond.timeout()){
-            Fl::awake(_main_thread_awaker, 0);
-            break;
-          }
-          
-        }
-      }
-    }
-  }
-exit_thread:
-  ib::platform::exit_thread(0);
+void ib::_key_event_handler(void *p) {
+  Fl::awake(_main_thread_awaker, 0);
 }
 // }}}
 
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
   const ib::Config &cfg = ib::Config::inst();
-  const int key = Fl::event_key();
+  int key = Fl::event_key();
   const int state = Fl::event_state();
   const int mods = state & (FL_META|FL_CTRL|FL_ALT);
   const int shift = state & FL_SHIFT;
@@ -110,6 +83,7 @@ int ib::Input::handle(int e){ /* {{{ */
 
   switch(e){
     case FL_KEYUP:
+      key = ib::platform::convert_keysym(key);
       if(!getImeComposition() && key != 0xe5 && key != 0xfee9){
 keyup:
         // ignore shift key up
@@ -135,7 +109,7 @@ keyup:
            // kill word
            ib::utils::matches_key(cfg.getKillWordKey(), key, state)
            ){
-          if(threshold > 0) cancelKeyEvent();
+          if(threshold > 0) key_event_.cancelEvent();
           ib::Controller::inst().showCompletionCandidates();
           return 1;
         }
@@ -145,19 +119,19 @@ keyup:
            ib::utils::matches_key(cfg.getToggleModeKey(), key, state) ||
            key == FL_Enter
             ){
-          if(threshold > 0) cancelKeyEvent();
+          if(threshold > 0) key_event_.cancelEvent();
           return 1;
         }
 
         if(!ib::utils::event_key_is_control_key()){
           if(threshold > 0) {
-            queueKeyEvent();
+            key_event_.queueEvent((void*)1);
           }else{
             ib::Controller::inst().showCompletionCandidates();
           }
           return 1;
         }else{
-          if(threshold > 0) cancelKeyEvent();
+          if(threshold > 0) key_event_.cancelEvent();
           Fl_Input::handle(e);
           return 1;
         }
@@ -171,20 +145,6 @@ keyup:
         if(key == 65505 && state == 0) { return 1; }
         // ignore hot key
         if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
-        // close modal window by an enter key
-        for(Fl_Window *w = Fl::first_window(); w != 0;w = Fl::next_window(w)){
-          if(w->modal()) { 
-            for(int i = 0; i < w->as_group()->children(); ++i){
-              Fl_Widget *widget = w->as_group()->child(i);
-              Fl_Button *button = dynamic_cast<Fl_Button*>(widget);
-              if(button && button->visible()){
-                button->do_callback();
-                return 1;
-              }
-            }
-          }
-        }
-
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_down");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -318,16 +278,15 @@ void ib::Input::adjustSize() { // {{{
   const int min_window_width = cfg.getStyleWindowWidth();
   const int pad_x = cfg.getStyleWindowPadx();
   const int max_window_width = screen_w - (screen_w/2 - min_window_width/2);
-#ifdef IB_OS_WIN
   Fl_Font font = textfont();
   unsigned int tsize = cfg.getStyleInputFontSize();
   fl_font(font, tsize);
+#ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
   ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(value()));
   int isize = (int)ib::platform::win_calc_text_width(osstr.get()) + tsize;
 #else
-  mainwin->begin();
-  int isize = (int)(fl_width(value()) + fl_width("a")*2);
-  mainwin->end();
+  int isize = (int)fl_width(value()) + tsize;
 #endif
   const int curret_w = w();
   int new_window_width = mainwin->w() + (isize - curret_w);
@@ -383,9 +342,6 @@ void ib::MainWindow::initLayout(){ /* {{{ */
   const unsigned int y = cfg.getStyleWindowPosyAuto() ? screen_h/2 - h/2 : cfg.getStyleWindowPosy();
   resize(x, y, w, h);
   box((Fl_Boxtype)cfg.getStyleWindowBoxtype());
-#ifndef IB_OS_WIN
-  ib::platform::set_window_alpha(ib::MainWindow::inst(), cfg.getStyleWindowAlpha());
-#endif
 
   iconbox_ = new Fl_Box(pad_x, h/2 - 16, 32, 32);
   input_ = new ib::Input(pad_x*2+32,pad_y, w - (pad_x*3 + 32), h - pad_y*2);
@@ -398,11 +354,18 @@ void ib::MainWindow::initLayout(){ /* {{{ */
 } /* }}} */
 
 int ib::MainWindow::handle(int e){ /* {{{ */
-  input_->take_focus();
   return Fl_Window::handle(e);
 } /* }}} */
 
+void ib::MainWindow::show(){ /* {{{ */
+#ifndef IB_OS_WIN
+  ib::platform::move_to_current_desktop(this);
+#endif
+  return Fl_Window::show();
+} /* }}} */
+
 void ib::MainWindow::hide(){ /* {{{ */
+  clear_visible();
   ib::platform::hide_window(this);
 } /* }}} */
 
@@ -509,10 +472,11 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
   fl_color(lcol);
 
 #ifdef IB_OS_WIN
+  // fl_draw on windwos is slow.
   ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(str));
   ib::platform::win_draw_text(osstr.get(), left, top, width);
 #else
-  // TODO
+  fl_draw(str, left, top);
 #endif
 
   if(description){
@@ -524,10 +488,11 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
     fl_font(font, cfg.getStyleListDescFontSize());
     fl_color(lcol);
 #ifdef IB_OS_WIN
+    // fl_draw on windwos is slow.
     ib::unique_oschar_ptr osdesc(ib::platform::utf82oschar(description));
     ib::platform::win_draw_text(osdesc.get(), left, top, width);
 #else
-  // TODO
+    fl_draw(description, left, top);
 #endif
   }
 } // }}}
@@ -543,7 +508,6 @@ int ib::Listbox::item_height(void *item) const { // {{{
 } // }}}
 
 int ib::Listbox::item_width(void *item) const{ // {{{
-#ifdef IB_OS_WIN
   FL_BLINE* l = (FL_BLINE*)item;
   char* str = l->txt;
   const auto &cfg = ib::Config::inst();
@@ -562,22 +526,29 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   int tsize = cfg.getStyleListFontSize();
   Fl_Font font = textfont();
   fl_font(font, tsize);
+#ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
   ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(str));
   size_t w1 = ib::platform::win_calc_text_width(osstr.get()) + tsize*2;
+#else
+  size_t w1 = fl_width(str) + tsize;
+#endif
   size_t w2 = 0;
 
   if(description){
     *ptr = '\t';
     tsize = cfg.getStyleListDescFontSize();
     fl_font(font, tsize);
+#ifdef IB_OS_WIN
+  // fl_width on windwos is slow. 
     ib::unique_oschar_ptr osdesc(ib::platform::utf82oschar(description));
     w2 = ib::platform::win_calc_text_width(osdesc.get()) + tsize*2;
+#else
+    w2 = fl_width(description) + tsize;
+#endif
   }
 
   return (int)(std::max<int>((int)w1, (int)w2)) + left_pad;
-#else
-  //TODO
-#endif
 } // }}}
 
 void ib::Listbox::initLayout(){ // {{{
@@ -761,7 +732,7 @@ void ib::Listbox::adjustSize() { // {{{
   int screen_x, screen_y, screen_w, screen_h;
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
   const int width_a = screen_w - main_window->x() - font_size;
-  int width_b = getMaxWidth() + font_size*2;
+  int width_b = getMaxWidth() + font_size*3;
   if(has_scrollbar() & Fl_Browser_::VERTICAL){
     width_b -= Fl::scrollbar_size();
   }
@@ -782,7 +753,27 @@ void ib::Listbox::adjustSize() { // {{{
 
 // class ListWindow {{{
 void ib::ListWindow::hide(){ /* {{{ */
-  ib::platform::hide_window(this);
+  clear_visible();
+#ifdef IB_OS_WIN
+  resize(-1, -1, 1, 1);
+#else
+  resize(x(), y(), 0, 0);
+#endif
+} /* }}} */
+
+void ib::ListWindow::show(){ /* {{{ */
+#ifndef IB_OS_WIN
+  ib::platform::move_to_current_desktop(this);
+#endif
+  if(!show_init_){
+    show_init_ = true;
+    return Fl_Window::show();
+  }else{
+    if(w() == 1) {
+      listbox_->adjustSize();
+    }
+    ib::platform::raise_window(this);
+  }
 } /* }}} */
 
 void ib::ListWindow::close() { // {{{
@@ -804,9 +795,6 @@ void ib::ListWindow::initLayout(){ // {{{
   clear_border();
   color(cfg.getStyleListBorderColor());
   box((Fl_Boxtype)cfg.getStyleListBoxtype());
-#ifndef IB_OS_WIN
-  ib::platform::set_window_alpha(ib::ListWindow::inst(), cfg.getStyleListAlpha());
-#endif
 
   listbox_ = new ib::Listbox(pad_x , pad_y , w()-pad_x*2, h()-pad_y*2);
   listbox_->initLayout();

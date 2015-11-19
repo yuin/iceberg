@@ -24,6 +24,7 @@ static void ib_window_callback(Fl_Widget* w){ // {{{
 #ifdef __GNUC__
 __attribute__ ((destructor)) void after_main() { // {{{
 #ifdef DEBUG
+#ifdef IB_OS_WIN
   // simple memory leaak check tool...
   std::cout << "\n\n=====================================" << std::endl;
   long ignore = 12;
@@ -34,15 +35,20 @@ __attribute__ ((destructor)) void after_main() { // {{{
   }
   std::cout << "=====================================" << std::endl;
 #endif
+#endif
 } // }}}
 
 __attribute__ ((constructor)) void pre_main() { // {{{
 #ifdef DEBUG
+#ifdef IB_OS_WIN
+#endif
 #endif
 } // }}}
 #endif
 
 int main(int argc, char **argv) { // {{{
+  Fl::lock();
+  fl_message_hotspot(0);
   auto &cfg = ib::Config::inst();
   setlocale(LC_ALL, "");
 
@@ -52,6 +58,13 @@ int main(int argc, char **argv) { // {{{
   }
 
   ib::Controller::inst().loadConfig(argc, argv);
+  if(cfg.getOldPid() > -1){
+    if(ib::platform::wait_pid(cfg.getOldPid()) != 0){
+      fl_alert("Failed to reboot iceberg.");
+      ib::utils::exit_application(1);
+    }
+  }
+
   if(!cfg.getIpcMessage().empty()){
     int code = ib::utils::ipc_message(cfg.getIpcMessage());
     ib::platform::finalize_system();
@@ -60,22 +73,16 @@ int main(int argc, char **argv) { // {{{
 
   ib::Controller::inst().initFonts();
   ib::Controller::inst().initBoxtypes();
-  if(cfg.getOldPid() > -1){
-    if(ib::platform::wait_pid(cfg.getOldPid()) != 0){
-      fl_alert("Failed to reboot iceberg.");
-      ib::utils::exit_application(1);
-    }
-  }
 
   Fl::visual(FL_DOUBLE|FL_INDEX);
   ib::MainWindow::init();
-  ib::MainWindow::inst()->callback(ib_window_callback);
+  ib::MainWindow::inst()->initLayout();
   ib::ListWindow::init();
+  ib::ListWindow::inst()->initLayout();
+  ib::MainWindow::inst()->callback(ib_window_callback);
   ib::ListWindow::inst()->callback(ib_window_callback);
 
-  ib::MainWindow::inst()->initLayout();
   ib::MainWindow::inst()->show();
-  ib::ListWindow::inst()->initLayout();
   ib::ListWindow::inst()->show();
 
   if(ib::platform::init_system() < 0) {
@@ -84,7 +91,7 @@ int main(int argc, char **argv) { // {{{
   }
   ib::Error error;
   if(ib::Server::inst().start(error) != 0){
-    fl_alert("Failed to initialize the application.(start_server)");
+    fl_alert("%s", error.getMessage().c_str());
     ib::utils::exit_application(1);
   }
 
@@ -96,13 +103,16 @@ int main(int argc, char **argv) { // {{{
   ib::History::inst().load();
   if(ib::Config::inst().getEnableIcons()){
     ib::IconManager::inst()->load();
+    ib::CancelableEvent &event = ib::IconManager::inst()->getLoaderEvent();
+    event.setMs(1);
+    event.startThread();
   }
   ib::Migemo::inst().init();
 
-  Fl::lock();
-  ib::IconManager::inst()->startLoaderThread();
   if(ib::Config::inst().getKeyEventThreshold() > 0){
-    ib::MainWindow::inst()->getInput()->startKeyEventThread();
+    auto &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
+    event.setMs(ib::Config::inst().getKeyEventThreshold());
+    event.startThread();
   }
   lua_getglobal(IB_LUA, "on_initialize");
   if (lua_pcall(IB_LUA, 0, 1, 0)) {
