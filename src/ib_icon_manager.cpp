@@ -150,7 +150,7 @@ void ib::IconManager::dump() { // {{{
 Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   Fl_RGB_Image *icon;
-  std::string cache_key;
+  std::string cache_key("");
   ib::oschar os_path[IB_MAX_PATH];
   ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path);
 
@@ -159,7 +159,7 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
   char key[IB_MAX_PATH_BYTE];
   ib::platform::oschar2utf8_b(key, IB_MAX_PATH_BYTE, os_key);
   cache_key = key;
-  char buf[24] = {};
+  char buf[24] = {0};
   snprintf(buf, 24, "_%d", size);
   cache_key += buf;
   icon = getIconCache(cache_key);

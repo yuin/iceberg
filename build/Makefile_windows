@@ -55,7 +55,7 @@ test_: $(TESTPACKAGE)
 
 # doc: build test executable
 test:
-	$(MAKE) "DEBUG=true"
+	$(MAKE) DEBUG=true
 	$(MAKE) test_
 
 # doc: show this message.
@@ -87,8 +87,7 @@ clean:
 
 # doc: build main package with debug symbols.
 debug: 
-	${MAKE} "DEBUG=true"
-	${MAKE}
+	${MAKE} DEBUG=true
 
 # doc: create release zip files
 package:

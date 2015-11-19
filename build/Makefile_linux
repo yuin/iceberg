@@ -73,7 +73,7 @@ test_: $(TESTPACKAGE)
 
 # doc: build test executable
 test:
-	$(MAKE) "DEBUG=true"
+	$(MAKE) DEBUG=true
 	$(MAKE) test_
 
 # doc: install the iceberg into your system.
@@ -120,8 +120,7 @@ clean:
 
 # doc: build main package with debug symbols.
 debug: 
-	${MAKE} "DEBUG=true"
-	${MAKE}
+	${MAKE} DEBUG=true
 
 # doc: initialize virtualenv.
 venv:

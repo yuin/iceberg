@@ -919,12 +919,13 @@ void ib::Controller::completionInput() { // {{{
           ib::oschar os_dirname[IB_MAX_PATH];
           ib::platform::dirname(os_dirname, os_value.get());
           ib::oschar os_compvalue[IB_MAX_PATH];
+          ib::oschar os_quoted_compvalue[IB_MAX_PATH];
           ib::platform::utf82oschar_b(os_compvalue, IB_MAX_PATH, listbox->selectedValue()->getCompvalue().c_str());
           ib::oschar os_completed_path[IB_MAX_PATH];
           ib::platform::normalize_join_path(os_completed_path, os_dirname, os_compvalue);
-          ib::platform::quote_string(os_completed_path, os_completed_path);
+          ib::platform::quote_string(os_quoted_compvalue, os_completed_path);
           char completed_path[IB_MAX_PATH_BYTE];
-          ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_completed_path);
+          ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_quoted_compvalue);
           buf += completed_path;
         }else{
           const std::string &comp_value = listbox->selectedValue()->getCompvalue();

@@ -1455,6 +1455,7 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
 
 ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  memset(result, 0, IB_MAX_PATH);
   const char *dot = strrchr(path, '.');
   if(!dot || dot == path) return result;
   strcpy(result, dot);
