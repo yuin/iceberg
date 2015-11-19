@@ -35,14 +35,14 @@ LUAFILESYSTEM_FILES=./ext/luafilesystem-1.5.0/src/lfs.dll
 LUAXML_FILES=./ext/LuaXML_101012/{LuaXml.lua,LuaXML_lib.dll}
 LUAWINALTTAB_FILES=./ext/luawinalttab-1.0.0/winalttab.dll
 
-FLTK_CXXFLAGS=$(shell ./ext/fltk-1.3.2/fltk-config --cxxflags) 
-FLTK_LDFLAGS=$(shell ./ext/fltk-1.3.2/fltk-config --ldflags)
+FLTK_CXXFLAGS=$(shell ./ext/fltk-1.3.3/fltk-config --cxxflags) 
+FLTK_LDFLAGS=$(shell ./ext/fltk-1.3.3/fltk-config --ldflags)
 
-CC=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
-LD=$(shell ./ext/fltk-1.3.2/fltk-config --cxx)
+CC=$(shell ./ext/fltk-1.3.3/fltk-config --cxx)
+LD=$(shell ./ext/fltk-1.3.3/fltk-config --cxx)
 WINDRES=windres
 
-CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc -I./ext/nanosvg-master/src $(DEBUGOPT) -I./ext/onig-5.9.6 -I./ext/cmigemo-1.3c-MIT/src -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x -mthreads -D_MT 
+CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.3.3/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc -I./ext/nanosvg-master/src $(DEBUGOPT) -I./ext/onig-5.9.6 -I./ext/cmigemo-1.3c-MIT/src -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x -mthreads -D_MT 
 LDFLAGS=-static-libgcc -static-libstdc++ -lshlwapi -lnetapi32 -lws2_32 -lfltk_images $(FLTK_LDFLAGS) -lfltk_png -lfltk_jpeg -lz -L./ext/onig-5.9.6/.libs/ -lonig -static $(LUA_DLL) 
 
 .SUFFIXES: .o .cpp .rc
