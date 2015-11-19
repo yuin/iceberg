@@ -3,7 +3,7 @@
 
 icebergは以下のライブラリを使用もしくはバンドルしています。
 
-- `鬼車 <http://www.geocities.jp/kosako3/oniguruma/index_ja.html>`_ 
+- `鬼車 <https://github.com/kkos/oniguruma>`_ 
     - 作者: K.Kosako
     - ライセンス: :download:`BSDライセンス <license/oniguruma.txt>`
 - `fltk <http://www.fltk.org/>`_ 
@@ -27,4 +27,6 @@ icebergは以下のライブラリを使用もしくはバンドルしていま�
 - `cmigemo <http://www.kaoriya.net/software/cmigemo/>`_
     - 作者: MURAOKA Taro
     - ライセンス: :download:`MITライセンス <license/cmigemo.txt>`
-
+- `nanosvg <https://github.com/memononen/nanosvg>`_
+    - 作者: Mikko Mononen
+    - ライセンス: :download:`zlib license <license/nanosvg.txt>`

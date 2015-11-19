@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>環境設定 &mdash; iceberg 0.9.6 documentation</title>
+    <title>環境設定 &mdash; iceberg 0.9.7 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.6',
+        VERSION:     '0.9.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,16 +23,16 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.6 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.7 documentation" href="index.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="概要" href="overview.html" /> 
   </head>
-  <body>
-      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.6 documentation</span></a></h1>
+  <body role="document">
+      <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.7 documentation</span></a></h1>
         <h2 class="heading"><span>環境設定</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="overview.html">概要</a>
@@ -50,12 +50,13 @@
 <h1>環境設定<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id2">
 <h2>概要<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>設定は <a class="reference external" href="http://www.lua.org">Lua</a> による設定ファイルに記載します。デフォルトではiceberg実行ファイルと同一ディレクトリの <tt class="docutils literal"><span class="pre">config.lua</span></tt> が読み込まれますが、起動時に <tt class="docutils literal"><span class="pre">-c</span> <span class="pre">CONFIGFILE</span></tt> と指定することで別のファイルを読み込むことができます。ヒストリファイルなどは設定ファイルと同一のディレクトリに保存されます。</p>
+<p>設定は <a class="reference external" href="http://www.lua.org">Lua</a> による設定ファイルに記載します。Windowsの場合iceberg実行ファイルと同一ディレクトリ、Linuxの場合 <code class="docutils literal"><span class="pre">~/.iceberg</span></code> の <code class="docutils literal"><span class="pre">config.lua</span></code> が読み込まれます。ヒストリファイルなどは設定ファイルと同一のディレクトリに保存されます。</p>
+<p>また、Linuxの場合 <code class="docutils literal"><span class="pre">~/.iceberg/config.d/*.lua</span></code> ファイルが起動時に自動的に読み込まれるためこちらに設定を記載することも可能です。</p>
 <p>設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。</p>
 </div>
 <div class="section" id="id3">
 <h2>キー名称<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>この後の章で示す設定には以下のキー名称が使用できます。また、修飾キーと通常キーを <tt class="docutils literal"><span class="pre">-</span></tt> でつなぎ合わせることで同時押しを表現します。同時押しのキーは3つまでです。また、ホットキーの設定のみOSネイティブの仮想キーコードを受け付けます。</p>
+<p>この後の章で示す設定には以下のキー名称が使用できます。また、修飾キーと通常キーを <code class="docutils literal"><span class="pre">-</span></code> でつなぎ合わせることで同時押しを表現します。同時押しのキーは3つまでです。また、ホットキーの設定のみOSネイティブの仮想キーコードを受け付けます。</p>
 <p>例：</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="s2">&quot;</span><span class="s">alt-space&quot;</span>
@@ -69,13 +70,13 @@
 <li><dl class="first docutils">
 <dt>修飾キー</dt>
 <dd><ul class="first last simple">
-<li><tt class="docutils literal"><span class="pre">shift</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">caps_lock</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">ctrl</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">alt</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">num_lock</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">meta</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">scroll_lock</span></tt></li>
+<li><code class="docutils literal"><span class="pre">shift</span></code></li>
+<li><code class="docutils literal"><span class="pre">caps_lock</span></code></li>
+<li><code class="docutils literal"><span class="pre">ctrl</span></code></li>
+<li><code class="docutils literal"><span class="pre">alt</span></code></li>
+<li><code class="docutils literal"><span class="pre">num_lock</span></code></li>
+<li><code class="docutils literal"><span class="pre">meta</span></code></li>
+<li><code class="docutils literal"><span class="pre">scroll_lock</span></code></li>
 </ul>
 </dd>
 </dl>
@@ -83,80 +84,80 @@
 <li><dl class="first docutils">
 <dt>通常キー</dt>
 <dd><ul class="first last simple">
-<li><tt class="docutils literal"><span class="pre">a</span></tt> ～ <tt class="docutils literal"><span class="pre">z</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">0</span></tt> ～ <tt class="docutils literal"><span class="pre">9</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">space</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">backspace</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">tab</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">iso_key</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">enter</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">pause</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">scroll_lock</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">escape</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">home</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">left</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">up</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">right</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">down</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">page_up</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">page_down</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">end</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">print</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">insert</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">menu</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">help</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">num_lock</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp0</span></tt> : kpから始まるキーはテンキー上のキーです。</li>
-<li><tt class="docutils literal"><span class="pre">kp1</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp2</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp3</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp4</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp5</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp6</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp7</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp8</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp9</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp_enter</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">kp_last</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f1</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f2</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f3</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f4</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f5</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f6</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f7</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f8</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f9</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f10</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f11</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f12</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f_last</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">shift_l</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">shift_r</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">control_l</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">control_r</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">caps_lock</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">meta_l</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">meta_r</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">alt_l</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">alt_r</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">delete</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">volume_down</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">volume_mute</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">volume_up</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">media_play</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">media_stop</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">media_prev</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">media_next</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">home_page</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">mail</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">search</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">back</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">forward</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">stop</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">refresh</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">sleep</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">favorites</span></tt></li>
+<li><code class="docutils literal"><span class="pre">a</span></code> ～ <code class="docutils literal"><span class="pre">z</span></code></li>
+<li><code class="docutils literal"><span class="pre">0</span></code> ～ <code class="docutils literal"><span class="pre">9</span></code></li>
+<li><code class="docutils literal"><span class="pre">space</span></code></li>
+<li><code class="docutils literal"><span class="pre">backspace</span></code></li>
+<li><code class="docutils literal"><span class="pre">tab</span></code></li>
+<li><code class="docutils literal"><span class="pre">iso_key</span></code></li>
+<li><code class="docutils literal"><span class="pre">enter</span></code></li>
+<li><code class="docutils literal"><span class="pre">pause</span></code></li>
+<li><code class="docutils literal"><span class="pre">scroll_lock</span></code></li>
+<li><code class="docutils literal"><span class="pre">escape</span></code></li>
+<li><code class="docutils literal"><span class="pre">home</span></code></li>
+<li><code class="docutils literal"><span class="pre">left</span></code></li>
+<li><code class="docutils literal"><span class="pre">up</span></code></li>
+<li><code class="docutils literal"><span class="pre">right</span></code></li>
+<li><code class="docutils literal"><span class="pre">down</span></code></li>
+<li><code class="docutils literal"><span class="pre">page_up</span></code></li>
+<li><code class="docutils literal"><span class="pre">page_down</span></code></li>
+<li><code class="docutils literal"><span class="pre">end</span></code></li>
+<li><code class="docutils literal"><span class="pre">print</span></code></li>
+<li><code class="docutils literal"><span class="pre">insert</span></code></li>
+<li><code class="docutils literal"><span class="pre">menu</span></code></li>
+<li><code class="docutils literal"><span class="pre">help</span></code></li>
+<li><code class="docutils literal"><span class="pre">num_lock</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp0</span></code> : kpから始まるキーはテンキー上のキーです。</li>
+<li><code class="docutils literal"><span class="pre">kp1</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp2</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp3</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp4</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp5</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp6</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp7</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp8</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp9</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp_enter</span></code></li>
+<li><code class="docutils literal"><span class="pre">kp_last</span></code></li>
+<li><code class="docutils literal"><span class="pre">f1</span></code></li>
+<li><code class="docutils literal"><span class="pre">f2</span></code></li>
+<li><code class="docutils literal"><span class="pre">f3</span></code></li>
+<li><code class="docutils literal"><span class="pre">f4</span></code></li>
+<li><code class="docutils literal"><span class="pre">f5</span></code></li>
+<li><code class="docutils literal"><span class="pre">f6</span></code></li>
+<li><code class="docutils literal"><span class="pre">f7</span></code></li>
+<li><code class="docutils literal"><span class="pre">f8</span></code></li>
+<li><code class="docutils literal"><span class="pre">f9</span></code></li>
+<li><code class="docutils literal"><span class="pre">f10</span></code></li>
+<li><code class="docutils literal"><span class="pre">f11</span></code></li>
+<li><code class="docutils literal"><span class="pre">f12</span></code></li>
+<li><code class="docutils literal"><span class="pre">f_last</span></code></li>
+<li><code class="docutils literal"><span class="pre">shift_l</span></code></li>
+<li><code class="docutils literal"><span class="pre">shift_r</span></code></li>
+<li><code class="docutils literal"><span class="pre">control_l</span></code></li>
+<li><code class="docutils literal"><span class="pre">control_r</span></code></li>
+<li><code class="docutils literal"><span class="pre">caps_lock</span></code></li>
+<li><code class="docutils literal"><span class="pre">meta_l</span></code></li>
+<li><code class="docutils literal"><span class="pre">meta_r</span></code></li>
+<li><code class="docutils literal"><span class="pre">alt_l</span></code></li>
+<li><code class="docutils literal"><span class="pre">alt_r</span></code></li>
+<li><code class="docutils literal"><span class="pre">delete</span></code></li>
+<li><code class="docutils literal"><span class="pre">volume_down</span></code></li>
+<li><code class="docutils literal"><span class="pre">volume_mute</span></code></li>
+<li><code class="docutils literal"><span class="pre">volume_up</span></code></li>
+<li><code class="docutils literal"><span class="pre">media_play</span></code></li>
+<li><code class="docutils literal"><span class="pre">media_stop</span></code></li>
+<li><code class="docutils literal"><span class="pre">media_prev</span></code></li>
+<li><code class="docutils literal"><span class="pre">media_next</span></code></li>
+<li><code class="docutils literal"><span class="pre">home_page</span></code></li>
+<li><code class="docutils literal"><span class="pre">mail</span></code></li>
+<li><code class="docutils literal"><span class="pre">search</span></code></li>
+<li><code class="docutils literal"><span class="pre">back</span></code></li>
+<li><code class="docutils literal"><span class="pre">forward</span></code></li>
+<li><code class="docutils literal"><span class="pre">stop</span></code></li>
+<li><code class="docutils literal"><span class="pre">refresh</span></code></li>
+<li><code class="docutils literal"><span class="pre">sleep</span></code></li>
+<li><code class="docutils literal"><span class="pre">favorites</span></code></li>
 </ul>
 </dd>
 </dl>
@@ -176,6 +177,9 @@
   <span class="c1">-- 補完候補のアイコンを表示するか(true:する, false:しない) --</span>
   <span class="n">enable_icons</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
 
+  <span class="c1">-- アイコンテーマ名:Linuxでのみ有効 --</span>
+  <span class="n">icon_theme</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">nuoveXT.2.2&quot;</span><span class="p">,</span>
+
   <span class="c1">-- 補完候補のアイコンのキャッシュ数 --</span>
   <span class="n">max_cached_icons</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
 
@@ -190,7 +194,7 @@
   <span class="c1">-- 補完候補の表示数 --</span>
   <span class="n">max_candidates</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
 
-  <span class="c1">-- クリップボード履歴の保存数 --</span>
+  <span class="c1">-- クリップボード履歴の保存数:Windowsでのみ有効 --</span>
   <span class="n">max_clipboard_histories</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
 
   <span class="c1">-- 補完候補ソート時のヒストリの影響度合い(0.0~1.0)</span>
@@ -198,6 +202,9 @@
 
   <span class="c1">-- ディレクトリを開く際のコマンド、${1}にディレクトリパスが入る --</span>
   <span class="n">file_browser</span> <span class="o">=</span> <span class="s">[[explorer ${1}]]</span><span class="p">,</span>
+
+  <span class="c1">-- ターミナルでコマンドを実行する際のコマンド、${1}コマンドが入る。ログインターミナルとして起動すること。:Linuxでのみ有効 --</span>
+  <span class="n">terminal</span> <span class="o">=</span> <span class="s">[[lxterminal -l -e ${1}]]</span><span class="p">,</span>
 
   <span class="c1">-- 外部からコマンドを受け付けるポート(0: 無効)</span>
   <span class="n">server_port</span> <span class="o">=</span> <span class="mi">13505</span><span class="p">,</span>
@@ -268,11 +275,11 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">category:</th><td class="field-body">サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に <tt class="docutils literal"><span class="pre">default</span></tt> というカテゴリに属します。</td>
+<tr class="field-odd field"><th class="field-name">category:</th><td class="field-body">サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に <code class="docutils literal"><span class="pre">default</span></code> というカテゴリに属します。</td>
 </tr>
 <tr class="field-even field"><th class="field-name">path:</th><td class="field-body">検索する起点となるディレクトリです。</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">depth:</th><td class="field-body"><tt class="docutils literal"><span class="pre">path</span></tt> から何階層検索するかを示す数値です。無指定の場合 <tt class="docutils literal"><span class="pre">system.default_search_path_depth</span></tt> が適応されます。</td>
+<tr class="field-odd field"><th class="field-name">depth:</th><td class="field-body"><code class="docutils literal"><span class="pre">path</span></code> から何階層検索するかを示す数値です。無指定の場合 <code class="docutils literal"><span class="pre">system.default_search_path_depth</span></code> が適応されます。</td>
 </tr>
 <tr class="field-even field"><th class="field-name">pattern:</th><td class="field-body">コマンドとして登録するファイル名の正規表現パターン(完全一致)です。</td>
 </tr>
@@ -299,7 +306,7 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p><tt class="docutils literal"><span class="pre">values</span></tt> は入力されているコマンドと引数の配列です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。</p>
+<p><code class="docutils literal"><span class="pre">values</span></code> は入力されているコマンドと引数の配列です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -310,11 +317,11 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">description:</th><td class="field-body">説明として利用する文字列です。</td>
 </tr>
-<tr class="field-even field"><th class="field-name">always_match:</th><td class="field-body"><tt class="docutils literal"><span class="pre">true</span></tt> を設定するとどんな入力にもマッチするようになり、選択時に入力欄が更新されなくなります。例えばWEB検索結果をただ表示する場合などに利用します。</td>
+<tr class="field-even field"><th class="field-name">always_match:</th><td class="field-body"><code class="docutils literal"><span class="pre">true</span></code> を設定するとどんな入力にもマッチするようになり、選択時に入力欄が更新されなくなります。例えばWEB検索結果をただ表示する場合などに利用します。</td>
 </tr>
 </tbody>
 </table>
-<p>補完関数は補完以外に情報表示だけのために利用することもできます。デフォルトの <tt class="docutils literal"><span class="pre">weather</span></tt> コマンドを参照してください。</p>
+<p>補完関数は補完以外に情報表示だけのために利用することもできます。デフォルトの <code class="docutils literal"><span class="pre">weather</span></code> コマンドを参照してください。</p>
 </div>
 </div>
 <div class="section" id="commands">
@@ -363,37 +370,37 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">commands</span></tt> tableのキーとして表現されます。</p>
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">commands</span></code> tableのキーとして表現されます。</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">path:</th><td class="field-body"><p class="first">実行対象のパスもしくはLuaの関数です。
-パスの場合、以下のように引数を含めることができます。また空白を含む場合は <tt class="docutils literal"><span class="pre">&quot;</span></tt> で囲う必要があります。:</p>
+パスの場合、以下のように引数を含めることができます。また空白を含む場合は <code class="docutils literal"><span class="pre">&quot;</span></code> で囲う必要があります。:</p>
 <div class="highlight-python"><div class="highlight"><pre>path = [[&quot;C:\s p a c e\bin.exe&quot; arg1 arg2]]
 </pre></div>
 </div>
-<p>また入力された変数を参照することができます。 <tt class="docutils literal"><span class="pre">google</span> <span class="pre">iceberg</span></tt> と入力された場合、 <tt class="docutils literal"><span class="pre">google</span></tt> コマンドの <tt class="docutils literal"><span class="pre">path</span></tt> が以下の場合、 <tt class="docutils literal"><span class="pre">${1}</span></tt> に <tt class="docutils literal"><span class="pre">iceberg</span></tt> が代入されます。:</p>
+<p>また入力された変数を参照することができます。 <code class="docutils literal"><span class="pre">google</span> <span class="pre">iceberg</span></code> と入力された場合、 <code class="docutils literal"><span class="pre">google</span></code> コマンドの <code class="docutils literal"><span class="pre">path</span></code> が以下の場合、 <code class="docutils literal"><span class="pre">${1}</span></code> に <code class="docutils literal"><span class="pre">iceberg</span></code> が代入されます。:</p>
 <div class="highlight-python"><div class="highlight"><pre>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]
 </pre></div>
 </div>
 <p>関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">completion:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">system.completer.option_func</span></tt> と同じ形式の補完関数です。補完関数はコマンドでも <tt class="docutils literal"><span class="pre">system.completer.option_func</span></tt> でも登録できます。両方登録した場合はコマンドで定義したものが優先されます。</p>
+<tr class="field-odd field"><th class="field-name">completion:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">system.completer.option_func</span></code> と同じ形式の補完関数です。補完関数はコマンドでも <code class="docutils literal"><span class="pre">system.completer.option_func</span></code> でも登録できます。両方登録した場合はコマンドで定義したものが優先されます。</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">description:</th><td class="field-body"><p class="first">補完候補ウインドウに表示される説明文です。</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">icon:</th><td class="field-body"><p class="first">補完候補ウインドウに表示されるアイコン画像のパスです。</p>
+<tr class="field-odd field"><th class="field-name">icon:</th><td class="field-body"><p class="first">補完候補ウインドウに表示されるアイコン画像のパスです。Linuxの場合、アイコンテーマにおけるアイコン名でもかまいません。アイコン名の場合自動的に最適な画像を選択します。</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">history:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">false</span></tt> を指定するとヒストリに残らなくなります。</p>
+<tr class="field-even field"><th class="field-name">history:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">false</span></code> を指定するとヒストリに残らなくなります。</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">workdir:</th><td class="field-body"><p class="first">コマンドを実行するディレクトリです。以下の指定が可能です。</p>
 <ul class="last simple">
 <li>固定値: そのディレクトリで実行されます。</li>
-<li><tt class="docutils literal"><span class="pre">.</span></tt> : icebergのカレントディレクトリで実行されます。</li>
+<li><code class="docutils literal"><span class="pre">.</span></code> : icebergのカレントディレクトリで実行されます。</li>
 <li>Lua関数: 関数の戻り値(文字列)のディレクトリで実行されます。例えば、外部ファイラのディレクトリを返す関数を設定すれば外部ファイラと連携できます。</li>
 </ul>
 </td>
@@ -415,7 +422,7 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>上記のようにショートカットを定義し、 <tt class="docutils literal"><span class="pre">c:\</span></tt> と入力欄に入力された状態で <tt class="docutils literal"><span class="pre">ctrl-l</span></tt> を押下したとします。その時以下のようにコマンドが実行されます。:</p>
+<p>上記のようにショートカットを定義し、 <code class="docutils literal"><span class="pre">c:\</span></code> と入力欄に入力された状態で <code class="docutils literal"><span class="pre">ctrl-l</span></code> を押下したとします。その時以下のようにコマンドが実行されます。:</p>
 <div class="highlight-python"><div class="highlight"><pre>:cd c:\
 </pre></div>
 </div>
@@ -478,7 +485,7 @@
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="overview.html">概要</a>
@@ -490,9 +497,9 @@
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012-2014, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2012-2015, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

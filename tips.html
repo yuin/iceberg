@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tips &mdash; iceberg 0.9.6 documentation</title>
+    <title>Tips &mdash; iceberg 0.9.7 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.6',
+        VERSION:     '0.9.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,16 +23,16 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.6 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.7 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="環境設定" href="config.html" /> 
   </head>
-  <body>
-      <div class="header"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.6 documentation</span></a></h1>
+  <body role="document">
+      <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.7 documentation</span></a></h1>
         <h2 class="heading"><span>Tips</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="config.html">環境設定</a>
@@ -54,7 +54,7 @@
 </div>
 <div class="section" id="id2">
 <h2>ポチエス連携<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="http://www.geocities.jp/pochi_s2004/pochi.html">ポチエス</a> はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 <tt class="docutils literal"><span class="pre">shift-enter</span></tt> を押すことでポスエスで実行する設定例を示します。</p>
+<p><a class="reference external" href="http://www.geocities.jp/pochi_s2004/pochi.html">ポチエス</a> はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 <code class="docutils literal"><span class="pre">shift-enter</span></code> を押すことでポスエスで実行する設定例を示します。</p>
 <p>コマンド定義</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
@@ -92,7 +92,7 @@
 </div>
 <div class="section" id="id5">
 <h2>エクスプローラで選択しているファイルをエディタで開く<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<p>エクスプローラでファイルを選択し、iceberg上で <tt class="docutils literal"><span class="pre">ctrl-m</span></tt> を実行するとvimでファイルを開く設定です。</p>
+<p>エクスプローラでファイルを選択し、iceberg上で <code class="docutils literal"><span class="pre">ctrl-m</span></code> を実行するとvimでファイルを開く設定です。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
@@ -114,11 +114,11 @@
 </div>
 <div class="section" id="id6">
 <h2>コマンド登録されているディレクトリ配下の表示<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<p>例えば <tt class="docutils literal"><span class="pre">app</span></tt> というコマンドとして <tt class="docutils literal"><span class="pre">c:\app</span></tt> というディレクトリが登録されているとします。このときに <tt class="docutils literal"><span class="pre">app</span></tt> と入力し <tt class="docutils literal"><span class="pre">ctrl-l</span></tt> を実行するとカレントディレクトリが <tt class="docutils literal"><span class="pre">c:\app</span></tt> に変更されます。このあとに <tt class="docutils literal"><span class="pre">./</span></tt> と入力すると <tt class="docutils literal"><span class="pre">c:\app</span></tt> の配下のファイルを表示することができます。</p>
+<p>例えば <code class="docutils literal"><span class="pre">app</span></code> というコマンドとして <code class="docutils literal"><span class="pre">c:\app</span></code> というディレクトリが登録されているとします。このときに <code class="docutils literal"><span class="pre">app</span></code> と入力し <code class="docutils literal"><span class="pre">ctrl-l</span></code> を実行するとカレントディレクトリが <code class="docutils literal"><span class="pre">c:\app</span></code> に変更されます。このあとに <code class="docutils literal"><span class="pre">./</span></code> と入力すると <code class="docutils literal"><span class="pre">c:\app</span></code> の配下のファイルを表示することができます。</p>
 </div>
 <div class="section" id="id7">
 <h2>数式入力で計算を行う<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p>以下のように <tt class="docutils literal"><span class="pre">on_enter</span></tt> を定義することで <tt class="docutils literal"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></tt> のように数式を入力してEnterを押下するとすぐに計算を実行することができます。</p>
+<p>以下のように <code class="docutils literal"><span class="pre">on_enter</span></code> を定義することで <code class="docutils literal"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></code> のように数式を入力してEnterを押下するとすぐに計算を実行することができます。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
@@ -138,7 +138,7 @@
 </div>
 <div class="section" id="scan-search-path">
 <h2>起動時に自動的に:scan_search_pathを行う<a class="headerlink" href="#scan-search-path" title="Permalink to this headline">¶</a></h2>
-<p>以下のように <tt class="docutils literal"><span class="pre">on_initialize</span></tt> を定義することで起動時に自動的に <tt class="docutils literal"><span class="pre">:scan_search_path</span></tt> することができます。 <tt class="docutils literal"><span class="pre">all</span></tt> 以外のカテゴリで実行したい場合は <tt class="docutils literal"><span class="pre">{&quot;all&quot;}</span></tt> となっている場所を書き変えてください。</p>
+<p>以下のように <code class="docutils literal"><span class="pre">on_initialize</span></code> を定義することで起動時に自動的に <code class="docutils literal"><span class="pre">:scan_search_path</span></code> することができます。 <code class="docutils literal"><span class="pre">all</span></code> 以外のカテゴリで実行したい場合は <code class="docutils literal"><span class="pre">{&quot;all&quot;}</span></code> となっている場所を書き変えてください。</p>
 <blockquote>
 <div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
   <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
@@ -188,7 +188,7 @@
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="config.html">環境設定</a>
@@ -200,9 +200,9 @@
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012-2014, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2012-2015, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
