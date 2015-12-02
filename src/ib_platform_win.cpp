@@ -902,7 +902,7 @@ ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int
 //////////////////////////////////////////////////
 // path functions {{{
 //////////////////////////////////////////////////
-Fl_RGB_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const int size){ // {{{
+Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const int size){ // {{{
    SHFILEINFO shinfo;
    Fl_RGB_Image *result_image = 0;
    uchar* data = 0;

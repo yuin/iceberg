@@ -10,7 +10,7 @@ ib::IconManager *ib::IconManager::instance_ = 0;
 
 // icon_loader_thread {{{
 struct iconlist {
-  std::vector<Fl_RGB_Image*> icons;
+  std::vector<Fl_Image*> icons;
   int pos;
 };
 
@@ -19,8 +19,8 @@ static void _main_thread_awaker(void *p){
   struct iconlist *ilist = (struct iconlist*)p;
   int pos = ilist->pos;
   for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
+    listbox->destroyIcon(pos);
     if(*it != 0) {
-      listbox->destroyIcon(pos);
       listbox->icon(pos, *it);
     }
   }
@@ -32,7 +32,7 @@ void ib::_icon_loader(void *p) {
 
   auto listbox = ib::ListWindow::inst()->getListbox();
 
-  std::vector<Fl_RGB_Image*> buf;
+  std::vector<Fl_Image*> buf;
   int current_operation_count = -1;
   int listsize;
   int pos;
@@ -147,9 +147,8 @@ void ib::IconManager::dump() { // {{{
   ofs.close();
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ // {{{
+Fl_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
-  Fl_RGB_Image *icon;
   std::string cache_key("");
   ib::oschar os_path[IB_MAX_PATH];
   ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path);
@@ -162,9 +161,13 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
   char buf[24] = {0};
   snprintf(buf, 24, "_%d", size);
   cache_key += buf;
-  icon = getIconCache(cache_key);
-  if(icon != 0){
-    return copyCache(icon);
+
+  {
+    Fl_RGB_Image *icon;
+    icon = getIconCache(cache_key);
+    if(icon != 0){
+      return copyCache(icon);
+    }
   }
   
 
@@ -179,35 +182,52 @@ Fl_RGB_Image* ib::IconManager::getAssociatedIcon(const char *path, const int siz
   if(ib::platform::is_path(os_path) && !ib::platform::path_exists(os_path)) {
     return getEmptyIcon(size, size);
   }
-  icon = ib::platform::get_associated_icon_image(os_path, size);
-  if(icon == 0) {
+  Fl_Image *aicon = ib::platform::get_associated_icon_image(os_path, size);
+  if(aicon == 0) {
     return getEmptyIcon(size, size);
   }
-  createIconCache(cache_key, icon); 
-  return copyCache(icon);
+  if(dynamic_cast<Fl_RGB_Image*>(aicon) != 0) {
+    createIconCache(cache_key, (Fl_RGB_Image*)aicon); 
+    return copyCache((Fl_RGB_Image*)aicon);
+  }
+  return aicon;
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int size){ // {{{
+Fl_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(png_file));
   Fl_RGB_Image *tmp_image = new Fl_PNG_Image(lopath.get());
-  Fl_RGB_Image *result_image;
+  Fl_Image *result_image;
   if(tmp_image->w() != size){
-    result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
+    result_image = tmp_image->copy(size, size);
     delete tmp_image;
   }else{
-    result_image = tmp_image;
+    result_image = (Fl_Image*)tmp_image;
   }
   return result_image;
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int size){ // {{{
+Fl_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(jpeg_file));
   Fl_RGB_Image *tmp_image = new Fl_JPEG_Image(lopath.get());
-  Fl_RGB_Image *result_image;
+  Fl_Image *result_image;
   if(tmp_image->w() != size){
-    result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
+    result_image = tmp_image->copy(size, size);
+    delete tmp_image;
+  }else{
+    result_image = (Fl_Image*)tmp_image;
+  }
+  return result_image;
+} // }}}
+
+Fl_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size){ // {{{
+  ib::platform::ScopedLock lock(cache_mutex_);
+  ib::unique_char_ptr lopath(ib::platform::utf82local(gif_file));
+  Fl_Image *tmp_image = new Fl_GIF_Image(lopath.get());
+  Fl_Image *result_image;
+  if(tmp_image->w() != size){
+    result_image = tmp_image->copy(size, size);
     delete tmp_image;
   }else{
     result_image = tmp_image;
@@ -215,36 +235,30 @@ Fl_RGB_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int
   return result_image;
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size){ // {{{
-  ib::platform::ScopedLock lock(cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(gif_file));
-  Fl_GIF_Image *tmp_image = new Fl_GIF_Image(lopath.get());
-  Fl_RGB_Image *result_image;
-  result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
-  delete tmp_image;
-  return result_image;
-} // }}}
-
-Fl_RGB_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
+Fl_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(svg_file));
   unsigned char *buf = ib::rasterize_svg_file(svg_file, size);
   if(buf == 0) return 0;
   Fl_RGB_Image *result_image = new Fl_RGB_Image(buf, size, size, 4);
-  return result_image;
+  return (Fl_Image*)result_image;
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
+Fl_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(xpm_file));
-  Fl_XPM_Image *tmp_image = new Fl_XPM_Image(lopath.get());
-  Fl_RGB_Image *result_image;
-  result_image = (Fl_RGB_Image*)tmp_image->copy(size, size);
-  delete tmp_image;
+  Fl_Image *tmp_image = new Fl_XPM_Image(lopath.get());
+  Fl_Image *result_image;
+  if(tmp_image->w() != size){
+    result_image = tmp_image->copy(size, size);
+    delete tmp_image;
+  }else{
+    result_image = tmp_image;
+  }
   return result_image;
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ // {{{
+Fl_Image* ib::IconManager::readFileIcon(const char *file, const int size){ // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   std::string cache_key;
 
@@ -254,41 +268,47 @@ Fl_RGB_Image* ib::IconManager::readFileIcon(const char *file, const int size){ /
   ib::platform::utf82oschar_b(osfile, IB_MAX_PATH, file);
   ib::platform::resolve_icon(osresolved_path, osfile, size);
   ib::platform::oschar2utf8_b(resolved_path, IB_MAX_PATH_BYTE, osresolved_path);
-  Fl_RGB_Image *icon;
   cache_key += resolved_path;
   cache_key += "_";
   cache_key += size;
-  icon = getIconCache(cache_key);
-  if(icon != 0){
-    return copyCache(icon);
+  {
+    Fl_RGB_Image *icon = getIconCache(cache_key);
+    if(icon != 0){
+      return copyCache(icon);
+    }
   }
 
+  Fl_Image *aicon = 0;
   ib::Regex re("(.*)\\.(\\w+)", ib::Regex::NONE);
   re.init();
   if(re.match(resolved_path) == 0){
     std::string ret;
     re._2(ret);
     if(ret == "png" || ret == "PNG") {
-      icon = readPngFileIcon(resolved_path, size);
+      aicon = readPngFileIcon(resolved_path, size);
     }else if(ret == "gif" || ret == "GIF") {
-      icon = readGifFileIcon(resolved_path, size);
+      aicon = readGifFileIcon(resolved_path, size);
     }else if(ret == "jpg" || ret == "JPG" || ret == "jpeg" || ret == "JPEG") {
-      icon =  readJpegFileIcon(resolved_path, size);
+      aicon =  readJpegFileIcon(resolved_path, size);
     } else if(ret == "svg" || ret == "SVG"){
-      icon = readSvgFileIcon(resolved_path, size);
+      aicon = readSvgFileIcon(resolved_path, size);
     } else if(ret == "xpm" || ret == "XPM"){
-      icon = readXpmFileIcon(resolved_path, size);
+      aicon = readXpmFileIcon(resolved_path, size);
     }
   }
-  if(icon != 0) {
-    createIconCache(cache_key, icon); 
-    return copyCache(icon);
+  if(aicon != 0){
+    if(dynamic_cast<Fl_RGB_Image*>(aicon) != 0) {
+      createIconCache(cache_key, (Fl_RGB_Image*)aicon); 
+      return copyCache((Fl_RGB_Image*)aicon);
+    } else {
+      return aicon;
+    }
   } else {
     return getAssociatedIcon(file, size);
   }
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // {{{
+Fl_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // {{{
   ib::platform::ScopedLock lock(cache_mutex_);
   char buf[24] = {};
   snprintf(buf, 24, "%s%dx%d", ":emp_", width, height);
@@ -305,7 +325,7 @@ Fl_RGB_Image* ib::IconManager::getEmptyIcon(const int width, const int height) {
   return copyCache(result_image);
 } // }}}
 
-Fl_RGB_Image* ib::IconManager::getLuaIcon(const int size) { // {{{
+Fl_Image* ib::IconManager::getLuaIcon(const int size) { // {{{
   return getEmbededIcon(lua_png, "lua", 32, size);
 } // }}}
 

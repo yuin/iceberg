@@ -612,15 +612,15 @@ namespace ib{
       void dump();
       void load();
       ib::CancelableEvent& getLoaderEvent() { return loader_event_; }
-      Fl_RGB_Image* getAssociatedIcon(const char *path, const int size);
-      Fl_RGB_Image* readPngFileIcon(const char *png_file, const int size);
-      Fl_RGB_Image* readJpegFileIcon(const char *jpeg_file, const int size);
-      Fl_RGB_Image* readGifFileIcon(const char *gif_file, const int size);
-      Fl_RGB_Image* readSvgFileIcon(const char *svg_file, const int size);
-      Fl_RGB_Image* readXpmFileIcon(const char *xpm_file, const int size);
-      Fl_RGB_Image* readFileIcon(const char *file, const int size);
-      Fl_RGB_Image* getEmptyIcon(const int width, const int height);
-      Fl_RGB_Image* getLuaIcon(const int size);
+      Fl_Image* getAssociatedIcon(const char *path, const int size);
+      Fl_Image* readPngFileIcon(const char *png_file, const int size);
+      Fl_Image* readJpegFileIcon(const char *jpeg_file, const int size);
+      Fl_Image* readGifFileIcon(const char *gif_file, const int size);
+      Fl_Image* readSvgFileIcon(const char *svg_file, const int size);
+      Fl_Image* readXpmFileIcon(const char *xpm_file, const int size);
+      Fl_Image* readFileIcon(const char *file, const int size);
+      Fl_Image* getEmptyIcon(const int width, const int height);
+      Fl_Image* getLuaIcon(const int size);
       void deleteIcon(Fl_RGB_Image* icon);
       void deleteCachedIcons();
       void shrinkCache();

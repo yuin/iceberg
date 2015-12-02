@@ -15,7 +15,7 @@ namespace ib{
       virtual bool isAutocompleteEnable() const { return false; }
       virtual bool hasDescription() const { return false;}
       virtual const std::string* getContextMenuPath() const = 0;
-      virtual Fl_RGB_Image* loadIcon(const int size){ return 0; }
+      virtual Fl_Image* loadIcon(const int size){ return 0; }
   }; // }}}
 
   class CompletionPathParts : public CompletionValue { // {{{
@@ -29,7 +29,7 @@ namespace ib{
       const std::string& getDescription() const { return description_; }
       const std::string* getContextMenuPath() const;
       bool isAutocompleteEnable() const;
-      Fl_RGB_Image* loadIcon(const int size);
+      Fl_Image* loadIcon(const int size);
 
     protected:
       std::string dirname_;
@@ -56,7 +56,7 @@ namespace ib{
       void setIconFile(const std::string &value){ icon_file_ = value; }
       void setIconFile(const char *value){ icon_file_ = value; }
       bool isAutocompleteEnable() const;
-      Fl_RGB_Image* loadIcon(const int size);
+      Fl_Image* loadIcon(const int size);
 
     protected:
       std::string value_;
@@ -127,7 +127,7 @@ namespace ib{
 
       /* virtual methods */
       const std::string* getContextMenuPath() const;
-      Fl_RGB_Image* loadIcon(const int size);
+      Fl_Image* loadIcon(const int size);
       int execute(const std::vector<std::string*> &args, const std::string* workdir, ib::Error &error);
       void init();
 
@@ -149,7 +149,7 @@ namespace ib{
 
       /* virtual methods */
       const std::string* getContextMenuPath() const;
-      Fl_RGB_Image* loadIcon(const int size);
+      Fl_Image* loadIcon(const int size);
 
       void init();
       int execute(const std::vector<std::string*> &args, const std::string* workdir, ib::Error &error);
@@ -165,7 +165,7 @@ namespace ib{
       void init();
       int execute(const std::vector<std::string*> &args, const std::string* workdir, ib::Error &error);
       const std::string* getContextMenuPath() const;
-      Fl_RGB_Image* loadIcon(const int size);
+      Fl_Image* loadIcon(const int size);
 
       int getRawScore() const { return raw_score_; }
       void setRawScore(const int value){ raw_score_ = value; }

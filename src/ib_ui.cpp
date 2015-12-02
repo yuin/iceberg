@@ -626,7 +626,7 @@ void ib::Listbox::clearAll(){ // {{{
 } // }}}
 
 void ib::Listbox::destroyIcon(const int line){ // {{{
-  Fl_RGB_Image *image_icon = (Fl_RGB_Image*)(icon(line));
+  Fl_Image *image_icon = icon(line);
   if(image_icon == 0) return;
 
   remove_icon(line);

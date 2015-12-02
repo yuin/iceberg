@@ -45,7 +45,7 @@ namespace ib {
     ib::oschar* resolve_icon(ib::oschar *result, ib::oschar *file, int size);
 
     /* path functions */
-    Fl_RGB_Image* get_associated_icon_image(const ib::oschar *path, const int size);
+    Fl_Image* get_associated_icon_image(const ib::oschar *path, const int size);
     ib::oschar* join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child);
     ib::oschar* normalize_path(ib::oschar *result, const ib::oschar *path);
     ib::oschar* normalize_join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child);

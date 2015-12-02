@@ -31,7 +31,7 @@ bool ib::CompletionPathParts::isAutocompleteEnable() const { // {{{
   return ib::Config::inst().getPathAutocomplete();
 } // }}}
 
-Fl_RGB_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
+Fl_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
   return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size);
 } // }}}
 // }}}
@@ -45,7 +45,7 @@ bool ib::CompletionString::isAutocompleteEnable() const { // {{{
   return ib::Config::inst().getOptionAutocomplete();
 } // }}}
 
-Fl_RGB_Image* ib::CompletionString::loadIcon(const int size) { // {{{
+Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
   ib::oschar ospath[IB_MAX_PATH];
   if(icon_file_.empty()){
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, value_.c_str());
@@ -116,7 +116,7 @@ const std::string* ib::Command::getContextMenuPath() const { // {{{
   return &getCommandPath();
 } // }}}
 
-Fl_RGB_Image* ib::Command::loadIcon(const int size) { // {{{
+Fl_Image* ib::Command::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size);
   }else{
@@ -195,7 +195,7 @@ const std::string* ib::LuaFunctionCommand::getContextMenuPath() const { // {{{
   return 0;
 } // }}}
 
-Fl_RGB_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
+Fl_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     return ib::IconManager::inst()->getLuaIcon(size);
   }else{
@@ -288,7 +288,7 @@ const std::string* ib::HistoryCommand::getContextMenuPath() const { // {{{
   return &command_path_;
 } // }}}
 
-Fl_RGB_Image* ib::HistoryCommand::loadIcon(const int size) { // {{{
+Fl_Image* ib::HistoryCommand::loadIcon(const int size) { // {{{
   if(org_cmd_){
     return org_cmd_->loadIcon(size);
   }
