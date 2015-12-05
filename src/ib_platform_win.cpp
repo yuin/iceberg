@@ -621,7 +621,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 } // }}}
 
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
-  // TODO handle terminal parameter
+  auto &cfg = ib::Config::inst();
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
 #ifdef IB_OS_WIN64
@@ -634,18 +634,31 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     ib::unique_wchar_ptr wparams(ib::platform::utf82oschar(path.c_str()));
     ib::unique_wchar_ptr wcwd(ib::platform::utf82oschar(cwd.c_str()));
 #ifdef IB_OS_WIN64
-  ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
+    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
 #else
-  ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
+    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
 #endif
   }else{
+    if(terminal == "yes") {
+      std::vector<std::string*> args;
+      // TODO escape quotations and spaces
+      args.push_back(new std::string(path + " " + strparams));
+      ib::Command cmd;
+      cmd.setName("tmp");
+      cmd.setPath(cfg.getTerminal());
+      cmd.setTerminal("no");
+      cmd.init();
+      int ret = cmd.execute(args, &cwd, error);
+      ib::utils::delete_pointer_vectors(args);
+      return ret;
+    }
     ib::unique_wchar_ptr wpath(ib::platform::utf82oschar(path.c_str()));
     ib::unique_wchar_ptr wparams(ib::platform::utf82oschar(strparams.c_str()));
     ib::unique_wchar_ptr wcwd(ib::platform::utf82oschar(cwd.c_str()));
 #ifdef IB_OS_WIN64
-  ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
+    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
 #else
-  ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
+    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
 #endif
   }
 
