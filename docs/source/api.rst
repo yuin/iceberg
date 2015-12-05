@@ -338,6 +338,7 @@ iceberg操作
        :workdir: 実行ディレクトリ
        :description: 説明
        :icon: アイコンパス
+       :termial: ターミナルで実行するか(yes:する, no:しない, auto:自動)
        :history: ヒストリへ追加するか
        
 .. lua:function:: icebergsupport.to_path(text)

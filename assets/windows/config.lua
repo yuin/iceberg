@@ -16,6 +16,7 @@ system = {
   max_clipboard_histories = 15,
   history_factor = 0.8,
   file_browser = [[explorer ${1}]],
+  terminal  = [[cmd /k ${1}]],
   server_port = 40000,
   path_autocomplete = true,
   option_autocomplete = true,
