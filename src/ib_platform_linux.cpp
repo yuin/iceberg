@@ -799,7 +799,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   if(!visible) window->hide();
 } // }}}
 
-static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, ib::Error &error) { // {{{
+static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string cmd;
   ib::oschar quoted_path[IB_MAX_PATH];
   ib::platform::quote_string(quoted_path, path.c_str());
@@ -840,7 +840,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
         cmd += " ";
         cmd += strparams;
       }
-      if(!xis_gui_app(path.c_str())) {
+      if(terminal == "yes" || (terminal == "auto" && !xis_gui_app(path.c_str()))) {
         ib::string_map values;
         cmd += ";";
         cmd += getenv("SHELL");
@@ -889,7 +889,7 @@ finally:
   return ret;
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(auto it = params.begin(), last = params.end(); it != last; ++it){
     ib::oschar qparam[IB_MAX_PATH];
@@ -897,10 +897,10 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
     ib::platform::quote_string(qparam, (*it).get()->c_str());
     strparams += qparam;
   }
-  return ib_platform_shell_execute(path, strparams, cwd, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
 } /* }}} */
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(auto it = params.begin(), last = params.end(); it != last; ++it){
     ib::oschar qparam[IB_MAX_PATH];
@@ -908,7 +908,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     ib::platform::quote_string(qparam, (*it)->c_str());
     strparams += qparam;
   }
-  return ib_platform_shell_execute(path, strparams, cwd, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
@@ -1066,6 +1066,16 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
           }
         }
         cmd->setPath(command);
+      }
+      auto prop_terminal = kvf.get(SECTION_KEY, "Terminal");
+      if(!prop_terminal.empty()){
+        if(prop_terminal == "true") {
+          cmd->setTerminal("yes");
+        } else if(prop_terminal == "false") {
+          cmd->setTerminal("no");
+        } else {
+          cmd->setTerminal("auto");
+        }
       }
     } else if(prop_type == "Directory") {
       // TODO
