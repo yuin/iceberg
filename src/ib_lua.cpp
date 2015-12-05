@@ -598,6 +598,9 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
     lua_pushstring(L, "icon");
     lua_pushstring(L, bcmd->getIconFile().c_str());
     lua_settable(L, -3);
+    lua_pushstring(L, "terminal");
+    lua_pushstring(L, bcmd->getTerminal().c_str());
+    lua_settable(L, -3);
     lua_pushstring(L, "history");
     lua_pushboolean(L, bcmd->isEnabledHistory());
     lua_settable(L, -3);
