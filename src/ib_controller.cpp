@@ -110,7 +110,7 @@ void ib::Controller::executeCommand() { // {{{
       char dirpath[IB_MAX_PATH_BYTE];
       ib::platform::oschar2utf8_b(dirpath, IB_MAX_PATH_BYTE, osdirpath);
       std::string strdirpath = dirpath;
-      if(ib::platform::shell_execute(abspath, input->getParamValues(), strdirpath, error) != 0){
+      if(ib::platform::shell_execute(abspath, input->getParamValues(), strdirpath, "auto", error) != 0){
         message = error.getMessage();
       }else{
         success = true;
@@ -714,6 +714,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
       }
       lua_pop(IB_LUA, 1);
 
+      GET_FIELD("terminal", string) {
+        command->setTerminal(luaL_checkstring(IB_LUA, -1));
+      }
+      lua_pop(IB_LUA, 1);
+
       GET_FIELD("history", boolean) {
         command->setEnablesHistory(lua_toboolean(IB_LUA, -1) != 0);
       }
@@ -721,6 +726,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
       if(command->getName() == "" || command->getPath() == ""){
         fl_alert("Command must have 'name' and 'path' attibutes.");
+        ib::utils::exit_application(1);
+      }
+
+      if(command->getTerminal() != "auto" && command->getTerminal() != "yes" && command->getTerminal() != "no"){
+        fl_alert("%s: Invalid 'terminal' attribute.(%s)", command->getName().c_str(), command->getTerminal().c_str());
         ib::utils::exit_application(1);
       }
 
@@ -845,6 +855,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     ofs << (*it)->getDescription() << std::endl;
     ofs << (*it)->getCommandPath() << std::endl;
     ofs << (*it)->getIconFile() << std::endl;
+    ofs << (*it)->getTerminal() << std::endl;
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
@@ -877,6 +888,8 @@ void ib::Controller::loadCachedCommands() {
     cmd->setCommandPath(buf);
     getline(ifs, buf);
     cmd->setIconFile(buf);
+    getline(ifs, buf);
+    cmd->setTerminal(buf);
     cmd->setInitialized(true);
     addCommand(cmd->getName(), cmd);
   }

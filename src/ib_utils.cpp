@@ -93,7 +93,7 @@ void ib::utils::reboot_application() { // {{{
   auto &cfg = ib::Config::inst();
   ib::Error error;
   ib::Server::inst().shutdown();
-  if(ib::platform::shell_execute(cfg.getSelfPath(), params, cfg.getInitialWorkdir(), error) != 0) {
+  if(ib::platform::shell_execute(cfg.getSelfPath(), params, cfg.getInitialWorkdir(), "auto", error) != 0) {
     ib::Server::inst().start(error);
     fl_alert("%s", error.getMessage().c_str());
   }else{

@@ -795,7 +795,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
   lua_state.clearStack();
 
   ib::Error error;
-  if(ib::platform::shell_execute(cmd, args, workdir, error) != 0){
+  if(ib::platform::shell_execute(cmd, args, workdir, "auto", error) != 0){
     lua_pushboolean(L, false);
     lua_pushstring(L, error.getMessage().c_str());
   }else{

@@ -67,7 +67,7 @@ namespace ib{
 
   class BaseCommand : public CompletionValue { // {{{
     public:
-      BaseCommand() : category_(""), name_(""), path_(""), workdir_(""), description_(""), icon_file_(), is_enabled_history_(true), score_(0.0), is_dynamic_workdir_(false) {}
+      BaseCommand() : category_(""), name_(""), path_(""), workdir_(""), description_(""), icon_file_(), terminal_("auto"), is_enabled_history_(true), score_(0.0), is_dynamic_workdir_(false) {}
       ~BaseCommand() {}
       virtual int execute(const std::vector<std::string*> &args, const std::string* workdir, ib::Error &error) = 0;
       virtual void init() = 0;
@@ -98,6 +98,9 @@ namespace ib{
       const std::string& getIconFile() const { return icon_file_; }
       void setIconFile(const std::string &value){ icon_file_ = value; }
       void setIconFile(const char *value){ icon_file_ = value; }
+      const std::string& getTerminal() const { return terminal_; }
+      void setTerminal(const std::string &value){ terminal_ = value; }
+      void setTerminal(const char *value){ terminal_ = value; }
       bool isEnabledHistory() const { return is_enabled_history_;}
       void setEnablesHistory(const bool value){ is_enabled_history_ = value; }
       double getScore() const { return score_; }
@@ -112,6 +115,7 @@ namespace ib{
       std::string workdir_;
       std::string description_;
       std::string icon_file_;
+      std::string terminal_;
       bool        is_enabled_history_;
       double      score_;
       bool        is_dynamic_workdir_;

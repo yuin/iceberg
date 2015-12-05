@@ -620,7 +620,8 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   SetLayeredWindowAttributes(fl_xid(window), 0, alpha, LWA_ALPHA);
 } // }}}
 
-static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, ib::Error &error) { // {{{
+static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+  // TODO handle terminal parameter
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
 #ifdef IB_OS_WIN64
@@ -672,7 +673,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   return -1;
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(auto it = params.begin(), last = params.end(); it != last; ++it){
     ib::unique_oschar_ptr osparam(ib::platform::utf82oschar((*it).get()->c_str()));
@@ -681,10 +682,10 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return ib_platform_shell_execute(path, strparams, cwd, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
 } /* }}} */
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(auto it = params.begin(), last = params.end(); it != last; ++it){
     ib::unique_oschar_ptr osparam(ib::platform::utf82oschar((*it)->c_str()));
@@ -693,7 +694,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return ib_platform_shell_execute(path, strparams, cwd, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
