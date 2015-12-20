@@ -39,6 +39,6 @@ namespace ib{
   }
 }
 const char *strcasestr(const char *haystack, const char *needle);
-
+extern "C" __declspec(dllimport) BOOL __stdcall RegenerateUserEnvironment( LPVOID *lpEnvironment, BOOL bUpdate );
 
 #endif

@@ -335,6 +335,12 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
       }
       break;
 
+    case WM_SETTINGCHANGE: {
+        LPVOID lpenv;
+        RegenerateUserEnvironment(&lpenv, TRUE);
+      }
+      break;
+
     case WM_DESTROY: {
         ChangeClipboardChain(hwnd, ib_g_hwnd_clbchain_next);
         PostQuitMessage(0);
