@@ -262,6 +262,19 @@ t.load_plugins = function() -- {{{
   end
 end -- }}}
 
+t.merge_table = function(dest, ...) -- {{{
+  local srcs = {...}
+  for i, src in ipairs(srcs) do
+    if dest[1] ~= nil then -- array
+      table.insert(dest, src)
+    else -- map
+      for k, v in pairs(src) do
+        dest[k] = v
+      end
+    end
+  end
+end -- }}}
+
 -- }}}
 
 return t
