@@ -117,11 +117,12 @@ package:
 	 $(CP) $(LUAXML_FILES) $${_IB_PACKAGE_DIR}/luamodule/;                               \
 	 $(CP) $(LUAWINALTTAB_FILES) $${_IB_PACKAGE_DIR}/luamodule/;                         \
 	 rm -f $${_IB_PACKAGE_DIR}/luamodule/__*;                                            \
-	 rm -f $${_IB_PACKAGE_DIR}/luamodule/weather/*.{gif,xml};                            \
 	 cp -r docs/build/html $${_IB_PACKAGE_DIR}/docs;                                     \
 	 rm -rf $${_IB_PACKAGE_DIR}/docs/.git;                                               \
-	 cp -r assets/common/shortcuts   $${_IB_PACKAGE_DIR};                                \
-	 rm -f $${_IB_PACKAGE_DIR}/shortcuts/dummy;                                          \
+	 mkdir -p  $${_IB_PACKAGE_DIR}/config.d;                                             \
+	 mkdir -p  $${_IB_PACKAGE_DIR}/shortcuts;                                            \
+	 mkdir -p  $${_IB_PACKAGE_DIR}/plugins;                                              \
+	 cp -r assets/common/luamodule/weather/ $${_IB_PACKAGE_DIR}/plugins;                 \
 	 zip -r iceberg-$${_IB_ARCH}-$${_IB_VERSION}.zip $${_IB_PACKAGE_DIR};                \
 	)
 

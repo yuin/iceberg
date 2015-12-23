@@ -236,6 +236,32 @@ t.load_lua_object = function(str) -- {{{
     return true, ret
   end
 end -- }}}
+
+t.load_lua_files = function(directory) -- {{{
+  local _, files = assert(t.list_dir(directory))
+  table.sort(files)
+  for i, file in ipairs(files) do
+    if t.regex_match("^[^_].*\\.lua$", Regex.NONE, file) then
+      dofile(t.join_path(directory, file))
+    end
+  end
+end -- }}}
+
+t.load_plugins = function() -- {{{
+  local directory = t.join_path(t.CONFIG_DIR, "plugins")
+  local _, dirs = assert(t.list_dir(directory))
+  table.sort(dirs)
+  for i, dir in ipairs(dirs) do
+    local dirpath = t.join_path(directory, dir)
+    if t.directory_exists(dirpath) then
+      local mainscript = t.join_path(dirpath, "main.lua")
+      if t.file_exists(mainscript) then
+        dofile(mainscript)
+      end
+    end
+  end
+end -- }}}
+
 -- }}}
 
 return t

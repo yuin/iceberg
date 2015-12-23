@@ -91,6 +91,7 @@ install:
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/shortcuts
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/luamodule
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/images
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/plugins
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/linux/config.lua /home/${SUDO_USER}/.iceberg/
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/images/* /home/${SUDO_USER}/.iceberg/images
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/luamodule/icebergsupport.lua /home/${SUDO_USER}/.iceberg/luamodule/

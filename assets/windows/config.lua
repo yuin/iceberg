@@ -250,5 +250,6 @@ function on_initialize()
   return error
 end
 
-require("weather")
-
+-- load configurations from ./config.d/*.lua --
+ibs.load_lua_files(ibs.join_path(script_path, "config.d"))
+ibs.load_plugins()
