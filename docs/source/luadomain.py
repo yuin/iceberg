@@ -196,7 +196,7 @@ class LuaDomain(Domain):
               name.replace('$', '_S_'), contnode, name)
 
   def get_objects(self):
-    for refname, (docname, type) in self.data['objects'].iteritems():
+    for refname, (docname, type) in self.data['objects'].items():
       yield refname, refname, type, docname, \
           refname.replace('$', '_S_'), 1
 
