@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; iceberg 0.9.7 documentation</title>
+    <title>API &mdash; iceberg 0.9.8 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.7',
+        VERSION:     '0.9.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.7 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.8 documentation" href="index.html" />
     <link rel="next" title="既知の問題" href="knownissues.html" />
     <link rel="prev" title="Tips" href="tips.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.7 documentation</span></a></h1>
+          <span>iceberg 0.9.8 documentation</span></a></h1>
         <h2 class="heading"><span>API</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -702,6 +702,23 @@
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="icebergsupport.merge_table">
+<code class="descclassname">icebergsupport.</code><code class="descname">merge_table</code><span class="sig-paren">(</span><em>table</em><span class="optional">[</span>, <em>obj</em>, <em>obj ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.merge_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>第一引数の <code class="docutils literal"><span class="pre">table</span></code> と第二引数以降をマージします。第一引数の <code class="docutils literal"><span class="pre">table</span></code> が配列の場合、末尾に要素が追加されます。そうでない場合、第二引数以降の <code class="docutils literal"><span class="pre">table</span></code> のキーを第一引数の <code class="docutils literal"><span class="pre">table</span></code> に上書きします。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>table</strong> (<em>table</em>) &#8211; table</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="iceberg">
 <h3>iceberg操作<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h3>
@@ -819,7 +836,9 @@
 </tr>
 <tr class="field-even field"><th class="field-name">icon:</th><td class="field-body">アイコンパス</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">history:</th><td class="field-body">ヒストリへ追加するか</td>
+<tr class="field-odd field"><th class="field-name">terminal:</th><td class="field-body">ターミナルで実行するか(yes:する, no:しない, auto:自動)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">history:</th><td class="field-body">ヒストリへ追加するか</td>
 </tr>
 </tbody>
 </table>
@@ -1351,7 +1370,7 @@
 
     <div class="footer" role="contentinfo">
         &copy; Copyright 2012-2015, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
     </div>
   </body>
 </html>

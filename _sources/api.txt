@@ -282,6 +282,11 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
    :param table table: table
    :returns: 配列であればtrue, でなければfalse
 
+.. lua:function:: icebergsupport.merge_table(table, [obj, obj ...])
+
+   第一引数の ``table`` と第二引数以降をマージします。第一引数の ``table`` が配列の場合、末尾に要素が追加されます。そうでない場合、第二引数以降の ``table`` のキーを第一引数の ``table`` に上書きします。
+
+   :param table table: table
 
 iceberg操作
 ~~~~~~~~~~~~~~
@@ -338,6 +343,7 @@ iceberg操作
        :workdir: 実行ディレクトリ
        :description: 説明
        :icon: アイコンパス
+       :terminal: ターミナルで実行するか(yes:する, no:しない, auto:自動)
        :history: ヒストリへ追加するか
        
 .. lua:function:: icebergsupport.to_path(text)

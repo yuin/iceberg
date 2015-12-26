@@ -275,6 +275,9 @@ commandsグローバル変数
           -- 実行ファイル, icebergのカレントディレクトリで実行 -- 
           np = {path = [[notepad.exe]], description="Notepad", workdir="."},
 
+          -- シェルスクリプト, ターミナルで実行する --
+          np = {path = [[myscript.sh]], description="My script", terminal="yes"},
+
           -- lua関数, 補完関数あり -- 
           lua_sample = { 
             path = function(args) 
@@ -320,6 +323,8 @@ commandsグローバル変数
     補完候補ウインドウに表示される説明文です。
 :icon:
     補完候補ウインドウに表示されるアイコン画像のパスです。Linuxの場合、アイコンテーマにおけるアイコン名でもかまいません。アイコン名の場合自動的に最適な画像を選択します。
+:terminal:
+    ターミナルで実行するかを示します。yesの場合常にターミナルで実行します。noの場合ターミナルで実行しません。autoの場合は自動的にターミナルで実行するか判定します。ターミナル実行コマンドは ``system.terminal`` で指定されたコマンドです。
 :history:
     ``false`` を指定するとヒストリに残らなくなります。
 :workdir:

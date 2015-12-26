@@ -1,5 +1,39 @@
 変更履歴
 =======================
+0.9.8 (2015-12-27)
+-----------------------
+- NEW: コマンド定義に ``terminal`` 属性を追加。
+- IMPROVED: Windowsにおいてシステム環境変数が変更された場合、icebergを再起動無しに以後起動したコマンドに変更された環境変数が反映されるようになった。
+- IMPROVED: Pluginシステムを標準化した。
+- IMPROVED: Windowsでも ``config.d`` ディレクトリ配下を読むようになった。
+- FIXED: GIFアイコンとXPMアイコンを表示した時にクラッシュする問題を修正。
+
+0.9.7からのアップグレード方法
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- 0.9.8をダウンロードしてください。
+- 0.9.8から ``iceberg.exe`` をコピーして既存の0.9.7側に上書きしてください。
+- 0.9.8から ``luamodule/icebergsupport.lua`` をコピーして既存の0.9.7側に上書きしてください。
+- ``commands.cache`` と  ``icons.cache`` を削除してください。
+- icebergディレクトリに ``plugins`` ディレクトリを作成してください。
+- Windowsの場合、icebergディレクトリに ``config.d`` ディレクトリを作成してください。
+- Windowsの場合、 ``config.lua`` の ``system`` グローバル変数に以下のように ``terminal``  を追加してください。
+
+    .. code-block:: lua
+
+        system = {
+          (他の設定)
+          terminal = "cmd /k ${1}",
+          (他の設定)
+        }
+
+- ``config.lua`` の末尾に以下を追加してください。Linuxの場合、 末尾の ``load_config_d()`` は削除した上で追加してください(関数定義も削除して問題ありません)。
+
+    .. code-block:: lua
+
+        ibs.load_lua_files(ibs.join_path(script_path, "config.d"))
+        ibs.load_plugins()
+
+
 0.9.7 (2015-11-19)
 -----------------------
 - NEW: Linux上での動作をサポートした。
