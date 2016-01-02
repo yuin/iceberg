@@ -595,7 +595,7 @@ void ib::Listbox::addValue(ib::CompletionValue* value){ // {{{
 } // }}}
 
 void ib::Listbox::removeValue(int line){ // {{{
-  ib::platform::ScopedLock lock(mutex_);
+  ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
   destroyIcon(line);
   remove(line);
@@ -607,7 +607,7 @@ ib::CompletionValue* ib::Listbox::selectedValue() const { // {{{
 } // }}}
 
 void ib::Listbox::clearAll(){ // {{{
-  ib::platform::ScopedLock lock(mutex_);
+  ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
 
   if(ib::MainWindow::inst()->getInput()->getCursorTokenIndex() == 0) {
@@ -635,12 +635,12 @@ void ib::Listbox::destroyIcon(const int line){ // {{{
 } // }}}
 
 void ib::Listbox::startUpdate(){ /* {{{ */
-  ib::platform::ScopedLock lock(mutex_);
+  ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
 } /* }}} */
 
 void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
-  ib::platform::ScopedLock lock(mutex_);
+  ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
   if(size() == 0) { max_width_ = 0;}
   if(isEmpty()) return;

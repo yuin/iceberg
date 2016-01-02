@@ -113,7 +113,7 @@ namespace ib {
       void selectLine(const int line, const bool move2middle = true);
       void adjustSize();
 
-      ib::mutex& getMutex() { return mutex_; }
+      ib::mutex* getMutex() { return &mutex_; }
       int getOperationCount() const { return operation_count_; }
       void incOperationCount(){ operation_count_++;}
       int item_height(void *item) const;

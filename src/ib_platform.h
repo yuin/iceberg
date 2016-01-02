@@ -108,10 +108,10 @@ namespace ib {
 
     class ScopedLock : private NonCopyable<ScopedLock> { // {{{
       public:
-        ScopedLock(ib::mutex &mutex) : mutex_(mutex) { ib::platform::lock_mutex(&mutex_); }
-        ~ScopedLock(){ ib::platform::unlock_mutex(&mutex_); }
+        explicit ScopedLock(ib::mutex *mutex) : mutex_(mutex) { ib::platform::lock_mutex(mutex_); }
+        ~ScopedLock(){ ib::platform::unlock_mutex(mutex_); }
       protected:
-        ib::mutex mutex_;
+        ib::mutex *mutex_;
     }; // }}}
 
   }

@@ -16,7 +16,7 @@ namespace ib{
         //onig_end();
         //ib::platform::destroy_mutex(&mutex_);
       }
-      ib::mutex& getMutex() { return mutex_; }
+      ib::mutex* getMutex() { return &mutex_; }
 
     protected:
       OnigrumaService() : mutex_(){
@@ -45,8 +45,8 @@ namespace ib{
       }
 
       int init(std::string *error_msg = 0) {
+        ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
         if(reg_ == 0){
-          ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
           region_  = onig_region_new();
           onig_set_default_case_fold_flag(0);
           int r = onig_new(&reg_, pattern_, pattern_ + strlen((char* )pattern_),
