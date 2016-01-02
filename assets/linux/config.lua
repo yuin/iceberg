@@ -104,7 +104,7 @@ commands = {
       end
       ibs.scan_search_path(args[1]) 
     end, 
-    completion = function(values) 
+    completion = function(values, pos) 
           local candidates = {"all"}
           local keys       = {all = true}
           for i, value in ipairs(system.search_path) do
@@ -149,9 +149,9 @@ commands = {
       commands.locate._list = {}
       return 0
     end, 
-    completion = function(values)
+    completion = function(values, pos)
       commands.locate._list = {}
-      if #values == 0 or values[1] == "" then return commands.locate._list end
+      if #values == 1 and values[1] == "" then return commands.locate._list end
       local ok, stdout, stderr =  ibs.command_output([[locate ]] .. ibs.quote_path(values[1]) .. [[ -l 20]])
       if ok then
         local lines = ibs.regex_split("\n", Regex.NONE, ibs.local2utf8(stdout))
@@ -180,15 +180,13 @@ commands = {
       end
       return 0
     end, 
-    completion = function(values)
+    completion = function(values, pos)
       local candidates = {}
-      if #values ~= 0 then
-        if values[#values] == "-" then
-          return {
-            {value="-1", description="HUP"}, {value="-2", description="INT"},
-            {value="-3", description="QUIT"}, {value="-9", description="KILL"},
-            {value="-10", description="USR1"}, {value="-15", description="TERM"}}
-        end
+      if values[pos] == "-" then
+        return {
+          {value="-1", description="HUP"}, {value="-2", description="INT"},
+          {value="-3", description="QUIT"}, {value="-9", description="KILL"},
+          {value="-10", description="USR1"}, {value="-15", description="TERM"}}
       end
       local ok, stdout, stderr =  ibs.command_output([[ps ux]])
       if ok then

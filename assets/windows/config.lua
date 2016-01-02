@@ -117,7 +117,7 @@ commands = {
       end
       ibs.scan_search_path(args[1]) 
     end, 
-    completion = function(values) 
+    completion = function(values, pos)
           local candidates = {"all"}
           local keys       = {all = true}
           for i, value in ipairs(system.search_path) do
@@ -181,7 +181,7 @@ commands = {
       end
       return 0
     end, 
-    completion = function(values)
+    completion = function(values, pos)
         local candidates = {}
         for i, tb in ipairs(winalttab.list()) do
           local title = tb.title .. " (ID:" .. tb.hwnd .. ")"
@@ -202,7 +202,7 @@ commands = {
       end
       return 0
     end,
-    completion = function(values)
+    completion = function(values, pos)
         local candidates = {}
         for i, text in ipairs(ibs.get_clipboard_histories()) do
           local value = ibs.regex_gsub("\n", Regex.NONE, text, " ")

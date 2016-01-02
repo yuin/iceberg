@@ -36,7 +36,9 @@ void ib::Completer::completeHistory(std::vector<ib::CompletionValue*> &candidate
 void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates, const std::string &command) { // {{{
   if(!hasCompletionFunc(command)) return;
   const auto &input = ib::MainWindow::inst()->getInput()->getCursorValue();
+  const auto &tokens = ib::MainWindow::inst()->getInput()->getTokens();
   const auto token = ib::MainWindow::inst()->getInput()->getCursorToken();
+  const unsigned int position = ib::MainWindow::inst()->getInput()->position();
   method_option_->beforeMatch(candidates, input);
   
   const int start = lua_gettop(IB_LUA);
@@ -47,15 +49,38 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
   lua_newtable(IB_LUA);
   const int top = lua_gettop(IB_LUA);
   int i = 1;
-  auto &args = ib::MainWindow::inst()->getInput()->getParamValues();
-  for (auto it = args.begin(), last = args.end(); it != last; ++it, ++i) {
+  int current_index = 1;
+  unsigned int token_index = 1; // 0 is command name
+  for(; token_index < tokens.size(); token_index++){
+    const auto token = tokens.at(token_index);
+    const auto is_current = token->getStartPos() <= position && token->getEndPos() >= position;
+    const auto is_last = (tokens.size() - 1 == token_index);
+
+    if(token->isValueToken()) {
       lua_pushinteger(IB_LUA, i);
-      lua_pushstring(IB_LUA, (*it)->c_str());
+      lua_pushstring(IB_LUA, token->getValue().c_str());
       lua_settable(IB_LUA, top);
+      if(is_current) current_index = i;
+      i++;
+    } else if(is_current){
+      current_index = i;
+      if(is_last){
+        lua_pushinteger(IB_LUA, i);
+        lua_pushstring(IB_LUA, "");
+        lua_settable(IB_LUA, top);
+        i++;
+      }
+    }
   }
 
-  if(lua_pcall(IB_LUA, 1, 1, 0) != 0) {
+  lua_pushinteger(IB_LUA, current_index);
+  if(lua_pcall(IB_LUA, 2, 1, 0) != 0){
     fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
+    return;
+  }
+
+  if(!lua_istable(IB_LUA, -1)) {
+    fl_alert("Completion function must return a table, but got a(n) %s", lua_typename(IB_LUA, lua_type(IB_LUA, -1)));
     return;
   }
 
