@@ -66,7 +66,7 @@ int main(int argc, char **argv) { // {{{
   }
 
   if(!cfg.getIpcMessage().empty()){
-    int code = ib::utils::ipc_message(cfg.getIpcMessage());
+    const auto code = ib::utils::ipc_message(cfg.getIpcMessage());
     ib::platform::finalize_system();
     exit(code);
   }
@@ -103,7 +103,7 @@ int main(int argc, char **argv) { // {{{
   ib::History::inst().load();
   if(ib::Config::inst().getEnableIcons()){
     ib::IconManager::inst()->load();
-    ib::CancelableEvent &event = ib::IconManager::inst()->getLoaderEvent();
+    auto &event = ib::IconManager::inst()->getLoaderEvent();
     event.setMs(1);
     event.startThread();
   }
@@ -119,7 +119,7 @@ int main(int argc, char **argv) { // {{{
       fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
       ib::utils::exit_application(1);
   }
-  int result = (int)lua_tonumber(IB_LUA, 1);
+  auto result = static_cast<int>(lua_tonumber(IB_LUA, 1));
   if(result != 0) {
     ib::utils::exit_application(result);
   }

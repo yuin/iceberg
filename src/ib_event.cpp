@@ -2,7 +2,7 @@
 
 // class CancelableEvent {{{
 static ib::threadret thread_func(void *self_) { // {{{
-  auto *self = reinterpret_cast<ib::CancelableEvent*>(self_);
+  auto self = reinterpret_cast<ib::CancelableEvent*>(self_);
   while(1) {
     ib::platform::lock_cmutex(&(self->trigger_cmutex_));
     if(self->last_event_ == 0) {

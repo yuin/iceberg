@@ -374,7 +374,7 @@ void ib::IconManager::deleteIconCache(const std::string &cache_key) { // {{{
 
 void ib::IconManager::deleteIconCache(Fl_RGB_Image *icon) { // {{{
   if(!isCached(icon)) return;
-  std::string cache_key = cached_icons_reverse_[icon];
+  const auto &cache_key = cached_icons_reverse_[icon];
   cached_icons_reverse_.erase(icon);
   cached_icons_.erase(cache_key);
 } // }}}

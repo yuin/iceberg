@@ -928,7 +928,7 @@ int ib::luamodule::selected_index(lua_State *L) { // {{{
 
 int ib::luamodule::utf82local(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *text= luaL_checkstring(L, 1);
+  const auto text = luaL_checkstring(L, 1);
   ib::unique_char_ptr ret(ib::platform::utf82local(text));
 
   lua_state.clearStack();
@@ -938,7 +938,7 @@ int ib::luamodule::utf82local(lua_State *L) { // {{{
 
 int ib::luamodule::local2utf8(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *text= luaL_checkstring(L, 1);
+  const auto text = luaL_checkstring(L, 1);
   ib::unique_char_ptr ret(ib::platform::local2utf8(text));
 
   lua_state.clearStack();

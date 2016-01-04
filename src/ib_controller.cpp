@@ -11,7 +11,7 @@
 #include "ib_icon_manager.h"
 
 void ib::Controller::initFonts(){ // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   Fl::set_font(ib::Fonts::input, cfg.getStyleInputFont().c_str());
   Fl::set_font(ib::Fonts::list, cfg.getStyleListFont().c_str());
 
@@ -179,7 +179,7 @@ void ib::Controller::showApplication() { // {{{
 } // }}}
 
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
-  ib::Config &cfg = ib::Config::inst();
+  auto &cfg = ib::Config::inst();
   ib::Error error;
 
   const char *usage = "Usage: iceberg.exe [-c CONFIG_FILE] [-m message]";
@@ -796,7 +796,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
       }else{
         ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, fileptr.get());
         if(re.match(file) == 0){
-          ib::Command *command = new ib::Command();
+          auto command = new ib::Command();
           ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, fileptr.get());
           std::string cmdname;
           ib::utils::to_command_name(cmdname, file);
@@ -825,7 +825,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     auto &prev_commands = ib::Controller::inst().getCommands();
     for(auto &p : prev_commands) {
       if(!p.second->getCategory().empty() && p.second->getCategory() != category){
-        ib::Command *prev_command = dynamic_cast<ib::Command*>(p.second);
+        auto prev_command = dynamic_cast<ib::Command*>(p.second);
         if(prev_command != 0){
           commands.push_back(prev_command);
           prev_index++;
@@ -874,7 +874,7 @@ void ib::Controller::loadCachedCommands() {
   std::string buf;
 
   while(ifs && getline(ifs, buf)) {
-    ib::Command *cmd = new ib::Command();
+    auto cmd = new ib::Command();
     cmd->setCategory(buf);
     getline(ifs, buf);
     cmd->setName(buf);
@@ -923,11 +923,11 @@ void ib::Controller::completionInput() { // {{{
     int i = 0;
     for(auto it = input->getTokens().begin(), last = input->getTokens().end(); it != last; ++it, ++i){
       if(i == input->getCursorTokenIndex()){
-        const auto &cursorValue = input->getCursorToken()->getValue();
+        const auto &cursor_value = input->getCursorToken()->getValue();
         if(!input->getCursorToken()->isValueToken()) {
-          buf += cursorValue;
+          buf += cursor_value;
         }
-        ib::unique_oschar_ptr os_value(ib::platform::utf82oschar(cursorValue.c_str()));
+        ib::unique_oschar_ptr os_value(ib::platform::utf82oschar(cursor_value.c_str()));
         if(ib::platform::is_path(os_value.get())){
           ib::oschar os_dirname[IB_MAX_PATH];
           ib::platform::dirname(os_dirname, os_value.get());
@@ -964,8 +964,8 @@ void ib::Controller::completionInput() { // {{{
 
 // void ib::Controller::showCompletionCandidates() { // {{{
 static int cmp_command(const ib::CompletionValue *a, const ib::CompletionValue *b) {
-  const auto *a_cmd = static_cast<const ib::BaseCommand*>(a);
-  const auto *b_cmd = static_cast<const ib::BaseCommand*>(b);
+  const auto a_cmd = static_cast<const ib::BaseCommand*>(a);
+  const auto b_cmd = static_cast<const ib::BaseCommand*>(b);
   return a_cmd->getScore() > b_cmd->getScore();
 }
 
@@ -1129,7 +1129,7 @@ void ib::Controller::killWord() { // {{{
   int i = 0;
   for(auto it = tokens.begin(), last = tokens.end(); it != last; ++it, ++i){
     if(i == input->getCursorTokenIndex()){
-      const std::string &cursor_value = (*it)->getValue();
+      const auto &cursor_value = (*it)->getValue();
       ib::unique_oschar_ptr os_value(ib::platform::utf82oschar(cursor_value.c_str()));
       if(ib::platform::is_path(os_value.get())){
         ib::oschar os_dirname[IB_MAX_PATH];

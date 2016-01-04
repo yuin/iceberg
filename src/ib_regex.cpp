@@ -35,7 +35,7 @@ int ib::Regex::search(const char *str, const std::size_t startpos, const std::si
   const auto end   = reinterpret_cast<const unsigned char*>(str + endposs);
   const auto start = reinterpret_cast<const unsigned char*>(str + startposs);
   const auto range = end;
-  int last_result_ = onig_search(reg_, (unsigned char*)str, end, start, range, region_, ONIG_OPTION_NONE);
+  last_result_ = onig_search(reg_, (unsigned char*)str, end, start, range, region_, ONIG_OPTION_NONE);
   if (last_result_ >= 0) {
     return 0;
   }else{

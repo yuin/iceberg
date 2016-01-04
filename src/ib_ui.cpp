@@ -74,7 +74,7 @@ void ib::_key_event_handler(void *p) {
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
   const auto &cfg = ib::Config::inst();
-  int key = Fl::event_key();
+  auto key = Fl::event_key();
   const auto state = Fl::event_state();
   const auto mods = state & (FL_META|FL_CTRL|FL_ALT);
   const auto shift = state & FL_SHIFT;
