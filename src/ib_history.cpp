@@ -5,7 +5,7 @@
 #include "ib_regex.h"
 
 void ib::History::load() { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::unique_oschar_ptr oshistory_path(ib::platform::utf82oschar(cfg.getHistoryPath().c_str()));
   if(!ib::platform::file_exists(oshistory_path.get())) return;
 
@@ -18,7 +18,7 @@ void ib::History::load() { // {{{
 
   while(ifs && getline(ifs, buf)) {
     re.split(fields, buf);
-    ib::HistoryCommand *cmd = new HistoryCommand();
+    auto cmd = new HistoryCommand();
     cmd->setName(*(fields.at(0)));
     cmd->setPath(*(fields.at(1)));
     cmd->addTime((std::time_t)atoi(fields.at(2)->c_str()));
@@ -30,7 +30,7 @@ void ib::History::load() { // {{{
 } // }}}
 
 void ib::History::dump() { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::Error error;
 
   ib::oschar osbkfile[IB_MAX_PATH];
@@ -48,7 +48,7 @@ void ib::History::dump() { // {{{
   }
 
   for(auto last = ordered_commands_.end(); it != last; ++it){
-    ib::HistoryCommand *cmd = *it;
+    auto cmd = *it;
     ofs << cmd->getName() << "\t" << cmd->getPath() << "\t" << cmd->getTimes().at(0) << std::endl;
   }
   ofs.close();
@@ -64,7 +64,7 @@ void ib::History::dump() { // {{{
 
 void ib::History::addCommand(ib::HistoryCommand *command) { // {{{
   command->init();
-  ib::HistoryCommand *cmd = command;
+  auto cmd = command;
   if(commands_.find(command->getPath()) == commands_.end()){
     commands_[command->getPath()] = command;
   }else{
@@ -79,7 +79,7 @@ void ib::History::addCommand(ib::HistoryCommand *command) { // {{{
 } // }}}
 
 void ib::History::addBaseCommandHistory(const std::string &value, const ib::BaseCommand* cmd){ // {{{
-   ib::HistoryCommand *hcmd = new HistoryCommand();
+   auto hcmd = new HistoryCommand();
    hcmd->setName(cmd->getName());
    hcmd->setPath(value);
    hcmd->addTime(std::time(0));
@@ -87,7 +87,7 @@ void ib::History::addBaseCommandHistory(const std::string &value, const ib::Base
 } // }}}
 
 void ib::History::addRawInputHistory(const std::string &value) { // {{{
-   ib::HistoryCommand *hcmd = new HistoryCommand();
+   auto hcmd = new HistoryCommand();
    hcmd->setName(value);
    hcmd->setPath(value);
    hcmd->addTime(std::time(0));
@@ -96,10 +96,10 @@ void ib::History::addRawInputHistory(const std::string &value) { // {{{
 
 void ib::History::calcRawScore(ib::HistoryCommand *command){ // {{{
   int score = 0;
-  std::time_t now = std::time(0);
-  const std::vector<std::time_t> &times = command->getTimes();
-  for(auto it = times.begin(), last = times.end(); it != last; ++it){
-    std::time_t diff = now - (*it);
+  auto now = std::time(0);
+  const auto &times = command->getTimes();
+  for(const auto &t : times) {
+    std::time_t diff = now - t;
     if(diff < 60*15){
       score += 8;
     }else if(diff < 60*60){
@@ -125,8 +125,8 @@ double ib::History::calcScore(const std::string &name, double average, double se
   }
   auto it = commands_.find(name);
   if(it == commands_.end()) return 0.0;
-  const ib::HistoryCommand *command = (*it).second;
-  const double v = command->getRawScore() - average;
+  const auto command = (*it).second;
+  const auto v = command->getRawScore() - average;
   if(v < 0.001) return 0.5;
 
   return std::min(1.0, ((10 * (command->getRawScore() - average)) / se + 50) / 100.0);
@@ -137,10 +137,10 @@ double ib::History::calcScoreSe(){ // {{{
     return 0.0;
   }
 
-  const double avr = getAverageScore();
+  const auto avr = getAverageScore();
   double sum = 0;
-  for(auto it = commands_.begin(), last = commands_.end(); it != last; ++it){
-    ib::HistoryCommand *cmd = (*it).second;
+  for(const auto &c : commands_) {
+    ib::HistoryCommand *cmd = c.second;
     sum += pow(cmd->getRawScore() - avr, 2);
   }
   return sqrt(sum / commands_.size());

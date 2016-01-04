@@ -19,8 +19,8 @@ void ib::Server::accept(FL_SOCKET fd, void *data) { // {{{
 void ib::Server::respond(FL_SOCKET fd, void *data) { // {{{
   char length_buf[4];
   if(ib::utils::read_socket(fd, length_buf, 4) == 4) {
-    ib::u32 length = ib::utils::bebytes2u32int(length_buf);
-    char *buf = new char[length+1];
+    auto length = ib::utils::bebytes2u32int(length_buf);
+    auto buf = new char[length+1];
     if(ib::utils::read_socket(fd, buf, length) == length){
       buf[length] = '\0';
       ib::Controller::inst().handleIpcMessage(buf);
@@ -32,7 +32,7 @@ void ib::Server::respond(FL_SOCKET fd, void *data) { // {{{
 } // }}}
 
 int ib::Server::start(ib::Error &error){ // {{{
-  const unsigned int port = ib::Config::inst().getServerPort();
+  const auto port = ib::Config::inst().getServerPort();
   if(port == 0) return 0;
   if(started_) return 0;
 

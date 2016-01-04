@@ -16,8 +16,8 @@ struct iconlist {
 
 static void _main_thread_awaker(void *p){
   auto listbox = ib::ListWindow::inst()->getListbox();
-  struct iconlist *ilist = (struct iconlist*)p;
-  int pos = ilist->pos;
+  auto ilist = reinterpret_cast<struct iconlist*>(p);
+  auto pos = ilist->pos;
   for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
     listbox->destroyIcon(pos);
     if(*it != 0) {
@@ -58,7 +58,7 @@ void ib::_icon_loader(void *p) {
           ib::utils::delete_pointer_vectors(buf);
           break;
         }
-        struct iconlist *ilist = new iconlist;
+        auto ilist = new iconlist;
         std::copy(buf.begin(), buf.end(), std::back_inserter(ilist->icons));
         ilist->pos = pos;
         Fl::awake(_main_thread_awaker, ilist);
@@ -76,7 +76,7 @@ void ib::IconManager::loadCompletionListIcons() { // {{{
 
 void ib::IconManager::load() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::unique_oschar_ptr osicon_path(ib::platform::utf82oschar(cfg.getIconCachePath().c_str()));
   if(!ib::platform::file_exists(osicon_path.get())) return;
 
@@ -96,17 +96,17 @@ void ib::IconManager::load() { // {{{
 
     std::string::size_type cache_key_size;
     ifs.read((char*)&cache_key_size, sizeof(std::string::size_type));
-    char *cache_key_buf = new char[cache_key_size];
+    auto cache_key_buf = new char[cache_key_size];
     ifs.read(cache_key_buf, cache_key_size);
 
     long data_size;
     ifs.read((char*)&data_size, sizeof(long));
-    unsigned char* data_buf = new unsigned char[data_size];
+    auto data_buf = new unsigned char[data_size];
     ifs.read((char*)data_buf, data_size);
 
     std::string cache_key(cache_key_buf);
     delete[] cache_key_buf;
-    Fl_RGB_Image *icon = new Fl_RGB_Image(data_buf, w, h ,d);
+    auto icon = new Fl_RGB_Image(data_buf, w, h ,d);
     icon->alloc_array = true;
     createIconCache(cache_key, icon);
   }
@@ -116,7 +116,7 @@ void ib::IconManager::load() { // {{{
 
 void ib::IconManager::dump() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg.getIconCachePath().c_str()));
   std::ofstream ofs(loicon_path.get(), std::ios::out|std::ios::binary|std::ios::trunc);
   int intvalue;
@@ -126,8 +126,7 @@ void ib::IconManager::dump() { // {{{
   intvalue = (int)std::min<std::size_t>(cached_icons_.size(), INT_MAX);
   ofs.write(intptr, sizeof(int));
 
-  for(auto it = cached_icons_queue_.begin(), last = cached_icons_queue_.end(); it != last; ++it){
-    const std::string cache_key = (*it);
+  for(auto const &cache_key : cached_icons_queue_) {
     Fl_RGB_Image *icon = getIconCache(cache_key);
     intvalue = icon->w();
     ofs.write(intptr, sizeof(int));
@@ -182,13 +181,14 @@ Fl_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ 
   if(ib::platform::is_path(os_path) && !ib::platform::path_exists(os_path)) {
     return getEmptyIcon(size, size);
   }
-  Fl_Image *aicon = ib::platform::get_associated_icon_image(os_path, size);
+  auto aicon = ib::platform::get_associated_icon_image(os_path, size);
   if(aicon == 0) {
     return getEmptyIcon(size, size);
   }
-  if(dynamic_cast<Fl_RGB_Image*>(aicon) != 0) {
-    createIconCache(cache_key, (Fl_RGB_Image*)aicon); 
-    return copyCache((Fl_RGB_Image*)aicon);
+  auto ricon = dynamic_cast<Fl_RGB_Image*>(aicon);
+  if(ricon != 0) {
+    createIconCache(cache_key, ricon); 
+    return copyCache(ricon);
   }
   return aicon;
 } // }}}
@@ -238,10 +238,10 @@ Fl_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size)
 Fl_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
   ib::unique_char_ptr lopath(ib::platform::utf82local(svg_file));
-  unsigned char *buf = ib::rasterize_svg_file(svg_file, size);
+  auto buf = ib::rasterize_svg_file(svg_file, size);
   if(buf == 0) return 0;
-  Fl_RGB_Image *result_image = new Fl_RGB_Image(buf, size, size, 4);
-  return (Fl_Image*)result_image;
+  auto result_image = new Fl_RGB_Image(buf, size, size, 4);
+  return static_cast<Fl_Image*>(result_image);
 } // }}}
 
 Fl_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
@@ -331,8 +331,8 @@ Fl_Image* ib::IconManager::getLuaIcon(const int size) { // {{{
 
 void ib::IconManager::deleteCachedIcons() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  for(auto it = cached_icons_.begin(), last = cached_icons_.end(); it != last; ++it){
-    delete (*it).second;
+  for(auto &pair : cached_icons_) {
+    delete pair.second;
   }
   cached_icons_.clear();
   cached_icons_reverse_.clear();
@@ -342,7 +342,7 @@ void ib::IconManager::deleteCachedIcons() { // {{{
 
 void ib::IconManager::shrinkCache() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const unsigned int max_cache_size = ib::Config::inst().getMaxCachedIcons();
+  const auto max_cache_size = ib::Config::inst().getMaxCachedIcons();
   if(cached_icons_.size() < max_cache_size) return;
   if(cached_icons_.size() != cached_icons_queue_.size()){
     fl_alert("Warning: icon cache seems to be broken. iceberg clears icon cache.");
@@ -350,8 +350,8 @@ void ib::IconManager::shrinkCache() { // {{{
     return;
   }
   for(std::size_t count = cached_icons_.size() - max_cache_size; count > 0; count--){
-    const std::string cache_key = cached_icons_queue_.front();
-    Fl_RGB_Image *icon = getIconCache(cache_key);
+    const auto cache_key = cached_icons_queue_.front();
+    auto icon = getIconCache(cache_key);
     deleteIconCache(cache_key);
     delete icon;
     cached_icons_queue_.pop_front();
@@ -396,7 +396,7 @@ bool ib::IconManager::isCached(Fl_RGB_Image *icon){ // {{{
 } // }}}
 
 Fl_RGB_Image* ib::IconManager::copyCache(Fl_RGB_Image *image) { // {{{
-  Fl_RGB_Image* ret = new Fl_RGB_Image(image->array, image->w(), image->h(), image->d());
+  auto ret = new Fl_RGB_Image(image->array, image->w(), image->h(), image->d());
   ret->alloc_array = false;
   return ret;
 } // }}} 
@@ -405,8 +405,8 @@ Fl_RGB_Image* ib::IconManager::getEmbededIcon(const unsigned char *data, const c
   ib::platform::ScopedLock lock(&cache_mutex_);
   char buf[16] = {};
   snprintf(buf, 16, ":%s_%d", cache_prefix, reqsize);
-  const std::string cache_key = buf;
-  Fl_RGB_Image *icon = getIconCache(cache_key);
+  const auto cache_key = buf;
+  auto icon = getIconCache(cache_key);
   if(icon != 0) return copyCache(icon);
 
   Fl_RGB_Image *result_image;

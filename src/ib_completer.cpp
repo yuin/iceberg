@@ -14,12 +14,12 @@ void ib::Completer::completeHistory(std::vector<ib::CompletionValue*> &candidate
 
   auto &history = ib::History::inst();
 
-  auto commands = history.getOrderedCommands();
-  const double average = history.getAverageScore();
-  const double se     = history.calcScoreSe();
+  const auto &commands = history.getOrderedCommands();
+  const auto average = history.getAverageScore();
+  const auto se     = history.calcScoreSe();
   std::map<std::string, bool> found;
   for(auto it = commands.rbegin(), last = commands.rend(); it != last; ++it){
-    ib::HistoryCommand *cmd = (*it);
+    auto cmd = (*it);
     if(method_history_->match(cmd->getPath(), value) > -1){
       if(found.find(cmd->getPath()) == found.end()){
         cmd->setScore(history.calcScore(cmd->getPath(), average, se));
@@ -41,13 +41,13 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
   const unsigned int position = ib::MainWindow::inst()->getInput()->position();
   method_option_->beforeMatch(candidates, input);
   
-  const int start = lua_gettop(IB_LUA);
+  const auto start = lua_gettop(IB_LUA);
   lua_getglobal(IB_LUA, "system");
   lua_getfield(IB_LUA, -1, "completer");
   lua_getfield(IB_LUA, -1, "option_func");
   lua_getfield(IB_LUA, -1, command.c_str());
   lua_newtable(IB_LUA);
-  const int top = lua_gettop(IB_LUA);
+  const auto top = lua_gettop(IB_LUA);
   int i = 1;
   int current_index = 1;
   unsigned int token_index = 1; // 0 is command name
@@ -93,7 +93,7 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
     }
     switch(lua_type(IB_LUA, -1)) {
       case LUA_TSTRING: {
-          const char *value = luaL_checkstring(IB_LUA, -1);
+          const auto value = luaL_checkstring(IB_LUA, -1);
           if(!token->isValueToken() || method_option_->match(value, input) > -1){
             candidates.push_back(new ib::CompletionString(value));
           }
@@ -102,10 +102,10 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
 
       case LUA_TTABLE: {
           lua_getfield(IB_LUA, -1, "value");
-          const char *value = luaL_checkstring(IB_LUA, -1);
+          const auto value = luaL_checkstring(IB_LUA, -1);
           lua_pop(IB_LUA, 1);
           lua_getfield(IB_LUA, -1, "always_match");
-          bool is_always_match = lua_toboolean(IB_LUA, -1);
+          const auto is_always_match = lua_toboolean(IB_LUA, -1);
           lua_pop(IB_LUA, 1);
 
           if(is_always_match || !token->isValueToken() || method_option_->match(value, input) > -1){
@@ -172,8 +172,8 @@ void ib::Completer::completePath(std::vector<ib::CompletionValue*> &candidates, 
   ib::Error error;
   if(ib::platform::walk_dir(files, os_dirname, error, false) == 0) {
     char compvalue[IB_MAX_PATH_BYTE];
-    for(auto it = files.begin(), last = files.end(); it != last; ++it){
-        ib::platform::oschar2utf8_b(compvalue, IB_MAX_PATH_BYTE, (*it).get());
+    for(const auto &file : files) {
+        ib::platform::oschar2utf8_b(compvalue, IB_MAX_PATH_BYTE, file.get());
         if(is_empty_basename || method_path_->match(compvalue, basename) > -1){
           candidates.push_back(new ib::CompletionPathParts(dirname, compvalue));
         }
@@ -189,17 +189,17 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
   double score;
 
   if(candidates.size() == 0){
-    for(auto it = controller.getCommands().begin(), last = controller.getCommands().end(); it != last; ++it){
-      (*it).second->setScore(0.0);
-      score = method_command_->match((*it).second->getName(), value);
+    for(auto &pair : controller.getCommands()) {
+      pair.second->setScore(0.0);
+      score = method_command_->match(pair.second->getName(), value);
       if(score > -1) {
-        (*it).second->setScore(score);
-        candidates.push_back((*it).second);
+        pair.second->setScore(score);
+        candidates.push_back(pair.second);
       }
     }
   }else{
     for(auto it = candidates.begin(); it != candidates.end();){
-      ib::BaseCommand *base_command = dynamic_cast<ib::BaseCommand*>(*it);
+      auto base_command = dynamic_cast<ib::BaseCommand*>(*it);
       if(base_command != 0){
         base_command->setScore(0.0);
         score = method_command_->match(base_command->getName(), value);
@@ -214,15 +214,15 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
   }
 
   auto &history = ib::History::inst();
-  const double average = history.getAverageScore();
-  const double se      = history.calcScoreSe();
-  const double hfactor  = ib::Config::inst().getHistoryFactor();
-  const double rfactor  = 1 - hfactor;
+  const auto average = history.getAverageScore();
+  const auto se      = history.calcScoreSe();
+  const auto hfactor  = ib::Config::inst().getHistoryFactor();
+  const auto rfactor  = 1 - hfactor;
 
-  for(auto it = candidates.begin(); it != candidates.end(); ++it){
-    ib::BaseCommand *base_command = dynamic_cast<ib::BaseCommand*>(*it);
+  for(const auto &candidate : candidates) {
+    auto *base_command = dynamic_cast<ib::BaseCommand*>(candidate);
     if(base_command != 0) {
-      double hist_score = history.calcScore(base_command->getName(), average, se);
+      const auto hist_score = history.calcScore(base_command->getName(), average, se);
       base_command->setScore(base_command->getScore()*rfactor + hist_score * hfactor);
     }
   }
@@ -235,7 +235,7 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
 void ib::CompletionMethodMigemoMixin::beforeMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input) { // {{{
   auto &migemo = ib::Migemo::inst();
   if(migemo.isEnable() && input.size() >= ib::Migemo::MIN_LENGTH){
-    unsigned char *pattern = migemo.query((unsigned char*)input.c_str());
+    const auto pattern = migemo.query((unsigned char*)input.c_str());
     regex_ = new ib::Regex((char*)pattern, ib::Regex::NONE);
     migemo.release(pattern);
 
@@ -297,8 +297,8 @@ double ib::AbbrMatchCompletionMethod::match(const std::string &name, const std::
               cmd_ptr = 0,
               input_ptr = 0;
 
-  const char *cmd_str = name.c_str();
-  const char *input_str = input.c_str();
+  const auto cmd_str = name.c_str();
+  const auto input_str = input.c_str();
   double score = 0;
   bool  match = false;
   if(cmd_len == 0 || input_len == 0) goto notmatch;
@@ -310,8 +310,8 @@ double ib::AbbrMatchCompletionMethod::match(const std::string &name, const std::
     input_utf8len = ib::utils::utf8len(input_str[input_ptr]);
     if(cmd_utf8len != input_utf8len){
     }else if(cmd_utf8len == 1){
-      const char cmdc = tolower(cmd_str[cmd_ptr]);
-      const char inputc = tolower(input_str[input_ptr]);
+      const auto cmdc = tolower(cmd_str[cmd_ptr]);
+      const auto inputc = tolower(input_str[input_ptr]);
       if(cmdc == inputc){
         score += cmd_ptr == 0 ? 1.5 : 0.9;
         input_ptr += input_utf8len;
@@ -331,7 +331,7 @@ double ib::AbbrMatchCompletionMethod::match(const std::string &name, const std::
       else{score += 0.75;}
     }else if(match && pre_utf8len != 0){
       if(cmd_utf8len == 1){
-        const char precmdc = cmd_str[cmd_ptr - pre_utf8len];
+        const auto precmdc = cmd_str[cmd_ptr - pre_utf8len];
         if(islower(precmdc) && isupper(cmd_str[cmd_ptr])) {
           score += 0.1;
         }else if(precmdc == '_' || isspace(precmdc)){

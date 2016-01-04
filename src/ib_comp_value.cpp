@@ -141,14 +141,13 @@ int ib::Command::execute(const std::vector<std::string*> &args, const std::strin
   ib::CommandLexer lexer;
   lexer.parse(path_.c_str());
   std::vector<std::string*> command_params;
-  const std::vector<std::string*> &params = lexer.getParamValues();
+  const auto &params = lexer.getParamValues();
   bool user_args_flag = false;
 
-  for(auto it = params.begin(), last = params.end(); it != last; ++it){
-    std::string *before = *it;
-    std::string *after = new std::string;
-    ib::utils::expand_vars(*after, *before, values);
-    if(!user_args_flag && (*before != *after)) user_args_flag = true;
+  for(auto &param : params) {
+    auto *after = new std::string;
+    ib::utils::expand_vars(*after, *param, values);
+    if(!user_args_flag && (*param != *after)) user_args_flag = true;
     command_params.push_back(after);
   }
 
@@ -227,13 +226,13 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
   }
   // ignore errors;
 
-  const int start = lua_gettop(IB_LUA);
+  const auto start = lua_gettop(IB_LUA);
   lua_getglobal(IB_LUA, "commands");
   lua_getfield(IB_LUA, -1, getName().c_str());
   lua_getfield(IB_LUA, -1, "path");
 
   lua_newtable(IB_LUA);
-  const int top = lua_gettop(IB_LUA);
+  const auto top = lua_gettop(IB_LUA);
   int i = 1;
   for (auto it = args.begin(), last = args.end(); it != last; ++it, ++i) {
       lua_pushinteger(IB_LUA, i);
@@ -247,7 +246,7 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
     error.setMessage(lua_tostring(IB_LUA, -1));
     ret = 1;
   }else{
-    ret = (int)lua_tointeger(IB_LUA, -1);
+    ret = static_cast<int>(lua_tointeger(IB_LUA, -1));
   }
   lua_pop(IB_LUA, start);
 
@@ -263,8 +262,8 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
 void ib::HistoryCommand::init() { // {{{
   if(initialized_) return;
   initialized_ = true;
-  auto &commands = ib::Controller::inst().getCommands();
-  auto it = commands.find(name_);
+  const auto &commands = ib::Controller::inst().getCommands();
+  const auto it = commands.find(name_);
   if(it != commands.end()) {
     org_cmd_ = (*it).second;
     workdir_ = org_cmd_->getRawWorkdir();

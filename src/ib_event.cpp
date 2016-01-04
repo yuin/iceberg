@@ -2,7 +2,7 @@
 
 // class CancelableEvent {{{
 static ib::threadret thread_func(void *self_) { // {{{
-  ib::CancelableEvent *self = (ib::CancelableEvent*)self_;
+  auto *self = reinterpret_cast<ib::CancelableEvent*>(self_);
   while(1) {
     ib::platform::lock_cmutex(&(self->trigger_cmutex_));
     if(self->last_event_ == 0) {
@@ -13,7 +13,7 @@ static ib::threadret thread_func(void *self_) { // {{{
       goto exit_thread;
     }
     {
-      int timeout = ib::platform::wait_condition(&(self->trigger_cond_), &(self->trigger_cmutex_), self->ms_);
+      auto timeout = ib::platform::wait_condition(&(self->trigger_cond_), &(self->trigger_cmutex_), self->ms_);
       if(!self->running_) {
         ib::platform::unlock_cmutex(&(self->trigger_cmutex_));
         goto exit_thread;

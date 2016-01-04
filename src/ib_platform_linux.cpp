@@ -27,7 +27,7 @@ static bool string_startswith(const char *str, const char *pre) {
 }
 
 static bool string_endswith(const char *str, const char *pre) {
-  const char *dot = strrchr(str, '.');
+  const auto dot = strrchr(str, '.');
   return (dot && !strcmp(dot, pre));
 }
 
@@ -58,7 +58,7 @@ static void normalize_desktop_entry_value(std::string &result, std::string &valu
 static int read_fd_all(int fd, std::string &out) {
   char buf[1024];
   do{
-    ssize_t ret = read(fd, buf, 1023);
+    auto ret = read(fd, buf, 1023);
     if(ret < 0) {
       return -1;
     } else {
@@ -78,20 +78,20 @@ static int parse_cmdline(std::vector<ib::unique_char_ptr> &result, const char *c
   string_r.init();
   value_r.init();
   std::size_t pos = 0;
-  std::size_t len = strlen(cmdline);
+  auto len = strlen(cmdline);
   while(pos < len) {
     std::string cap;
     if(space_r.match(cmdline, pos) == 0) {
       pos = space_r.getEndpos(0) + 1;
     } else if(string_r.match(cmdline, pos) == 0) {
       string_r._1(cap);
-      char *buf = new char[cap.length()+1];
+      auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
       result.push_back(ib::unique_char_ptr(buf));
       pos = string_r.getEndpos(0) + 1;
     } else if(value_r.match(cmdline, pos) == 0) {
       value_r._1(cap);
-      char *buf = new char[cap.length()+1];
+      auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
       result.push_back(ib::unique_char_ptr(buf));
       pos = value_r.getEndpos(0) + 1;
@@ -170,7 +170,7 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
           map_[std::make_tuple(current_section, key)] = value;
         }
       }
-      const char *locale = getenv("LC_MESSAGES");
+      auto locale = getenv("LC_MESSAGES");
       if(locale == 0) locale = getenv("LANGUAGE");
       if(locale == 0) locale = getenv("LANG");
       if(locale != 0) {
@@ -239,7 +239,7 @@ FreeDesktopMime* FreeDesktopMime::instance_ = 0;
 void FreeDesktopMime::build() {
   const char *files[] = {"/usr/share/mime/globs2", "/usr/share/mime/globs"};
   for(int i = 0; i < 2; i++) {
-    const char *file = files[i];
+    const auto file = files[i];
     std::ifstream ifs(file);
     std::string   line;
     if (ifs.fail()) {
@@ -269,8 +269,7 @@ bool FreeDesktopMime::findByPath(std::string &typ, std::string &subtyp, const ch
     subtyp = "directory";
     return true;
   }
-  for(auto it = globs_.begin(), last = globs_.end(); it != last; ++it) {
-    auto tup  = (*it);
+  for(const auto &tup : globs_){
     auto &glob = std::get<3>(tup);
     if(fl_filename_match(name, glob.c_str())) {
       typ = std::get<1>(tup);
@@ -317,7 +316,7 @@ class FreeDesktopIconFinder : private ib::NonCopyable<FreeDesktopIconFinder> { /
 };
 
 void FreeDesktopIconFinder::find(std::string &result) {
-  const char *theme = ib::Config::inst().getIconTheme().c_str();
+  const auto theme = ib::Config::inst().getIconTheme().c_str();
   findHelper(result, theme);
   if(!result.empty()) return;
   findHelper(result, "Hicolor");
@@ -327,7 +326,7 @@ void FreeDesktopIconFinder::find(std::string &result) {
   char icon_file[IB_MAX_PATH];
   const char *exts[] = {"png", "svg", "xpm"};
   for(int i = 0; i < 3; i++) {
-    const char *ext = exts[i];
+    const auto ext = exts[i];
     snprintf(icon_file, IB_MAX_PATH, "%s/%s.%s", pixmaps, name_, ext);
     if(ib::platform::path_exists(icon_file)) {
       result = icon_file;
@@ -364,7 +363,7 @@ void FreeDesktopIconFinder::lookup(std::string &result, const char *theme) {
     if(directoryMatchSize(dir.c_str(), theme)) {
       const char *exts[] = {"png", "svg", "xpm"};
       for(int i = 0; i < 3; i++) {
-        const char *ext = exts[i];
+        const auto ext = exts[i];
         snprintf(icon_file, IB_MAX_PATH, "%s/%s/%s.%s", theme_dir, dir.c_str(), name_, ext);
         if(ib::platform::path_exists(icon_file)) {
           result = icon_file;
@@ -379,7 +378,7 @@ void FreeDesktopIconFinder::lookup(std::string &result, const char *theme) {
   while (std::getline(stream2, dir, ',')) {
     const char *exts[] = {"png", "svg", "xpm"};
     for(int i = 0; i < 3; i++) {
-      const char *ext = exts[i];
+      const auto ext = exts[i];
       snprintf(icon_file, IB_MAX_PATH, "%s/%s/%s.%s", theme_dir, dir.c_str(), name_, ext);
       if(ib::platform::path_exists(icon_file)){
         auto distance = directorySizeDistance(dir.c_str(), theme);
@@ -396,19 +395,19 @@ void FreeDesktopIconFinder::lookup(std::string &result, const char *theme) {
 std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySizes(const char *dir, const char *theme) {
   std::string typ;
   int size, min, max, th = 0;
-  auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
+  const auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
   if(kvf != NULL) {
     typ = kvf->get(dir, "Type", false);
     if(typ.empty()) typ = "Threshold";
     size = std::atoi(kvf->get(dir, "Size", false).c_str());
     min = size;
     max = size;
-    auto minstr = kvf->get(dir, "MinSize", false);
-    auto maxstr = kvf->get(dir, "MaxSize", false);
+    const auto minstr = kvf->get(dir, "MinSize", false);
+    const auto maxstr = kvf->get(dir, "MaxSize", false);
     if(!minstr.empty()) min = std::atoi(minstr.c_str());
     if(!maxstr.empty()) max = std::atoi(maxstr.c_str());
     th = 2;
-    auto thstr = kvf->get(dir, "Threshold", false);
+    const auto thstr = kvf->get(dir, "Threshold", false);
     if(!thstr.empty()) th = std::atoi(thstr.c_str());
   }
 
@@ -417,12 +416,12 @@ std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySize
 }
 
 bool FreeDesktopIconFinder::directoryMatchSize(const char *dir, const char *theme) {
-  auto sizedata = getDirectorySizes(dir, theme);
-  auto typ = std::get<0>(sizedata);
-  auto size = std::get<1>(sizedata);
-  auto min = std::get<2>(sizedata);
-  auto max = std::get<3>(sizedata);
-  auto th  = std::get<4>(sizedata);
+  const auto sizedata = getDirectorySizes(dir, theme);
+  const auto typ = std::get<0>(sizedata);
+  const auto size = std::get<1>(sizedata);
+  const auto min = std::get<2>(sizedata);
+  const auto max = std::get<3>(sizedata);
+  const auto th  = std::get<4>(sizedata);
 
   if(typ == "Fixed") {
     return size == size_;
@@ -435,12 +434,12 @@ bool FreeDesktopIconFinder::directoryMatchSize(const char *dir, const char *them
 }
 
 int FreeDesktopIconFinder::directorySizeDistance(const char *dir, const char *theme) {
-  auto sizedata = getDirectorySizes(dir, theme);
-  auto &typ = std::get<0>(sizedata);
-  auto size = std::get<1>(sizedata);
-  auto min = std::get<2>(sizedata);
-  auto max = std::get<3>(sizedata);
-  auto th  = std::get<4>(sizedata);
+  const auto sizedata = getDirectorySizes(dir, theme);
+  const auto &typ = std::get<0>(sizedata);
+  const auto size = std::get<1>(sizedata);
+  const auto min = std::get<2>(sizedata);
+  const auto max = std::get<3>(sizedata);
+  const auto th  = std::get<4>(sizedata);
   if(typ == "Fixed") {
     return std::abs(size - size_);
   } else if(typ == "Scalable") {
@@ -483,12 +482,12 @@ void FreeDesktopThemeRepos::buildHelper(const char *basepath) {
   if(ib::platform::walk_dir(files, basepath, error, false) != 0) {
     return; //ignore errors
   }
-  for(auto it = files.begin(), last = files.end(); it != last; ++it){
-    snprintf(path, IB_MAX_PATH, "%s/%s", basepath, (const char*)((*it).get()));
+  for(const auto &f : files) {
+    snprintf(path, IB_MAX_PATH, "%s/%s", basepath, (const char*)(f.get()));
     if(ib::platform::is_directory(path)) {
       snprintf(index_path, IB_MAX_PATH, "%s/%s", path, "index.theme");
       if(ib::platform::file_exists(index_path)) {
-        FreeDesktopKVFile *kvf = new FreeDesktopKVFile(index_path);
+        auto kvf = new FreeDesktopKVFile(index_path);
         if(kvf->parse() < 0) { delete kvf; continue; /* ignore errors */ }
         auto name = kvf->get("Icon Theme", "Name", false);
         if(name.empty()) {
@@ -543,12 +542,12 @@ static int xevent_handler(int e){
 }
 
 static int xregister_hotkey() {
-  Window root = RootWindow(fl_display, fl_screen);
-  const int* hot_key = ib::Config::inst().getHotKey();
+  auto root = RootWindow(fl_display, fl_screen);
+  const auto hot_key = ib::Config::inst().getHotKey();
   for(int i=0 ;hot_key[i] != 0; ++i){
     ib_g_hotkey += hot_key[i];
   }
-  const int keycode = XKeysymToKeycode(fl_display, ib_g_hotkey & 0xFFFF);
+  const auto keycode = XKeysymToKeycode(fl_display, ib_g_hotkey & 0xFFFF);
   if(!keycode) {
     return -1;
   }
@@ -594,13 +593,13 @@ static void xsend_message_l(Window w, const char *msg, long d0, long d1, long d2
 }
 
 static int xcurrent_desktop() {
-  long *desktop = (long*)xget_property(DefaultRootWindow(fl_display), "_NET_CURRENT_DESKTOP", XA_CARDINAL);
+  auto desktop = reinterpret_cast<long*>(xget_property(DefaultRootWindow(fl_display), "_NET_CURRENT_DESKTOP", XA_CARDINAL));
   if(desktop == 0) {
     return -1;
   }
-  int ret = (int)desktop[0];
+  auto ret = reinterpret_cast<int&>(desktop[0]);
   XFree(desktop);
-  return (int)ret;
+  return ret;
 }
 
 static bool xis_gui_app(const char *path) {
@@ -659,12 +658,14 @@ int ib::platform::init_system() { // {{{
 } // }}}
 
 void ib::platform::finalize_system(){ // {{{ 
-  Window root = XRootWindow(fl_display, fl_screen);
-  const int keycode = XKeysymToKeycode(fl_display, ib_g_hotkey & 0xFFFF);
-  XUngrabKey(fl_display, keycode, ib_g_hotkey >>16,     root);
-  XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|2,  root); // CapsLock
-  XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|16, root); // NumLock
-  XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root); // both
+  if(fl_display != 0) {
+    auto root = XRootWindow(fl_display, fl_screen);
+    const auto keycode = XKeysymToKeycode(fl_display, ib_g_hotkey & 0xFFFF);
+    XUngrabKey(fl_display, keycode, ib_g_hotkey >>16,     root);
+    XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|2,  root); // CapsLock
+    XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|16, root); // NumLock
+    XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root); // both
+  }
   
   delete FreeDesktopThemeRepos::inst();
   delete FreeDesktopMime::inst();
@@ -674,7 +675,7 @@ void ib::platform::get_runtime_platform(char *ret){ // {{{
 } // }}}
 
 ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
-  char *buff = new char[strlen(src)+1];
+  auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
   return buff;
 } // }}}
@@ -684,7 +685,7 @@ void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, co
 } // }}}
 
 char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
-  char *buff = new char[strlen(src)+1];
+  auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
   return buff;
 } // }}}
@@ -694,7 +695,7 @@ void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib
 } // }}}
 
 char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
-  char *buff = new char[strlen(src)+1];
+  auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
   return buff;
 } // }}}
@@ -704,13 +705,13 @@ void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const i
 } // }}}
 
 char* ib::platform::utf82local(const char *src) { // {{{
-  char *buff = new char[strlen(src)+1];
+  auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
   return buff;
 } // }}}
 
 char* ib::platform::local2utf8(const char *src) { // {{{
-  char *buff = new char[strlen(src)+1];
+  auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
   return buff;
 } // }}}
@@ -754,7 +755,7 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
 
 ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  std::size_t len = strlen(str);
+  auto len = strlen(str);
   if(len == 0) { result[0] = '\0'; return result; }
   if(len == 1) { strcpy(result, str); return result; }
   if(*str == '"') str++;
@@ -789,7 +790,7 @@ void ib::platform::raise_window(Fl_Window *window){ // {{{
 } // }}}
 
 void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
-  int visible = window->visible();
+  auto visible = window->visible();
   if(!visible) window->show();
   double  a = alpha/255.0;
   uint32_t cardinal_alpha = (uint32_t) (a * (uint32_t)-1) ;
@@ -891,10 +892,10 @@ finally:
 
 int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
-  for(auto it = params.begin(), last = params.end(); it != last; ++it){
+  for(const auto &p : params) {
     ib::oschar qparam[IB_MAX_PATH];
     strparams += " ";
-    ib::platform::quote_string(qparam, (*it).get()->c_str());
+    ib::platform::quote_string(qparam, p.get()->c_str());
     strparams += qparam;
   }
   return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
@@ -902,10 +903,10 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
 
 int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
-  for(auto it = params.begin(), last = params.end(); it != last; ++it){
+  for(const auto &p : params) {
     ib::oschar qparam[IB_MAX_PATH];
     strparams += " ";
-    ib::platform::quote_string(qparam, (*it)->c_str());
+    ib::platform::quote_string(qparam, p->c_str());
     strparams += qparam;
   }
   return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
@@ -965,7 +966,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     read_fd_all(outfd[0], sstdout); // ignore errors
     read_fd_all(efd[0], sstderr); // ignore errors
     int status;
-    pid_t ret = waitpid(pid, &status, WUNTRACED);
+    auto ret = waitpid(pid, &status, WUNTRACED);
     if (ret < 0 || !WIFEXITED(status)) {
       close(infd[1]);
       close(outfd[0]);
@@ -1017,7 +1018,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
     auto prop_icon = kvf.get(SECTION_KEY, "Icon");
     if(!prop_icon.empty()){
       std::string path;
-      const char *theme = ib::Config::inst().getIconTheme().c_str();
+      const auto theme = ib::Config::inst().getIconTheme().c_str();
       FreeDesktopThemeRepos::inst()->findIcon(path, theme, prop_icon.c_str(), 32);
       if(!path.empty()) {
         cmd->setIconFile(path);
@@ -1085,7 +1086,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
 } // }}}
 
 void ib::platform::on_command_init(ib::Command *cmd) { // {{{
-  const char *path = cmd->getCommandPath().c_str();
+  const auto path = cmd->getCommandPath().c_str();
 
   if(string_endswith(path, ".desktop")){
     desktop_entry2command(cmd, path);
@@ -1104,7 +1105,7 @@ ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int
     strncpy_s(result, file, IB_MAX_PATH);
   } else {
     auto repos = FreeDesktopThemeRepos::inst();
-    const char *theme = ib::Config::inst().getIconTheme().c_str();
+    const auto theme = ib::Config::inst().getIconTheme().c_str();
     std::string iconpath;
     repos->findIcon(iconpath, theme, file, size);
     strncpy_s(result, iconpath.c_str(), IB_MAX_PATH);
@@ -1119,7 +1120,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
   auto repos = FreeDesktopThemeRepos::inst();
   std::string iconpath;
   bool isdir = ib::platform::directory_exists(path);
-  const char *theme = ib::Config::inst().getIconTheme().c_str();
+  const auto theme = ib::Config::inst().getIconTheme().c_str();
 
   if(isdir) {
     repos->findIcon(iconpath, theme, "folder", size);
@@ -1160,7 +1161,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   if(result == 0){
     result = new ib::oschar[IB_MAX_PATH];
   }
-  std::size_t length = strlen(parent);
+  const auto length = strlen(parent);
   const ib::oschar *sep;
   if(parent[length-1] != '/') {
     sep = "/";
@@ -1192,14 +1193,14 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   std::vector<std::string*> parts;
   std::vector<std::string*>  st;
   sep.split(parts, tmp);
-  for(auto part : parts) {
+  for(const auto &part : parts) {
     if(*part == ".." && st.size() > 0){
       st.pop_back();
     } else {
       st.push_back(part);
     }
   }
-  for(auto part : st) {
+  for(const auto &part : st) {
     strcat(result, part->c_str());
     strcat(result, "/");
   }
@@ -1226,7 +1227,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   strncpy_s(result, path, IB_MAX_PATH);
-  const std::size_t len = strlen(path);
+  const auto len = strlen(path);
   if(len == 0) return result;
   std::size_t i = len -1;
   for(; i > 0; --i){
@@ -1245,7 +1246,7 @@ ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ 
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   strncpy_s(tmp, path, IB_MAX_PATH);
-  const char *basename = fl_filename_name(tmp);
+  const auto basename = fl_filename_name(tmp);
   strncpy_s(result, basename, IB_MAX_PATH);
   return result;
 } // }}}
@@ -1269,7 +1270,7 @@ bool ib::platform::is_path(const ib::oschar *str){ // {{{
 } // }}}
 
 bool ib::platform::is_relative_path(const ib::oschar *path) { // {{{
-  const std::size_t length = strlen(path);
+  const auto length = strlen(path);
   bool is_dot_path = length > 1 && path[0] == '.' && path[1] == '/';
   if(!is_dot_path) is_dot_path = length == 1 && path[0] == '.';
   bool is_dot_dot_path = length > 2 && path[0] == '.' && path[1] == '.' && path[2] == '/';
@@ -1290,19 +1291,19 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
 } // }}}
 
 int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
-    DIR *d = opendir(dir);
+    auto d = opendir(dir);
     if (!d) {
       set_errno(error);
       return 1;
     }
     while (1) {
-        struct dirent * entry = readdir(d);
+        auto entry = readdir(d);
         if (!entry) break;
-        const char *d_name = entry->d_name;
+        const auto d_name = entry->d_name;
         if (entry->d_type & DT_DIR) {
             if (strcmp (d_name, "..") != 0 &&
                 strcmp (d_name, ".") != 0) {
-                ib::oschar *path = new ib::oschar[IB_MAX_PATH];
+                auto path = new ib::oschar[IB_MAX_PATH];
                 if(recursive){
                   snprintf(path, IB_MAX_PATH, "%s/%s", dir, d_name);
                 } else {
@@ -1314,7 +1315,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
                 }
             }
         } else {
-          ib::oschar *path = new ib::oschar[IB_MAX_PATH];
+          auto path = new ib::oschar[IB_MAX_PATH];
           if(recursive){
             snprintf(path, IB_MAX_PATH, "%s/%s", dir, d_name);
           } else {
@@ -1337,7 +1338,7 @@ ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   char buf[64];
   snprintf(buf, 64, "/proc/%d/exe", getpid());
-  std::size_t ret = readlink(buf, result, IB_MAX_PATH-1);
+  const auto ret = readlink(buf, result, IB_MAX_PATH-1);
   if(ret < 0) {
     fl_alert("Failed to get self path.");
   }
@@ -1466,7 +1467,7 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
 ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   memset(result, 0, IB_MAX_PATH);
-  const char *dot = strrchr(path, '.');
+  const auto dot = strrchr(path, '.');
   if(!dot || dot == path) return result;
   strcpy(result, dot);
   return result;
@@ -1498,7 +1499,7 @@ void ib::platform::create_mutex(ib::mutex *m) { /* {{{ */
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr); 
   pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
-  int ret = pthread_mutex_init(m, &attr);
+  const auto ret = pthread_mutex_init(m, &attr);
   if(ret == 0) {
     m = 0;
   }
@@ -1638,7 +1639,7 @@ int ib::platform::convert_keysym(int key){ // {{{
 // platform specific functions {{{
 //////////////////////////////////////////////////
 void ib::platform::move_to_current_desktop(Fl_Window *w) {
-  int desktop = xcurrent_desktop();
+  const auto desktop = xcurrent_desktop();
   if(desktop >= 0) {
     xsend_message_l(fl_xid(w), "_NET_WM_DESKTOP", desktop,0,0,0,0);
   }

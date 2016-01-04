@@ -8,22 +8,21 @@
 
 // Lua Class "Regex" {{{
 static ib::Regex* to_regex (lua_State *L, int index) {
-  ib::Regex **regex_ptr = (ib::Regex**)lua_touserdata(L, index);
+  auto regex_ptr = reinterpret_cast<ib::Regex**>(lua_touserdata(L, index));
   if (regex_ptr == 0) luaL_typerror(L, index, "Regex");
   return *regex_ptr;
 }
 
 static ib::Regex* check_regex (lua_State *L, int index) {
-  ib::Regex **regex_ptr;
   luaL_checktype(L, index, LUA_TUSERDATA);
-  regex_ptr = (ib::Regex**)luaL_checkudata(L, index, "Regex");
+  auto regex_ptr = reinterpret_cast<ib::Regex**>(luaL_checkudata(L, index, "Regex"));
   if (regex_ptr == 0) luaL_typerror(L, index, "Regex");
   if (*regex_ptr == 0) luaL_error(L, "null Regex");
   return *regex_ptr;
 }
 
 static ib::Regex* push_regex (lua_State *L, ib::Regex *value) {
-  ib::Regex **regex_ptr = (ib::Regex**)lua_newuserdata(L, sizeof(ib::Regex));
+  auto regex_ptr = reinterpret_cast<ib::Regex**>(lua_newuserdata(L, sizeof(ib::Regex)));
   *regex_ptr = value;
   luaL_getmetatable(L, "Regex");
   lua_setmetatable(L, -2);
@@ -31,9 +30,9 @@ static ib::Regex* push_regex (lua_State *L, ib::Regex *value) {
 }
 
 static int Regex_new (lua_State *L) {
-  const char *pattern = luaL_checkstring(L, 1);
-  const unsigned int flags = (unsigned int)luaL_checkint(L, 2);
-  ib::Regex *value = new ib::Regex(pattern, flags);
+  const auto pattern = luaL_checkstring(L, 1);
+  const auto flags = static_cast<unsigned int>(luaL_checkint(L, 2));
+  auto value = new ib::Regex(pattern, flags);
   ib::unique_string_ptr msg(new std::string());
   if(value->init(msg.get()) != 0) {
     return luaL_error(L, "Invalid regular expression: %s", msg.get()->c_str());
@@ -46,7 +45,7 @@ static int Regex_new (lua_State *L) {
 
 static int Regex_static_escape(lua_State *L){
   ib::LuaState lua_state(L);
-  const char *string    = luaL_checkstring(L, 1);
+  const auto string    = luaL_checkstring(L, 1);
   std::string ret;
   ib::Regex::escape(ret, string);
 
@@ -57,13 +56,13 @@ static int Regex_static_escape(lua_State *L){
 
 static int Regex_match(lua_State *L) {
   ib::LuaState lua_state(L);
-  const int argc = lua_gettop(L);
-  ib::Regex *value      = check_regex(L, 1);
-  const char *string    = luaL_checkstring(L, 2);
+  const auto argc = lua_gettop(L);
+  auto value      = check_regex(L, 1);
+  const auto string    = luaL_checkstring(L, 2);
   unsigned int startpos = 0;
   unsigned int endpos = 0;
-  if(argc == 3){ startpos = (unsigned int)luaL_checkint(L, 3); }
-  if(argc == 4){ endpos = (unsigned int)luaL_checkint(L, 4); }
+  if(argc == 3){ startpos = static_cast<unsigned int>(luaL_checkint(L, 3)); }
+  if(argc == 4){ endpos = static_cast<unsigned int>(luaL_checkint(L, 4)); }
 
   lua_state.clearStack();
   lua_pushboolean(L, value->match(string, startpos, endpos) == 0);
@@ -72,13 +71,13 @@ static int Regex_match(lua_State *L) {
 }
 
 static int Regex_search(lua_State *L) {
-  const int argc = lua_gettop(L);
-  ib::Regex *value      = check_regex(L, 1);
-  const char *string    = luaL_checkstring(L, 2);
+  const auto argc = lua_gettop(L);
+  auto value      = check_regex(L, 1);
+  const auto string    = luaL_checkstring(L, 2);
   unsigned int startpos = 0;
   unsigned int endpos = 0;
-  if(argc == 3){ startpos = (unsigned int)luaL_checkint(L, 3); }
-  if(argc == 4){ endpos = (unsigned int)luaL_checkint(L, 4); }
+  if(argc == 3){ startpos = static_cast<unsigned int>(luaL_checkint(L, 3)); }
+  if(argc == 4){ endpos = static_cast<unsigned int>(luaL_checkint(L, 4)); }
   ib::LuaState lua_state(L);
   lua_state.clearStack();
   lua_pushboolean(L, value->search(string, startpos, endpos) == 0);
@@ -87,8 +86,8 @@ static int Regex_search(lua_State *L) {
 }
 
 static int Regex_split(lua_State *L) {
-  ib::Regex *value      = check_regex(L, 1);
-  const char *string    = luaL_checkstring(L, 2);
+  auto value      = check_regex(L, 1);
+  const auto string    = luaL_checkstring(L, 2);
   std::vector<std::string*> result;
   value->split(result, string);
 
@@ -108,11 +107,11 @@ static int Regex_split(lua_State *L) {
 
 static int Regex_gsub(lua_State *L) {
   ib::LuaState lua_state(L);
-  ib::Regex *value      = check_regex(L, 1);
-  const char *string    = luaL_checkstring(L, 2);
-  const int type = lua_type(L, 3);
+  auto value      = check_regex(L, 1);
+  const auto string    = luaL_checkstring(L, 2);
+  const auto type = lua_type(L, 3);
   if(type == LUA_TSTRING){
-    const char *repl = luaL_checkstring(L, 3);
+    const auto repl = luaL_checkstring(L, 3);
     lua_state.clearStack();
     std::string result;
     value->gsub(result, string, repl);
@@ -120,8 +119,8 @@ static int Regex_gsub(lua_State *L) {
   }else{
     std::string result;
     value->gsub(result, string, [](const ib::Regex &reg, std::string *res, void *userdata) {
-      lua_State *L = (lua_State*)userdata;
-      int top = lua_gettop(L);
+      auto L = reinterpret_cast<lua_State*>(userdata);
+      const auto top = lua_gettop(L);
       lua_pushvalue(L, 3);
       lua_pushvalue(L, 1);
       if(lua_pcall(L, 1, 1, 0) == 0) {
@@ -140,7 +139,7 @@ static int Regex_gsub(lua_State *L) {
 }
 
 static int Regex_groups(lua_State *L) {
-  ib::Regex *value      = check_regex(L, 1);
+  auto value      = check_regex(L, 1);
   ib::LuaState lua_state(L);
   lua_state.clearStack();
   lua_pushnumber(L, value->getNumGroups());
@@ -148,8 +147,8 @@ static int Regex_groups(lua_State *L) {
 }
 
 static int Regex_group(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
-  const int n            = luaL_checkint(L, 2);
+  auto value = check_regex(L, 1);
+  const auto n = luaL_checkint(L, 2);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -161,7 +160,7 @@ static int Regex_group(lua_State *L) {
 }
 
 static int Regex_0(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 0);
 
@@ -173,7 +172,7 @@ static int Regex_0(lua_State *L) {
 }
 
 static int Regex_1(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 1);
 
@@ -185,7 +184,7 @@ static int Regex_1(lua_State *L) {
 }
 
 static int Regex_2(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 2);
 
@@ -197,7 +196,7 @@ static int Regex_2(lua_State *L) {
 }
 
 static int Regex_3(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 3);
 
@@ -209,7 +208,7 @@ static int Regex_3(lua_State *L) {
 }
 
 static int Regex_4(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 4);
 
@@ -221,7 +220,7 @@ static int Regex_4(lua_State *L) {
 }
 
 static int Regex_5(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 5);
 
@@ -233,7 +232,7 @@ static int Regex_5(lua_State *L) {
 }
 
 static int Regex_6(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 6);
 
@@ -245,7 +244,7 @@ static int Regex_6(lua_State *L) {
 }
 
 static int Regex_7(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 7);
 
@@ -257,7 +256,7 @@ static int Regex_7(lua_State *L) {
 }
 
 static int Regex_8(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 8);
 
@@ -269,7 +268,7 @@ static int Regex_8(lua_State *L) {
 }
 
 static int Regex_9(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
   std::string ret;
   value->group(ret, 9);
 
@@ -281,8 +280,8 @@ static int Regex_9(lua_State *L) {
 }
 
 static int Regex_startpos(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
-  const int n      = luaL_checkint(L, 2);
+  auto value = check_regex(L, 1);
+  const auto n = luaL_checkint(L, 2);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -291,8 +290,8 @@ static int Regex_startpos(lua_State *L) {
   return 1;
 }
 static int Regex_endpos(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
-  const int n      = luaL_checkint(L, 2);
+  auto value = check_regex(L, 1);
+  const auto n = luaL_checkint(L, 2);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -302,7 +301,7 @@ static int Regex_endpos(lua_State *L) {
 }
 
 static int Regex_firstpos(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -312,7 +311,7 @@ static int Regex_firstpos(lua_State *L) {
 }
 
 static int Regex_lastpos(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -322,7 +321,7 @@ static int Regex_lastpos(lua_State *L) {
 }
 
 static int Regex_bytes(lua_State *L) {
-  ib::Regex *value = check_regex(L, 1);
+  auto value = check_regex(L, 1);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -359,13 +358,13 @@ static const luaL_reg Regex_methods[] = {
 
 
 static int Regex_gc (lua_State *L){
-  ib::Regex *value = to_regex(L, 1);
+  auto value = to_regex(L, 1);
   if (value != 0) { delete value; }
   return 0;
 }
 
 static int Regex_tostring (lua_State *L) {
-  ib::Regex *value = to_regex(L, 1);
+  auto value = to_regex(L, 1);
   lua_pushfstring(L, "<Regex pattern=%s, flags=%d", value->getPattern(), value->getFlags());
   return 1;
 }
@@ -408,7 +407,7 @@ int Regex_register (lua_State *L){
 
 // class LuaState {{{
 void ib::LuaState::init() { // {{{
-  ib::Config &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   luaL_openlibs(l_);
   lua_register(l_, "_iceberg_module", &ib::luamodule::create);
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
@@ -421,7 +420,7 @@ void ib::LuaState::init() { // {{{
 
 Fl_Color ib::LuaState::getColorFromStackTop() { // {{{
   int r, g, b;
-  lua_State *L = get();
+  auto L = get();
 
   lua_pushinteger(L, 1);
     lua_gettable(L, -2);
@@ -504,7 +503,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
 } // }}}
 
 int ib::luamodule::config_dir(lua_State *L) { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::oschar osbuf[IB_MAX_PATH];
   ib::oschar osconfig[IB_MAX_PATH];
   ib::platform::utf82oschar_b(osconfig, IB_MAX_PATH, cfg.getConfigPath().c_str());
@@ -516,7 +515,7 @@ int ib::luamodule::config_dir(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::build_platform(lua_State *L) { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   lua_pushstring(L, cfg.getPlatform().c_str());
   return 1;
 } // }}}
@@ -553,7 +552,7 @@ int ib::luamodule::get_cwd(lua_State *L) { // {{{
 
 int ib::luamodule::set_cwd(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *workdir = luaL_checkstring(L, 1);
+  const auto workdir = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::Error error;
   if(ib::Controller::inst().setCwd(workdir, error) != 0){
@@ -569,7 +568,7 @@ int ib::luamodule::set_cwd(lua_State *L) { // {{{
 int ib::luamodule::set_result_text(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
-  const char *msg = luaL_checkstring(L, 1);
+  const auto msg = luaL_checkstring(L, 1);
   ib::Controller::inst().setResultText(msg);
   lua_state.clearStack();
   return 0;
@@ -577,7 +576,7 @@ int ib::luamodule::set_result_text(lua_State *L) { // {{{
 
 int ib::luamodule::find_command(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *name = luaL_checkstring(L, 1);
+  const auto name = luaL_checkstring(L, 1);
   lua_state.clearStack();
 
   auto &commands = ib::Controller::inst().getCommands();
@@ -585,7 +584,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
   if(it != commands.end()){
     lua_pushboolean(L, true);
     lua_newtable(L);
-    ib::BaseCommand *bcmd = (*it).second;
+    auto bcmd = (*it).second;
     lua_pushstring(L, "name");
     lua_pushstring(L, bcmd->getName().c_str());
     lua_settable(L, -3);
@@ -605,7 +604,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
     lua_pushboolean(L, bcmd->isEnabledHistory());
     lua_settable(L, -3);
 
-    ib::Command *cmd = dynamic_cast<ib::Command*>(bcmd);
+    auto cmd = dynamic_cast<ib::Command*>(bcmd);
     if(cmd != 0){
       lua_pushstring(L, "path");
       lua_pushstring(L, cmd->getPath().c_str());
@@ -615,7 +614,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
       lua_pushstring(L, cmd->getCommandPath().c_str());
       lua_settable(L, -3);
     }else{
-      ib::LuaFunctionCommand *lcmd = dynamic_cast<ib::LuaFunctionCommand*>((*it).second);
+      auto lcmd = dynamic_cast<ib::LuaFunctionCommand*>((*it).second);
 
       lua_pushstring(L, "path");
       lua_getglobal(L, "commands");
@@ -634,7 +633,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
 
 int ib::luamodule::to_path(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *name_or_path = luaL_checkstring(L, 1);
+  const auto name_or_path = luaL_checkstring(L, 1);
   lua_state.clearStack();
 
   ib::unique_oschar_ptr osname_or_path(ib::platform::utf82oschar(name_or_path));
@@ -650,10 +649,10 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
     lua_pushboolean(L, true);
     lua_pushstring(L, abs_path);
   }else{
-    auto &commands = ib::Controller::inst().getCommands();
+    const auto &commands = ib::Controller::inst().getCommands();
     auto it = commands.find(name_or_path);
     if(it != commands.end()){
-      ib::Command *cmd = dynamic_cast<ib::Command*>((*it).second);
+      auto cmd = dynamic_cast<ib::Command*>((*it).second);
       if(cmd != 0){
         lua_pushboolean(L, true);
         lua_pushstring(L, cmd->getCommandPath().c_str());
@@ -672,7 +671,7 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
 int ib::luamodule::message(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
-  const char *msg = luaL_checkstring(L, 1);
+  const auto msg = luaL_checkstring(L, 1);
   fl_message("%s", msg);
   lua_state.clearStack();
   return 0;
@@ -690,7 +689,7 @@ int ib::luamodule::event_state(lua_State *L) { // {{{
 
 int ib::luamodule::matches_key(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *string = luaL_checkstring(L, 1);
+  const auto string = luaL_checkstring(L, 1);
   int buf[3] = {0};
   ib::utils::parse_key_bind(buf, string);
   lua_state.clearStack();
@@ -700,9 +699,9 @@ int ib::luamodule::matches_key(lua_State *L) { // {{{
 
 int ib::luamodule::exit_application(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const lua_Integer code = luaL_checkinteger(L, 1);
+  const auto code = static_cast<int>(luaL_checkinteger(L, 1));
   lua_state.clearStack();
-  ib::utils::exit_application((int)code);
+  ib::utils::exit_application(code);
   return 0;
 } // }}}
 
@@ -713,7 +712,7 @@ int ib::luamodule::reboot_application(lua_State *L) { // {{{
 
 int ib::luamodule::scan_search_path(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *category = luaL_checkstring(L, 1);
+  const auto category = luaL_checkstring(L, 1);
   ib::utils::scan_search_path(category);
   lua_state.clearStack();
   return 0;
@@ -728,7 +727,7 @@ int ib::luamodule::get_input_text(lua_State *L) { // {{{
 int ib::luamodule::set_input_text(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
-  const char *msg = luaL_checkstring(L, 1);
+  const auto msg = luaL_checkstring(L, 1);
   ib::ListWindow::inst()->getListbox()->clearAll();
   ib::ListWindow::inst()->hide();
   ib::MainWindow::inst()->getInput()->setValue(msg);
@@ -747,7 +746,7 @@ int ib::luamodule::get_clipboard(lua_State *L) { // {{{
 int ib::luamodule::set_clipboard(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
-  const char *msg = luaL_checkstring(L, 1);
+  const auto msg = luaL_checkstring(L, 1);
   ib::utils::set_clipboard(msg);
   lua_state.clearStack();
   return 0;
@@ -757,7 +756,7 @@ int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   lua_state.clearStack();
 
-  auto &histories  = ib::Controller::inst().getClipboardHistories();
+  const auto &histories  = ib::Controller::inst().getClipboardHistories();
   int i = 1;
   lua_newtable(L);
   for(auto it = histories.rbegin(), last = histories.rend(); it != last; ++it, ++i){
@@ -771,7 +770,7 @@ int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
 int ib::luamodule::shell_execute(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   std::vector<ib::unique_string_ptr> args;
-  const int top = lua_gettop(L);
+  const auto top = lua_gettop(L);
   const std::string cmd(luaL_checkstring(L, 1));
   std::string workdir;
   if(top > 2) {
@@ -812,7 +811,7 @@ int ib::luamodule::command_execute(lua_State *L) { // {{{
   auto &controller = ib::Controller::inst();
   ib::LuaState lua_state(L);
   std::vector<std::string*> args;
-  const int top = lua_gettop(L);
+  const auto top = lua_gettop(L);
   const std::string cmd(luaL_checkstring(L, 1));
 
   if(top > 1) {
@@ -823,7 +822,7 @@ int ib::luamodule::command_execute(lua_State *L) { // {{{
     }
   }
   lua_state.clearStack();
-  auto &commands_ = controller.getCommands();
+  const auto &commands_ = controller.getCommands();
   auto it = commands_.find(cmd);
   if(it != commands_.end()){
     ib::Error error;
@@ -850,7 +849,7 @@ int ib::luamodule::command_execute(lua_State *L) { // {{{
 
 int ib::luamodule::command_output(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *cmd = luaL_checkstring(L, 1);
+  const auto cmd = luaL_checkstring(L, 1);
   std::string sstdout, sstderr;
   ib::Error error;
 
@@ -869,8 +868,8 @@ int ib::luamodule::command_output(lua_State *L) { // {{{
 int ib::luamodule::default_after_command_action(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   luaL_checktype(L, 1, LUA_TBOOLEAN);
-  const bool success = lua_toboolean(L, 1);
-  const char *message = luaL_checkstring(L, 2);
+  const auto success = lua_toboolean(L, 1);
+  const auto message = luaL_checkstring(L, 2);
   ib::Controller::inst().afterExecuteCommand(success, strlen(message) != 0 ? message : 0);
   lua_state.clearStack();
   return 0;
@@ -878,13 +877,13 @@ int ib::luamodule::default_after_command_action(lua_State *L) { // {{{
 
 int ib::luamodule::add_history(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const int top = lua_gettop(L);
+  const auto top = lua_gettop(L);
   std::string name = "";
   if(top > 1) {
     name = luaL_checkstring(L, -1);
     lua_pop(L, 1);
   }
-  std::string input = luaL_checkstring(L, -1);
+  auto input = std::string(luaL_checkstring(L, -1));
   lua_state.clearStack();
 
   if(name.empty()){
@@ -900,7 +899,7 @@ int ib::luamodule::add_history(lua_State *L) { // {{{
 
 int ib::luamodule::open_dir(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   ib::Error error;
 
   lua_state.clearStack();
@@ -950,7 +949,7 @@ int ib::luamodule::local2utf8(lua_State *L) { // {{{
 // int ib::luamodule::list_all_windows(lua_State *L) { // {{{
 #ifdef IB_OS_WIN
 static void list_all_windows_iter(std::vector<ib::whandle> &result, const ib::whandle parent){
-  HWND hwnd = FindWindowEx(parent, NULL, NULL, NULL);
+  auto hwnd = FindWindowEx(parent, NULL, NULL, NULL);
   result.push_back(hwnd);
   while (hwnd != NULL){
     list_all_windows_iter(result, hwnd);
@@ -982,6 +981,7 @@ int ib::luamodule::list_all_windows(lua_State *L) { // {{{
   return 1;
 } // }}}
 #endif
+// }}}
 
 int ib::luamodule::lock(lua_State *L) { // {{{
   Fl::lock();
@@ -995,7 +995,7 @@ int ib::luamodule::unlock(lua_State *L) { // {{{
 
 int ib::luamodule::band(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const int argc = lua_gettop(L);
+  const auto argc = lua_gettop(L);
   lua_Integer value = luaL_checkinteger(L, 1);
   for(int i = 2; i <= argc; ++i){
     value = value & luaL_checkinteger(L, i);
@@ -1007,7 +1007,7 @@ int ib::luamodule::band(lua_State *L) { // {{{
 
 int ib::luamodule::bor(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const int argc = lua_gettop(L);
+  const auto argc = lua_gettop(L);
   lua_Integer value = luaL_checkinteger(L, 1);
   for(int i = 2; i <= argc; ++i){
     value = value | luaL_checkinteger(L, i);
@@ -1019,8 +1019,8 @@ int ib::luamodule::bor(lua_State *L) { // {{{
 
 int ib::luamodule::bxor(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const int argc = lua_gettop(L);
-  lua_Integer value = luaL_checkinteger(L, 1);
+  const auto argc = lua_gettop(L);
+  auto value = luaL_checkinteger(L, 1);
   for(int i = 2; i <= argc; ++i){
     value = value ^ luaL_checkinteger(L, i);
   }
@@ -1031,8 +1031,8 @@ int ib::luamodule::bxor(lua_State *L) { // {{{
 
 int ib::luamodule::brshift(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  lua_Integer value = luaL_checkinteger(L, 1);
-  int disp = luaL_checkint(L, 2);
+  auto value = luaL_checkinteger(L, 1);
+  auto disp = luaL_checkint(L, 2);
   lua_state.clearStack();
   lua_pushnumber(L, value >> disp);
   return 1;
@@ -1040,8 +1040,8 @@ int ib::luamodule::brshift(lua_State *L) { // {{{
 
 int ib::luamodule::blshift(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  lua_Integer value = luaL_checkinteger(L, 1);
-  int disp = luaL_checkint(L, 2);
+  auto value = luaL_checkinteger(L, 1);
+  auto disp = luaL_checkint(L, 2);
   lua_state.clearStack();
   lua_pushnumber(L, value << disp);
   return 1;
@@ -1049,7 +1049,7 @@ int ib::luamodule::blshift(lua_State *L) { // {{{
 
 int ib::luamodule::dirname(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1064,7 +1064,7 @@ int ib::luamodule::dirname(lua_State *L) { // {{{
 
 int ib::luamodule::basename(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1079,7 +1079,7 @@ int ib::luamodule::basename(lua_State *L) { // {{{
 
 int ib::luamodule::directory_exists(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1089,7 +1089,7 @@ int ib::luamodule::directory_exists(lua_State *L) { // {{{
 
 int ib::luamodule::file_exists(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1099,7 +1099,7 @@ int ib::luamodule::file_exists(lua_State *L) { // {{{
 
 int ib::luamodule::path_exists(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1109,7 +1109,7 @@ int ib::luamodule::path_exists(lua_State *L) { // {{{
 
 int ib::luamodule::list_dir(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const char *path = luaL_checkstring(L, 1);
+  const auto path = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::oschar ospath[IB_MAX_PATH];
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
@@ -1136,15 +1136,15 @@ int ib::luamodule::list_dir(lua_State *L) { // {{{
 
 int ib::luamodule::join_path(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  const int argc = lua_gettop(L);
-  const char *base = luaL_checkstring(L, 1);
+  const auto argc = lua_gettop(L);
+  const auto base = luaL_checkstring(L, 1);
   ib::oschar path_ret[IB_MAX_PATH];
   ib::oschar path_a[IB_MAX_PATH];
   ib::oschar path_b[IB_MAX_PATH];
   ib::platform::utf82oschar_b(path_a, IB_MAX_PATH, base);
 
   for(int i = 2; i <= argc; ++i){
-    const char *child = luaL_checkstring(L, i);
+    const auto child = luaL_checkstring(L, i);
     ib::platform::utf82oschar_b(path_b, IB_MAX_PATH, child);
     ib::platform::join_path(path_ret, path_a, path_b);
     memcpy(path_a, path_ret, IB_MAX_PATH);

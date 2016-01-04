@@ -79,7 +79,7 @@ static char* ib_platform_get_last_error_message(){ // {{{
     NULL, GetLastError(),
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
     (LPTSTR) &msg_buf, 0, NULL);
-  char *ret = ib::platform::oschar2utf8((const ib::oschar*)msg_buf);
+  auto ret = ib::platform::oschar2utf8(reinterpret_cast<const ib::oschar*>(msg_buf));
   ret[strlen(ret)-2] = '\0';
   LocalFree(msg_buf);
   return ret;
@@ -166,8 +166,8 @@ static const struct {unsigned short vk, key;} vktab[] = {
 };
 
 static int ib_platform_key2os_key(const int key){
-  int b = sizeof(vktab)/sizeof(*vktab);
-  for(int i=0; i < b; i++) {
+  auto b = sizeof(vktab)/sizeof(*vktab);
+  for(unsigned int i=0; i < b; i++) {
     if (vktab[i].key == key) return vktab[i].vk;
   }
   return key;
@@ -190,7 +190,7 @@ static int ib_platform_modkey2os_modkey(const int key){ // {{{
 
 static int ib_platform_register_hotkey() { /* {{{ */
   int mod, len;
-  const int* hot_key = ib::Config::inst().getHotKey();
+  const auto hot_key = ib::Config::inst().getHotKey();
   len = 0;
   for(;hot_key[len] != 0; ++len){}
   len--;
@@ -287,7 +287,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
         OpenClipboard(hwnd);
         HANDLE htext = GetClipboardData(CF_TEXT);
         if(htext != NULL) {
-            char *text = (char*)GlobalLock(htext);
+            auto text = reinterpret_cast<char*>(GlobalLock(htext));
             ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
             ib::Regex reg("\r\n", ib::Regex::NONE);
             reg.init();
@@ -355,7 +355,7 @@ static uchar * ib_platform_read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h,
   int d;
   
   d = alpha ? 4 : 3;
-  uchar *p = new uchar[w * h * d];
+  auto p = new uchar[w * h * d];
   memset(p, 0, w * h * d);
   int ww = w; 
   int shift_x = 0; 
@@ -372,7 +372,7 @@ static uchar * ib_platform_read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h,
   }
   if (h < 1 || w < 1) return p;  
   int line_size = ((d*w+3)/4) * 4;
-  uchar *dib = new uchar[line_size*h]; 
+  auto dib = new uchar[line_size*h]; 
   
   BITMAPINFO   bi;
   bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -394,7 +394,7 @@ static uchar * ib_platform_read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h,
   GetDIBits(hdc1, hbm, 0, h, dib, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
   
   for (int j = 0; j<h; j++) {
-    const uchar *src = dib + j * line_size;   
+    auto src = dib + j * line_size;   
     uchar *tg = p + (j + shift_y) * d * ww + shift_x * d; 
     for (int i = 0; i<w; i++) {
       uchar b = *src++;
@@ -420,7 +420,7 @@ static void ib_platform_list_network_servers(std::vector<ib::oschar*> &result, c
   NET_API_STATUS ret = NetServerEnum(NULL, 100, (BYTE**)&server_info, MAX_PREFERRED_LENGTH, &read, &num_servers, types, domain, 0);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
-      ib::oschar *server_name = new ib::oschar[IB_MAX_PATH];
+      auto server_name = new ib::oschar[IB_MAX_PATH];
       _tcscpy(server_name, server_info[i].sv100_name);
       result.push_back(server_name);
     }
@@ -439,7 +439,7 @@ static void ib_platform_list_network_shares(std::vector<ib::oschar*> &result, ib
   NET_API_STATUS ret = NetShareEnum(server, 502, (BYTE**)&share_info,  MAX_PREFERRED_LENGTH, &read, &num_shares, NULL);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
-      ib::oschar *share_name = new ib::oschar[IB_MAX_PATH];
+      auto share_name = new ib::oschar[IB_MAX_PATH];
       _tcscpy(share_name, share_info[i].shi502_netname);
       result.push_back(share_name);
     }
@@ -470,7 +470,7 @@ finalize:
 int ib::platform::init_system() { // {{{
   int ret;
   long style;
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
 
   ib_g_hwnd_main = fl_xid(ib::MainWindow::inst());
   ib_g_hwnd_list = fl_xid(ib::ListWindow::inst());
@@ -530,49 +530,49 @@ void ib::platform::get_runtime_platform(char *ret){ // {{{
 } // }}}
 
 ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
-  const std::size_t _srclen = strlen(src);
+  const auto _srclen = strlen(src);
   const unsigned int srclen = (_srclen) > UINT_MAX ? UINT_MAX : (unsigned int)_srclen;
 
-  unsigned int wlen = fl_utf8toUtf16(src, srclen, NULL, 0);
+  auto wlen = fl_utf8toUtf16(src, srclen, NULL, 0);
   wlen++;
-  wchar_t *wbuf = new wchar_t[wlen];
-  wlen = fl_utf8toUtf16(src, srclen, (unsigned short*)wbuf, wlen);
+  auto wbuf = new wchar_t[wlen];
+  wlen = fl_utf8toUtf16(src, srclen, reinterpret_cast<unsigned short*>(wbuf), wlen);
   wbuf[wlen] = 0;
   return wbuf;
 } // }}}
 
 void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, const char *src) { // {{{
-  const std::size_t _srclen = strlen(src);
+  const auto _srclen = strlen(src);
   const unsigned int srclen = (_srclen) > UINT_MAX ? UINT_MAX : (unsigned int)_srclen;
-  unsigned int wlen = fl_utf8toUtf16(src, srclen, (unsigned short*)buf, bufsize);
+  auto wlen = fl_utf8toUtf16(src, srclen, reinterpret_cast<unsigned short*>(buf), bufsize);
   buf[wlen] = 0;
 } // }}}
 
 char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
-  unsigned int size = WideCharToMultiByte(CP_UTF8, 0, src, -1, NULL, 0, NULL, NULL);
+  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, NULL, 0, NULL, NULL);
   size++;
-  char *buff = new char[size];
+  auto buff = new char[size];
   size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buff, size, NULL, NULL);
   buff[size] = 0;
   return buff;
 } // }}}
 
 void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  int size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buf, bufsize, NULL, NULL);
+  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buf, bufsize, NULL, NULL);
   buf[size] = 0;
 } // }}}
 
 char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
-  int size = WideCharToMultiByte(GetACP(), 0, src, -1, NULL, 0, NULL, NULL);
+  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, NULL, 0, NULL, NULL);
   size++;
-  char *buff = new char[size];
+  auto buff = new char[size];
   size = WideCharToMultiByte(GetACP(), 0, src, -1, buff, size, NULL, NULL);
   buff[size] = 0;
   return buff;
 } // }}}
 
 void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  int size = WideCharToMultiByte(GetACP(), 0, src, -1, buf, bufsize, NULL, NULL);
+  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, buf, bufsize, NULL, NULL);
   buf[size] = 0;
 } // }}}
 
@@ -582,12 +582,12 @@ char* ib::platform::utf82local(const char *src) { // {{{
 } // }}}
 
 char* ib::platform::local2utf8(const char *src) { // {{{
-  int size = MultiByteToWideChar(GetACP(), 0, src, -1, NULL, 0);
+  auto size = MultiByteToWideChar(GetACP(), 0, src, -1, NULL, 0);
   size++;
-  ib::oschar *buff = new ib::oschar[size];
+  auto buff = new ib::oschar[size];
   size = MultiByteToWideChar(GetACP(), 0, src, -1, buff, size);
   buff[size] = '\0';
-  char *ret = ib::platform::oschar2utf8(buff);
+  auto ret = ib::platform::oschar2utf8(buff);
   delete[] buff;
   return ret;
 } // }}}
@@ -627,7 +627,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 } // }}}
 
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
 #ifdef IB_OS_WIN64
@@ -654,7 +654,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       cmd.setPath(cfg.getTerminal());
       cmd.setTerminal("no");
       cmd.init();
-      int ret = cmd.execute(args, &cwd, error);
+      auto ret = cmd.execute(args, &cwd, error);
       ib::utils::delete_pointer_vectors(args);
       return ret;
     }
@@ -694,8 +694,8 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
 
 int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
-  for(auto it = params.begin(), last = params.end(); it != last; ++it){
-    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar((*it).get()->c_str()));
+  for(const auto &p : params) {
+    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p.get()->c_str()));
     ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(0, osparam.get()));
     ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
     strparams += escaped_param.get();
@@ -706,8 +706,8 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
 
 int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
-  for(auto it = params.begin(), last = params.end(); it != last; ++it){
-    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar((*it)->c_str()));
+  for(const auto &p : params) {
+    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p->c_str()));
     ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(0, osparam.get()));
     ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
     strparams += escaped_param.get();
@@ -944,7 +944,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
      special_folder = CSIDL_PRINTERS;
    }
 
-   const int size_flag = size > 16 ? SHGFI_LARGEICON : SHGFI_SMALLICON;
+   const auto size_flag = size > 16 ? SHGFI_LARGEICON : SHGFI_SMALLICON;
 
    if(special_folder > -1){
      LPITEMIDLIST pidl;
@@ -962,9 +962,9 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
      if(reg.match(native_path) == 0){
        ExtractIconEx(path, 0, &hicon, 0, 1);
      }else{
-       const int attr = ib::platform::directory_exists(path) ? FILE_ATTRIBUTE_DIRECTORY
+       const auto attr = ib::platform::directory_exists(path) ? FILE_ATTRIBUTE_DIRECTORY
                                                              : FILE_ATTRIBUTE_NORMAL;
-       const int flags = SHGFI_ICON | size_flag | SHGFI_USEFILEATTRIBUTES;
+       const auto flags = SHGFI_ICON | size_flag | SHGFI_USEFILEATTRIBUTES;
        if(!SHGetFileInfo(path, attr, &shinfo, sizeof(SHFILEINFO), flags)) {
          goto label_finalize;
        }
@@ -995,7 +995,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
   }
   tcsncpy_s(result, parent, IB_MAX_PATH);
   result[IB_MAX_PATH-1]= '\0';
-  std::size_t length = _tcslen(result);
+  auto length = _tcslen(result);
   const ib::oschar *sep;
   if(result[length-1] != L'/' && result[length-1] != L'\\') {
     sep = L"\\";
@@ -1010,7 +1010,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
 ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *path){ // {{{
   ib::oschar tmp[IB_MAX_PATH];
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  const std::size_t length = _tcslen(path);
+  const auto length = _tcslen(path);
   bool is_dot_path = length > 1 && path[0] == L'.' && (path[1] == L'/' || path[1] == L'\\');
   if(!is_dot_path) is_dot_path = length == 1 && path[0] == L'.';
   bool is_dot_dot_path = length > 2 && path[0] == L'.' && path[1] == L'.' && (path[2] == L'/' || path[2] == L'\\');
@@ -1050,7 +1050,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   tcsncpy_s(result, path, IB_MAX_PATH);
-  const std::size_t len = _tcslen(path);
+  const auto len = _tcslen(path);
   if(len == 0) return result;
   std::size_t i = len -1;
   for(; i > 0; --i){
@@ -1067,7 +1067,7 @@ ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ /
 
 ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ // {{{
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  const std::size_t len = _tcslen(path);
+  const auto len = _tcslen(path);
   if(len == 0) return result;
   std::size_t i = len-1;
   for(; i > 0; --i){
@@ -1090,7 +1090,7 @@ ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar 
 } // }}}
 
 bool ib::platform::is_directory(const ib::oschar *path) { // {{{
-  const size_t length = _tcslen(path);
+  const auto length = _tcslen(path);
   return (path[length-1] == L'/' || path[length-1] == L'\\' || PathIsDirectory(path));
 } // }}}
 
@@ -1145,14 +1145,14 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
 
 int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
 
-  const std::size_t dir_length = _tcslen(dir);
+  const auto dir_length = _tcslen(dir);
   const ib::oschar *sep = (dir[dir_length-1] == L'\\' || dir[dir_length-1] == L'/') ? L"" : L"\\";
   if(_tcscmp(dir, L"\\\\") == 0){
     if(!recursive){
       std::vector<ib::oschar*> servers;
       ib_platform_list_network_servers(servers, NULL, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
-      for(auto it = servers.begin(), last = servers.end(); it != last; ++it){
-        result.push_back(ib::unique_oschar_ptr(*it));
+      for(const auto &s : servers) {
+        result.push_back(ib::unique_oschar_ptr(s));
       }
       return 0;
     }else{
@@ -1170,8 +1170,8 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
           ib::oschar not_const_dir[IB_MAX_PATH];
           tcsncpy_s(not_const_dir, dir, IB_MAX_PATH);
           ib_platform_list_network_shares(shares, not_const_dir);
-          for(auto it = shares.begin(), last = shares.end(); it != last; ++it){
-            result.push_back(ib::unique_oschar_ptr(*it));
+          for(const auto &s : shares) {
+            result.push_back(ib::unique_oschar_ptr(s));
           }
           return 0;
         }else{
@@ -1205,7 +1205,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
     return 1;
   }else{
     do {
-      std::size_t file_name_length = _tcslen(fd.cFileName);
+      const auto file_name_length = _tcslen(fd.cFileName);
       if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
         if(_tcscmp(fd.cFileName, L".") && _tcscmp(fd.cFileName, L"..")){
           if(recursive){
@@ -1345,7 +1345,7 @@ ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *p
 //////////////////////////////////////////////////
 int ib::platform::remove_file(const ib::oschar *path, ib::Error &error){ // {{{
   SetLastError(NO_ERROR);
-  int ret = DeleteFile(path);
+  auto ret = DeleteFile(path);
   if(ret == 0){
     ib_platform_set_error(error);
     return 1;
@@ -1355,7 +1355,7 @@ int ib::platform::remove_file(const ib::oschar *path, ib::Error &error){ // {{{
 
 int ib::platform::copy_file(const ib::oschar *source, const ib::oschar *dest, ib::Error &error){ // {{{
   SetLastError(NO_ERROR);
-  int ret = CopyFile(source, dest, FALSE);
+  auto ret = CopyFile(source, dest, FALSE);
   if(ret == 0){
     ib_platform_set_error(error);
     return 1;
@@ -1370,8 +1370,8 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
     ib_platform_set_error(error);
     return 1;
   }
-  long sz = GetFileSize(file, NULL );
-  if(sz == -1){
+  auto sz = GetFileSize(file, NULL );
+  if(sz == (DWORD)-1){
     ib_platform_set_error(error);
     return 1;
   }
@@ -1383,7 +1383,7 @@ ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){
   if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::basename(tmp, path);
-  ib::oschar *ptr = PathFindExtensionW(tmp);
+  auto ptr = PathFindExtensionW(tmp);
   memset(result, 0, 1);
   if(ptr != tmp && *ptr != L'\0') { 
     ptr++; 

@@ -787,17 +787,17 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
   ib::platform::utf82oschar_b(osdir, IB_MAX_PATH, path);
   ib::Error error;
   if(ib::platform::walk_dir(files, osdir, error, false) == 0){
-    for(auto it = files.begin(), last = files.end(); it != last; ++it){
-      ib::platform::join_path(osfull_path, osdir, (*it).get());
+    for(const auto &fileptr : files) {
+      ib::platform::join_path(osfull_path, osdir, fileptr.get());
       ib::platform::oschar2utf8_b(full_path, IB_MAX_PATH_BYTE, osfull_path);
       if(exre != 0 && exre->match(full_path) == 0) continue;
       if(ib::platform::directory_exists(osfull_path)){
         _walk_search_path(commands, category, full_path, current_depth+1, limit_depth, pattern, exre);
       }else{
-        ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, (*it).get());
+        ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, fileptr.get());
         if(re.match(file) == 0){
           ib::Command *command = new ib::Command();
-          ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, (*it).get());
+          ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, fileptr.get());
           std::string cmdname;
           ib::utils::to_command_name(cmdname, file);
           command->setName(cmdname);
@@ -816,16 +816,16 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
 }
 
 void ib::Controller::cacheCommandsInSearchPath(const char *category) {
-  auto &cfg = ib::Config::inst();
-  auto &search_paths = cfg.getSearchPath();
-  bool is_all = strcmp(category, "all") == 0;
+  const auto &cfg = ib::Config::inst();
+  const auto &search_paths = cfg.getSearchPath();
+  const auto is_all = strcmp(category, "all") == 0;
   long prev_index = 0;
   std::vector<ib::Command*> commands;
   if(!is_all){
     auto &prev_commands = ib::Controller::inst().getCommands();
-    for(auto it = prev_commands.begin(), last = prev_commands.end(); it != last; ++it){
-      if(!(*it).second->getCategory().empty() && (*it).second->getCategory() != category){
-        ib::Command *prev_command = dynamic_cast<ib::Command*>((*it).second);
+    for(auto &p : prev_commands) {
+      if(!p.second->getCategory().empty() && p.second->getCategory() != category){
+        ib::Command *prev_command = dynamic_cast<ib::Command*>(p.second);
         if(prev_command != 0){
           commands.push_back(prev_command);
           prev_index++;
@@ -834,28 +834,28 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     }
   }
 
-  for(auto it = search_paths.begin(), last = search_paths.end(); it != last; ++it){
-    if(is_all || (*it)->getCategory() == category){
-      int depth = (*it)->getDepth();
+  for(auto &s : search_paths) {
+    if(is_all || s->getCategory() == category){
+      auto depth = s->getDepth();
       if(depth == 0) depth = cfg.getDefaultSearchPathDepth();
-      ib::Regex exre((*it)->getExcludePattern().c_str(), ib::Regex::I);
+      ib::Regex exre(s->getExcludePattern().c_str(), ib::Regex::I);
       exre.init();
-      _walk_search_path(commands, (*it)->getCategory().c_str(), (*it)->getPath().c_str(), 0, depth,
-                        (*it)->getPattern(), strlen(exre.getPattern()) == 0 ? 0 : &exre);
+      _walk_search_path(commands, s->getCategory().c_str(), s->getPath().c_str(), 0, depth,
+                        s->getPattern(), strlen(exre.getPattern()) == 0 ? 0 : &exre);
     }
   }
 
   ib::unique_char_ptr locache_path(ib::platform::utf82local(cfg.getCommandCachePath().c_str()));
   std::ofstream ofs(locache_path.get());
-  for(auto it = commands.begin(), last = commands.end(); it != last; ++it){
-    ofs << (*it)->getCategory() << std::endl;
-    ofs << (*it)->getName() << std::endl;
-    ofs << (*it)->getPath() << std::endl;
-    ofs << (*it)->getRawWorkdir() << std::endl;
-    ofs << (*it)->getDescription() << std::endl;
-    ofs << (*it)->getCommandPath() << std::endl;
-    ofs << (*it)->getIconFile() << std::endl;
-    ofs << (*it)->getTerminal() << std::endl;
+  for(const auto &c : commands) {
+    ofs << c->getCategory() << std::endl;
+    ofs << c->getName() << std::endl;
+    ofs << c->getPath() << std::endl;
+    ofs << c->getRawWorkdir() << std::endl;
+    ofs << c->getDescription() << std::endl;
+    ofs << c->getCommandPath() << std::endl;
+    ofs << c->getIconFile() << std::endl;
+    ofs << c->getTerminal() << std::endl;
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
@@ -866,7 +866,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
 
 // void ib::Controller::loadCachedCommands() { // {{{
 void ib::Controller::loadCachedCommands() {
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   auto input = ib::MainWindow::inst()->getInput();
   input->value("Loading commands...");
   ib::unique_char_ptr locache_path(ib::platform::utf82local(cfg.getCommandCachePath().c_str()));
@@ -915,7 +915,7 @@ void ib::Controller::completionInput() { // {{{
   if(isHistorySearchMode()){
     buf += listbox->selectedValue()->getCompvalue();
     input->value(buf.c_str());
-    input->position((int)position);
+    input->position(static_cast<int>(position));
   }else{
     if(input->isUsingCwd()){
       buf += "!";
@@ -923,7 +923,7 @@ void ib::Controller::completionInput() { // {{{
     int i = 0;
     for(auto it = input->getTokens().begin(), last = input->getTokens().end(); it != last; ++it, ++i){
       if(i == input->getCursorTokenIndex()){
-        const std::string &cursorValue = input->getCursorToken()->getValue();
+        const auto &cursorValue = input->getCursorToken()->getValue();
         if(!input->getCursorToken()->isValueToken()) {
           buf += cursorValue;
         }
@@ -941,7 +941,7 @@ void ib::Controller::completionInput() { // {{{
           ib::platform::oschar2utf8_b(completed_path, IB_MAX_PATH_BYTE, os_quoted_compvalue);
           buf += completed_path;
         }else{
-          const std::string &comp_value = listbox->selectedValue()->getCompvalue();
+          const auto &comp_value = listbox->selectedValue()->getCompvalue();
           ib::unique_oschar_ptr oscomp_value(ib::platform::utf82oschar(comp_value.c_str()));
           ib::unique_oschar_ptr osquoted_value(ib::platform::quote_string(0, oscomp_value.get()));
           ib::unique_char_ptr   quoted_value(ib::platform::oschar2utf8(osquoted_value.get()));
@@ -957,15 +957,15 @@ void ib::Controller::completionInput() { // {{{
 
     }
     input->value(buf.c_str());
-    input->position((int)position);
+    input->position(static_cast<int>(position));
   }
   input->adjustSize();
 } // }}}
 
 // void ib::Controller::showCompletionCandidates() { // {{{
 static int cmp_command(const ib::CompletionValue *a, const ib::CompletionValue *b) {
-  const ib::BaseCommand *a_cmd = static_cast<const ib::BaseCommand*>(a);
-  const ib::BaseCommand *b_cmd = static_cast<const ib::BaseCommand*>(b);
+  const auto *a_cmd = static_cast<const ib::BaseCommand*>(a);
+  const auto *b_cmd = static_cast<const ib::BaseCommand*>(b);
   return a_cmd->getScore() > b_cmd->getScore();
 }
 
@@ -983,8 +983,8 @@ void ib::Controller::showCompletionCandidates() {
     return;
   }
   listbox->startUpdate();
-  const std::string &first_value = input->getFirstValue();
-  const std::string &cursor_value = input->getCursorValue();
+  const auto &first_value = input->getFirstValue();
+  const auto &cursor_value = input->getCursorValue();
   ib::unique_oschar_ptr os_cursor_value(ib::platform::utf82oschar(cursor_value.c_str()));
   std::vector<ib::CompletionValue*> candidates;
 
@@ -995,8 +995,8 @@ void ib::Controller::showCompletionCandidates() {
     ib::Error error;
     char drive[16];
     if(ib::platform::list_drives(os_drives, error) == 0){
-      for(auto it = os_drives.begin(), last = os_drives.end(); it != last; ++it){
-        ib::platform::oschar2utf8_b(drive, 16, (*it).get());
+      for(const auto &d : os_drives) {
+        ib::platform::oschar2utf8_b(drive, 16, d.get());
         candidates.push_back(new ib::CompletionString(drive));
       }
     }
@@ -1016,7 +1016,7 @@ void ib::Controller::showCompletionCandidates() {
       if(input->isUsingCwd()) {
         ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, getCwd().c_str());
       }else{
-        const std::string &cmdname = input->getFirstValue();
+        const auto &cmdname = input->getFirstValue();
         auto it = commands_.find(cmdname);
         if(it != commands_.end()){
           ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, (*it).second->getWorkdir().c_str());
@@ -1042,8 +1042,8 @@ void ib::Controller::showCompletionCandidates() {
 
   listbox->clearAll();
 
-  for(auto it = candidates.begin(), last = candidates.end(); it != last; ++it){
-    listbox->addValue(*it);
+  for(const auto &c : candidates) {
+    listbox->addValue(c);
   }
 
   if(input->getCursorTokenIndex() == 0 || input->getPrevCursorTokenIndex() == 0){
@@ -1105,7 +1105,7 @@ void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{
     }
 
     input->position(0);
-    input->mark((int)strlen(text));
+    input->mark(static_cast<int>(strlen(text)));
     auto listbox = ib::ListWindow::inst()->getListbox();
     listbox->clearAll();
     ib::ListWindow::inst()->hide();
@@ -1151,7 +1151,7 @@ void ib::Controller::killWord() { // {{{
 
   input->clear();
   input->value(buf.c_str());
-  input->position((int)position);
+  input->position(static_cast<int>(position));
   input->adjustSize();
   input->getKeyEvent().queueEvent((void*)1);
 } // }}}
@@ -1198,17 +1198,17 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
 } // }}}
 
 void ib::Controller::appendClipboardHistory(const char* text){ // {{{
-  auto &cfg = ib::Config::inst();
-  std::string *data = new std::string(text);
-  for(auto it = clipboard_histories_.begin(), last = clipboard_histories_.end(); it != last; ++it){
-    if(*(*it) == *data) {
+  const auto &cfg = ib::Config::inst();
+  auto data = new std::string(text);
+  for(const auto &h : clipboard_histories_){
+    if(*h == *data) {
       delete data;
       return;
     }
   }
 
   if(clipboard_histories_.size() >= cfg.getMaxClipboardHistories()){
-    std::string *front = clipboard_histories_.front();
+    auto front = clipboard_histories_.front();
     delete front;
     clipboard_histories_.pop_front();
   }

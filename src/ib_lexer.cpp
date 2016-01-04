@@ -75,7 +75,7 @@ void ib::CommandLexer::onReadChar() { // {{{
       if(c_ == '"'){
         // double quote
         if(pc_ != '\\') {
-          std::size_t saved_start_pos = token_->getStartPos();
+          auto saved_start_pos = token_->getStartPos();
           delete token_;
           token_ = new StringToken(saved_start_pos);
           strbuf_.append(input_+ptr_, utf8_len_);

@@ -90,7 +90,7 @@ void ib::utils::reboot_application() { // {{{
   snprintf(options, 32, "%d", ib::platform::get_pid());
   params.push_back(ib::unique_string_ptr(new std::string(options)));
 
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::Error error;
   ib::Server::inst().shutdown();
   if(ib::platform::shell_execute(cfg.getSelfPath(), params, cfg.getInitialWorkdir(), "auto", error) != 0) {
@@ -103,7 +103,7 @@ void ib::utils::reboot_application() { // {{{
 
 // ib::utils::scan_search_path() { // {{{
 static void scan_search_path_awaker1(void *p){ 
-  const char *category = (const char*)p;
+  const auto category = reinterpret_cast<const char*>(p);
   std::string message = "Scanning search paths";
   message +="(category: ";
   message += category;
@@ -115,7 +115,7 @@ static void scan_search_path_awaker1(void *p){
 }
 static void scan_search_path_awaker2(void *p){ ib::utils::reboot_application(); }
 static ib::threadret scan_search_path_thread(void *p){
-  const char *category = (const char*)p;
+  const auto category = reinterpret_cast<const char*>(p);
   ib::platform::on_thread_start();
   sleep(1);
   Fl::awake(scan_search_path_awaker1, p);
@@ -126,7 +126,7 @@ static ib::threadret scan_search_path_thread(void *p){
 }
 
 void ib::utils::scan_search_path(const char *category) {
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::oschar oscache_path[IB_MAX_PATH];
   ib::platform::utf82oschar_b(oscache_path, IB_MAX_PATH, cfg.getCommandCachePath().c_str());
   if(ib::platform::file_exists(oscache_path)){
@@ -427,7 +427,7 @@ static int ib_utils_parse_single_keyname(const char *string) { // {{{
 } // }}}
 
 void ib::utils::parse_key_bind(int *result, const char *string) { // {{{
-  int ret = ib_utils_parse_single_keyname(string);
+  auto ret = ib_utils_parse_single_keyname(string);
   if(ret > -1) {
     result[0] = ret;
     return;
@@ -514,14 +514,14 @@ void ib::utils::to_command_name(std::string &ret, const std::string &string){ //
 } // }}}
 
 int ib::utils::open_directory(const std::string &path, ib::Error &error) { // {{{
-  auto &cfg = ib::Config::inst();
+  const auto &cfg = ib::Config::inst();
   ib::Command cmd;
   cmd.setName("tmp");
   cmd.setPath(cfg.getFileBrowser());
   cmd.init();
   std::vector<std::string*> params;
   params.push_back(new std::string(path));
-  int ret = cmd.execute(params, 0, error);
+  auto ret = cmd.execute(params, 0, error);
   ib::utils::delete_pointer_vectors(params);
   return ret;
 } // }}}
@@ -541,9 +541,9 @@ size_t ib::utils::read_socket(FL_SOCKET s, char *buf, const size_t bufsize){ // 
 } // }}}
 
 int ib::utils::ipc_message(const char *message) { // {{{
-  const size_t length = strlen(message);
+  const auto length = strlen(message);
   if(length > 2147483646) return 1;
-  ib::u32 ulength = (ib::u32)length;
+  auto ulength = static_cast<ib::u32>(length);
 
   struct sockaddr_in server;
   FL_SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -562,7 +562,7 @@ int ib::utils::ipc_message(const char *message) { // {{{
 
   char length_buf[4];
   ib::utils::u32int2bebytes(length_buf, ulength);
-  int n = send(sock, length_buf, 4, 0);
+  auto n = send(sock, length_buf, 4, 0);
   if (n < 0) { return 3; }
   n = send(sock, message, length, 0);
   if (n < 0) { return 3; }
