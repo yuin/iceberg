@@ -56,16 +56,20 @@ void ib::CancelableEvent::stopThread(){ // {{{
 } // }}}
 
 void ib::CancelableEvent::queueEvent(void *ev){ // {{{
+  if(running_ != 0){
     ib::platform::lock_cmutex(&trigger_cmutex_);
     ib::platform::notify_condition(&trigger_cond_);
     last_event_ = ev;
     ib::platform::unlock_cmutex(&trigger_cmutex_);
+  }
 } // }}}
 
 void ib::CancelableEvent::cancelEvent(){ // {{{
+  if(running_ != 0){
     ib::platform::lock_cmutex(&trigger_cmutex_);
     last_event_ = 0;
     ib::platform::unlock_cmutex(&trigger_cmutex_);
+  }
 } // }}}
 
 // }}}
