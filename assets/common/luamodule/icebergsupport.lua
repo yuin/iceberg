@@ -269,10 +269,82 @@ t.merge_table = function(dest, ...) -- {{{
       table.insert(dest, src)
     else -- map
       for k, v in pairs(src) do
-        dest[k] = v
+        if type(dest[k]) == "table" and type(v) == "table" then
+          t.merge_table(dest[k], v)
+        else
+          dest[k] = v
+        end
       end
     end
   end
+end -- }}}
+
+t.table_find = function(tbl, value) -- {{{
+   for i, v in ipairs(tbl) do
+     if v == value then return i end
+   end
+   return 0
+end -- }}}
+
+t.getopts = function(arguments, options) -- {{{
+  local opts, args, i = {}, {}, 1
+  local function find_opt(v) return t.table_find(options, v) end
+  while i <= #arguments do
+    local argument = arguments[i]
+    local name = string.gsub(argument, [[^-+(.*)$]], "%1")
+    if find_opt(argument) ~= 0 then
+      opts[name] = true
+    elseif t.table_find(options, argument..":") ~= 0 then
+      if find_opt(opts[name]) == 0 and find_opt(tostring(opts[name])..":") == 0 then
+        opts[name] = arguments[i+1]
+        i = i + 1
+      else
+        opts[name] = nil
+      end
+    else
+      table.insert(args, argument)
+    end
+    i = i + 1
+  end
+  return opts, args
+end -- }}}
+
+t.comp_state = function(values, pos, ...) -- {{{
+  local cur  = values[pos]
+  local prev = values[pos-1] or ""
+  local opts = {...}
+  local is_prev_opt = t.regex_match([[\-[\-]?[a-zA-Z0-9\-_]*]], Regex.NONE, prev)
+  local has_exclude = function(exclude)
+    for i, ex in ipairs(exclude or {}) do
+      if t.table_find(values, ex) ~= 0 then
+        return true
+      end
+    end
+    return false
+  end
+
+  if t.regex_match([[\-[\-]?[a-zA-Z0-9\-_]*]], Regex.NONE, prev) then
+    for i, opt in ipairs(opts) do
+      if opt.opt == prev and not has_exclude(opt.exclude) then
+        if opt.state then
+          return opt.state, {}
+        end
+      end
+    end
+  end
+
+  local candidates = {}
+  local seen = {}
+  for i, opt in ipairs(opts) do
+    if not has_exclude(opt.exclude) and not seen[opt.opt] then
+      table.insert(candidates, {value=opt.opt, description=opt.description})
+      seen[opt.opt] = true
+    end
+  end
+  if t.regex_match([[\-[\-]?[a-zA-Z0-9\-_]*]], Regex.NONE, cur) then
+    return "opt", candidates
+  end
+  return "", candidates
 end -- }}}
 
 -- }}}
