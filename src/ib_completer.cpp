@@ -53,7 +53,7 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
   unsigned int token_index = 1; // 0 is command name
   for(; token_index < tokens.size(); token_index++){
     const auto token = tokens.at(token_index);
-    const auto is_current = token->getStartPos() <= position && token->getEndPos() >= position;
+    const auto is_current = token->getStartPos() < position && token->getEndPos() >= position;
     const auto is_last = (tokens.size() - 1 == token_index);
 
     if(token->isValueToken()) {
