@@ -336,7 +336,7 @@ t.comp_state = function(values, pos, ...) -- {{{
   local candidates = {}
   local seen = {}
   for i, opt in ipairs(opts) do
-    if not has_exclude(opt.exclude) and not seen[opt.opt] then
+    if not has_exclude(opt.exclude) and not seen[opt.opt] and t.table_find(values, opt.opt) == 0 then
       table.insert(candidates, {value=opt.opt, description=opt.description})
       seen[opt.opt] = true
     end
