@@ -43,7 +43,7 @@ Linux(Ubuntu 14.04)
 
 `Release <https://github.com/yuin/iceberg/releases>`_ で配布されているソースコードを任意の場所に解凍してください。その後
 
-    .. code-block:: lua
+    .. code-block:: bash
     
         % ./tools/install_requires.sh
         % make
