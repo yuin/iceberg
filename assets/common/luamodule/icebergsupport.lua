@@ -286,7 +286,8 @@ t.table_find = function(tbl, value) -- {{{
    return 0
 end -- }}}
 
-t.getopts = function(arguments, options) -- {{{
+t.getopts = function(arguments, ...) -- {{{
+  local options = {...}
   local opts, args, i = {}, {}, 1
   local function find_opt(v) return t.table_find(options, v) end
   while i <= #arguments do
