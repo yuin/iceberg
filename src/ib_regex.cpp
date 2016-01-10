@@ -43,13 +43,13 @@ int ib::Regex::search(const char *str, const std::size_t startpos, const std::si
   }
 } // }}}
 
-void ib::Regex::split(std::vector<std::string*> &result, const char *string) { // {{{
+void ib::Regex::split(std::vector<std::string> &result, const char *string) { // {{{
   const auto len   = strlen(string);
 
   if(strlen(getPattern()) == 0) {
     for(std::size_t ptr = 0; ptr != len;){
       const auto l = ib::utils::utf8len(string+ptr);
-      result.push_back(new std::string(string+ptr, l));
+      result.push_back(std::string(string+ptr, l));
       ptr += l;
     }
     return;
@@ -58,13 +58,13 @@ void ib::Regex::split(std::vector<std::string*> &result, const char *string) { /
   std::size_t start = 0;
   while(start < len){
     if(search(string, start, 0) != 0) {
-      result.push_back(new std::string(string+start, len - start));
+      result.push_back(std::string(string+start, len - start));
       break;
     }
-    result.push_back(new std::string(string+start, getFirstpos() - start));
+    result.push_back(std::string(string+start, getFirstpos() - start));
     start = getLastpos();
     if(start >= len) {
-      result.push_back(new std::string(""));
+      result.push_back(std::string(""));
       break;
     }
   }

@@ -14,16 +14,15 @@ void ib::History::load() { // {{{
   std::string buf;
   ib::Regex re("\t", ib::Regex::NONE);
   re.init();
-  std::vector<std::string*> fields;
 
   while(ifs && getline(ifs, buf)) {
+    std::vector<std::string> fields;
     re.split(fields, buf);
     auto cmd = new HistoryCommand();
-    cmd->setName(*(fields.at(0)));
-    cmd->setPath(*(fields.at(1)));
-    cmd->addTime((std::time_t)atoi(fields.at(2)->c_str()));
+    cmd->setName(fields.at(0));
+    cmd->setPath(fields.at(1));
+    cmd->addTime((std::time_t)atoi(fields.at(2).c_str()));
     addCommand(cmd);
-    ib::utils::delete_pointer_vectors(fields);
   }
 
   ifs.close();

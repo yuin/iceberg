@@ -1199,19 +1199,11 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
 
 void ib::Controller::appendClipboardHistory(const char* text){ // {{{
   const auto &cfg = ib::Config::inst();
-  auto data = new std::string(text);
-  for(const auto &h : clipboard_histories_){
-    if(*h == *data) {
-      delete data;
-      return;
-    }
-  }
 
+  std::string data(text);
   if(clipboard_histories_.size() >= cfg.getMaxClipboardHistories()){
-    auto front = clipboard_histories_.front();
-    delete front;
     clipboard_histories_.pop_front();
   }
-  clipboard_histories_.push_back(data);
+  clipboard_histories_.push_back(std::move(data));
 } // }}}
 

@@ -88,7 +88,7 @@ static int Regex_search(lua_State *L) {
 static int Regex_split(lua_State *L) {
   auto value      = check_regex(L, 1);
   const auto string    = luaL_checkstring(L, 2);
-  std::vector<std::string*> result;
+  std::vector<std::string> result;
   value->split(result, string);
 
   ib::LuaState lua_state(L);
@@ -98,10 +98,9 @@ static int Regex_split(lua_State *L) {
   int i = 1;
   for(auto it = result.begin(), last = result.end(); it != last; ++it, ++i){
     lua_pushnumber(L, i);
-    lua_pushstring(L, (*it)->c_str());
+    lua_pushstring(L, (*it).c_str());
     lua_settable(L, -3);
   }
-  ib::utils::delete_pointer_vectors(result);
   return 1;
 }
 
@@ -760,8 +759,9 @@ int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
   int i = 1;
   lua_newtable(L);
   for(auto it = histories.rbegin(), last = histories.rend(); it != last; ++it, ++i){
+    const auto &s = *it;
     lua_pushnumber(L, i);
-    lua_pushstring(L, (*it)->c_str());
+    lua_pushstring(L, s.c_str());
     lua_settable(L, -3);
   }
   return 1;

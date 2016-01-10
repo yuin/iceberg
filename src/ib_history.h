@@ -11,9 +11,7 @@ namespace ib {
     friend class Singleton<History>;
     public:
       ~History() {
-        for(auto it = ordered_commands_.begin(), last = ordered_commands_.end(); it != last; ++it) {
-          delete *it;
-        }
+        for(auto &c : ordered_commands_) { delete c;}
       }
       void load();
       void dump();

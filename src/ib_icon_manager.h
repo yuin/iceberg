@@ -607,6 +607,7 @@ namespace ib{
 
       ~IconManager() {
         ib::platform::destroy_mutex(&cache_mutex_);
+        for(auto &pair : cached_icons_) { delete pair.second; }
       }
       void loadCompletionListIcons();
       void dump();
