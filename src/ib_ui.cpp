@@ -639,37 +639,39 @@ void ib::Listbox::startUpdate(){ /* {{{ */
 } /* }}} */
 
 void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
-  ib::platform::ScopedLock lock(&mutex_);
-  incOperationCount();
-  if(size() == 0) { max_width_ = 0;}
-  if(isEmpty()) return;
+  {
+    ib::platform::ScopedLock lock(&mutex_);
+    incOperationCount();
+    if(size() == 0) { max_width_ = 0;}
+    if(isEmpty()) return;
 
-  auto max_candidates = ib::Config::inst().getMaxCandidates();
-  if(max_candidates == 0) max_candidates = UINT_MAX;
-  int width = 0;
-  unsigned int i = 1;
-  for(auto it = values_.begin(), last = values_.end(); it != last; ++it, ++i) {
-    if(use_max_candidates && i > max_candidates) break;
+    auto max_candidates = ib::Config::inst().getMaxCandidates();
+    if(max_candidates == 0) max_candidates = UINT_MAX;
+    int width = 0;
+    unsigned int i = 1;
+    for(auto it = values_.begin(), last = values_.end(); it != last; ++it, ++i) {
+      if(use_max_candidates && i > max_candidates) break;
 
-    if((*it)->hasDescription()) {
-      add(((*it)->getDispvalue() + "\t    " + (*it)->getDescription()).c_str(), (void*)(intptr_t)i);
-      // char scorebuf[124];
-      // sprintf(scorebuf, "%1.2f", ((ib::BaseCommand*)(*it))->getScore());
-      // add(((*it)->getDispvalue() + "(score:" + scorebuf + ")\n \t\n    " + (*it)->getDescription()).c_str(), (void*)i);
-    }else{
-      add((*it)->getDispvalue().c_str(), (void*)(intptr_t)i);
+      if((*it)->hasDescription()) {
+        add(((*it)->getDispvalue() + "\t    " + (*it)->getDescription()).c_str(), (void*)(intptr_t)i);
+        // char scorebuf[124];
+        // sprintf(scorebuf, "%1.2f", ((ib::BaseCommand*)(*it))->getScore());
+        // add(((*it)->getDispvalue() + "(score:" + scorebuf + ")\n \t\n    " + (*it)->getDescription()).c_str(), (void*)i);
+      }else{
+        add((*it)->getDispvalue().c_str(), (void*)(intptr_t)i);
+      }
+      width = item_width(item_last());
+      max_width_ = (max_width_ > width) ? max_width_ : width;
     }
-    width = item_width(item_last());
-    max_width_ = (max_width_ > width) ? max_width_ : width;
-  }
 
-  if(values_.at(0)->isAutocompleteEnable()){
-    selectLine(1);
-    is_autocompleted_ = true;
-  }
+    if(values_.at(0)->isAutocompleteEnable()){
+      selectLine(1);
+      is_autocompleted_ = true;
+    }
 
-  setEmptyIcons();
-  adjustSize();
+    setEmptyIcons();
+    adjustSize();
+  }
 
   if(ib::Config::inst().getEnableIcons()){
     ib::IconManager::inst()->loadCompletionListIcons();
