@@ -48,7 +48,7 @@ void ib::_icon_loader(void *p) {
   for(int i=1;i <= listsize; ++i){
     { ib::platform::ScopedLock lock(listbox->getMutex());
       if(current_operation_count != listbox->getOperationCount()){ break; }
-      int icon_size = listbox->getValues().at(i-1)->hasDescription() ? 32 : 16;
+      int icon_size = listbox->getValues().at(i-1)->hasDescription() ? IB_ICON_SIZE_LARGE : IB_ICON_SIZE_SMALL;
       buf.push_back(listbox->getValues().at(i-1)->loadIcon(icon_size));
     }
 
@@ -317,7 +317,7 @@ Fl_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // 
   if(icon != 0) return copyCache(icon);
 
   Fl_RGB_Image *result_image;
-  icon = new Fl_RGB_Image(blank_png, 32, 32, 4);
+  icon = new Fl_RGB_Image(blank_png, IB_ICON_SIZE_LARGE, IB_ICON_SIZE_LARGE, 4);
   icon->alloc_array = false;
   result_image = (Fl_RGB_Image*)icon->copy(width, height);
   delete icon;
@@ -326,7 +326,7 @@ Fl_Image* ib::IconManager::getEmptyIcon(const int width, const int height) { // 
 } // }}}
 
 Fl_Image* ib::IconManager::getLuaIcon(const int size) { // {{{
-  return getEmbededIcon(lua_png, "lua", 32, size);
+  return getEmbededIcon(lua_png, "lua", IB_ICON_SIZE_LARGE, size);
 } // }}}
 
 void ib::IconManager::deleteCachedIcons() { // {{{

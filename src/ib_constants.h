@@ -82,8 +82,12 @@
 #  define IB_MAX_PATH (PATH_MAX)
 #endif
 #define IB_EVENT_END_COMPOSITION 100
-#define IB_LOCALE "ja_JP.UTF-8"
-#define IB_MAX_ARGS 32
+
+const char* const IB_LOCALE = "ja_JP.UTF-8";
+const int         IB_MAX_ARGS = 32;
+const int         IB_KEY_EVENT_THRESOLD_MIN = 10;
+const int         IB_ICON_SIZE_SMALL = 16;
+const int         IB_ICON_SIZE_LARGE = 32;
 // }}}
 
 // typedef {{{

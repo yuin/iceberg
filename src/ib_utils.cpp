@@ -63,7 +63,7 @@ void ib::utils::exit_application(const int code) { // {{{
   }
   if(ib::MainWindow::inst() != 0){
     auto input = ib::MainWindow::inst()->getInput();
-    if(input != 0 && ib::Config::inst().getKeyEventThreshold() > 0){
+    if(input != 0){
       input->getKeyEvent().stopThread();
     }
     ib::MainWindow::inst()->close();

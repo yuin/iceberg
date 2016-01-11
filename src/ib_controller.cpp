@@ -293,7 +293,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     lua_pop(IB_LUA, 1);
     GET_FIELD("key_event_threshold", number) {
        READ_UNSIGNED_INT("key_event_threshold");
-       cfg.setKeyEventThreshold(number);
+       cfg.setKeyEventThreshold(std::max(number, IB_KEY_EVENT_THRESOLD_MIN));
     }
     lua_pop(IB_LUA, 1);
     GET_FIELD("max_histories", number) {

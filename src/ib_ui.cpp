@@ -79,7 +79,6 @@ int ib::Input::handle(int e){ /* {{{ */
   const auto mods = state & (FL_META|FL_CTRL|FL_ALT);
   const auto shift = state & FL_SHIFT;
   const auto selected = (position() != mark()) ? 1 : 0;
-  const auto threshold = cfg.getKeyEventThreshold();
 
   switch(e){
     case FL_KEYUP:
@@ -109,7 +108,7 @@ keyup:
            // kill word
            ib::utils::matches_key(cfg.getKillWordKey(), key, state)
            ){
-          if(threshold > 0) key_event_.cancelEvent();
+          key_event_.cancelEvent();
           ib::Controller::inst().showCompletionCandidates();
           return 1;
         }
@@ -119,19 +118,15 @@ keyup:
            ib::utils::matches_key(cfg.getToggleModeKey(), key, state) ||
            key == FL_Enter
             ){
-          if(threshold > 0) key_event_.cancelEvent();
+          key_event_.cancelEvent();
           return 1;
         }
 
         if(!ib::utils::event_key_is_control_key()){
-          if(threshold > 0) {
-            key_event_.queueEvent((void*)1);
-          }else{
-            ib::Controller::inst().showCompletionCandidates();
-          }
+          key_event_.queueEvent((void*)1);
           return 1;
         }else{
-          if(threshold > 0) key_event_.cancelEvent();
+          key_event_.cancelEvent();
           Fl_Input::handle(e);
           return 1;
         }
@@ -342,7 +337,7 @@ void ib::MainWindow::initLayout(){ /* {{{ */
   resize(x, y, w, h);
   box((Fl_Boxtype)cfg.getStyleWindowBoxtype());
 
-  iconbox_ = new Fl_Box(pad_x, h/2 - 16, 32, 32);
+  iconbox_ = new Fl_Box(pad_x, h/2 - 16, IB_ICON_SIZE_LARGE, IB_ICON_SIZE_LARGE);
   input_ = new ib::Input(pad_x*2+32,pad_y, w - (pad_x*3 + 32), h - pad_y*2);
   input_->initLayout();
 
@@ -376,7 +371,7 @@ void ib::MainWindow::clearIconbox() { // {{{
   if(!ib::Config::inst().getEnableIcons()) return;
   auto image = iconbox_->image();
   if(image) delete image;
-  iconbox_->image(ib::IconManager::inst()->getEmptyIcon(32,32));
+  iconbox_->image(ib::IconManager::inst()->getEmptyIcon(IB_ICON_SIZE_LARGE,IB_ICON_SIZE_LARGE));
   redraw();
 } // }}}
 
@@ -399,10 +394,10 @@ void ib::MainWindow::updateIconbox() { // {{{
   const auto &cmd = input->getFirstValue();
   auto it = ib::Controller::inst().getCommands().find(cmd);
   if(it != ib::Controller::inst().getCommands().end()){
-    setIconbox((*it).second->loadIcon(32));
+    setIconbox((*it).second->loadIcon(IB_ICON_SIZE_LARGE));
   }else{
     CompletionString comp_value(cmd.c_str());
-    setIconbox(comp_value.loadIcon(32));
+    setIconbox(comp_value.loadIcon(IB_ICON_SIZE_LARGE));
   }
 }
 /* }}} */
@@ -500,9 +495,9 @@ int ib::Listbox::item_height(void *item) const { // {{{
   auto l = reinterpret_cast<FL_BLINE*>(item);
   const auto str = l->txt;
   if(strchr(str, '\t') != 0){
-    return 32 + 4;
+    return IB_ICON_SIZE_LARGE + 4;
   }else{
-    return 16 + 4;
+    return IB_ICON_SIZE_SMALL + 4;
   }
 } // }}}
 
@@ -519,7 +514,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   }
   int left_pad = 2;
   if(cfg.getEnableIcons()){
-    left_pad += 2 + (description ? 32 : 16);
+    left_pad += 2 + (description ? IB_ICON_SIZE_LARGE : IB_ICON_SIZE_SMALL);
   }
 
   int tsize = cfg.getStyleListFontSize();
@@ -682,7 +677,7 @@ void ib::Listbox::setEmptyIcons(){ /* {{{ */
   if(isEmpty()) return;
   unsigned int icon_height;
   for(int i=1, last = size(); i <= last; ++i){
-    icon_height = values_.at(i-1)->hasDescription() ? 32 : 16;
+    icon_height = values_.at(i-1)->hasDescription() ? IB_ICON_SIZE_LARGE : IB_ICON_SIZE_SMALL;
     auto icon_width = icon_height;
     if(!ib::Config::inst().getEnableIcons()){
       icon_width = 1;
@@ -719,7 +714,7 @@ void ib::Listbox::selectLine(const int line, const bool move2middle) { // {{{
     seek(std::max<int>(std::min<int>(size(),line), 1)); 
   }
   if(ib::MainWindow::inst()->getInput()->getCursorTokenIndex() == 0) {
-    ib::MainWindow::inst()->setIconbox(selectedValue()->loadIcon(32));
+    ib::MainWindow::inst()->setIconbox(selectedValue()->loadIcon(IB_ICON_SIZE_LARGE));
   }
 } // }}
 // }}}

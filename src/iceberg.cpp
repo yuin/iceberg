@@ -109,11 +109,9 @@ int main(int argc, char **argv) { // {{{
   }
   ib::Migemo::inst().init();
 
-  if(ib::Config::inst().getKeyEventThreshold() > 0){
-    auto &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
-    event.setMs(ib::Config::inst().getKeyEventThreshold());
-    event.startThread();
-  }
+  auto &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
+  event.setMs(ib::Config::inst().getKeyEventThreshold());
+  event.startThread();
   lua_getglobal(IB_LUA, "on_initialize");
   if (lua_pcall(IB_LUA, 0, 1, 0)) {
       fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
