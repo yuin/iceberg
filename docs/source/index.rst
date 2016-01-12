@@ -17,6 +17,7 @@ Contents:
    config
    tips
    api
+   plugin
    knownissues
    changes
    acknowledgements

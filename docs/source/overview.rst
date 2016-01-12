@@ -170,4 +170,4 @@ Windowsの場合、iceberg実行ファイルのディレクトリに ``migemo.dl
 より進んだ使い方
 ------------------------
 
-詳しい使い方や設定方法は :doc:`config` , :doc:`api` や :doc:`tips` を参照してください。
+詳しい使い方や設定方法は :doc:`config` , :doc:`api` , :doc:`plugin` や :doc:`tips` を参照してください。
