@@ -104,22 +104,23 @@ namespace ib{
 
       /* these functions does not work correctly if current state is not 'matched' */
       int getNumGroups() const { return region_->num_regs; }
-      void group(std::string &ret, const int n) const {
-        if(n >= region_->num_regs) { return; }
+      std::string group(const int n) const {
+        std::string ret("");
+        if(n >= region_->num_regs) { return std::move(ret); }
         const char *string = getString();
-        ret.clear();
         ret.append(string+region_->beg[n], region_->end[n] - region_->beg[n]);
+        return std::move(ret);
       };
-      void _0(std::string &ret) const { return group(ret, 0); }
-      void _1(std::string &ret) const { return group(ret, 1); }
-      void _2(std::string &ret) const { return group(ret, 2); }
-      void _3(std::string &ret) const { return group(ret, 3); }
-      void _4(std::string &ret) const { return group(ret, 4); }
-      void _5(std::string &ret) const { return group(ret, 5); }
-      void _6(std::string &ret) const { return group(ret, 6); }
-      void _7(std::string &ret) const { return group(ret, 7); }
-      void _8(std::string &ret) const { return group(ret, 8); }
-      void _9(std::string &ret) const { return group(ret, 9); }
+      std::string _0() const { return group(0); }
+      std::string _1() const { return group(1); }
+      std::string _2() const { return group(2); }
+      std::string _3() const { return group(3); }
+      std::string _4() const { return group(4); }
+      std::string _5() const { return group(5); }
+      std::string _6() const { return group(6); }
+      std::string _7() const { return group(7); }
+      std::string _8() const { return group(8); }
+      std::string _9() const { return group(9); }
       int getStartpos(const int n) const { return region_->beg[n]; }
       int getEndpos(const int n) const { return region_->end[n]; }
       int getGroupLength(const int n) const { return region_->end[n] - region_->beg[n]; }

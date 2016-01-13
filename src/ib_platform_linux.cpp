@@ -35,8 +35,7 @@ static void parse_desktop_entry_value(std::string &result, std::string &value) {
   ib::Regex re("(\\\\s|\\\\n|\\\\t|\\\\r|\\\\\\\\)", ib::Regex::NONE);
   re.init();
   re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
-      std::string escape;
-      reg._1(escape);
+      auto escape = reg._1();
       if(escape == "\\s") *res += " ";
       else if(escape == "\\n") *res += "\n";
       else if(escape == "\\t") *res += "\t";
@@ -49,8 +48,7 @@ static void normalize_desktop_entry_value(std::string &result, std::string &valu
   ib::Regex re("(\\n|\\r|\\t)", ib::Regex::NONE);
   re.init();
   re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
-      std::string escape;
-      reg._1(escape);
+      auto escape = reg._1();
       if(escape == "\t") *res += "    ";
   }, 0);
 }
@@ -80,17 +78,16 @@ static int parse_cmdline(std::vector<ib::unique_char_ptr> &result, const char *c
   std::size_t pos = 0;
   auto len = strlen(cmdline);
   while(pos < len) {
-    std::string cap;
     if(space_r.match(cmdline, pos) == 0) {
       pos = space_r.getEndpos(0) + 1;
     } else if(string_r.match(cmdline, pos) == 0) {
-      string_r._1(cap);
+      auto cap = string_r._1();
       auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
       result.push_back(ib::unique_char_ptr(buf));
       pos = string_r.getEndpos(0) + 1;
     } else if(value_r.match(cmdline, pos) == 0) {
-      value_r._1(cap);
+      auto cap = value_r._1();
       auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
       result.push_back(ib::unique_char_ptr(buf));
@@ -116,7 +113,7 @@ static bool xdg_mime_filetype(std::string &result, const char *path, ib::Error &
     ib::Regex re("([^;]+)(;.*)?", ib::Regex::NONE);
     re.init();
     if(re.match(out) == 0) {
-      re._1(result);
+      result = re._1();
       return true;
     }
   }
@@ -156,16 +153,14 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
       std::string current_section;
       while(std::getline(ifs, line)) {
         if(section_reg.match(line.c_str()) == 0) {
-          section_reg._1(current_section);
+          current_section = section_reg._1();
         } if(kv_reg.match(line.c_str()) == 0) {
           if(current_section.empty()) {
             return -1;
           }
-          std::string   key;
-          std::string   raw_value;
           std::string   value;
-          kv_reg._1(key);
-          kv_reg._2(raw_value);
+          auto key = kv_reg._1();
+          auto raw_value = kv_reg._2()
           parse_desktop_entry_value(value, raw_value);
           map_[std::make_tuple(current_section, key)] = value;
         }
@@ -177,9 +172,9 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
         ib::Regex locale_reg("(([^\\._@]+)((\\.)([^_]*))?)(_(\\w+))?(@(\\w+))?", ib::Regex::I);
         locale_reg.init();
         if(locale_reg.match(locale) == 0){
-          locale_reg._2(lang_);
-          locale_reg._7(country_);
-          locale_reg._9(modifier_);
+          lang_ = locale_reg._2();
+          country_ = locale_reg._7();
+          modifier_ = locale_reg._9();
         }
       }
       return 0;
@@ -250,8 +245,10 @@ void FreeDesktopMime::build() {
 
     while(std::getline(ifs, line)) {
       if(reg.match(line) == 0) {
-        std::string scorestr, typ, subtyp, glob;
-        reg._1(scorestr); reg._2(typ); reg._3(subtyp); reg._4(glob);
+        auto scorestr = reg._1();
+        auto typ      = reg._2();
+        auto subtyp   = reg._3();
+        auto glob     = reg._4();
         int score = 0;
         if(!scorestr.empty()) score = std::atoi(scorestr.c_str());
         globs_.push_back(std::make_tuple(score, typ, subtyp, glob));

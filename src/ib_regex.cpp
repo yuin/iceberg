@@ -177,9 +177,7 @@ void ib::Regex::gsub(std::string &ret, const char *string, const char *repl) { /
       if(t->t == 0) {
         ret += *(t->val.str);
       }else{
-        std::string tmpptr;
-        group(tmpptr, t->val.n);
-        ret += tmpptr;
+        ret += group(t->val.n);
       }
     }
     start = getLastpos();

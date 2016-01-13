@@ -152,16 +152,13 @@ static int Regex_group(lua_State *L) {
   ib::LuaState lua_state(L);
   lua_state.clearStack();
 
-  std::string ret;
-  value->group(ret, n);
-  lua_pushstring(L, ret.c_str());
+  lua_pushstring(L, value->group(n).c_str());
   return 1;
 }
 
 static int Regex_0(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 0);
+  auto ret = value->group(0);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -172,8 +169,7 @@ static int Regex_0(lua_State *L) {
 
 static int Regex_1(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 1);
+  auto ret = value->group(1);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -184,8 +180,7 @@ static int Regex_1(lua_State *L) {
 
 static int Regex_2(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 2);
+  auto ret = value->group(2);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -196,8 +191,7 @@ static int Regex_2(lua_State *L) {
 
 static int Regex_3(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 3);
+  auto ret = value->group(3);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -208,8 +202,7 @@ static int Regex_3(lua_State *L) {
 
 static int Regex_4(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 4);
+  auto ret = value->group(4);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -220,8 +213,7 @@ static int Regex_4(lua_State *L) {
 
 static int Regex_5(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 5);
+  auto ret = value->group(5);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -232,8 +224,7 @@ static int Regex_5(lua_State *L) {
 
 static int Regex_6(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 6);
+  auto ret = value->group(6);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -244,8 +235,7 @@ static int Regex_6(lua_State *L) {
 
 static int Regex_7(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 7);
+  auto ret = value->group(7);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -256,8 +246,7 @@ static int Regex_7(lua_State *L) {
 
 static int Regex_8(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 8);
+  auto ret = value->group(8);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
@@ -268,8 +257,7 @@ static int Regex_8(lua_State *L) {
 
 static int Regex_9(lua_State *L) {
   auto value = check_regex(L, 1);
-  std::string ret;
-  value->group(ret, 9);
+  auto ret = value->group(9);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();

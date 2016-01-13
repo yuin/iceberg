@@ -282,8 +282,7 @@ Fl_Image* ib::IconManager::readFileIcon(const char *file, const int size){ // {{
   ib::Regex re("(.*)\\.(\\w+)", ib::Regex::NONE);
   re.init();
   if(re.match(resolved_path) == 0){
-    std::string ret;
-    re._2(ret);
+    auto ret = re._2();
     if(ret == "png" || ret == "PNG") {
       aicon = readPngFileIcon(resolved_path, size);
     }else if(ret == "gif" || ret == "GIF") {

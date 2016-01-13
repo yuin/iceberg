@@ -1163,12 +1163,10 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
     ib::Regex re_exec("exec (.*)", ib::Regex::NONE);
     re_exec.init();
     if(re_exec.match(message) == 0){
-      std::string cmd;
-      re_exec._1(cmd);
       showApplication();
       ib::ListWindow::inst()->getListbox()->clearAll();
       ib::ListWindow::inst()->hide();
-      ib::MainWindow::inst()->getInput()->setValue(cmd.c_str());
+      ib::MainWindow::inst()->getInput()->setValue(re_exec._1().c_str());
       executeCommand();
       return;
     }
@@ -1178,12 +1176,10 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
     ib::Regex re_set("set (.*)", ib::Regex::NONE);
     re_set.init();
     if(re_set.match(message) == 0){
-      std::string cmd;
-      re_set._1(cmd);
       showApplication();
       ib::ListWindow::inst()->getListbox()->clearAll();
       ib::ListWindow::inst()->hide();
-      ib::MainWindow::inst()->getInput()->setValue(cmd.c_str());
+      ib::MainWindow::inst()->getInput()->setValue(re_set._1().c_str());
       return;
     }
   }
