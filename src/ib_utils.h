@@ -47,7 +47,7 @@ namespace ib {
     inline unsigned int utf8len(const char *str){return utf8_skip_data[(unsigned char)str[0]];}
 
     /* keyboard stuff */
-    void expand_vars(std::string &ret, const std::string &tpl, const string_map &values);
+    std::string expand_vars(const std::string &tpl, const string_map &values);
     bool event_key_is_control_key();
     void parse_key_bind(int *result, const char *string);
     inline bool matches_key(const int *key_bind, const int key, const int modifiers) {
@@ -72,7 +72,7 @@ namespace ib {
     void set_clipboard(const char *text);
 
     /* command stuff */
-    void to_command_name(std::string &ret, const std::string &string);
+    std::string to_command_name(const std::string &string);
     int  open_directory(const std::string &path, ib::Error &error);
 
     /* socket stuff */

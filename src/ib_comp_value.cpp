@@ -145,14 +145,12 @@ int ib::Command::execute(const std::vector<std::string*> &args, const std::strin
   bool user_args_flag = false;
 
   for(auto &param : params) {
-    auto *after = new std::string;
-    ib::utils::expand_vars(*after, *param, values);
+    auto *after = new std::string(ib::utils::expand_vars(*param, values));
     if(!user_args_flag && (*param != *after)) user_args_flag = true;
     command_params.push_back(after);
   }
 
-  std::string command;
-  ib::utils::expand_vars(command, getCommandPath(), values);
+  auto command = ib::utils::expand_vars(getCommandPath(), values);
   if(!user_args_flag && (command != getCommandPath())) user_args_flag = true; 
   if(!user_args_flag){
     i = 1;

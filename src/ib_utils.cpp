@@ -197,9 +197,11 @@ void ib::utils::alert_lua_stack(lua_State *L) { // {{{
   fl_alert("%s", str.c_str());
 } // }}}
 
-void ib::utils::expand_vars(std::string &ret, const std::string &tpl, const ib::string_map &values) { // {{{
+std::string ib::utils::expand_vars(const std::string &tpl, const ib::string_map &values) { // {{{
   ib::SimpleTemplateLexer lexer;
+  std::string ret;
   lexer.parse(ret, tpl, values);
+  return ret;
 } // }}}
 
 bool ib::utils::event_key_is_control_key() { // {{{
@@ -502,14 +504,15 @@ void ib::utils::set_clipboard(const char *text) { // {{{
 #endif
 } // }}}
 
-void ib::utils::to_command_name(std::string &ret, const std::string &string){ // {{{
+std::string ib::utils::to_command_name(const std::string &string){ // {{{
   //TODO needs more efficiency
   ib::Regex re("\\s+", ib::Regex::NONE);
   re.init();
   auto tmp = re.gsub(string.c_str(), "_");
   ib::Regex re1("(.*)\\.(\\w+)", ib::Regex::NONE);
   re1.init();
-  ret = re1.gsub(tmp.c_str(), "\\1");
+  auto ret = re1.gsub(tmp.c_str(), "\\1");
+  return ret;
 } // }}}
 
 int ib::utils::open_directory(const std::string &path, ib::Error &error) { // {{{

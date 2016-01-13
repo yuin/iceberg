@@ -843,8 +843,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
         cmd += ";";
         cmd += getenv("SHELL");
         values.insert(ib::string_pair("1", ("'" + cmd + "'")));
-        cmd.clear();
-        ib::utils::expand_vars(cmd, ib::Config::inst().getTerminal(), values);
+        cmd = ib::utils::expand_vars(ib::Config::inst().getTerminal(), values);
       }
     } else {
       std::string mime, app;
@@ -1001,9 +1000,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
 
     auto prop_name = kvf.get(SECTION_KEY, "Name");
     if(prop_name.empty()) return; // Name is a required value. ignore errors;
-    std::string name;
-    ib::utils::to_command_name(name, prop_name);
-    cmd->setName(name);
+    auto name = ib::utils::to_command_name(prop_name);
 
     auto prop_comment = kvf.get(SECTION_KEY, "Comment");
     if(!prop_comment.empty()){

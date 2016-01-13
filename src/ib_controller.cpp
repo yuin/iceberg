@@ -798,8 +798,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
         if(re.match(file) == 0){
           auto command = new ib::Command();
           ib::platform::oschar2utf8_b(file, IB_MAX_PATH_BYTE, fileptr.get());
-          std::string cmdname;
-          ib::utils::to_command_name(cmdname, file);
+          auto cmdname = ib::utils::to_command_name(file);
           command->setName(cmdname);
           command->setCategory(category);
           command->setWorkdir(path);
