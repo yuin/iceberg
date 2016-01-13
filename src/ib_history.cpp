@@ -16,8 +16,7 @@ void ib::History::load() { // {{{
   re.init();
 
   while(ifs && getline(ifs, buf)) {
-    std::vector<std::string> fields;
-    re.split(fields, buf);
+    auto fields = re.split(buf);
     auto cmd = new HistoryCommand();
     cmd->setName(fields.at(0));
     cmd->setPath(fields.at(1));

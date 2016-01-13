@@ -43,7 +43,8 @@ int ib::Regex::search(const char *str, const std::size_t startpos, const std::si
   }
 } // }}}
 
-void ib::Regex::split(std::vector<std::string> &result, const char *string) { // {{{
+std::vector<std::string> ib::Regex::split(const char *string) { // {{{
+  std::vector<std::string> result;
   const auto len   = strlen(string);
 
   if(strlen(getPattern()) == 0) {
@@ -52,22 +53,23 @@ void ib::Regex::split(std::vector<std::string> &result, const char *string) { //
       result.push_back(std::string(string+ptr, l));
       ptr += l;
     }
-    return;
+    return result;
   }
 
   std::size_t start = 0;
   while(start < len){
     if(search(string, start, 0) != 0) {
-      result.push_back(std::string(string+start, len - start));
+      result.emplace_back(string+start, len - start);
       break;
     }
     result.push_back(std::string(string+start, getFirstpos() - start));
     start = getLastpos();
     if(start >= len) {
-      result.push_back(std::string(""));
+      result.emplace_back("");
       break;
     }
   }
+  return result;
 } // }}}
 
 // static void parse_repl(std::vector<IbRegexToken*> &result, const char *string, char sub_meta_char) {{{

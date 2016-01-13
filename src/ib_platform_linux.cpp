@@ -1187,18 +1187,17 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   }
   ib::Regex sep("/", ib::Regex::I);
   sep.init();
-  std::vector<std::string*> parts;
-  std::vector<std::string*>  st;
-  sep.split(parts, tmp);
+  auto parts = sep.split(tmp);
+  std::vector<std::string>  st;
   for(const auto &part : parts) {
-    if(*part == ".." && st.size() > 0){
+    if(part == ".." && st.size() > 0){
       st.pop_back();
     } else {
-      st.push_back(part);
+      st.emplace_back(part);
     }
   }
   for(const auto &part : st) {
-    strcat(result, part->c_str());
+    strcat(result, part.c_str());
     strcat(result, "/");
   }
   if(!string_endswith(path, "/")) {
@@ -1209,7 +1208,6 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
   }else if(is_dot_dot_path){
     result[0] = '.'; result[1] = '.';
   }
-  ib::utils::delete_pointer_vectors(parts);
   return result;
 } // }}}
 

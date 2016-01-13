@@ -87,9 +87,9 @@ namespace ib{
         return search(string.c_str(), startpos, endpos);
       }
 
-      void split(std::vector<std::string> &result, const char *string);
-      void split(std::vector<std::string> &result, const std::string &string){
-        split(result, string.c_str());
+      std::vector<std::string> split(const char *string);
+      std::vector<std::string> split(const std::string &string){
+        return split(string.c_str());
       }
 
       void gsub(std::string &ret, const char *string, const char *repl);

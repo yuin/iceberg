@@ -88,8 +88,7 @@ static int Regex_search(lua_State *L) {
 static int Regex_split(lua_State *L) {
   auto value      = check_regex(L, 1);
   const auto string    = luaL_checkstring(L, 2);
-  std::vector<std::string> result;
-  value->split(result, string);
+  auto result = value->split(string);
 
   ib::LuaState lua_state(L);
   lua_state.clearStack();
