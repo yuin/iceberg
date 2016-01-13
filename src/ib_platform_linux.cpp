@@ -31,10 +31,10 @@ static bool string_endswith(const char *str, const char *pre) {
   return (dot && !strcmp(dot, pre));
 }
 
-static void parse_desktop_entry_value(std::string &result, const std::string &value) {
+static std::string parse_desktop_entry_value(const std::string &value) {
   ib::Regex re("(\\\\s|\\\\n|\\\\t|\\\\r|\\\\\\\\)", ib::Regex::NONE);
   re.init();
-  result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+  auto result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto escape = reg._1();
       if(escape == "\\s") *res += " ";
       else if(escape == "\\n") *res += "\n";
@@ -42,15 +42,17 @@ static void parse_desktop_entry_value(std::string &result, const std::string &va
       else if(escape == "\\r") *res += "\r";
       else if(escape == "\\\\") *res += "\\";
   }, 0);
+  return result;
 }
 
-static void normalize_desktop_entry_value(std::string &result, const std::string &value) {
+static std::string normalize_desktop_entry_value(const std::string &value) {
   ib::Regex re("(\\n|\\r|\\t)", ib::Regex::NONE);
   re.init();
-  result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+  auto result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto escape = reg._1();
       if(escape == "\t") *res += "    ";
   }, 0);
+  return result;
 }
 
 static int read_fd_all(int fd, std::string &out) {
@@ -158,10 +160,9 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
           if(current_section.empty()) {
             return -1;
           }
-          std::string   value;
           auto key = kv_reg._1();
-          auto raw_value = kv_reg._2()
-          parse_desktop_entry_value(value, raw_value);
+          auto raw_value = kv_reg._2();
+          auto value = parse_desktop_entry_value(raw_value);
           map_[std::make_tuple(current_section, key)] = value;
         }
       }
@@ -1004,8 +1005,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
 
     auto prop_comment = kvf.get(SECTION_KEY, "Comment");
     if(!prop_comment.empty()){
-      std::string normalized;
-      normalize_desktop_entry_value(normalized, prop_comment);
+      auto normalized = normalize_desktop_entry_value(prop_comment);
       cmd->setDescription(normalized);
     }
 
