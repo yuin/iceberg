@@ -291,9 +291,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
             ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
             ib::Regex reg("\r\n", ib::Regex::NONE);
             reg.init();
-            std::string replaced;
-            reg.gsub(replaced, utf8text.get(), "\n");
-            ib::Controller::inst().appendClipboardHistory(replaced.c_str());
+            ib::Controller::inst().appendClipboardHistory(reg.gsub(utf8text.get(), "\n").c_str());
             GlobalUnlock(htext);
         }
         CloseClipboard();

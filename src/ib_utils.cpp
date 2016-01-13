@@ -506,11 +506,10 @@ void ib::utils::to_command_name(std::string &ret, const std::string &string){ //
   //TODO needs more efficiency
   ib::Regex re("\\s+", ib::Regex::NONE);
   re.init();
-  std::string tmp;
-  re.gsub(tmp, string.c_str(), "_");
+  auto tmp = re.gsub(string.c_str(), "_");
   ib::Regex re1("(.*)\\.(\\w+)", ib::Regex::NONE);
   re1.init();
-  re1.gsub(ret, tmp.c_str(), "\\1");
+  ret = re1.gsub(tmp.c_str(), "\\1");
 } // }}}
 
 int ib::utils::open_directory(const std::string &path, ib::Error &error) { // {{{

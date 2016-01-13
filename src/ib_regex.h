@@ -34,7 +34,10 @@ namespace ib{
       const static unsigned int M    = ONIG_OPTION_MULTILINE;
       const static unsigned int I    = ONIG_OPTION_IGNORECASE;
 
-      static void escape(std::string &ret, const char*str);
+      static std::string escape(const char*str);
+      static std::string escape(const std::string &str){
+        return escape(str.c_str());
+      };
 
       Regex(const char *pattern, unsigned int flags) : pattern_(0), flags_(flags), reg_(0), error_info_(), region_(0), const_string_(0), var_string_(0), var_string_alloced_(0), last_result_(-1), sub_meta_char_('\\') {
         size_t len = strlen(pattern) + 1;
@@ -92,14 +95,14 @@ namespace ib{
         return split(string.c_str());
       }
 
-      void gsub(std::string &ret, const char *string, const char *repl);
-      void gsub(std::string &ret, const std::string &string, const std::string &repl){
-        return gsub(ret, string.c_str(), repl.c_str());
+      std::string gsub(const char *string, const char *repl);
+      std::string gsub(const std::string &string, const std::string &repl){
+        return gsub(string.c_str(), repl.c_str());
       }
 
-      void gsub(std::string &ret, const char *string, ib::regsubfunc replacer, void *userdata);
-      void gsub(std::string &ret, const std::string &string, ib::regsubfunc replacer, void *userdata){
-        return gsub(ret, string.c_str(), replacer, userdata);
+      std::string gsub(const char *string, ib::regsubfunc replacer, void *userdata);
+      std::string gsub(const std::string &string, ib::regsubfunc replacer, void *userdata){
+        return gsub(string.c_str(), replacer, userdata);
       }
 
       /* these functions does not work correctly if current state is not 'matched' */

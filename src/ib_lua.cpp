@@ -46,8 +46,7 @@ static int Regex_new (lua_State *L) {
 static int Regex_static_escape(lua_State *L){
   ib::LuaState lua_state(L);
   const auto string    = luaL_checkstring(L, 1);
-  std::string ret;
-  ib::Regex::escape(ret, string);
+  auto ret = ib::Regex::escape(string);
 
   lua_state.clearStack();
   lua_pushstring(L, ret.c_str());
@@ -111,12 +110,9 @@ static int Regex_gsub(lua_State *L) {
   if(type == LUA_TSTRING){
     const auto repl = luaL_checkstring(L, 3);
     lua_state.clearStack();
-    std::string result;
-    value->gsub(result, string, repl);
-    lua_pushstring(L, result.c_str());
+    lua_pushstring(L, value->gsub(string, repl).c_str());
   }else{
-    std::string result;
-    value->gsub(result, string, [](const ib::Regex &reg, std::string *res, void *userdata) {
+    auto result = value->gsub(string, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto L = reinterpret_cast<lua_State*>(userdata);
       const auto top = lua_gettop(L);
       lua_pushvalue(L, 3);

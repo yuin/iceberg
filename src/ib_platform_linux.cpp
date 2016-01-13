@@ -31,10 +31,10 @@ static bool string_endswith(const char *str, const char *pre) {
   return (dot && !strcmp(dot, pre));
 }
 
-static void parse_desktop_entry_value(std::string &result, std::string &value) {
+static void parse_desktop_entry_value(std::string &result, const std::string &value) {
   ib::Regex re("(\\\\s|\\\\n|\\\\t|\\\\r|\\\\\\\\)", ib::Regex::NONE);
   re.init();
-  re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+  result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto escape = reg._1();
       if(escape == "\\s") *res += " ";
       else if(escape == "\\n") *res += "\n";
@@ -44,10 +44,10 @@ static void parse_desktop_entry_value(std::string &result, std::string &value) {
   }, 0);
 }
 
-static void normalize_desktop_entry_value(std::string &result, std::string &value) {
+static void normalize_desktop_entry_value(std::string &result, const std::string &value) {
   ib::Regex re("(\\n|\\r|\\t)", ib::Regex::NONE);
   re.init();
-  re.gsub(result, value, [](const ib::Regex &reg, std::string *res, void *userdata) {
+  result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto escape = reg._1();
       if(escape == "\t") *res += "    ";
   }, 0);

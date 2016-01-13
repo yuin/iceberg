@@ -1,9 +1,10 @@
 #include "ib_regex.h"
 
-void ib::Regex::escape(std::string &ret, const char*str) { // {{{
+std::string ib::Regex::escape(const char*str) { // {{{
   ib::Regex esc("([\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\])", ib::Regex::NONE);
   esc.init();
-  esc.gsub(ret, str, "\\\\\\1");
+  auto ret = esc.gsub(str, "\\\\\\1");
+  return ret;
 } // }}}
 
 int ib::Regex::match(const char *str, const std::size_t startpos, const std::size_t endpos) { // {{{
@@ -161,11 +162,12 @@ static void parse_repl(std::vector<IbRegexToken*> &result, const char *string, c
   }
 } // }}}
 
-void ib::Regex::gsub(std::string &ret, const char *string, const char *repl) { // {{{
-  if(strlen(getPattern()) == 0) { return; }
+std::string ib::Regex::gsub(const char *string, const char *repl) { // {{{
+  if(strlen(getPattern()) == 0) { return std::string(string); }
 
   std::vector<IbRegexToken*> repltokens;
   parse_repl(repltokens, repl, sub_meta_char_);
+  std::string ret;
 
   std::size_t start = 0;
   const auto len   = strlen(string);
@@ -185,11 +187,13 @@ void ib::Regex::gsub(std::string &ret, const char *string, const char *repl) { /
     start = getLastpos();
   }
   ib::utils::delete_pointer_vectors(repltokens);
+  return ret;
 } // }}}
 
-void ib::Regex::gsub(std::string &ret, const char *string, ib::regsubfunc replacer, void *userdata) { // {{{
-  if(strlen(getPattern()) == 0) { return; }
+std::string ib::Regex::gsub(const char *string, ib::regsubfunc replacer, void *userdata) { // {{{
+  if(strlen(getPattern()) == 0) { return std::string(string); }
 
+  std::string ret;
   std::size_t start = 0;
   const auto len   = strlen(string);
   while(start < len){
@@ -201,5 +205,6 @@ void ib::Regex::gsub(std::string &ret, const char *string, ib::regsubfunc replac
     replacer(*this, &ret, userdata);
     start = getLastpos();
   }
+  return ret;
 } // }}}
 
