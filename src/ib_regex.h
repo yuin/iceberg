@@ -105,11 +105,9 @@ namespace ib{
       /* these functions does not work correctly if current state is not 'matched' */
       int getNumGroups() const { return region_->num_regs; }
       std::string group(const int n) const {
-        std::string ret("");
-        if(n >= region_->num_regs) { return std::move(ret); }
+        if(n >= region_->num_regs) { return std::string(""); }
         const char *string = getString();
-        ret.append(string+region_->beg[n], region_->end[n] - region_->beg[n]);
-        return std::move(ret);
+        return std::string(string+region_->beg[n], region_->end[n] - region_->beg[n]);
       };
       std::string _0() const { return group(0); }
       std::string _1() const { return group(1); }
