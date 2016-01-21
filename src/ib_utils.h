@@ -101,27 +101,6 @@ namespace ib {
     public:
       typedef T Type;
   }; // }}}
-
-  // needs g++ && -fthreadsafe-statics
-  template<class T>
-  class Singleton : private NonCopyable<T>{ // {{{
-    public:
-      static T& inst(void) {
-        static T instance;
-        return instance;
-      }
-  }; // }}}
-
-  // needs g++ && -fthreadsafe-statics
-  template<class T>
-  class Singletonp : private NonCopyable<T>{ // {{{
-    public:
-      static T* inst(void) {
-        static T instance;
-        return &instance;
-      }
-  }; // }}}
-
   // }}}
 
   class Error : private NonCopyable<Error> { // {{{

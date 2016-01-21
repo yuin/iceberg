@@ -1,6 +1,7 @@
 #include "ib_migemo.h"
 #include "ib_platform.h"
 #include "ib_config.h"
+#include "ib_singleton.h"
 
 const unsigned int ib::Migemo::MIN_LENGTH = 3;
 
@@ -22,7 +23,7 @@ void ib::Migemo::init() {
 
     migemo_ = _open(0);
     if(migemo_ != 0){
-      const std::string &dict_dir = ib::Config::inst().getMigemoDictPath();
+      const std::string &dict_dir = ib::Singleton<ib::Config>::getInstance()->getMigemoDictPath();
       ib::oschar  osdict_dir[IB_MAX_PATH];
       ib::platform::utf82oschar_b(osdict_dir, IB_MAX_PATH, dict_dir.c_str());
       ib::oschar  osdict_fullpath[IB_MAX_PATH];
@@ -60,7 +61,7 @@ void ib::Migemo::init() {
   };
 }
 
-void ib::Migemo::destroy(){
+ib::Migemo::~Migemo() {
   if(migemo_ != 0) { _close(migemo_); }
   if(dl_ != 0) { ib::platform::close_library(dl_); }
 }

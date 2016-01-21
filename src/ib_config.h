@@ -5,13 +5,14 @@
 #include "ib_utils.h"
 #include "ib_search_path.h"
 #include "ib_completer.h"
+#include "ib_singleton.h"
 
 namespace ib {
 
-  class Config : public Singleton<Config>{ // {{{
-    friend class Singleton<Config>;
+  class Config : private NonCopyable<Config> { // {{{
+    friend class ib::Singleton<Config>;
     public:
-      virtual ~Config() {
+      ~Config() {
         ib::utils::delete_pointer_vectors(search_path_);
         delete completer_;
       }

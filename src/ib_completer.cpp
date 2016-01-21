@@ -7,22 +7,23 @@
 #include "ib_history.h"
 #include "ib_config.h"
 #include "ib_migemo.h"
+#include "ib_singleton.h"
 
 // class Completer {{{
 void ib::Completer::completeHistory(std::vector<ib::CompletionValue*> &candidates, const std::string &value){ // {{{
   method_history_->beforeMatch(candidates, value);
 
-  auto &history = ib::History::inst();
+  auto history = ib::Singleton<ib::History>::getInstance();
 
-  const auto &commands = history.getOrderedCommands();
-  const auto average = history.getAverageScore();
-  const auto se     = history.calcScoreSe();
+  const auto &commands = history->getOrderedCommands();
+  const auto average = history->getAverageScore();
+  const auto se     = history->calcScoreSe();
   std::map<std::string, bool> found;
   for(auto it = commands.rbegin(), last = commands.rend(); it != last; ++it){
     auto cmd = (*it);
     if(method_history_->match(cmd->getPath(), value) > -1){
       if(found.find(cmd->getPath()) == found.end()){
-        cmd->setScore(history.calcScore(cmd->getPath(), average, se));
+        cmd->setScore(history->calcScore(cmd->getPath(), average, se));
         candidates.push_back(cmd);
       }
       found[cmd->getPath()] = true;
@@ -35,10 +36,11 @@ void ib::Completer::completeHistory(std::vector<ib::CompletionValue*> &candidate
 
 void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates, const std::string &command) { // {{{
   if(!hasCompletionFunc(command)) return;
-  const auto &input = ib::MainWindow::inst()->getInput()->getCursorValue();
-  const auto &tokens = ib::MainWindow::inst()->getInput()->getTokens();
-  const auto token = ib::MainWindow::inst()->getInput()->getCursorToken();
-  const unsigned int position = ib::MainWindow::inst()->getInput()->position();
+  auto maininput = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto &input = maininput->getCursorValue();
+  const auto &tokens = maininput->getTokens();
+  const auto token = maininput->getCursorToken();
+  const unsigned int position = maininput->position();
   method_option_->beforeMatch(candidates, input);
   
   const auto start = lua_gettop(IB_LUA);
@@ -184,12 +186,12 @@ void ib::Completer::completePath(std::vector<ib::CompletionValue*> &candidates, 
 } // }}}
 
 void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidates, const std::string &value){ // {{{
-  auto &controller = ib::Controller::inst();
+  auto controller = ib::Singleton<ib::Controller>::getInstance();
   method_command_->beforeMatch(candidates, value);
   double score;
 
   if(candidates.size() == 0){
-    for(auto &pair : controller.getCommands()) {
+    for(auto &pair : controller->getCommands()) {
       pair.second->setScore(0.0);
       score = method_command_->match(pair.second->getName(), value);
       if(score > -1) {
@@ -213,16 +215,16 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
     }
   }
 
-  auto &history = ib::History::inst();
-  const auto average = history.getAverageScore();
-  const auto se      = history.calcScoreSe();
-  const auto hfactor  = ib::Config::inst().getHistoryFactor();
+  auto history = ib::Singleton<ib::History>::getInstance();
+  const auto average = history->getAverageScore();
+  const auto se      = history->calcScoreSe();
+  const auto hfactor  = ib::Singleton<ib::Config>::getInstance()->getHistoryFactor();
   const auto rfactor  = 1 - hfactor;
 
   for(const auto &candidate : candidates) {
     auto *base_command = dynamic_cast<ib::BaseCommand*>(candidate);
     if(base_command != 0) {
-      const auto hist_score = history.calcScore(base_command->getName(), average, se);
+      const auto hist_score = history->calcScore(base_command->getName(), average, se);
       base_command->setScore(base_command->getScore()*rfactor + hist_score * hfactor);
     }
   }
@@ -233,11 +235,11 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
 
 // class CompletionMethodMigemoMixin {{{
 void ib::CompletionMethodMigemoMixin::beforeMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input) { // {{{
-  auto &migemo = ib::Migemo::inst();
-  if(migemo.isEnable() && input.size() >= ib::Migemo::MIN_LENGTH){
-    const auto pattern = migemo.query((unsigned char*)input.c_str());
+  auto migemo = ib::Singleton<ib::Migemo>::getInstance();
+  if(migemo->isEnable() && input.size() >= ib::Migemo::MIN_LENGTH){
+    const auto pattern = migemo->query((unsigned char*)input.c_str());
     regex_ = new ib::Regex((char*)pattern, ib::Regex::NONE);
-    migemo.release(pattern);
+    migemo->release(pattern);
 
     if(regex_->init() != 0){
       delete regex_;

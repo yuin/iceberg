@@ -4,16 +4,16 @@
 #include "ib_constants.h"
 #include "ib_utils.h"
 #include "ib_platform.h"
+#include "ib_server.h"
 
 namespace ib{
-  class Migemo : public Singleton<Migemo>{ // {{{
-    friend class Singleton<Migemo>;
+  class Migemo : private NonCopyable<Migemo> { // {{{
+    friend class ib::Singleton<Migemo>;
     public:
       const static unsigned int MIN_LENGTH;
-      ~Migemo(){ }
+      ~Migemo();
 
       void init();
-      void destroy();
       bool hasMigemo() const { return has_migemo_; }
       migemo* get() { return migemo_; }
       bool isEnable() const { return has_migemo_ && _isEnable(migemo_) != 0;}

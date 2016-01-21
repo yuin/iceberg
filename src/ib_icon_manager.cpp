@@ -5,8 +5,7 @@
 #include "ib_regex.h"
 #include "ib_config.h"
 #include "ib_svg.h"
-
-ib::IconManager *ib::IconManager::instance_ = 0;
+#include "ib_singleton.h"
 
 // icon_loader_thread {{{
 struct iconlist {
@@ -15,7 +14,7 @@ struct iconlist {
 };
 
 static void _main_thread_awaker(void *p){
-  auto listbox = ib::ListWindow::inst()->getListbox();
+  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
   auto ilist = reinterpret_cast<struct iconlist*>(p);
   auto pos = ilist->pos;
   for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
@@ -30,7 +29,7 @@ static void _main_thread_awaker(void *p){
 void ib::_icon_loader(void *p) {
   const int MAX_FLUSH = 200;
 
-  auto listbox = ib::ListWindow::inst()->getListbox();
+  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
 
   std::vector<Fl_Image*> buf;
   int current_operation_count = -1;
@@ -76,11 +75,11 @@ void ib::IconManager::loadCompletionListIcons() { // {{{
 
 void ib::IconManager::load() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const auto &cfg = ib::Config::inst();
-  ib::unique_oschar_ptr osicon_path(ib::platform::utf82oschar(cfg.getIconCachePath().c_str()));
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  ib::unique_oschar_ptr osicon_path(ib::platform::utf82oschar(cfg->getIconCachePath().c_str()));
   if(!ib::platform::file_exists(osicon_path.get())) return;
 
-  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg.getIconCachePath().c_str()));
+  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg->getIconCachePath().c_str()));
   std::ifstream ifs(loicon_path.get(), std::ios::in|std::ios::binary);
 
   deleteCachedIcons();
@@ -116,8 +115,8 @@ void ib::IconManager::load() { // {{{
 
 void ib::IconManager::dump() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const auto &cfg = ib::Config::inst();
-  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg.getIconCachePath().c_str()));
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg->getIconCachePath().c_str()));
   std::ofstream ofs(loicon_path.get(), std::ios::out|std::ios::binary|std::ios::trunc);
   int intvalue;
   char *intptr = (char*)&intvalue;
@@ -341,7 +340,7 @@ void ib::IconManager::deleteCachedIcons() { // {{{
 
 void ib::IconManager::shrinkCache() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const auto max_cache_size = ib::Config::inst().getMaxCachedIcons();
+  const auto max_cache_size = ib::Singleton<ib::Config>::getInstance()->getMaxCachedIcons();
   if(cached_icons_.size() < max_cache_size) return;
   if(cached_icons_.size() != cached_icons_queue_.size()){
     fl_alert("Warning: icon cache seems to be broken. iceberg clears icon cache.");
@@ -415,5 +414,12 @@ Fl_RGB_Image* ib::IconManager::getEmbededIcon(const unsigned char *data, const c
   delete icon;
   createIconCache(cache_key, result_image);
   return copyCache(result_image);
+} // }}}
+
+ib::IconManager::~IconManager() { // {{{
+  deleteCachedIcons();
+  loader_event_.stopThread();
+  ib::platform::destroy_mutex(&cache_mutex_);
+  for(auto &pair : cached_icons_) { delete pair.second; }
 } // }}}
 

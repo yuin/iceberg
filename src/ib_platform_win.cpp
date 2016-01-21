@@ -6,6 +6,7 @@
 #include "ib_config.h"
 #include "ib_regex.h"
 #include "ib_comp_value.h"
+#include "ib_singleton.h"
 
 #if defined IB_OS_WIN64
 #  define IB_GWL_WNDPROC GWLP_WNDPROC
@@ -190,7 +191,7 @@ static int ib_platform_modkey2os_modkey(const int key){ // {{{
 
 static int ib_platform_register_hotkey() { /* {{{ */
   int mod, len;
-  const auto hot_key = ib::Config::inst().getHotKey();
+  const auto hot_key = ib::Singleton<ib::Config>::getInstance()->getHotKey();
   len = 0;
   for(;hot_key[len] != 0; ++len){}
   len--;
@@ -216,24 +217,24 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
       break;
 
     case WM_IME_STARTCOMPOSITION: {
-        ib::MainWindow::inst()->getInput()->setImeComposition(1);
+        ib::Singleton<ib::MainWindow>::getInstance()->getInput()->setImeComposition(1);
       }
     break;
 
     case WM_IME_COMPOSITION: {
-        ib::MainWindow::inst()->getInput()->setImeComposition(wparam != 0 ? 1: 0);
+        ib::Singleton<ib::MainWindow>::getInstance()->getInput()->setImeComposition(wparam != 0 ? 1: 0);
       }
     break;
 
     case WM_IME_ENDCOMPOSITION: {
-        ib::MainWindow::inst()->getInput()->setImeComposition(0);
+        ib::Singleton<ib::MainWindow>::getInstance()->getInput()->setImeComposition(0);
         m_end_composition = 1;
       }
       break;
 
     case WM_HOTKEY: {
         if((int)wparam == IB_IDH_HOTKEY){
-          ib::Controller::inst().showApplication();
+          ib::Singleton<ib::Controller>::getInstance()->showApplication();
         }
       }
       return 0;
@@ -291,7 +292,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
             ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
             ib::Regex reg("\r\n", ib::Regex::NONE);
             reg.init();
-            ib::Controller::inst().appendClipboardHistory(reg.gsub(utf8text.get(), "\n").c_str());
+            ib::Singleton<ib::Controller>::getInstance()->appendClipboardHistory(reg.gsub(utf8text.get(), "\n").c_str());
             GlobalUnlock(htext);
         }
         CloseClipboard();
@@ -302,7 +303,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
     case WM_KEYUP: {
       if(m_end_composition){
           m_end_composition = 0;
-          ib::MainWindow::inst()->getInput()->sendEndCompositionEvent();
+          ib::Singleton<ib::MainWindow>::getInstance()->getInput()->sendEndCompositionEvent();
           return 0;
         }
       }
@@ -468,10 +469,10 @@ finalize:
 int ib::platform::init_system() { // {{{
   int ret;
   long style;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
-  ib_g_hwnd_main = fl_xid(ib::MainWindow::inst());
-  ib_g_hwnd_list = fl_xid(ib::ListWindow::inst());
+  ib_g_hwnd_main = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
+  ib_g_hwnd_list = fl_xid(ib::Singleton<ib::ListWindow>::getInstance());
   ib_g_hinst    = fl_display;
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));
@@ -479,11 +480,11 @@ int ib::platform::init_system() { // {{{
 
   style = (GetWindowLongPtrW64(ib_g_hwnd_main, GWL_EXSTYLE));
   SetWindowLongPtrW64(ib_g_hwnd_main, GWL_EXSTYLE, style | WS_EX_LAYERED);
-  ib::platform::set_window_alpha(ib::MainWindow::inst(), cfg.getStyleWindowAlpha());
+  ib::platform::set_window_alpha(ib::Singleton<ib::MainWindow>::getInstance(), cfg->getStyleWindowAlpha());
 
   style = (GetWindowLongPtrW64(ib_g_hwnd_list, GWL_EXSTYLE));
   SetWindowLongPtrW64(ib_g_hwnd_list, GWL_EXSTYLE, style | WS_EX_LAYERED);
-  ib::platform::set_window_alpha(ib::ListWindow::inst(), cfg.getStyleListAlpha());
+  ib::platform::set_window_alpha(ib::Singleton<ib::ListWindow>::getInstance(), cfg->getStyleListAlpha());
 
   PostMessage(ib_g_hwnd_main, IB_WM_INIT, (WPARAM)0, (LPARAM)0);
   ret = 0;
@@ -625,7 +626,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 } // }}}
 
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
 #ifdef IB_OS_WIN64
@@ -649,7 +650,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       args.push_back(new std::string(path + " " + strparams));
       ib::Command cmd;
       cmd.setName("tmp");
-      cmd.setPath(cfg.getTerminal());
+      cmd.setPath(cfg->getTerminal());
       cmd.setTerminal("no");
       cmd.init();
       auto ret = cmd.execute(args, &cwd, error);

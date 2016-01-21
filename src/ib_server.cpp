@@ -3,6 +3,7 @@
 #include "ib_utils.h"
 #include "ib_platform.h"
 #include "ib_controller.h"
+#include "ib_singleton.h"
 
 void ib::Server::accept(FL_SOCKET fd, void *data) { // {{{
   FL_SOCKET client_socket;
@@ -23,7 +24,7 @@ void ib::Server::respond(FL_SOCKET fd, void *data) { // {{{
     auto buf = new char[length+1];
     if(ib::utils::read_socket(fd, buf, length) == length){
       buf[length] = '\0';
-      ib::Controller::inst().handleIpcMessage(buf);
+      ib::Singleton<ib::Controller>::getInstance()->handleIpcMessage(buf);
     }
     delete[] buf;
   }
@@ -32,7 +33,7 @@ void ib::Server::respond(FL_SOCKET fd, void *data) { // {{{
 } // }}}
 
 int ib::Server::start(ib::Error &error){ // {{{
-  const auto port = ib::Config::inst().getServerPort();
+  const auto port = ib::Singleton<ib::Config>::getInstance()->getServerPort();
   if(port == 0) return 0;
   if(started_) return 0;
 
@@ -72,11 +73,15 @@ int ib::Server::start(ib::Error &error){ // {{{
   return 0;
 } // }}}
 
-void ib::Server::shutdown() { // {{{
+void ib::Server::shutdown(){ // {{{
   if(started_){
     Fl::remove_fd(socket_, FL_READ);
     ib::platform::close_socket(socket_);
     started_ = false;
   }
+} // }}}
+
+ib::Server::~Server() { // {{{
+  shutdown();
 } // }}}
 

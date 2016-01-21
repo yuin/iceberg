@@ -4,13 +4,14 @@
 #include "ib_constants.h"
 #include "ib_utils.h"
 #include "ib_platform.h"
+#include "ib_singleton.h"
 
 namespace ib {
 
-  class Server : public Singleton<Server>{ // {{{
-    friend class Singleton<Server>;
+  class Server : private NonCopyable<Server>{ // {{{
+    friend class ib::Singleton<ib::Server>;
     public:
-      ~Server() {}
+      ~Server();
 
       static void accept(FL_SOCKET fd, void *data);
       static void respond(FL_SOCKET fd, void *data);

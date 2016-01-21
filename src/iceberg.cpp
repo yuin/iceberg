@@ -11,6 +11,8 @@
 #include "ib_history.h"
 #include "ib_migemo.h"
 #include "ib_server.h"
+#include "ib_singleton.h"
+#include "ib_regex.h"
 
 
 static void ib_window_callback(Fl_Widget* w){ // {{{
@@ -49,68 +51,88 @@ __attribute__ ((constructor)) void pre_main() { // {{{
 int main(int argc, char **argv) { // {{{
   Fl::lock();
   fl_message_hotspot(0);
-  auto &cfg = ib::Config::inst();
+  ib::OnigrumaService::init();
+  ib::Singleton<ib::NullToken>::initInstance();
+  ib::Singleton<ib::MainLuaState>::initInstance();
+  ib::Singleton<ib::Config>::initInstance();
+  ib::Singleton<ib::Controller>::initInstance();
+  ib::Singleton<ib::Completer>::initInstance();
+
+  auto cfg = ib::Singleton<ib::Config>::getInstance();
+  auto controller = ib::Singleton<ib::Controller>::getInstance();
   setlocale(LC_ALL, "");
 
   if(ib::platform::startup_system() != 0) {
     std::cerr << "Failed to start an application." << std::endl;
+    ib::SingletonFinalizer::finalize();
     exit(1);
   }
 
-  ib::Controller::inst().loadConfig(argc, argv);
-  if(cfg.getOldPid() > -1){
-    if(ib::platform::wait_pid(cfg.getOldPid()) != 0){
+  controller->loadConfig(argc, argv);
+  if(cfg->getOldPid() > -1){
+    if(ib::platform::wait_pid(cfg->getOldPid()) != 0){
       fl_alert("Failed to reboot iceberg.");
       ib::utils::exit_application(1);
     }
   }
 
-  if(!cfg.getIpcMessage().empty()){
-    const auto code = ib::utils::ipc_message(cfg.getIpcMessage());
+  if(!cfg->getIpcMessage().empty()){
+    const auto code = ib::utils::ipc_message(cfg->getIpcMessage());
     ib::platform::finalize_system();
+    ib::SingletonFinalizer::finalize();
     exit(code);
   }
 
-  ib::Controller::inst().initFonts();
-  ib::Controller::inst().initBoxtypes();
+  controller->initFonts();
+  controller->initBoxtypes();
 
   Fl::visual(FL_DOUBLE|FL_INDEX);
-  ib::MainWindow::init();
-  ib::MainWindow::inst()->initLayout();
-  ib::ListWindow::init();
-  ib::ListWindow::inst()->initLayout();
-  ib::MainWindow::inst()->callback(ib_window_callback);
-  ib::ListWindow::inst()->callback(ib_window_callback);
+  ib::Singleton<ib::MainWindow>::initInstance()->init();
+  ib::Singleton<ib::ListWindow>::initInstance()->init();
 
-  ib::MainWindow::inst()->show();
-  ib::ListWindow::inst()->show();
+  auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
+  auto listwin = ib::Singleton<ib::ListWindow>::getInstance();
+
+  mainwin->callback(ib_window_callback);
+  listwin->callback(ib_window_callback);
+
+  mainwin->show();
+  listwin->show();
 
   if(ib::platform::init_system() < 0) {
     fl_alert("Failed to initialize the application.(init_system)");
     ib::utils::exit_application(1);
   }
+
+  ib::Singleton<ib::Server>::initInstance();
+  auto server = ib::Singleton<ib::Server>::getInstance();
+
   ib::Error error;
-  if(ib::Server::inst().start(error) != 0){
+  if(server->start(error) != 0){
     fl_alert("%s", error.getMessage().c_str());
     ib::utils::exit_application(1);
   }
 
-  ib::IconManager::init();
-  ib::unique_oschar_ptr oscache_path(ib::platform::utf82oschar(cfg.getCommandCachePath().c_str()));
+  ib::Singleton<ib::IconManager>::initInstance();
+  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
+  ib::unique_oschar_ptr oscache_path(ib::platform::utf82oschar(cfg->getCommandCachePath().c_str()));
   if(ib::platform::file_exists(oscache_path.get())){
-    ib::Controller::inst().loadCachedCommands();
+    controller->loadCachedCommands();
   }
-  ib::History::inst().load();
-  if(ib::Config::inst().getEnableIcons()){
-    ib::IconManager::inst()->load();
-    auto &event = ib::IconManager::inst()->getLoaderEvent();
+
+  ib::Singleton<ib::History>::initInstance();
+  auto history = ib::Singleton<ib::History>::getInstance();
+  history->load();
+  if(cfg->getEnableIcons()){
+    icon_manager->load();
+    auto &event = icon_manager->getLoaderEvent();
     event.setMs(1);
     event.startThread();
   }
-  ib::Migemo::inst().init();
+  ib::Singleton<ib::Migemo>::initInstance()->init();
 
-  auto &event = ib::MainWindow::inst()->getInput()->getKeyEvent();
-  event.setMs(ib::Config::inst().getKeyEventThreshold());
+  auto &event = mainwin->getInput()->getKeyEvent();
+  event.setMs(cfg->getKeyEventThreshold());
   event.startThread();
   lua_getglobal(IB_LUA, "on_initialize");
   if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -128,8 +150,8 @@ int main(int argc, char **argv) { // {{{
     Sleep(5);
 #endif
     if(!flag){
-      ib::ListWindow::inst()->hide();
-      ib::Controller::inst().showApplication();
+      listwin->hide();
+      controller->showApplication();
       flag = true;
     }
   }

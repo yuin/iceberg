@@ -5,10 +5,11 @@
 #include "ib_utils.h"
 #include "ib_comp_value.h"
 #include "ib_regex.h"
+#include "ib_singleton.h"
 
 namespace ib {
-  class History : public Singleton<History>{ // {{{
-    friend class Singleton<History>;
+  class History : private NonCopyable<History>{ // {{{
+    friend class ib::Singleton<History>;
     public:
       ~History() {
         for(auto &c : ordered_commands_) { delete c;}

@@ -3,9 +3,10 @@
 
 #include "ib_constants.h"
 #include "ib_utils.h"
+#include "ib_server.h"
 
 // Macros {{{
-#define IB_LUA ib::MainLuaState::inst().get()
+#define IB_LUA (ib::Singleton<ib::MainLuaState>::getInstance()->get())
 // }}}
 
 namespace ib {
@@ -24,12 +25,14 @@ namespace ib {
       bool      alloced_;
 
     private:
-      LuaState (const LuaState &rhs);
-      LuaState& operator=(const LuaState &rhs);
+      LuaState (const LuaState &rhs) = delete;
+      LuaState& operator=(const LuaState &rhs) = delete;
+      LuaState (LuaState &&rhs) = delete;
+      LuaState& operator=(LuaState &&rhs) = delete;
   }; // }}}
 
-  class MainLuaState : public Singleton<LuaState>, public LuaState { // {{{
-    friend class Singleton<MainLuaState>;
+  class MainLuaState : public LuaState, private NonCopyable<MainLuaState> { // {{{
+    friend class ib::Singleton<MainLuaState>;
     protected:
       MainLuaState() : LuaState() {}
   }; // }}}

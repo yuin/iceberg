@@ -7,6 +7,7 @@
 #include "ib_comp_value.h"
 #include "ib_event.h"
 #include "ib_platform.h"
+#include "ib_singleton.h"
 
 namespace ib {
   void _key_event_handler(void *);
@@ -54,15 +55,18 @@ namespace ib {
   }; // }}}
 
   class MainWindow : public Fl_Double_Window, private NonCopyable<MainWindow> { // {{{
+    friend class ib::Singleton<ib::MainWindow>;
     public:
-      static MainWindow* inst() { return instance_; }
-      static void init() { instance_ = new MainWindow(); instance_->end(); }
-
-      ~MainWindow() { delete input_;}
+      ~MainWindow() { 
+        input_->getKeyEvent().stopThread();
+        close();
+        delete input_;
+      }
       Input* getInput() const { return input_;}
       Fl_Input *_getClipboard() const { return clipboard_;}
       Fl_Box   * getIconbox() const { return iconbox_;}
       void initLayout();
+      void init() { end(); initLayout(); }
       void show();
       void hide();
       void close();
@@ -73,7 +77,6 @@ namespace ib {
     protected:
       MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"), input_(0), clipboard_(0), iconbox_(0) {};
 
-      static MainWindow *instance_;
       Input *input_;
       Fl_Input *clipboard_;
       Fl_Box   *iconbox_;
@@ -87,6 +90,7 @@ namespace ib {
     friend class ListWindow;
     public:
       ~Listbox(){
+        hide();
         ib::platform::destroy_mutex(&mutex_);
       }
 
@@ -137,14 +141,12 @@ namespace ib {
   }; // }}}
  
   class ListWindow : public Fl_Double_Window, private NonCopyable<ListWindow> { // {{{
-
+    friend class ib::Singleton<ib::ListWindow>;
     public:
-      static ListWindow* inst() { return instance_; }
-      static void init() { instance_ = new ListWindow(); instance_->end();}
-
       ~ListWindow() { delete listbox_;}
       ib::Listbox* getListbox() const { return listbox_;}
       void initLayout();
+      void init() { end(); initLayout();}
 
       void hide();
       void show();
@@ -153,7 +155,6 @@ namespace ib {
     protected:
       ListWindow() : Fl_Double_Window(0, 0, "icebergListWindow"), listbox_(0), show_init_(false) {};
 
-      static ListWindow *instance_;
       Listbox *listbox_;
       bool show_init_;
 

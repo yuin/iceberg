@@ -6,6 +6,7 @@
 #include "ib_lexer.h"
 #include "ib_lua.h"
 #include "ib_icon_manager.h"
+#include "ib_singleton.h"
 
 
 // class CompletionPathParts {{{
@@ -28,11 +29,11 @@ const std::string* ib::CompletionPathParts::getContextMenuPath() const { // {{{
 } // }}}
 
 bool ib::CompletionPathParts::isAutocompleteEnable() const { // {{{
-  return ib::Config::inst().getPathAutocomplete();
+  return ib::Singleton<ib::Config>::getInstance()->getPathAutocomplete();
 } // }}}
 
 Fl_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
-  return ib::IconManager::inst()->getAssociatedIcon(path_.c_str(), size);
+  return ib::Singleton<ib::IconManager>::getInstance()->getAssociatedIcon(path_.c_str(), size);
 } // }}}
 // }}}
 
@@ -42,7 +43,7 @@ const std::string* ib::CompletionString::getContextMenuPath() const { // {{{
 } // }}}
 
 bool ib::CompletionString::isAutocompleteEnable() const { // {{{
-  return ib::Config::inst().getOptionAutocomplete();
+  return ib::Singleton<ib::Config>::getInstance()->getOptionAutocomplete();
 } // }}}
 
 Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
@@ -50,7 +51,7 @@ Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, value_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::IconManager::inst()->getAssociatedIcon(value_.c_str(), size);
+      return ib::Singleton<ib::IconManager>::getInstance()->getAssociatedIcon(value_.c_str(), size);
     }else{
       return 0;
     }
@@ -58,7 +59,7 @@ Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
     ib::oschar ospath[IB_MAX_PATH];
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, icon_file_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
+      return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(icon_file_.c_str(), size);
     }else{
       return 0;
     }
@@ -80,7 +81,7 @@ const std::string& ib::BaseCommand::getWorkdir() {
   }
 
   if(workdir_ == "."){
-    return Controller::inst().getCwd();
+    return ib::Singleton<ib::Controller>::getInstance()->getCwd();
   }
   return workdir_;
 }
@@ -117,10 +118,11 @@ const std::string* ib::Command::getContextMenuPath() const { // {{{
 } // }}}
 
 Fl_Image* ib::Command::loadIcon(const int size) { // {{{
+  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
   if(icon_file_.empty()){
-    return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size);
+    return icon_manager->getAssociatedIcon(command_path_.c_str(), size);
   }else{
-    return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
+    return icon_manager->readFileIcon(icon_file_.c_str(), size);
   }
 } // }}}
 
@@ -193,10 +195,11 @@ const std::string* ib::LuaFunctionCommand::getContextMenuPath() const { // {{{
 } // }}}
 
 Fl_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
+  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
   if(icon_file_.empty()){
-    return ib::IconManager::inst()->getLuaIcon(size);
+    return icon_manager->getLuaIcon(size);
   }else{
-    return ib::IconManager::inst()->readFileIcon(icon_file_.c_str(), size);
+    return icon_manager->readFileIcon(icon_file_.c_str(), size);
   }
 } // }}}
 
@@ -211,16 +214,17 @@ void ib::LuaFunctionCommand::init() { // {{{
 
 int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const std::string *workdir, ib::Error &error){ // {{{
 
+  auto controller = ib::Singleton<ib::Controller>::getInstance();
   std::string wd;
   if(workdir == 0){
     wd = getWorkdir();
   }else{
     wd = *workdir;
   }
-  std::string old_workdir = ib::Controller::inst().getCwd();
+  auto old_workdir = controller->getCwd();
   ib::Error cderror;
   if(getName() != ":cd") {
-    ib::Controller::inst().setCwd(wd, cderror);
+    controller->setCwd(wd, cderror);
   }
   // ignore errors;
 
@@ -249,7 +253,7 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
   lua_pop(IB_LUA, start);
 
   if(getName() != ":cd") {
-    ib::Controller::inst().setCwd(old_workdir, cderror);
+    controller->setCwd(old_workdir, cderror);
     // ignore errors;
   }
   return ret;
@@ -260,7 +264,7 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
 void ib::HistoryCommand::init() { // {{{
   if(initialized_) return;
   initialized_ = true;
-  const auto &commands = ib::Controller::inst().getCommands();
+  const auto &commands = ib::Singleton<ib::Controller>::getInstance()->getCommands();
   const auto it = commands.find(name_);
   if(it != commands.end()) {
     org_cmd_ = (*it).second;
@@ -289,7 +293,7 @@ Fl_Image* ib::HistoryCommand::loadIcon(const int size) { // {{{
   if(org_cmd_){
     return org_cmd_->loadIcon(size);
   }
-  return ib::IconManager::inst()->getAssociatedIcon(command_path_.c_str(), size);
+  return ib::Singleton<ib::IconManager>::getInstance()->getAssociatedIcon(command_path_.c_str(), size);
 } // }}}
 // }}}
 

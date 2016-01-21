@@ -5,6 +5,7 @@
 #include "ib_utils.h"
 #include "ib_comp_value.h"
 #include "ib_regex.h"
+#include "ib_singleton.h"
 
 namespace ib {
   class CompletionMethod : private NonCopyable<CompletionMethod> { // {{{
@@ -59,8 +60,8 @@ namespace ib {
       void  afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input);
   }; // }}}
 
-  class Completer : public Singleton<Completer> {
-    friend class Singleton<Completer>;
+  class Completer : public NonCopyable<Completer> {
+    friend class ib::Singleton<ib::Completer>;
     public:
       ~Completer() {
         if(method_history_ != 0) delete method_history_;

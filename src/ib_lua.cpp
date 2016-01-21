@@ -5,6 +5,7 @@
 #include "ib_controller.h"
 #include "ib_regex.h"
 #include "ib_config.h"
+#include "ib_singleton.h"
 
 // Lua Class "Regex" {{{
 static ib::Regex* to_regex (lua_State *L, int index) {
@@ -389,12 +390,12 @@ int Regex_register (lua_State *L){
 
 // class LuaState {{{
 void ib::LuaState::init() { // {{{
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   luaL_openlibs(l_);
   lua_register(l_, "_iceberg_module", &ib::luamodule::create);
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
-  if(luaL_dofile(l_, cfg.getConfigPath().c_str())) {
+  if(luaL_dofile(l_, cfg->getConfigPath().c_str())) {
     fl_alert("%s", lua_tostring(l_, lua_gettop(l_)));
     exit(1);
   }
@@ -485,10 +486,10 @@ int ib::luamodule::create(lua_State *L){ // {{{
 } // }}}
 
 int ib::luamodule::config_dir(lua_State *L) { // {{{
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   ib::oschar osbuf[IB_MAX_PATH];
   ib::oschar osconfig[IB_MAX_PATH];
-  ib::platform::utf82oschar_b(osconfig, IB_MAX_PATH, cfg.getConfigPath().c_str());
+  ib::platform::utf82oschar_b(osconfig, IB_MAX_PATH, cfg->getConfigPath().c_str());
   ib::platform::dirname(osbuf, osconfig);
   char config_dir[IB_MAX_PATH_BYTE];
   ib::platform::oschar2utf8_b(config_dir, IB_MAX_PATH_BYTE, osbuf);
@@ -497,8 +498,8 @@ int ib::luamodule::config_dir(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::build_platform(lua_State *L) { // {{{
-  const auto &cfg = ib::Config::inst();
-  lua_pushstring(L, cfg.getPlatform().c_str());
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  lua_pushstring(L, cfg->getPlatform().c_str());
   return 1;
 } // }}}
 
@@ -510,25 +511,25 @@ int ib::luamodule::runtime_platform(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::hide_application(lua_State *L) { // {{{
-  ib::Controller::inst().hideApplication();
+  ib::Singleton<ib::Controller>::getInstance()->hideApplication();
   return 0;
 } // }}}
 
 int ib::luamodule::show_application(lua_State *L) { // {{{
-  ib::Controller::inst().showApplication();
+  ib::Singleton<ib::Controller>::getInstance()->showApplication();
   return 0;
 } // }}}
 
 int ib::luamodule::do_autocomplete(lua_State *L) { // {{{
-  if(ib::ListWindow::inst()->getListbox()->isAutocompleted()){
-    ib::Controller::inst().completionInput();
-    ib::MainWindow::inst()->getInput()->scan();
+  if(ib::Singleton<ib::ListWindow>::getInstance()->getListbox()->isAutocompleted()){
+    ib::Singleton<ib::Controller>::getInstance()->completionInput();
+    ib::Singleton<ib::MainWindow>::getInstance()->getInput()->scan();
   }
   return 0;
 } // }}}
 
 int ib::luamodule::get_cwd(lua_State *L) { // {{{
-  lua_pushstring(L, ib::Controller::inst().getCwd().c_str());
+  lua_pushstring(L, ib::Singleton<ib::Controller>::getInstance()->getCwd().c_str());
   return 1;
 } // }}}
 
@@ -537,7 +538,7 @@ int ib::luamodule::set_cwd(lua_State *L) { // {{{
   const auto workdir = luaL_checkstring(L, 1);
   lua_state.clearStack();
   ib::Error error;
-  if(ib::Controller::inst().setCwd(workdir, error) != 0){
+  if(ib::Singleton<ib::Controller>::getInstance()->setCwd(workdir, error) != 0){
     lua_pushboolean(L, false);
     lua_pushstring(L, error.getMessage().c_str());
   }else{
@@ -551,7 +552,7 @@ int ib::luamodule::set_result_text(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
   const auto msg = luaL_checkstring(L, 1);
-  ib::Controller::inst().setResultText(msg);
+  ib::Singleton<ib::Controller>::getInstance()->setResultText(msg);
   lua_state.clearStack();
   return 0;
 } // }}}
@@ -561,7 +562,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
   const auto name = luaL_checkstring(L, 1);
   lua_state.clearStack();
 
-  auto &commands = ib::Controller::inst().getCommands();
+  auto &commands = ib::Singleton<ib::Controller>::getInstance()->getCommands();
   auto it = commands.find(name);
   if(it != commands.end()){
     lua_pushboolean(L, true);
@@ -625,13 +626,13 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
     ib::oschar osabs_path[IB_MAX_PATH];
     char abs_path[IB_MAX_PATH_BYTE];
 
-    ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, ib::Controller::inst().getCwd().c_str());
+    ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, ib::Singleton<ib::Controller>::getInstance()->getCwd().c_str());
     ib::platform::to_absolute_path(osabs_path, oscwd, unquoted_osname_or_path.get());
     ib::platform::oschar2utf8_b(abs_path, IB_MAX_PATH_BYTE, osabs_path);
     lua_pushboolean(L, true);
     lua_pushstring(L, abs_path);
   }else{
-    const auto &commands = ib::Controller::inst().getCommands();
+    const auto &commands = ib::Singleton<ib::Controller>::getInstance()->getCommands();
     auto it = commands.find(name_or_path);
     if(it != commands.end()){
       auto cmd = dynamic_cast<ib::Command*>((*it).second);
@@ -640,7 +641,7 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
         lua_pushstring(L, cmd->getCommandPath().c_str());
       }else{
         lua_pushboolean(L, true);
-        lua_pushstring(L, ib::Controller::inst().getCwd().c_str());
+        lua_pushstring(L, ib::Singleton<ib::Controller>::getInstance()->getCwd().c_str());
       }
     }else{
       lua_pushboolean(L, false);
@@ -702,7 +703,7 @@ int ib::luamodule::scan_search_path(lua_State *L) { // {{{
 
 int ib::luamodule::get_input_text(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
-  lua_pushstring(L, ib::MainWindow::inst()->getInput()->value());
+  lua_pushstring(L, ib::Singleton<ib::MainWindow>::getInstance()->getInput()->value());
   return 1;
 } // }}}
 
@@ -710,9 +711,9 @@ int ib::luamodule::set_input_text(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
   const auto msg = luaL_checkstring(L, 1);
-  ib::ListWindow::inst()->getListbox()->clearAll();
-  ib::ListWindow::inst()->hide();
-  ib::MainWindow::inst()->getInput()->setValue(msg);
+  ib::Singleton<ib::ListWindow>::getInstance()->getListbox()->clearAll();
+  ib::Singleton<ib::ListWindow>::getInstance()->hide();
+  ib::Singleton<ib::MainWindow>::getInstance()->getInput()->setValue(msg);
   lua_state.clearStack();
   return 0;
 } // }}}
@@ -738,7 +739,7 @@ int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   lua_state.clearStack();
 
-  const auto &histories  = ib::Controller::inst().getClipboardHistories();
+  const auto &histories  = ib::Singleton<ib::Controller>::getInstance()->getClipboardHistories();
   int i = 1;
   lua_newtable(L);
   for(auto it = histories.rbegin(), last = histories.rend(); it != last; ++it, ++i){
@@ -760,7 +761,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
     workdir = luaL_checkstring(L, -1);
     lua_pop(L, 1);
   }else{
-    workdir = ib::Controller::inst().getCwd();
+    workdir = ib::Singleton<ib::Controller>::getInstance()->getCwd();
   }
 
   if(top > 1) {
@@ -791,7 +792,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::command_execute(lua_State *L) { // {{{
-  auto &controller = ib::Controller::inst();
+  auto controller = ib::Singleton<ib::Controller>::getInstance();
   ib::LuaState lua_state(L);
   std::vector<std::string*> args;
   const auto top = lua_gettop(L);
@@ -805,7 +806,7 @@ int ib::luamodule::command_execute(lua_State *L) { // {{{
     }
   }
   lua_state.clearStack();
-  const auto &commands_ = controller.getCommands();
+  const auto &commands_ = controller->getCommands();
   auto it = commands_.find(cmd);
   if(it != commands_.end()){
     ib::Error error;
@@ -853,7 +854,7 @@ int ib::luamodule::default_after_command_action(lua_State *L) { // {{{
   luaL_checktype(L, 1, LUA_TBOOLEAN);
   const auto success = lua_toboolean(L, 1);
   const auto message = luaL_checkstring(L, 2);
-  ib::Controller::inst().afterExecuteCommand(success, strlen(message) != 0 ? message : 0);
+  ib::Singleton<ib::Controller>::getInstance()->afterExecuteCommand(success, strlen(message) != 0 ? message : 0);
   lua_state.clearStack();
   return 0;
 } // }}}
@@ -870,11 +871,11 @@ int ib::luamodule::add_history(lua_State *L) { // {{{
   lua_state.clearStack();
 
   if(name.empty()){
-    ib::History::inst().addRawInputHistory(input);
+    ib::Singleton<ib::History>::getInstance()->addRawInputHistory(input);
   }else{
-    auto it = ib::Controller::inst().getCommands().find(name);
-    if(it != ib::Controller::inst().getCommands().end()){
-      ib::History::inst().addBaseCommandHistory(input, (*it).second);
+    auto it = ib::Singleton<ib::Controller>::getInstance()->getCommands().find(name);
+    if(it != ib::Singleton<ib::Controller>::getInstance()->getCommands().end()){
+      ib::Singleton<ib::History>::getInstance()->addBaseCommandHistory(input, (*it).second);
     }
   }
   return 0;
@@ -899,13 +900,13 @@ int ib::luamodule::open_dir(lua_State *L) { // {{{
 
 int ib::luamodule::version(lua_State *L) { // {{{
   char buf[128];
-  sprintf(buf, "iceberg %s %s (%s)", ib::Config::inst().getPlatform().c_str(), IB_VERSION, __DATE__);
+  sprintf(buf, "iceberg %s %s (%s)", ib::Singleton<ib::Config>::getInstance()->getPlatform().c_str(), IB_VERSION, __DATE__);
   lua_pushstring(L, buf);
   return 1;
 } // }}}
 
 int ib::luamodule::selected_index(lua_State *L) { // {{{
-  lua_pushinteger(L, ib::ListWindow::inst()->getListbox()->value());
+  lua_pushinteger(L, ib::Singleton<ib::ListWindow>::getInstance()->getListbox()->value());
   return 1;
 } // }}}
 

@@ -3,13 +3,14 @@
 #include "ib_comp_value.h"
 #include "ib_platform.h"
 #include "ib_regex.h"
+#include "ib_singleton.h"
 
 void ib::History::load() { // {{{
-  const auto &cfg = ib::Config::inst();
-  ib::unique_oschar_ptr oshistory_path(ib::platform::utf82oschar(cfg.getHistoryPath().c_str()));
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  ib::unique_oschar_ptr oshistory_path(ib::platform::utf82oschar(cfg->getHistoryPath().c_str()));
   if(!ib::platform::file_exists(oshistory_path.get())) return;
 
-  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg.getHistoryPath().c_str()));
+  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg->getHistoryPath().c_str()));
   std::ifstream ifs(lohistory_path.get());
   std::string buf;
   ib::Regex re("\t", ib::Regex::NONE);
@@ -28,21 +29,21 @@ void ib::History::load() { // {{{
 } // }}}
 
 void ib::History::dump() { // {{{
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Error error;
 
   ib::oschar osbkfile[IB_MAX_PATH];
   ib::oschar osfile[IB_MAX_PATH];
-  ib::platform::utf82oschar_b(osbkfile, IB_MAX_PATH, (cfg.getHistoryPath()+".bk").c_str());
-  ib::platform::utf82oschar_b(osfile, IB_MAX_PATH, cfg.getHistoryPath().c_str());
+  ib::platform::utf82oschar_b(osbkfile, IB_MAX_PATH, (cfg->getHistoryPath()+".bk").c_str());
+  ib::platform::utf82oschar_b(osfile, IB_MAX_PATH, cfg->getHistoryPath().c_str());
   ib::platform::remove_file(osbkfile, error); // ignore errors
   ib::platform::copy_file(osfile, osbkfile, error); // ignore errors
 
-  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg.getHistoryPath().c_str()));
+  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg->getHistoryPath().c_str()));
   std::ofstream ofs(lohistory_path.get());
   auto it = ordered_commands_.begin();
-  if(ordered_commands_.size() > cfg.getMaxHistories()){
-    std::advance(it, ordered_commands_.size() - cfg.getMaxHistories());
+  if(ordered_commands_.size() > cfg->getMaxHistories()){
+    std::advance(it, ordered_commands_.size() - cfg->getMaxHistories());
   }
 
   for(auto last = ordered_commands_.end(); it != last; ++it){

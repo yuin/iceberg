@@ -9,6 +9,7 @@
 #include "ib_comp_value.h"
 #include "ib_icon_manager.h"
 #include "ib_server.h"
+#include "ib_singleton.h"
 
 static char ib_g_lang[32];
 static int  ib_g_hotkey;
@@ -314,7 +315,7 @@ class FreeDesktopIconFinder : private ib::NonCopyable<FreeDesktopIconFinder> { /
 };
 
 void FreeDesktopIconFinder::find(std::string &result) {
-  const auto theme = ib::Config::inst().getIconTheme().c_str();
+  const auto theme = ib::Singleton<ib::Config>::getInstance()->getIconTheme().c_str();
   findHelper(result, theme);
   if(!result.empty()) return;
   findHelper(result, "Hicolor");
@@ -532,7 +533,7 @@ static int xevent_handler(int e){
     //Window window = fl_xevent->xany.window;
     switch(fl_xevent->type){
       case KeyPress: // hotkey
-        ib::Controller::inst().showApplication();
+        ib::Singleton<ib::Controller>::getInstance()->showApplication();
         return 1;
     }
   } 
@@ -541,7 +542,7 @@ static int xevent_handler(int e){
 
 static int xregister_hotkey() {
   auto root = RootWindow(fl_display, fl_screen);
-  const auto hot_key = ib::Config::inst().getHotKey();
+  const auto hot_key = ib::Singleton<ib::Config>::getInstance()->getHotKey();
   for(int i=0 ;hot_key[i] != 0; ++i){
     ib_g_hotkey += hot_key[i];
   }
@@ -633,7 +634,7 @@ int ib::platform::startup_system() { // {{{
 } // }}}
 
 int ib::platform::init_system() { // {{{
-  ib::ListWindow::inst()->set_menu_window();
+  ib::Singleton<ib::ListWindow>::getInstance()->set_menu_window();
   XAllowEvents(fl_display, AsyncKeyboard, CurrentTime);
   XkbSetDetectableAutoRepeat(fl_display, true, NULL);
   if(xregister_hotkey() < 0 ) {
@@ -844,7 +845,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
         cmd += ";";
         cmd += getenv("SHELL");
         values.insert(ib::string_pair("1", ("'" + cmd + "'")));
-        cmd = ib::utils::expand_vars(ib::Config::inst().getTerminal(), values);
+        cmd = ib::utils::expand_vars(ib::Singleton<ib::Config>::getInstance()->getTerminal(), values);
       }
     } else {
       std::string mime, app;
@@ -1012,7 +1013,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
     auto prop_icon = kvf.get(SECTION_KEY, "Icon");
     if(!prop_icon.empty()){
       std::string path;
-      const auto theme = ib::Config::inst().getIconTheme().c_str();
+      const auto theme = ib::Singleton<ib::Config>::getInstance()->getIconTheme().c_str();
       FreeDesktopThemeRepos::inst()->findIcon(path, theme, prop_icon.c_str(), 32);
       if(!path.empty()) {
         cmd->setIconFile(path);
@@ -1099,7 +1100,7 @@ ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int
     strncpy_s(result, file, IB_MAX_PATH);
   } else {
     auto repos = FreeDesktopThemeRepos::inst();
-    const auto theme = ib::Config::inst().getIconTheme().c_str();
+    const auto theme = ib::Singleton<ib::Config>::getInstance()->getIconTheme().c_str();
     std::string iconpath;
     repos->findIcon(iconpath, theme, file, size);
     strncpy_s(result, iconpath.c_str(), IB_MAX_PATH);
@@ -1114,7 +1115,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
   auto repos = FreeDesktopThemeRepos::inst();
   std::string iconpath;
   bool isdir = ib::platform::directory_exists(path);
-  const auto theme = ib::Config::inst().getIconTheme().c_str();
+  const auto theme = ib::Singleton<ib::Config>::getInstance()->getIconTheme().c_str();
 
   if(isdir) {
     repos->findIcon(iconpath, theme, "folder", size);
@@ -1146,7 +1147,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
   }
 
   if(!iconpath.empty() && ib::platform::file_exists(iconpath.c_str())) {
-    return ib::IconManager::inst()->readFileIcon(iconpath.c_str(), size);
+    return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(iconpath.c_str(), size);
   }
   return 0;
 } /* }}} */

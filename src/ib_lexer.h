@@ -3,6 +3,7 @@
 
 #include "ib_constants.h"
 #include "ib_utils.h"
+#include "ib_server.h"
 
 namespace ib {
 
@@ -46,8 +47,8 @@ namespace ib {
       bool isValueToken() const { return false; }
   }; // }}}
 
-  class NullToken : public Token, public Singleton<NullToken> { // {{{
-    friend class Singleton<NullToken>;
+  class NullToken : public Token, private NonCopyable<NullToken> { // {{{
+    friend class ib::Singleton<NullToken>;
     public:
       bool isNullToken() const { return true; }
       bool isValueToken() const { return false; }

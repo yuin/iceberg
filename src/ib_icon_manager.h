@@ -5,6 +5,7 @@
 #include "ib_utils.h"
 #include "ib_event.h"
 #include "ib_platform.h"
+#include "ib_singleton.h"
 
 static const unsigned char blank_png[] = { // {{{
 /* W=32 H=32 D=4 */
@@ -596,19 +597,13 @@ namespace ib{
   void _icon_loader(void *p);
 
   class IconManager : private NonCopyable<IconManager> {
+    friend class ib::Singleton<ib::IconManager>;
     public:
-      static IconManager *instance_;
-      static IconManager* inst() { return instance_; }
-      static void init() { instance_ = new IconManager(); }
-
       IconManager() :loader_event_(0, _icon_loader), cache_mutex_(), cached_icons_(), cached_icons_reverse_(), cached_icons_queue_() {
         ib::platform::create_mutex(&cache_mutex_);
       }
+      ~IconManager();
 
-      ~IconManager() {
-        ib::platform::destroy_mutex(&cache_mutex_);
-        for(auto &pair : cached_icons_) { delete pair.second; }
-      }
       void loadCompletionListIcons();
       void dump();
       void load();

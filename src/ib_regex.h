@@ -9,22 +9,15 @@ namespace ib{
   class Regex;
   typedef void (*regsubfunc)(const Regex &regex, std::string *result, void *userdata);
 
-  class OnigrumaService: public Singleton<OnigrumaService> {
-    friend class Singleton<OnigrumaService>;
+  class OnigrumaService {
     public:
-      ~OnigrumaService(){
-        //onig_end();
-        //ib::platform::destroy_mutex(&mutex_);
+      static ib::mutex* getMutex() { 
+        static ib::mutex mutex;
+        return &mutex; 
       }
-      ib::mutex* getMutex() { return &mutex_; }
-
-    protected:
-      OnigrumaService() : mutex_(){
-        ib::platform::create_mutex(&mutex_);
+      static void init() {
+        ib::platform::create_mutex(getMutex());
       }
-
-    protected:
-      ib::mutex     mutex_;
   };
 
   class Regex : private NonCopyable<Regex> {
@@ -48,7 +41,7 @@ namespace ib{
       }
 
       int init(std::string *error_msg = 0) {
-        ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
+        ib::platform::ScopedLock lock(OnigrumaService::getMutex());
         if(reg_ == 0){
           region_  = onig_region_new();
           onig_set_default_case_fold_flag(0);
@@ -69,7 +62,7 @@ namespace ib{
       }
 
       ~Regex() {
-        ib::platform::ScopedLock lock(OnigrumaService::inst().getMutex());
+        ib::platform::ScopedLock lock(OnigrumaService::getMutex());
         freeString();
         free(pattern_);
         if(reg_ != 0){ onig_free(reg_); }

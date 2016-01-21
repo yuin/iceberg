@@ -5,9 +5,7 @@
 #include "ib_controller.h"
 #include "ib_comp_value.h"
 #include "ib_icon_manager.h"
-
-ib::MainWindow *ib::MainWindow::instance_ = 0;
-ib::ListWindow *ib::ListWindow::instance_ = 0;
+#include "ib_singleton.h"
 
 // class Input {{{
 static void ib_input_copy_callback(Fl_Widget*, void *userdata) { // {{{
@@ -19,8 +17,8 @@ static void ib_input_paste_calback(Fl_Widget*, void *userdata) { // {{{
   auto in = reinterpret_cast<ib::Input*>(userdata);
   Fl::paste(*in);
   in->scan();
-  ib::MainWindow::inst()->updateIconbox();
-  ib::Controller::inst().showCompletionCandidates();
+  ib::Singleton<ib::MainWindow>::getInstance()->updateIconbox();
+  ib::Singleton<ib::Controller>::getInstance()->showCompletionCandidates();
 } // }}}
 
 static void ib_input_cut_callback(Fl_Widget*, void *userdata) { // {{{
@@ -28,31 +26,31 @@ static void ib_input_cut_callback(Fl_Widget*, void *userdata) { // {{{
   in->copy(1);
   in->cut();
   in->scan();
-  ib::MainWindow::inst()->updateIconbox();
-  ib::Controller::inst().showCompletionCandidates();
+  ib::Singleton<ib::MainWindow>::getInstance()->updateIconbox();
+  ib::Singleton<ib::Controller>::getInstance()->showCompletionCandidates();
 } // }}}
 
 // void ib::Input::initLayout(){ /* {{{ */
 static void _blink_cursor(void *p) {
   static int state = 0;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   auto input = reinterpret_cast<ib::Input*>(p);
   state =!state;
-  if(state){ input->cursor_color(cfg.getStyleInputFontColor());
-  }else{ input->cursor_color(cfg.getStyleInputBgColor()); }
+  if(state){ input->cursor_color(cfg->getStyleInputFontColor());
+  }else{ input->cursor_color(cfg->getStyleInputBgColor()); }
   input->redraw();
   Fl::repeat_timeout(0.5,_blink_cursor, (void*)input);
 }
 void ib::Input::initLayout(){
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   textfont(ib::Fonts::input);
-  textcolor(cfg.getStyleInputFontColor());
-  cursor_color(cfg.getStyleInputFontColor());
-  textsize(cfg.getStyleInputFontSize());
-  color(cfg.getStyleInputBgColor());
-  selection_color(cfg.getStyleInputSelectionBgColor());
-  box((Fl_Boxtype)cfg.getStyleInputBoxtype());
+  textcolor(cfg->getStyleInputFontColor());
+  cursor_color(cfg->getStyleInputFontColor());
+  textsize(cfg->getStyleInputFontSize());
+  color(cfg->getStyleInputBgColor());
+  selection_color(cfg->getStyleInputSelectionBgColor());
+  box((Fl_Boxtype)cfg->getStyleInputBoxtype());
   Fl::add_timeout(0.5,_blink_cursor, this);
 } /* }}} */
 
@@ -63,7 +61,7 @@ bool ib::Input::isEmpty() const { // {{{
 
 // key_event_handler {{{
 static void _main_thread_awaker(void *p){
-  ib::Controller::inst().showCompletionCandidates();
+  ib::Singleton<ib::Controller>::getInstance()->showCompletionCandidates();
 }
 
 void ib::_key_event_handler(void *p) {
@@ -73,7 +71,8 @@ void ib::_key_event_handler(void *p) {
 
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  auto controller = ib::Singleton<ib::Controller>::getInstance();
   auto key = Fl::event_key();
   const auto state = Fl::event_state();
   const auto mods = state & (FL_META|FL_CTRL|FL_ALT);
@@ -88,7 +87,7 @@ keyup:
         // ignore shift key up
         if(key == 65505 && state == 0) { return 1; }
         // ignore hot key
-        if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
+        if(ib::utils::matches_key(cfg->getHotKey(), key, state)) { return 1;}
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_up");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -96,7 +95,7 @@ keyup:
             return 1;
         }
         accept = (int)lua_tonumber(IB_LUA, 1);
-        ib::MainLuaState::inst().clearStack();
+        ib::Singleton<ib::MainLuaState>::getInstance()->clearStack();
         if(accept) { return 1; }
         if(
            // paste
@@ -106,16 +105,16 @@ keyup:
            //(mods == 0 && shift && selected) ||
            (key == 'x' && mods==FL_COMMAND) ||
            // kill word
-           ib::utils::matches_key(cfg.getKillWordKey(), key, state)
+           ib::utils::matches_key(cfg->getKillWordKey(), key, state)
            ){
           key_event_.cancelEvent();
-          ib::Controller::inst().showCompletionCandidates();
+          controller->showCompletionCandidates();
           return 1;
         }
 
-        if(ib::utils::matches_key(cfg.getListNextKey(), key, state) ||
-           ib::utils::matches_key(cfg.getListPrevKey(), key, state) || 
-           ib::utils::matches_key(cfg.getToggleModeKey(), key, state) ||
+        if(ib::utils::matches_key(cfg->getListNextKey(), key, state) ||
+           ib::utils::matches_key(cfg->getListPrevKey(), key, state) || 
+           ib::utils::matches_key(cfg->getToggleModeKey(), key, state) ||
            key == FL_Enter
             ){
           key_event_.cancelEvent();
@@ -139,7 +138,7 @@ keyup:
         // ignore shift key down
         if(key == 65505 && state == 0) { return 1; }
         // ignore hot key
-        if(ib::utils::matches_key(cfg.getHotKey(), key, state)) { return 1;}
+        if(ib::utils::matches_key(cfg->getHotKey(), key, state)) { return 1;}
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_down");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
@@ -147,7 +146,7 @@ keyup:
             return 1;
         }
         accept = (int)lua_tonumber(IB_LUA, 1);
-        ib::MainLuaState::inst().clearStack();
+        ib::Singleton<ib::MainLuaState>::getInstance()->clearStack();
         if(accept) { return 1; }
         // handle copy&paste events
         if(
@@ -159,7 +158,7 @@ keyup:
            (key == 'x' && mods==FL_COMMAND)){
           Fl_Input::handle(e);
           scan();
-          ib::MainWindow::inst()->updateIconbox();
+          ib::Singleton<ib::MainWindow>::getInstance()->updateIconbox();
           return 1;
         }
         
@@ -171,30 +170,30 @@ keyup:
               return 1;
           }
           accept = (int)lua_tonumber(IB_LUA, 1);
-          ib::MainLuaState::inst().clearStack();
+          ib::Singleton<ib::MainLuaState>::getInstance()->clearStack();
           if(!accept){
-            ib::Controller::inst().executeCommand();
+            controller->executeCommand();
           }
           return 1;
         }
-        if(ib::utils::matches_key(cfg.getEscapeKey(), key, state)){
-          ib::Controller::inst().hideApplication();
+        if(ib::utils::matches_key(cfg->getEscapeKey(), key, state)){
+          controller->hideApplication();
           return 1;
         }
-        if(ib::utils::matches_key(cfg.getListNextKey(), key, state)){
-          ib::Controller::inst().selectNextCompletion();
+        if(ib::utils::matches_key(cfg->getListNextKey(), key, state)){
+          controller->selectNextCompletion();
           return 1;
         }
-        if(ib::utils::matches_key(cfg.getListPrevKey(), key, state)){
-          ib::Controller::inst().selectPrevCompletion();
+        if(ib::utils::matches_key(cfg->getListPrevKey(), key, state)){
+          controller->selectPrevCompletion();
           return 1;
         }
-        if(ib::utils::matches_key(cfg.getToggleModeKey(), key, state)){
-          ib::Controller::inst().toggleHistorySearchMode();
+        if(ib::utils::matches_key(cfg->getToggleModeKey(), key, state)){
+          controller->toggleHistorySearchMode();
           return 1;
         }
-        if(ib::utils::matches_key(cfg.getKillWordKey(), key, state)){
-          ib::Controller::inst().killWord();
+        if(ib::utils::matches_key(cfg->getKillWordKey(), key, state)){
+          controller->killWord();
           return 1;
         }
       }
@@ -261,20 +260,20 @@ void ib::Input::clear() { // {{{
   cursor_token_index_ = 0;
   prev_cursor_token_index_ = 0;
   value("");
-  ib::MainWindow::inst()->clearIconbox();
+  ib::Singleton<ib::MainWindow>::getInstance()->clearIconbox();
 } // }}}
 
 void ib::Input::adjustSize() { // {{{
-  const auto &cfg = ib::Config::inst();
-  auto mainwin = ib::MainWindow::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
   int screen_x, screen_y, screen_w, screen_h;
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
 
-  const auto min_window_width = cfg.getStyleWindowWidth();
-  const auto pad_x = cfg.getStyleWindowPadx();
+  const auto min_window_width = cfg->getStyleWindowWidth();
+  const auto pad_x = cfg->getStyleWindowPadx();
   const auto max_window_width = screen_w - (screen_w/2 - min_window_width/2);
   Fl_Font font = textfont();
-  auto tsize = cfg.getStyleInputFontSize();
+  auto tsize = cfg->getStyleInputFontSize();
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
   // fl_width on windwos is slow. 
@@ -300,7 +299,7 @@ void ib::Input::adjustSize() { // {{{
 
 const ib::Token* ib::Input::getCursorToken() const { // {{{
   if(lexer_.getTokens().size() == 0) {
-    return &ib::NullToken::inst();
+    return ib::Singleton<ib::NullToken>::getInstance();
   }
   return lexer_.getTokens().at(cursor_token_index_);
 } // }}}
@@ -322,20 +321,20 @@ void ib::Input::draw() { // {{{
 void ib::MainWindow::initLayout(){ /* {{{ */
   begin();
   int screen_x, screen_y, screen_w, screen_h;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
-  const auto w = cfg.getStyleWindowWidth();
-  const auto h = cfg.getStyleWindowHeight();
-  const auto pad_x = cfg.getStyleWindowPadx();
-  const auto pad_y = cfg.getStyleWindowPady();
+  const auto w = cfg->getStyleWindowWidth();
+  const auto h = cfg->getStyleWindowHeight();
+  const auto pad_x = cfg->getStyleWindowPadx();
+  const auto pad_y = cfg->getStyleWindowPady();
 
   clear_border();
-  color(cfg.getStyleWindowBgColor());
-  const auto x = cfg.getStyleWindowPosxAuto() ? screen_w/2 - w/2 : cfg.getStyleWindowPosx();
-  const auto y = cfg.getStyleWindowPosyAuto() ? screen_h/2 - h/2 : cfg.getStyleWindowPosy();
+  color(cfg->getStyleWindowBgColor());
+  const auto x = cfg->getStyleWindowPosxAuto() ? screen_w/2 - w/2 : cfg->getStyleWindowPosx();
+  const auto y = cfg->getStyleWindowPosyAuto() ? screen_h/2 - h/2 : cfg->getStyleWindowPosy();
   resize(x, y, w, h);
-  box((Fl_Boxtype)cfg.getStyleWindowBoxtype());
+  box((Fl_Boxtype)cfg->getStyleWindowBoxtype());
 
   iconbox_ = new Fl_Box(pad_x, h/2 - 16, IB_ICON_SIZE_LARGE, IB_ICON_SIZE_LARGE);
   input_ = new ib::Input(pad_x*2+32,pad_y, w - (pad_x*3 + 32), h - pad_y*2);
@@ -368,15 +367,15 @@ void ib::MainWindow::close() { // {{{
 } // }}}
 
 void ib::MainWindow::clearIconbox() { // {{{
-  if(!ib::Config::inst().getEnableIcons()) return;
+  if(!ib::Singleton<ib::Config>::getInstance()->getEnableIcons()) return;
   auto image = iconbox_->image();
   if(image) delete image;
-  iconbox_->image(ib::IconManager::inst()->getEmptyIcon(IB_ICON_SIZE_LARGE,IB_ICON_SIZE_LARGE));
+  iconbox_->image(ib::Singleton<ib::IconManager>::getInstance()->getEmptyIcon(IB_ICON_SIZE_LARGE,IB_ICON_SIZE_LARGE));
   redraw();
 } // }}}
 
 void ib::MainWindow::setIconbox(Fl_Image *image) { // {{{
-  if(!ib::Config::inst().getEnableIcons()) return;
+  if(!ib::Singleton<ib::Config>::getInstance()->getEnableIcons()) return;
   auto bimage = iconbox_->image();
   if(bimage) delete bimage;
   iconbox_->image(image);
@@ -385,15 +384,15 @@ void ib::MainWindow::setIconbox(Fl_Image *image) { // {{{
 /* }}} */
 
 void ib::MainWindow::updateIconbox() { // {{{
-  if(!ib::Config::inst().getEnableIcons()) return;
-  auto input = ib::MainWindow::inst()->getInput();
+  if(!ib::Singleton<ib::Config>::getInstance()->getEnableIcons()) return;
+  auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   if(input->isEmpty()) {
     clearIconbox();
     return;
   }
   const auto &cmd = input->getFirstValue();
-  auto it = ib::Controller::inst().getCommands().find(cmd);
-  if(it != ib::Controller::inst().getCommands().end()){
+  auto it = ib::Singleton<ib::Controller>::getInstance()->getCommands().find(cmd);
+  if(it != ib::Singleton<ib::Controller>::getInstance()->getCommands().end()){
     setIconbox((*it).second->loadIcon(IB_ICON_SIZE_LARGE));
   }else{
     CompletionString comp_value(cmd.c_str());
@@ -418,20 +417,20 @@ struct FL_BLINE {  // {{{
 void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // {{{
   auto l = reinterpret_cast<FL_BLINE*>(item);
   auto str = l->txt;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   const auto line = reinterpret_cast<std::size_t>(l->data);
   if(line%2 == 0){
     if (l->flags & 1) {
-      fl_color(cfg.getStyleListSelectionBgColor1());
+      fl_color(cfg->getStyleListSelectionBgColor1());
     }else{
-      fl_color(cfg.getStyleListBgColor1());
+      fl_color(cfg->getStyleListBgColor1());
     }
   }else{
     if (l->flags & 1) {
-      fl_color(cfg.getStyleListSelectionBgColor2());
+      fl_color(cfg->getStyleListSelectionBgColor2());
     }else{
-      fl_color(cfg.getStyleListBgColor2());
+      fl_color(cfg->getStyleListBgColor2());
     }
   }
   fl_rectf(X, Y, W, H);
@@ -457,10 +456,10 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
 
   left += 2;
   width -= 2;
-  int tsize = cfg.getStyleListFontSize();
+  int tsize = cfg->getStyleListFontSize();
   Fl_Font font = textfont();
   Fl_Color lcol = textcolor();
-  if (l->flags & 1) lcol = cfg.getStyleListSelectionFontColor();
+  if (l->flags & 1) lcol = cfg->getStyleListSelectionFontColor();
   if (!active_r())  lcol = fl_inactive(lcol);
   fl_font(font, tsize);
   fl_color(lcol);
@@ -474,12 +473,12 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
 #endif
 
   if(description){
-    top += cfg.getStyleListFontSize()-2;
+    top += cfg->getStyleListFontSize()-2;
     *ptr = '\t';
-    lcol = cfg.getStyleListDescFontColor();
-    if (l->flags & 1) lcol = cfg.getStyleListSelectionDescFontColor();
+    lcol = cfg->getStyleListDescFontColor();
+    if (l->flags & 1) lcol = cfg->getStyleListSelectionDescFontColor();
     if (!active_r())  lcol = fl_inactive(lcol);
-    fl_font(font, cfg.getStyleListDescFontSize());
+    fl_font(font, cfg->getStyleListDescFontSize());
     fl_color(lcol);
 #ifdef IB_OS_WIN
     // fl_draw on windwos is slow.
@@ -504,7 +503,7 @@ int ib::Listbox::item_height(void *item) const { // {{{
 int ib::Listbox::item_width(void *item) const{ // {{{
   auto l = reinterpret_cast<FL_BLINE*>(item);
   char* str = l->txt;
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   char *ptr = strchr(str, '\t');
   char *description = 0;
@@ -513,11 +512,11 @@ int ib::Listbox::item_width(void *item) const{ // {{{
     description = ptr+1;
   }
   int left_pad = 2;
-  if(cfg.getEnableIcons()){
+  if(cfg->getEnableIcons()){
     left_pad += 2 + (description ? IB_ICON_SIZE_LARGE : IB_ICON_SIZE_SMALL);
   }
 
-  int tsize = cfg.getStyleListFontSize();
+  int tsize = cfg->getStyleListFontSize();
   Fl_Font font = textfont();
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
@@ -531,7 +530,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
 
   if(description){
     *ptr = '\t';
-    tsize = cfg.getStyleListDescFontSize();
+    tsize = cfg->getStyleListDescFontSize();
     fl_font(font, tsize);
 #ifdef IB_OS_WIN
   // fl_width on windwos is slow. 
@@ -546,20 +545,20 @@ int ib::Listbox::item_width(void *item) const{ // {{{
 } // }}}
 
 void ib::Listbox::initLayout(){ // {{{
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   textfont(ib::Fonts::list);
-  textcolor(cfg.getStyleListFontColor());
-  textsize(cfg.getStyleListFontSize());
-  color(cfg.getStyleListBgColor1());
-  selection_color(cfg.getStyleListSelectionBgColor1());
+  textcolor(cfg->getStyleListFontColor());
+  textsize(cfg->getStyleListFontSize());
+  color(cfg->getStyleListBgColor1());
+  selection_color(cfg->getStyleListSelectionBgColor1());
   has_scrollbar(Fl_Browser_::VERTICAL);
   box(FL_FLAT_BOX);
-  static int widths[] = { (int)cfg.getStyleListFontSize()*2+3, 1, 0};
+  static int widths[] = { (int)cfg->getStyleListFontSize()*2+3, 1, 0};
   column_widths(widths);
-  scrollbar.selection_color(cfg.getStyleListBgColor1());
-  scrollbar.color(cfg.getStyleListBgColor1());
-  scrollbar.labelcolor(cfg.getStyleListFontColor());
+  scrollbar.selection_color(cfg->getStyleListBgColor1());
+  scrollbar.color(cfg->getStyleListBgColor1());
+  scrollbar.labelcolor(cfg->getStyleListFontColor());
 } // }}}
 
 int ib::Listbox::handle(int e){ /* {{{ */
@@ -569,7 +568,7 @@ int ib::Listbox::handle(int e){ /* {{{ */
   auto selected_a = value();
   if(selected_b != selected_a){
     selectLine(selected_a, false);
-    ib::Controller::inst().completionInput();
+    ib::Singleton<ib::Controller>::getInstance()->completionInput();
     ret = 1;
   }
   if(e == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE){
@@ -604,8 +603,8 @@ void ib::Listbox::clearAll(){ // {{{
   ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
 
-  if(ib::MainWindow::inst()->getInput()->getCursorTokenIndex() == 0) {
-    ib::MainWindow::inst()->clearIconbox();
+  if(ib::Singleton<ib::MainWindow>::getInstance()->getInput()->getCursorTokenIndex() == 0) {
+    ib::Singleton<ib::MainWindow>::getInstance()->clearIconbox();
   }
   for(int i = 1, last = size(); i <= last; ++i){ destroyIcon(i); }
   for(auto &v : values_) {
@@ -616,7 +615,7 @@ void ib::Listbox::clearAll(){ // {{{
   is_autocompleted_ = false;
   max_width_ = 0;
   clear();
-  ib::IconManager::inst()->shrinkCache();
+  ib::Singleton<ib::IconManager>::getInstance()->shrinkCache();
 } // }}}
 
 void ib::Listbox::destroyIcon(const int line){ // {{{
@@ -640,7 +639,7 @@ void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
     if(size() == 0) { max_width_ = 0;}
     if(isEmpty()) return;
 
-    auto max_candidates = ib::Config::inst().getMaxCandidates();
+    auto max_candidates = ib::Singleton<ib::Config>::getInstance()->getMaxCandidates();
     if(max_candidates == 0) max_candidates = UINT_MAX;
     int width = 0;
     unsigned int i = 1;
@@ -668,8 +667,8 @@ void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
     adjustSize();
   }
 
-  if(ib::Config::inst().getEnableIcons()){
-    ib::IconManager::inst()->loadCompletionListIcons();
+  if(ib::Singleton<ib::Config>::getInstance()->getEnableIcons()){
+    ib::Singleton<ib::IconManager>::getInstance()->loadCompletionListIcons();
   }
 } /* }}} */
 
@@ -679,11 +678,11 @@ void ib::Listbox::setEmptyIcons(){ /* {{{ */
   for(int i=1, last = size(); i <= last; ++i){
     icon_height = values_.at(i-1)->hasDescription() ? IB_ICON_SIZE_LARGE : IB_ICON_SIZE_SMALL;
     auto icon_width = icon_height;
-    if(!ib::Config::inst().getEnableIcons()){
+    if(!ib::Singleton<ib::Config>::getInstance()->getEnableIcons()){
       icon_width = 1;
     }
 
-    icon(i, ib::IconManager::inst()->getEmptyIcon(icon_width, icon_height));
+    icon(i, ib::Singleton<ib::IconManager>::getInstance()->getEmptyIcon(icon_width, icon_height));
   }
 } /* }}} */
 
@@ -713,17 +712,17 @@ void ib::Listbox::selectLine(const int line, const bool move2middle) { // {{{
   }else{
     seek(std::max<int>(std::min<int>(size(),line), 1)); 
   }
-  if(ib::MainWindow::inst()->getInput()->getCursorTokenIndex() == 0) {
-    ib::MainWindow::inst()->setIconbox(selectedValue()->loadIcon(IB_ICON_SIZE_LARGE));
+  if(ib::Singleton<ib::MainWindow>::getInstance()->getInput()->getCursorTokenIndex() == 0) {
+    ib::Singleton<ib::MainWindow>::getInstance()->setIconbox(selectedValue()->loadIcon(IB_ICON_SIZE_LARGE));
   }
 } // }}
 // }}}
 
 void ib::Listbox::adjustSize() { // {{{
-  auto main_window = ib::MainWindow::inst();
-  auto list_window = ib::ListWindow::inst();
-  const auto &cfg     = ib::Config::inst();
-  const auto font_size    = cfg.getStyleListFontSize();
+  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto cfg   = ib::Singleton<ib::Config>::getInstance();
+  const auto font_size    = cfg->getStyleListFontSize();
 
   int screen_x, screen_y, screen_w, screen_h;
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
@@ -732,15 +731,15 @@ void ib::Listbox::adjustSize() { // {{{
   if(has_scrollbar() & Fl_Browser_::VERTICAL){
     width_b -= Fl::scrollbar_size();
   }
-  const auto new_width = std::max(static_cast<int>(cfg.getStyleWindowWidth()), std::min<int>(width_b , width_a));
+  const auto new_width = std::max(static_cast<int>(cfg->getStyleWindowWidth()), std::min<int>(width_b , width_a));
 
-  const auto height_a = screen_h - (main_window->y()+main_window->h()+cfg.getStyleTaskbarHeight());
+  const auto height_a = screen_h - (main_window->y()+main_window->h()+cfg->getStyleTaskbarHeight());
   const auto height_b = item_height(item_first()) * size() + font_size;
 
   const auto new_height = ((height_a > height_b) ? height_b : height_a);
   resize(x(), y(), 
-      new_width - cfg.getStyleListPadx()*2, 
-      new_height - cfg.getStyleListPady()*2);
+      new_width - cfg->getStyleListPadx()*2, 
+      new_height - cfg->getStyleListPady()*2);
   list_window->resize(main_window->x(), main_window->y()+main_window->h(), new_width, new_height);
 } // }}
 // }}}
@@ -778,19 +777,20 @@ void ib::ListWindow::close() { // {{{
 
 void ib::ListWindow::initLayout(){ // {{{
   begin();
-  const auto &cfg = ib::Config::inst();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
 
-  const auto pad_x = cfg.getStyleListPadx();
-  const auto pad_y = cfg.getStyleListPady();
+  const auto pad_x = cfg->getStyleListPadx();
+  const auto pad_y = cfg->getStyleListPady();
 
-  const auto main_x = ib::MainWindow::inst()->x();
-  const auto main_y = ib::MainWindow::inst()->y();
-  const auto main_w = ib::MainWindow::inst()->w();
-  const auto main_h = ib::MainWindow::inst()->h();
+  const auto main_x = main_window->x();
+  const auto main_y = main_window->y();
+  const auto main_w = main_window->w();
+  const auto main_h = main_window->h();
   resize(main_x, main_y + main_h, main_w, 1);
   clear_border();
-  color(cfg.getStyleListBorderColor());
-  box((Fl_Boxtype)cfg.getStyleListBoxtype());
+  color(cfg->getStyleListBorderColor());
+  box((Fl_Boxtype)cfg->getStyleListBoxtype());
 
   listbox_ = new ib::Listbox(pad_x , pad_y , w()-pad_x*2, h()-pad_y*2);
   listbox_->initLayout();

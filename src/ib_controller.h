@@ -4,11 +4,12 @@
 #include "ib_constants.h"
 #include "ib_utils.h"
 #include "ib_comp_value.h"
+#include "ib_singleton.h"
 
 namespace ib {
 
-  class Controller : public Singleton<Controller>{ // {{{
-    friend class Singleton<Controller>;
+  class Controller : private NonCopyable<Controller> { // {{{
+    friend class ib::Singleton<ib::Controller>;
     public:
       ~Controller() {
         for(auto &pair : commands_) { delete pair.second; };
