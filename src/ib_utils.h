@@ -19,7 +19,7 @@ namespace ib {
   namespace utils {
     /* application & debug stuff */
     long malloc_count();
-    template<class T> void delete_pointer_vectors(std::vector<T*> &vector) {
+    template<typename T> void delete_pointer_vectors(std::vector<T*> &vector) {
       for (typename std::vector<T*>::iterator it = vector.begin();
            it != vector.end(); ++it ) {
         if(*it != 0){ delete *it; }

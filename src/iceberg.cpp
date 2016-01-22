@@ -14,15 +14,6 @@
 #include "ib_singleton.h"
 #include "ib_regex.h"
 
-
-static void ib_window_callback(Fl_Widget* w){ // {{{
-  // disable default escape key behaviour
-  if(Fl::event() ==  FL_SHORTCUT && Fl::event_key() == FL_Escape){
-  }else{
-    ib::utils::exit_application();
-  }
-} // }}}
-
 #ifdef __GNUC__
 __attribute__ ((destructor)) void after_main() { // {{{
 #ifdef DEBUG
@@ -48,16 +39,29 @@ __attribute__ ((constructor)) void pre_main() { // {{{
 } // }}}
 #endif
 
-int main(int argc, char **argv) { // {{{
-  Fl::lock();
-  fl_message_hotspot(0);
-  ib::OnigrumaService::init();
+static void init_common_singletons() {
   ib::Singleton<ib::NullToken>::initInstance();
   ib::Singleton<ib::MainLuaState>::initInstance();
   ib::Singleton<ib::Config>::initInstance();
   ib::Singleton<ib::Controller>::initInstance();
   ib::Singleton<ib::Completer>::initInstance();
+}
 
+static void init_gui_singletons() {
+  ib::Singleton<ib::MainWindow>::initInstance()->init();
+  ib::Singleton<ib::ListWindow>::initInstance()->init();
+  ib::Singleton<ib::Server>::initInstance();
+  ib::Singleton<ib::IconManager>::initInstance();
+  ib::Singleton<ib::History>::initInstance();
+  ib::Singleton<ib::Migemo>::initInstance()->init();
+}
+
+int main(int argc, char **argv) { // {{{
+  Fl::lock();
+  fl_message_hotspot(0);
+  ib::OnigrumaService::init();
+
+  init_common_singletons();
   auto cfg = ib::Singleton<ib::Config>::getInstance();
   auto controller = ib::Singleton<ib::Controller>::getInstance();
   setlocale(LC_ALL, "");
@@ -87,14 +91,13 @@ int main(int argc, char **argv) { // {{{
   controller->initBoxtypes();
 
   Fl::visual(FL_DOUBLE|FL_INDEX);
-  ib::Singleton<ib::MainWindow>::initInstance()->init();
-  ib::Singleton<ib::ListWindow>::initInstance()->init();
+  init_gui_singletons();
 
   auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
   auto listwin = ib::Singleton<ib::ListWindow>::getInstance();
-
-  mainwin->callback(ib_window_callback);
-  listwin->callback(ib_window_callback);
+  auto server = ib::Singleton<ib::Server>::getInstance();
+  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
+  auto history = ib::Singleton<ib::History>::getInstance();
 
   mainwin->show();
   listwin->show();
@@ -104,8 +107,6 @@ int main(int argc, char **argv) { // {{{
     ib::utils::exit_application(1);
   }
 
-  ib::Singleton<ib::Server>::initInstance();
-  auto server = ib::Singleton<ib::Server>::getInstance();
 
   ib::Error error;
   if(server->start(error) != 0){
@@ -113,15 +114,11 @@ int main(int argc, char **argv) { // {{{
     ib::utils::exit_application(1);
   }
 
-  ib::Singleton<ib::IconManager>::initInstance();
-  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
   ib::unique_oschar_ptr oscache_path(ib::platform::utf82oschar(cfg->getCommandCachePath().c_str()));
   if(ib::platform::file_exists(oscache_path.get())){
     controller->loadCachedCommands();
   }
 
-  ib::Singleton<ib::History>::initInstance();
-  auto history = ib::Singleton<ib::History>::getInstance();
   history->load();
   if(cfg->getEnableIcons()){
     icon_manager->load();
@@ -129,7 +126,6 @@ int main(int argc, char **argv) { // {{{
     event.setMs(1);
     event.startThread();
   }
-  ib::Singleton<ib::Migemo>::initInstance()->init();
 
   auto &event = mainwin->getInput()->getKeyEvent();
   event.setMs(cfg->getKeyEventThreshold());

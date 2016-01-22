@@ -11,6 +11,14 @@
 
 namespace ib {
   void _key_event_handler(void *);
+  static void _window_callback(Fl_Widget* w){
+    // disable default escape key behaviour
+    if(Fl::event() ==  FL_SHORTCUT && Fl::event_key() == FL_Escape){
+    }else{
+      ib::utils::exit_application();
+    }
+  }
+
   class MainWindow;
   class Input : public Fl_Input, private NonCopyable<Input> { // {{{
     friend class MainWindow;
@@ -66,7 +74,7 @@ namespace ib {
       Fl_Input *_getClipboard() const { return clipboard_;}
       Fl_Box   * getIconbox() const { return iconbox_;}
       void initLayout();
-      void init() { end(); initLayout(); }
+      void init() { end(); initLayout(); callback(ib::_window_callback); }
       void show();
       void hide();
       void close();
@@ -146,7 +154,7 @@ namespace ib {
       ~ListWindow() { delete listbox_;}
       ib::Listbox* getListbox() const { return listbox_;}
       void initLayout();
-      void init() { end(); initLayout();}
+      void init() { end(); initLayout(); callback(ib::_window_callback);}
 
       void hide();
       void show();
