@@ -39,7 +39,7 @@ Fl_Image* ib::CompletionPathParts::loadIcon(const int size) { // {{{
 
 // class CompletionString {{{
 const std::string* ib::CompletionString::getContextMenuPath() const { // {{{
-  return 0;
+  return nullptr;
 } // }}}
 
 bool ib::CompletionString::isAutocompleteEnable() const { // {{{
@@ -53,7 +53,7 @@ Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
     if(ib::platform::is_path(ospath)){
       return ib::Singleton<ib::IconManager>::getInstance()->getAssociatedIcon(value_.c_str(), size);
     }else{
-      return 0;
+      return nullptr;
     }
   }else{
     ib::oschar ospath[IB_MAX_PATH];
@@ -61,7 +61,7 @@ Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
     if(ib::platform::is_path(ospath)){
       return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(icon_file_.c_str(), size);
     }else{
-      return 0;
+      return nullptr;
     }
   }
 } // }}}
@@ -166,7 +166,7 @@ int ib::Command::execute(const std::vector<std::string*> &args, const std::strin
   ib::platform::utf82oschar_b(oscommand, IB_MAX_PATH, command.c_str());
 
   std::string wd;
-  if(workdir == 0){
+  if(workdir == nullptr){
     wd = getWorkdir();
   }else{
     wd = *workdir;
@@ -191,7 +191,7 @@ int ib::Command::execute(const std::vector<std::string*> &args, const std::strin
 
 //class LuaFunctionCommand {{{
 const std::string* ib::LuaFunctionCommand::getContextMenuPath() const { // {{{
-  return 0;
+  return nullptr;
 } // }}}
 
 Fl_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
@@ -216,7 +216,7 @@ int ib::LuaFunctionCommand::execute(const std::vector<std::string*> &args, const
 
   auto controller = ib::Singleton<ib::Controller>::getInstance();
   std::string wd;
-  if(workdir == 0){
+  if(workdir == nullptr){
     wd = getWorkdir();
   }else{
     wd = *workdir;

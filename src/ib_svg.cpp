@@ -8,9 +8,9 @@
 
 
 unsigned char* ib::rasterize_svg_file(const char *path, int size) {
-  unsigned char *result = 0;
-  NSVGimage *svg_image = 0;
-  NSVGrasterizer *rasterizer= 0;
+  unsigned char *result = nullptr;
+  NSVGimage *svg_image = nullptr;
+  NSVGrasterizer *rasterizer= nullptr;
   double scale;
 
   svg_image = nsvgParseFromFile(path, "px", 96.0f);
@@ -22,7 +22,7 @@ unsigned char* ib::rasterize_svg_file(const char *path, int size) {
   result = new unsigned char[size * size * 4];
   nsvgRasterize(rasterizer, svg_image, 0, 0, scale, result, size, size, size*4);
 finally:
-  if(rasterizer != 0) nsvgDeleteRasterizer(rasterizer);
-  if(svg_image != 0) nsvgDelete(svg_image);
+  if(rasterizer != nullptr) nsvgDeleteRasterizer(rasterizer);
+  if(svg_image != nullptr) nsvgDelete(svg_image);
   return result;
 }

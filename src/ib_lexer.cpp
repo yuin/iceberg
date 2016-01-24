@@ -7,7 +7,7 @@ void ib::Lexer::clear() { // {{{
   pc_ = '\0';
   utf8_len_ = 0;
   ptr_ = 0;
-  input_ = 0;
+  input_ = nullptr;
 } // }}}
 
 void ib::Lexer::onBeforeLoop() { // {{{
@@ -15,7 +15,7 @@ void ib::Lexer::onBeforeLoop() { // {{{
 
 void ib::Lexer::parse(const char *input) { // {{{
   clear();
-  if(input == 0 || input[0] == '\0'){ return; }
+  if(input == nullptr || input[0] == '\0'){ return; }
   input_ = input;
 
   onBeforeLoop();
@@ -125,7 +125,7 @@ void ib::CommandLexer::onReadChar() { // {{{
 } // }}}
 
 void ib::CommandLexer::onAfterLoop() { // {{{
-  if(state_ != 0 && token_ != 0){
+  if(state_ != 0 && token_ != nullptr){
     token_->setToken(strbuf_);
     tokens_.push_back(token_);
   }

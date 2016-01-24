@@ -85,7 +85,7 @@ void ib::Controller::executeCommand() { // {{{
   std::string message;
   auto it = commands_.find(cmd);
   if(it != commands_.end()){
-    if((*it).second->execute(input->getParamValues(), workdir.empty() ? 0 : &workdir, error) != 0){
+    if((*it).second->execute(input->getParamValues(), workdir.empty() ? nullptr : &workdir, error) != 0){
       if(!error.getMessage().empty()){
         message = error.getMessage();
       }
@@ -119,7 +119,7 @@ void ib::Controller::executeCommand() { // {{{
     }
   }
 
-  afterExecuteCommand(success, message.empty() ? 0 : message.c_str());
+  afterExecuteCommand(success, message.empty() ? nullptr : message.c_str());
   if(success){
     if(it != commands_.end()){
       if((*it).second->isEnabledHistory()){
@@ -154,7 +154,7 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
       input->adjustSize();
     }
   }
-  if(message != 0){
+  if(message != nullptr){
     fl_alert("%s", message);
   }
 } // }}}
@@ -208,7 +208,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   ib::unique_char_ptr current_workdir(ib::platform::oschar2utf8(osbuf));
   ib::platform::get_self_path(osbuf);
   ib::unique_char_ptr self_path(ib::platform::oschar2utf8(osbuf));
-  ib::unique_oschar_ptr osself_dir(ib::platform::dirname(0, osbuf));
+  ib::unique_oschar_ptr osself_dir(ib::platform::dirname(nullptr, osbuf));
   cfg->setSelfPath(self_path.get());
   cfg->setInitialWorkdir(current_workdir.get());
   setCwd(current_workdir.get(), error);
@@ -216,7 +216,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     ib::oschar osconf_dir[IB_MAX_PATH];
     ib::platform::default_config_path(osconf_dir);
     ib::unique_oschar_ptr osconfig_name(ib::platform::utf82oschar("config.lua"));
-    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(0, osconf_dir, osconfig_name.get()));
+    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(nullptr, osconf_dir, osconfig_name.get()));
     ib::unique_char_ptr   cconfig_path(ib::platform::oschar2utf8(oscconfig_path.get()));
     cfg->setConfigPath(cconfig_path.get());
   }
@@ -224,25 +224,25 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
   ib::platform::dirname(osbuf, osconfig_path.get());
   ib::unique_oschar_ptr oscmd_cache_name(ib::platform::utf82oschar("commands.cache"));
-  ib::unique_oschar_ptr oscmd_cache_path(ib::platform::join_path(0, osbuf, oscmd_cache_name.get()));
+  ib::unique_oschar_ptr oscmd_cache_path(ib::platform::join_path(nullptr, osbuf, oscmd_cache_name.get()));
   ib::unique_char_ptr   cmd_cache_path(ib::platform::oschar2utf8(oscmd_cache_path.get()));
   cfg->setCommandCachePath(cmd_cache_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
   ib::unique_oschar_ptr oshistory_name(ib::platform::utf82oschar("history.txt"));
-  ib::unique_oschar_ptr oshistory_path(ib::platform::join_path(0, osbuf, oshistory_name.get()));
+  ib::unique_oschar_ptr oshistory_path(ib::platform::join_path(nullptr, osbuf, oshistory_name.get()));
   ib::unique_char_ptr   history_path(ib::platform::oschar2utf8(oshistory_path.get()));
   cfg->setHistoryPath(history_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
   ib::unique_oschar_ptr osicon_cache_name(ib::platform::utf82oschar("icons.cache"));
-  ib::unique_oschar_ptr osicon_cache_path(ib::platform::join_path(0, osbuf, osicon_cache_name.get()));
+  ib::unique_oschar_ptr osicon_cache_path(ib::platform::join_path(nullptr, osbuf, osicon_cache_name.get()));
   ib::unique_char_ptr   icon_cache_path(ib::platform::oschar2utf8(osicon_cache_path.get()));
   cfg->setIconCachePath(icon_cache_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
   ib::unique_oschar_ptr osmigemo_dict_name(ib::platform::utf82oschar("dict"));
-  ib::unique_oschar_ptr osmigemo_dict_path(ib::platform::normalize_join_path(0, osbuf, osmigemo_dict_name.get()));
+  ib::unique_oschar_ptr osmigemo_dict_path(ib::platform::normalize_join_path(nullptr, osbuf, osmigemo_dict_name.get()));
   ib::unique_char_ptr   migemo_dict_path(ib::platform::oschar2utf8(osmigemo_dict_path.get()));
   cfg->setMigemoDictPath(migemo_dict_path.get());
 
@@ -250,7 +250,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
   ib::Singleton<ib::MainLuaState>::getInstance()->init();
   
-  ib::SearchPath *search_path = 0;
+  ib::SearchPath *search_path = nullptr;
   lua_Integer luint = 0;
   lua_Number  ludouble = 0.0;
   int         key_buf[3];
@@ -791,7 +791,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
     for(const auto &fileptr : files) {
       ib::platform::join_path(osfull_path, osdir, fileptr.get());
       ib::platform::oschar2utf8_b(full_path, IB_MAX_PATH_BYTE, osfull_path);
-      if(exre != 0 && exre->match(full_path) == 0) continue;
+      if(exre != nullptr && exre->match(full_path) == 0) continue;
       if(ib::platform::directory_exists(osfull_path)){
         _walk_search_path(commands, category, full_path, current_depth+1, limit_depth, pattern, exre);
       }else{
@@ -826,7 +826,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     for(auto &p : prev_commands) {
       if(!p.second->getCategory().empty() && p.second->getCategory() != category){
         auto prev_command = dynamic_cast<ib::Command*>(p.second);
-        if(prev_command != 0){
+        if(prev_command != nullptr){
           commands.push_back(prev_command);
           prev_index++;
         }
@@ -841,7 +841,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
       ib::Regex exre(s->getExcludePattern().c_str(), ib::Regex::I);
       exre.init();
       _walk_search_path(commands, s->getCategory().c_str(), s->getPath().c_str(), 0, depth,
-                        s->getPattern(), strlen(exre.getPattern()) == 0 ? 0 : &exre);
+                        s->getPattern(), strlen(exre.getPattern()) == 0 ? nullptr : &exre);
     }
   }
 
@@ -859,7 +859,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
-    if(commands.at(i) != 0){ delete commands.at(i); }
+    if(commands.at(i) != nullptr){ delete commands.at(i); }
   }
   commands.clear();
 } // }}}
@@ -943,7 +943,7 @@ void ib::Controller::completionInput() { // {{{
         }else{
           const auto &comp_value = listbox->selectedValue()->getCompvalue();
           ib::unique_oschar_ptr oscomp_value(ib::platform::utf82oschar(comp_value.c_str()));
-          ib::unique_oschar_ptr osquoted_value(ib::platform::quote_string(0, oscomp_value.get()));
+          ib::unique_oschar_ptr osquoted_value(ib::platform::quote_string(nullptr, oscomp_value.get()));
           ib::unique_char_ptr   quoted_value(ib::platform::oschar2utf8(osquoted_value.get()));
           buf += quoted_value.get();
         }

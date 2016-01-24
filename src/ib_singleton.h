@@ -33,13 +33,13 @@ namespace ib {
     protected:
       static void destroy() {
         delete instance_;
-        instance_ = 0;
+        instance_ = nullptr;
       }
       static T* instance_;
   };
 
 }
 
-template <typename T> T* ib::Singleton<T>::instance_ = 0;
+template <typename T> T* ib::Singleton<T>::instance_ = nullptr;
 
 #endif

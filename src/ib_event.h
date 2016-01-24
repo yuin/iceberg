@@ -10,7 +10,7 @@ typedef void (*eventf)(void *);
 namespace ib {
   class CancelableEvent : private NonCopyable<CancelableEvent> { // {{{
     public:
-      explicit CancelableEvent(int ms, void (*f)(void*)) : ms_(ms), f_(f), last_event_(0), state_(0), running_(0), thread_(), trigger_cmutex_(), trigger_cond_() {}
+      explicit CancelableEvent(int ms, void (*f)(void*)) : ms_(ms), f_(f), last_event_(nullptr), state_(0), running_(0), thread_(), trigger_cmutex_(), trigger_cond_() {}
       virtual ~CancelableEvent() {}
 
       void startThread();

@@ -51,7 +51,7 @@ const char *strcasestr(const char *haystack, const char *needle) { // {{{
     }
     ++haypos;
   }
-  return NULL;
+  return nullptr;
 } // }}}
 
 void tcsncpy_s(ib::oschar *dest, const ib::oschar *src, std::size_t bufsize) {
@@ -77,9 +77,9 @@ static char* ib_platform_get_last_error_message(){ // {{{
     FORMAT_MESSAGE_ALLOCATE_BUFFER | 
     FORMAT_MESSAGE_FROM_SYSTEM | 
     FORMAT_MESSAGE_IGNORE_INSERTS,
-    NULL, GetLastError(),
+    nullptr, GetLastError(),
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-    (LPTSTR) &msg_buf, 0, NULL);
+    (LPTSTR) &msg_buf, 0, nullptr);
   auto ret = ib::platform::oschar2utf8(reinterpret_cast<const ib::oschar*>(msg_buf));
   ret[strlen(ret)-2] = '\0';
   LocalFree(msg_buf);
@@ -270,9 +270,9 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
             HMENU hMenuPop = CreatePopupMenu();
             AppendMenu(hMenuPop, MF_BYCOMMAND | MF_STRING, IB_IDM_EXIT, L"Exit(&X)");
 
-            TrackPopupMenu(hMenuPop, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
+            TrackPopupMenu(hMenuPop, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, nullptr);
             MSG msg;
-            if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
               TranslateMessage(&msg);
               DispatchMessage(&msg);
             }
@@ -287,7 +287,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
     case WM_DRAWCLIPBOARD: {
         OpenClipboard(hwnd);
         HANDLE htext = GetClipboardData(CF_TEXT);
-        if(htext != NULL) {
+        if(htext != nullptr) {
             auto text = reinterpret_cast<char*>(GlobalLock(htext));
             ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
             ib::Regex reg("\r\n", ib::Regex::NONE);
@@ -296,7 +296,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
             GlobalUnlock(htext);
         }
         CloseClipboard();
-        if(ib_g_hwnd_clbchain_next != NULL) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
+        if(ib_g_hwnd_clbchain_next != nullptr) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
       }
       break;
 
@@ -330,7 +330,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
 
     case WM_CHANGECBCHAIN: {
         if((HWND)wparam == ib_g_hwnd_clbchain_next) ib_g_hwnd_clbchain_next = (HWND)lparam;
-        else if(ib_g_hwnd_clbchain_next != NULL) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
+        else if(ib_g_hwnd_clbchain_next != nullptr) SendMessage(ib_g_hwnd_clbchain_next, umsg, wparam, lparam);
       }
       break;
 
@@ -416,7 +416,7 @@ static void ib_platform_list_network_servers(std::vector<ib::oschar*> &result, c
   DWORD read;
   DWORD num_servers;
 
-  NET_API_STATUS ret = NetServerEnum(NULL, 100, (BYTE**)&server_info, MAX_PREFERRED_LENGTH, &read, &num_servers, types, domain, 0);
+  NET_API_STATUS ret = NetServerEnum(nullptr, 100, (BYTE**)&server_info, MAX_PREFERRED_LENGTH, &read, &num_servers, types, domain, 0);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
       auto server_name = new ib::oschar[IB_MAX_PATH];
@@ -431,11 +431,11 @@ static void ib_platform_list_network_servers(std::vector<ib::oschar*> &result, c
 } // }}}
 
 static void ib_platform_list_network_shares(std::vector<ib::oschar*> &result, ib::oschar *server){ // {{{
-  SHARE_INFO_502* share_info = 0;
+  SHARE_INFO_502* share_info = nullptr;
   DWORD read;
   DWORD num_shares;
 
-  NET_API_STATUS ret = NetShareEnum(server, 502, (BYTE**)&share_info,  MAX_PREFERRED_LENGTH, &read, &num_shares, NULL);
+  NET_API_STATUS ret = NetShareEnum(server, 502, (BYTE**)&share_info,  MAX_PREFERRED_LENGTH, &read, &num_shares, nullptr);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
       auto share_name = new ib::oschar[IB_MAX_PATH];
@@ -532,7 +532,7 @@ ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
   const auto _srclen = strlen(src);
   const unsigned int srclen = (_srclen) > UINT_MAX ? UINT_MAX : (unsigned int)_srclen;
 
-  auto wlen = fl_utf8toUtf16(src, srclen, NULL, 0);
+  auto wlen = fl_utf8toUtf16(src, srclen, nullptr, 0);
   wlen++;
   auto wbuf = new wchar_t[wlen];
   wlen = fl_utf8toUtf16(src, srclen, reinterpret_cast<unsigned short*>(wbuf), wlen);
@@ -548,30 +548,30 @@ void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, co
 } // }}}
 
 char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
-  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, NULL, 0, NULL, NULL);
+  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, nullptr, 0, nullptr, nullptr);
   size++;
   auto buff = new char[size];
-  size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buff, size, NULL, NULL);
+  size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buff, size, nullptr, nullptr);
   buff[size] = 0;
   return buff;
 } // }}}
 
 void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buf, bufsize, NULL, NULL);
+  auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buf, bufsize, nullptr, nullptr);
   buf[size] = 0;
 } // }}}
 
 char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
-  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, NULL, 0, NULL, NULL);
+  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, nullptr, 0, nullptr, nullptr);
   size++;
   auto buff = new char[size];
-  size = WideCharToMultiByte(GetACP(), 0, src, -1, buff, size, NULL, NULL);
+  size = WideCharToMultiByte(GetACP(), 0, src, -1, buff, size, nullptr, nullptr);
   buff[size] = 0;
   return buff;
 } // }}}
 
 void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
-  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, buf, bufsize, NULL, NULL);
+  auto size = WideCharToMultiByte(GetACP(), 0, src, -1, buf, bufsize, nullptr, nullptr);
   buf[size] = 0;
 } // }}}
 
@@ -581,7 +581,7 @@ char* ib::platform::utf82local(const char *src) { // {{{
 } // }}}
 
 char* ib::platform::local2utf8(const char *src) { // {{{
-  auto size = MultiByteToWideChar(GetACP(), 0, src, -1, NULL, 0);
+  auto size = MultiByteToWideChar(GetACP(), 0, src, -1, nullptr, 0);
   size++;
   auto buff = new ib::oschar[size];
   size = MultiByteToWideChar(GetACP(), 0, src, -1, buff, size);
@@ -592,14 +592,14 @@ char* ib::platform::local2utf8(const char *src) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathQuoteSpaces(result);
   return result;
 } // }}}
 
 ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathUnquoteSpaces(result);
   return result;
@@ -695,7 +695,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
   std::string strparams;
   for(const auto &p : params) {
     ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p.get()->c_str()));
-    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(0, osparam.get()));
+    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(nullptr, osparam.get()));
     ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
     strparams += escaped_param.get();
     strparams += " ";
@@ -707,7 +707,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
   std::string strparams;
   for(const auto &p : params) {
     ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p->c_str()));
-    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(0, osparam.get()));
+    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(nullptr, osparam.get()));
     ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
     strparams += escaped_param.get();
     strparams += " ";
@@ -791,22 +791,22 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   HRESULT             ret;
   POINT               pt;
   HMENU               hmenu;
-  IContextMenu        *context_menu = NULL;
-  IShellFolder        *shell_folder = NULL;
+  IContextMenu        *context_menu = nullptr;
+  IShellFolder        *shell_folder = nullptr;
   ITEMIDLIST          *childlist;
   CMINVOKECOMMANDINFO ici;
   ITEMIDLIST          *abslist;
   int                 context_id;
   
   abslist = ILCreateFromPath(path);
-  if(abslist == 0) {
+  if(abslist == nullptr) {
     ret = S_FALSE;
     goto finalize;
   }
-  SHBindToParent(abslist, IID_IShellFolder, (void **)(&shell_folder), NULL);
+  SHBindToParent(abslist, IID_IShellFolder, (void **)(&shell_folder), nullptr);
   childlist = ILFindLastID(abslist);
 
-  ret = shell_folder->GetUIObjectOf(NULL, 1, (LPCITEMIDLIST *)&childlist, IID_IContextMenu, NULL, (void **)&context_menu);
+  ret = shell_folder->GetUIObjectOf(nullptr, 1, (LPCITEMIDLIST *)&childlist, IID_IContextMenu, nullptr, (void **)&context_menu);
   if (ret != S_OK) {
     goto finalize;
   }
@@ -815,7 +815,7 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   context_menu->QueryContextMenu(hmenu, 0, 1, 0x7fff, CMF_NORMAL);
 
   GetCursorPos(&pt);
-  context_id = TrackPopupMenu(hmenu, TPM_RETURNCMD, pt.x, pt.y, 0, ib_g_hwnd_main, NULL);
+  context_id = TrackPopupMenu(hmenu, TPM_RETURNCMD, pt.x, pt.y, 0, ib_g_hwnd_main, nullptr);
   if (context_id == 0) {
     ret = S_FALSE;
     goto finalize;
@@ -825,16 +825,16 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   ici.fMask        = 0;
   ici.hwnd         = ib_g_hwnd_main;
   ici.lpVerb       = (LPCSTR)MAKEINTRESOURCE(context_id - 1);
-  ici.lpParameters = NULL;
-  ici.lpDirectory  = NULL;
+  ici.lpParameters = nullptr;
+  ici.lpDirectory  = nullptr;
   ici.nShow        = SW_SHOW;
   
   ret = context_menu->InvokeCommand(&ici);
 
 finalize:
-  if(context_menu != NULL) context_menu->Release();
-  if(shell_folder != NULL) shell_folder->Release();
-  if(abslist != NULL) ILFree(abslist);
+  if(context_menu != nullptr) context_menu->Release();
+  if(shell_folder != nullptr) shell_folder->Release();
+  if(abslist != nullptr) ILFree(abslist);
 
   return ret == S_OK ? 0 : 1;
 } // }}}
@@ -845,10 +845,10 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
   if(lnk_reg.match(cmd->getCommandPath().c_str()) == 0){
     ib::oschar command_path[IB_MAX_PATH];
     ib::platform::utf82oschar_b(command_path, IB_MAX_PATH, cmd->getCommandPath().c_str());
-    IShellLink* shell_link_if = NULL;
-    IPersistFile* persist_file_if = NULL;
+    IShellLink* shell_link_if = nullptr;
+    IPersistFile* persist_file_if = nullptr;
     HRESULT result;
-    CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&shell_link_if);
+    CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&shell_link_if);
     shell_link_if->QueryInterface(IID_IPersistFile, (void**)&persist_file_if);
     result = persist_file_if->Load(command_path, TRUE);
     if(SUCCEEDED(result)){
@@ -905,7 +905,7 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar osbuf[IB_MAX_PATH];
   ib::platform::get_self_path(osbuf);
   ib::platform::dirname(result, osbuf);
@@ -913,7 +913,7 @@ ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   tcsncpy_s(result, file, IB_MAX_PATH);
   return result;
 } // }}}
@@ -923,8 +923,8 @@ ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int
 //////////////////////////////////////////////////
 Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const int size){ // {{{
    SHFILEINFO shinfo;
-   Fl_RGB_Image *result_image = 0;
-   uchar* data = 0;
+   Fl_RGB_Image *result_image = nullptr;
+   uchar* data = nullptr;
    HDC hdc1 = 0;
    HDC hdc2 = 0;
    HBITMAP hbmp = 0;
@@ -947,7 +947,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
 
    if(special_folder > -1){
      LPITEMIDLIST pidl;
-     if(SHGetSpecialFolderLocation(NULL, special_folder, &pidl) != S_OK) {
+     if(SHGetSpecialFolderLocation(nullptr, special_folder, &pidl) != S_OK) {
        goto label_finalize;
      }
      if(!SHGetFileInfo((LPCWSTR)pidl, 0, &shinfo, sizeof(SHFILEINFO), SHGFI_PIDL | SHGFI_ICON | size_flag)) {
@@ -989,7 +989,7 @@ label_finalize:
 } /* }}} */
 
 ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child) { // {{{
-  if(result == 0){
+  if(result == nullptr){
     result = new ib::oschar[IB_MAX_PATH];
   }
   tcsncpy_s(result, parent, IB_MAX_PATH);
@@ -1008,7 +1008,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
 
 ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *path){ // {{{
   ib::oschar tmp[IB_MAX_PATH];
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   const auto length = _tcslen(path);
   bool is_dot_path = length > 1 && path[0] == L'.' && (path[1] == L'/' || path[1] == L'\\');
   if(!is_dot_path) is_dot_path = length == 1 && path[0] == L'.';
@@ -1039,7 +1039,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
 } // }}}
 
 ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::join_path(tmp, parent, child);
   ib::platform::normalize_path(result, tmp);
@@ -1047,7 +1047,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 } // }}}
 
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   tcsncpy_s(result, path, IB_MAX_PATH);
   const auto len = _tcslen(path);
   if(len == 0) return result;
@@ -1065,7 +1065,7 @@ ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ /
 } // }}}
 
 ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   const auto len = _tcslen(path);
   if(len == 0) return result;
   std::size_t i = len-1;
@@ -1079,7 +1079,7 @@ ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ 
 } // }}}
 
 ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar *dir, const ib::oschar *path) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   if(ib::platform::is_relative_path(path)){
     ib::platform::normalize_join_path(result, dir, path);
   }else{
@@ -1149,7 +1149,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
   if(_tcscmp(dir, L"\\\\") == 0){
     if(!recursive){
       std::vector<ib::oschar*> servers;
-      ib_platform_list_network_servers(servers, NULL, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
+      ib_platform_list_network_servers(servers, nullptr, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
       for(const auto &s : servers) {
         result.push_back(ib::unique_oschar_ptr(s));
       }
@@ -1194,9 +1194,9 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
   GetVersionEx(&OSver);
   if((OSver.dwMajorVersion == 6 && OSver.dwMinorVersion >= 1) || OSver.dwMajorVersion > 6){
     // supported in windows7, windows2008R2 or above
-    h = FindFirstFileEx(pattern, FindExInfoBasic, &fd, FindExSearchNameMatch, NULL, 0);
+    h = FindFirstFileEx(pattern, FindExInfoBasic, &fd, FindExSearchNameMatch, nullptr, 0);
   }else{
-    h = FindFirstFileEx(pattern, FindExInfoStandard, &fd, FindExSearchNameMatch, NULL, 0);
+    h = FindFirstFileEx(pattern, FindExInfoStandard, &fd, FindExSearchNameMatch, nullptr, 0);
   }
   if (INVALID_HANDLE_VALUE == h) {
     error.setCode(1);
@@ -1238,13 +1238,13 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
 } // }}}
 
 ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   GetModuleFileName(ib_g_hinst, result, IB_MAX_PATH-1);
   return result;
 } // }}}
 
 ib::oschar* ib::platform::get_current_workdir(ib::oschar *result){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   GetCurrentDirectory(IB_MAX_PATH-1, result);
   return result;
 } // }}}
@@ -1272,13 +1272,13 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
 
   bool has_ext = _tcsstr(name, L".") != 0;
   bool found = false;
-  ib::oschar *path_next = 0;
+  ib::oschar *path_next = nullptr;
   ib::oschar *path_current = path_buf;
   do{ 
     path_next = tcstokread(path_current, L';');
     if(!has_ext){
-      ib::oschar *ext_next = 0;
-      ib::oschar *ext_current = 0;
+      ib::oschar *ext_next = nullptr;
+      ib::oschar *ext_current = nullptr;
       ib::oschar ext_buf2[MAX_ENV_SIZE];
       tcsncpy_s(ext_buf2, ext_buf, MAX_ENV_SIZE);
       ext_current = ext_buf2;
@@ -1309,7 +1309,7 @@ finalize:
 } // }}}
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
   // PathIsDirectory returns true even if path is a drive.
@@ -1364,12 +1364,12 @@ int ib::platform::copy_file(const ib::oschar *source, const ib::oschar *dest, ib
 
 int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &error){ // {{{
   SetLastError(NO_ERROR);
-  HANDLE file = CreateFile(path, GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE file = CreateFile(path, GENERIC_READ, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
   if(file == INVALID_HANDLE_VALUE ){
     ib_platform_set_error(error);
     return 1;
   }
-  auto sz = GetFileSize(file, NULL );
+  auto sz = GetFileSize(file, nullptr );
   if(sz == (DWORD)-1){
     ib_platform_set_error(error);
     return 1;
@@ -1379,7 +1379,7 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
 } // }}}
 
 ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::basename(tmp, path);
   auto ptr = PathFindExtensionW(tmp);
@@ -1432,7 +1432,7 @@ void ib::platform::unlock_mutex(ib::mutex *m) { /* {{{ */
 } /* }}} */
 
 void ib::platform::create_cmutex(ib::cmutex *m) { /* {{{ */
-  *m = CreateMutex(NULL,FALSE,NULL);
+  *m = CreateMutex(nullptr,FALSE,nullptr);
 } /* }}} */
 
 void ib::platform::destroy_cmutex(ib::cmutex *m) { /* {{{ */
@@ -1450,9 +1450,9 @@ void ib::platform::unlock_cmutex(ib::cmutex *m) { /* {{{ */
 void ib::platform::create_condition(ib::condition *c) { /* {{{ */
   c->waiters = 0;
   c->was_broadcast = 0;
-  c->sema = CreateSemaphore (NULL, 0, LONG_MAX, NULL);
+  c->sema = CreateSemaphore (nullptr, 0, LONG_MAX, nullptr);
   InitializeCriticalSection (&c->waiters_lock);
-  c->waiters_done = CreateEvent (NULL, FALSE, FALSE, NULL);
+  c->waiters_done = CreateEvent (nullptr, FALSE, FALSE, nullptr);
 } /* }}} */
 
 void ib::platform::destroy_condition(ib::condition *c) { /* {{{ */
@@ -1503,7 +1503,7 @@ void ib::platform::notify_condition(ib::condition *c) { /* {{{ */
 //////////////////////////////////////////////////
 int ib::platform::wait_pid(const int pid) { // {{{
   HANDLE hprocess = OpenProcess(SYNCHRONIZE, FALSE, pid);
-  if (hprocess != NULL) {
+  if (hprocess != nullptr) {
     if (WaitForSingleObject(hprocess, 10 * 1000) == WAIT_TIMEOUT) {
       return -1;
     }

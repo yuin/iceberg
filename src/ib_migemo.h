@@ -33,7 +33,7 @@ namespace ib{
 
 
     protected:
-      Migemo() : has_migemo_(false), dl_(0), migemo_(0) {}
+      Migemo() : has_migemo_(false), dl_(0), migemo_(nullptr) {}
 
       bool has_migemo_;
       ib::module dl_;

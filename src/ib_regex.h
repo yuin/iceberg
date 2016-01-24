@@ -32,7 +32,7 @@ namespace ib{
         return escape(str.c_str());
       };
 
-      Regex(const char *pattern, unsigned int flags) : pattern_(0), flags_(flags), reg_(0), error_info_(), region_(0), const_string_(0), var_string_(0), var_string_alloced_(0), last_result_(-1), sub_meta_char_('\\') {
+      Regex(const char *pattern, unsigned int flags) : pattern_(nullptr), flags_(flags), reg_(nullptr), error_info_(), region_(nullptr), const_string_(nullptr), var_string_(nullptr), var_string_alloced_(false), last_result_(-1), sub_meta_char_('\\') {
         size_t len = strlen(pattern) + 1;
         char *tmpptr = (char*)malloc(sizeof(char) * len);
         strcpy(tmpptr, pattern);
@@ -124,7 +124,7 @@ namespace ib{
 
       void copyString(const char *value){
         freeString();
-        var_string_alloced_ = 1;
+        var_string_alloced_ = true;
         size_t len = strlen(value) + 1;
         var_string_ = (char*)malloc(sizeof(char) * len);
         strcpy(var_string_, value);
@@ -137,7 +137,7 @@ namespace ib{
       }
 
       const char* getString() const {
-        return (var_string_alloced_ == 0) ? const_string_ : var_string_;
+        return (var_string_alloced_ == false) ? const_string_ : var_string_;
       }
 
       void setSubMetaChar(const char value) { sub_meta_char_ = value; }
@@ -150,15 +150,15 @@ namespace ib{
       OnigRegion *region_;
       const char *const_string_;
       char       *var_string_;
-      int        var_string_alloced_;
+      bool       var_string_alloced_;
       int last_result_;
       char sub_meta_char_;
 
       void freeString(){
-        if(var_string_alloced_ == 1){
+        if(var_string_alloced_){
           free(var_string_);
         }
-        var_string_alloced_ = 0;
+        var_string_alloced_ = false;
         var_string_ = 0;
       }
   };

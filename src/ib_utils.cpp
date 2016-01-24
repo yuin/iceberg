@@ -128,7 +128,7 @@ void ib::utils::scan_search_path(const char *category) {
 
 void ib::utils::alert_lua_stack(lua_State *L) { // {{{
   int num, i, type;
-  if(L == 0) {
+  if(L == nullptr) {
     L = IB_LUA;
   }
   
@@ -509,7 +509,7 @@ int ib::utils::open_directory(const std::string &path, ib::Error &error) { // {{
   cmd.init();
   std::vector<std::string*> params;
   params.push_back(new std::string(path));
-  auto ret = cmd.execute(params, 0, error);
+  auto ret = cmd.execute(params, nullptr, error);
   ib::utils::delete_pointer_vectors(params);
   return ret;
 } // }}}

@@ -5,7 +5,7 @@ static ib::threadret thread_func(void *self_) { // {{{
   auto self = reinterpret_cast<ib::CancelableEvent*>(self_);
   while(1) {
     ib::platform::lock_cmutex(&(self->trigger_cmutex_));
-    if(self->last_event_ == 0) {
+    if(self->last_event_ == nullptr) {
       ib::platform::wait_condition(&(self->trigger_cond_), &(self->trigger_cmutex_), 0);
     }
     if(!self->running_) {
@@ -18,9 +18,9 @@ static ib::threadret thread_func(void *self_) { // {{{
         ib::platform::unlock_cmutex(&(self->trigger_cmutex_));
         goto exit_thread;
       }
-      if(timeout && self->last_event_ != 0) {
+      if(timeout && self->last_event_ != nullptr) {
         self->f_(self->last_event_);
-        self->last_event_ = 0;
+        self->last_event_ = nullptr;
       }
     }
     ib::platform::unlock_cmutex(&(self->trigger_cmutex_));

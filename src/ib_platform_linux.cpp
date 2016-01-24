@@ -42,7 +42,7 @@ static std::string parse_desktop_entry_value(const std::string &value) {
       else if(escape == "\\t") *res += "\t";
       else if(escape == "\\r") *res += "\r";
       else if(escape == "\\\\") *res += "\\";
-  }, 0);
+  }, nullptr);
   return result;
 }
 
@@ -52,7 +52,7 @@ static std::string normalize_desktop_entry_value(const std::string &value) {
   auto result = re.gsub(value, [](const ib::Regex &reg, std::string *res, void *userdata) {
       auto escape = reg._1();
       if(escape == "\t") *res += "    ";
-  }, 0);
+  }, nullptr);
   return result;
 }
 
@@ -168,9 +168,9 @@ class FreeDesktopKVFile : private ib::NonCopyable<FreeDesktopKVFile> { // {{{
         }
       }
       auto locale = getenv("LC_MESSAGES");
-      if(locale == 0) locale = getenv("LANGUAGE");
-      if(locale == 0) locale = getenv("LANG");
-      if(locale != 0) {
+      if(locale == nullptr) locale = getenv("LANGUAGE");
+      if(locale == nullptr) locale = getenv("LANG");
+      if(locale != nullptr) {
         ib::Regex locale_reg("(([^\\._@]+)((\\.)([^_]*))?)(_(\\w+))?(@(\\w+))?", ib::Regex::I);
         locale_reg.init();
         if(locale_reg.match(locale) == 0){
@@ -231,7 +231,7 @@ class FreeDesktopMime: private ib::NonCopyable<FreeDesktopMime> { // {{{
     std::vector<std::tuple<int, std::string, std::string, std::string> > globs_;
 }; 
 
-FreeDesktopMime* FreeDesktopMime::instance_ = 0;
+FreeDesktopMime* FreeDesktopMime::instance_ = nullptr;
 
 void FreeDesktopMime::build() {
   const char *files[] = {"/usr/share/mime/globs2", "/usr/share/mime/globs"};
@@ -338,7 +338,7 @@ void FreeDesktopIconFinder::findHelper(std::string &result, const char *theme) {
   lookup(result, theme);
   if(!result.empty()) return;
   auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
-  if(kvf == NULL) return;
+  if(kvf == nullptr) return;
   auto parents = kvf->get("Icon Theme", "Inherits", false);
   if(parents.empty() && strcmp(theme, "Hicolor") != 0) parents = "Hicolor";
   std::istringstream stream(parents);
@@ -351,7 +351,7 @@ void FreeDesktopIconFinder::findHelper(std::string &result, const char *theme) {
 
 void FreeDesktopIconFinder::lookup(std::string &result, const char *theme) {
   auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
-  if(kvf == NULL) return;
+  if(kvf == nullptr) return;
   auto dirs = kvf->get("Icon Theme", "Directories", false);
   char theme_dir[IB_MAX_PATH];
   ib::platform::dirname(theme_dir, kvf->getPath());
@@ -395,7 +395,7 @@ std::tuple<std::string, int,int,int,int> FreeDesktopIconFinder::getDirectorySize
   std::string typ;
   int size, min, max, th = 0;
   const auto kvf = FreeDesktopThemeRepos::inst()->getTheme(theme);
-  if(kvf != NULL) {
+  if(kvf != nullptr) {
     typ = kvf->get(dir, "Type", false);
     if(typ.empty()) typ = "Threshold";
     size = std::atoi(kvf->get(dir, "Size", false).c_str());
@@ -454,14 +454,14 @@ int FreeDesktopIconFinder::directorySizeDistance(const char *dir, const char *th
 }
 // }}}
 
-FreeDesktopThemeRepos *FreeDesktopThemeRepos::instance_ = 0;
+FreeDesktopThemeRepos *FreeDesktopThemeRepos::instance_ = nullptr;
 
 void FreeDesktopThemeRepos::build() {
   char path[IB_MAX_PATH];
   snprintf(path, IB_MAX_PATH, "%s/.icons", getenv("HOME"));
   buildHelper(path);
 
-  if(getenv("XDG_DATA_DIRS") == 0) {
+  if(getenv("XDG_DATA_DIRS") == nullptr) {
     snprintf(path, IB_MAX_PATH, "/usr/share/icons");
   }else{
     snprintf(path, IB_MAX_PATH, "%s/icons", getenv("XDG_DATA_DIRS"));
@@ -502,7 +502,7 @@ void FreeDesktopThemeRepos::buildHelper(const char *basepath) {
 
 FreeDesktopKVFile* FreeDesktopThemeRepos::getTheme(const char *name) const {
   auto themeptr = indicies_.find(name);
-  if(themeptr == indicies_.end()) return 0;
+  if(themeptr == indicies_.end()) return nullptr;
   return themeptr->second.get();
 }
 
@@ -568,10 +568,10 @@ static void* xget_property(Window w, const char *prop, Atom typ) {
   long *ptr = 0;
 
   if (XGetWindowProperty(fl_display, w, XInternAtom(fl_display, prop, False), 0, 1, False, typ, &aret, &f, &n, &b, (unsigned char**)&ptr) != Success) {
-      return 0;
+      return nullptr;
   }
   if (aret != typ || n == 0) {
-    return 0;
+    return nullptr;
   }
   return ptr;
 }
@@ -593,7 +593,7 @@ static void xsend_message_l(Window w, const char *msg, long d0, long d1, long d2
 
 static int xcurrent_desktop() {
   auto desktop = reinterpret_cast<long*>(xget_property(DefaultRootWindow(fl_display), "_NET_CURRENT_DESKTOP", XA_CARDINAL));
-  if(desktop == 0) {
+  if(desktop == nullptr) {
     return -1;
   }
   auto ret = reinterpret_cast<int&>(desktop[0]);
@@ -636,7 +636,7 @@ int ib::platform::startup_system() { // {{{
 int ib::platform::init_system() { // {{{
   ib::Singleton<ib::ListWindow>::getInstance()->set_menu_window();
   XAllowEvents(fl_display, AsyncKeyboard, CurrentTime);
-  XkbSetDetectableAutoRepeat(fl_display, true, NULL);
+  XkbSetDetectableAutoRepeat(fl_display, true, nullptr);
   if(xregister_hotkey() < 0 ) {
     fl_alert("%s", "Failed to register hotkeys.");
     ib::utils::exit_application(1);
@@ -648,7 +648,7 @@ int ib::platform::init_system() { // {{{
   Fl::add_clipboard_notify([](int source, void *data){
     std::string tmp;
     ib::utils::get_clipboard(tmp);
-  }, (void*)0);
+  }, nullptr);
 
   Fl::add_handler(xevent_handler);
   XFlush(fl_display);
@@ -716,7 +716,7 @@ char* ib::platform::local2utf8(const char *src) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   bool need_quote = false;
   bool all_space = true;
 
@@ -753,7 +753,7 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
 } // }}}
 
 ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   auto len = strlen(str);
   if(len == 0) { result[0] = '\0'; return result; }
   if(len == 1) { strcpy(result, str); return result; }
@@ -926,7 +926,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   for(std::size_t i = 0; i < argv.size(); i++) {
     cargv.get()[i] = argv.at(i).get();
   }
-  cargv[argv.size()] = NULL;
+  cargv[argv.size()] = nullptr;
 
   if(pipe(outfd) != 0 || pipe(infd) != 0 || pipe(efd) != 0) {
     error.setMessage("Failed to create pipes.");
@@ -1045,7 +1045,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
           int argc = 0;
           for(auto last = cmdline.end(); it != last; ++it){
             command += " ";
-            const ib::oschar *v = it->get();
+            const auto *v = it->get();
             if(strcmp(v, "%f") == 0 || strcmp(v, "%F") == 0 || strcmp(v, "%u") == 0 ||
                strcmp(v, "%U") == 0){
               snprintf(quoted, IB_MAX_PATH, "${%d}",  ++argc);
@@ -1089,13 +1089,13 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   snprintf(result, IB_MAX_PATH, "%s/%s", getenv("HOME"), ".iceberg");
   return result;
 } // }}}
 
 ib::oschar* ib::platform::resolve_icon(ib::oschar *result, ib::oschar *file, int size){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   if(ib::platform::file_exists(file)) {
     strncpy_s(result, file, IB_MAX_PATH);
   } else {
@@ -1149,11 +1149,11 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
   if(!iconpath.empty() && ib::platform::file_exists(iconpath.c_str())) {
     return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(iconpath.c_str(), size);
   }
-  return 0;
+  return nullptr;
 } /* }}} */
 
 ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child) { // {{{
-  if(result == 0){
+  if(result == nullptr){
     result = new ib::oschar[IB_MAX_PATH];
   }
   const auto length = strlen(parent);
@@ -1172,7 +1172,7 @@ ib::oschar* ib::platform::join_path(ib::oschar *result, const ib::oschar *parent
 } // }}}
 
 ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   result[0] = '\0';
   ib::oschar tmp[IB_MAX_PATH];
   bool is_dot_path = string_startswith(path, "./") || strcmp(path, ".") == 0;
@@ -1210,7 +1210,7 @@ ib::oschar* ib::platform::normalize_path(ib::oschar *result, const ib::oschar *p
 } // }}}
 
 ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::oschar *parent, const ib::oschar *child){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   ib::platform::join_path(tmp, parent, child);
   ib::platform::normalize_path(result, tmp);
@@ -1218,7 +1218,7 @@ ib::oschar* ib::platform::normalize_join_path(ib::oschar *result, const ib::osch
 } // }}}
 
 ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   strncpy_s(result, path, IB_MAX_PATH);
   const auto len = strlen(path);
   if(len == 0) return result;
@@ -1236,7 +1236,7 @@ ib::oschar* ib::platform::dirname(ib::oschar *result, const ib::oschar *path){ /
 } // }}}
 
 ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar tmp[IB_MAX_PATH];
   strncpy_s(tmp, path, IB_MAX_PATH);
   const auto basename = fl_filename_name(tmp);
@@ -1245,7 +1245,7 @@ ib::oschar* ib::platform::basename(ib::oschar *result, const ib::oschar *path){ 
 } // }}}
 
 ib::oschar* ib::platform::to_absolute_path(ib::oschar *result, const ib::oschar *dir, const ib::oschar *path) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   if(ib::platform::is_relative_path(path)){
     ib::platform::normalize_join_path(result, dir, path);
   } else {
@@ -1328,7 +1328,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
 } // }}}
 
 ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   char buf[64];
   snprintf(buf, 64, "/proc/%d/exe", getpid());
   const auto ret = readlink(buf, result, IB_MAX_PATH-1);
@@ -1340,8 +1340,8 @@ ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
 } // }}}
 
 ib::oschar* ib::platform::get_current_workdir(ib::oschar *result){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
-  if(NULL == getcwd(result, IB_MAX_PATH-1)) {
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(nullptr == getcwd(result, IB_MAX_PATH-1)) {
     // ignore errors;
   }
   return result;
@@ -1356,7 +1356,7 @@ int ib::platform::set_current_workdir(const ib::oschar *dir, ib::Error &error){ 
 } // }}}
 
 bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   char *filename = result;
   const char* program = name;
   std::size_t filesize = IB_MAX_PATH;
@@ -1365,7 +1365,7 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
   const char *path;
   char       *ptr,
              *end;
-  if ((path = getenv("PATH")) == NULL) path = "/bin:/usr/bin";
+  if ((path = getenv("PATH")) == nullptr) path = "/bin:/usr/bin";
   for (ptr = filename, end = filename + filesize - 1; *path; path ++) {
     if (*path == ':') {
       if (ptr > filename && ptr[-1] != '/' && ptr < end) *ptr++ = '/';
@@ -1383,7 +1383,7 @@ bool ib::platform::which(ib::oschar *result, const ib::oschar *name) { // {{{
 } // }}}
 
 ib::oschar* ib::platform::icon_cache_key(ib::oschar *result, const ib::oschar *path) { // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   ib::oschar file_type[IB_MAX_PATH];
   ib::platform::file_type(file_type, path);
   if(ib::platform::directory_exists(path)) {
@@ -1458,7 +1458,7 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
 } // }}}
 
 ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){ // {{{
-  if(result == 0){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
   memset(result, 0, IB_MAX_PATH);
   const auto dot = strrchr(path, '.');
   if(!dot || dot == path) return result;
@@ -1473,7 +1473,7 @@ ib::oschar* ib::platform::file_type(ib::oschar *result, const ib::oschar *path){
 // thread functions {{{
 //////////////////////////////////////////////////
 void ib::platform::create_thread(ib::thread *t, ib::threadfunc f, void* p) { // {{{
-  pthread_create(t, NULL, f, p);
+  pthread_create(t, nullptr, f, p);
 }
 /* }}} */
 
@@ -1481,7 +1481,7 @@ void ib::platform::on_thread_start(){ /* {{{ */
 } /* }}} */
 
 void ib::platform::join_thread(ib::thread *t){ /* {{{ */
-  pthread_join(*t, NULL);
+  pthread_join(*t, nullptr);
 } /* }}} */
 
 void ib::platform::exit_thread(int exit_code) { // {{{
@@ -1527,7 +1527,7 @@ void ib::platform::unlock_cmutex(ib::cmutex *m) { /* {{{ */
 } /* }}} */
 
 void ib::platform::create_condition(ib::condition *c) { /* {{{ */
-  pthread_cond_init(c, NULL);
+  pthread_cond_init(c, nullptr);
 } /* }}} */
 
 void ib::platform::destroy_condition(ib::condition *c) { /* {{{ */
@@ -1537,7 +1537,7 @@ void ib::platform::destroy_condition(ib::condition *c) { /* {{{ */
 int ib::platform::wait_condition(ib::condition *c, ib::cmutex *m, int ms) { /* {{{ */
   if(ms == 0) return pthread_cond_wait(c, m);
   struct timespec tv;
-  tv.tv_sec  = time(NULL) + ms/1000;
+  tv.tv_sec  = time(nullptr) + ms/1000;
   tv.tv_nsec = ms%1000 * 1000000;
   return pthread_cond_timedwait(c, m, &tv);
 } /* }}} */

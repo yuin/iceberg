@@ -83,7 +83,7 @@ namespace ib {
       void updateIconbox();
 
     protected:
-      MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"), input_(0), clipboard_(0), iconbox_(0) {};
+      MainWindow(): Fl_Double_Window(0,0,"icebergMainWindow"), input_(nullptr), clipboard_(nullptr), iconbox_(nullptr) {};
 
       Input *input_;
       Fl_Input *clipboard_;
@@ -161,7 +161,7 @@ namespace ib {
       void close();
 
     protected:
-      ListWindow() : Fl_Double_Window(0, 0, "icebergListWindow"), listbox_(0), show_init_(false) {};
+      ListWindow() : Fl_Double_Window(0, 0, "icebergListWindow"), listbox_(nullptr), show_init_(false) {};
 
       Listbox *listbox_;
       bool show_init_;

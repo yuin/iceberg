@@ -22,7 +22,7 @@ void ib::Migemo::init() {
     _setprocInt2char = (void (*)(migemo*, MIGEMO_PROC_INT2CHAR))ib::platform::get_dynamic_symbol(dl_, "migemo_setproc_int2char");
 
     migemo_ = _open(0);
-    if(migemo_ != 0){
+    if(migemo_ != nullptr){
       const std::string &dict_dir = ib::Singleton<ib::Config>::getInstance()->getMigemoDictPath();
       ib::oschar  osdict_dir[IB_MAX_PATH];
       ib::platform::utf82oschar_b(osdict_dir, IB_MAX_PATH, dict_dir.c_str());
@@ -62,6 +62,6 @@ void ib::Migemo::init() {
 }
 
 ib::Migemo::~Migemo() {
-  if(migemo_ != 0) { _close(migemo_); }
+  if(migemo_ != nullptr) { _close(migemo_); }
   if(dl_ != 0) { ib::platform::close_library(dl_); }
 }

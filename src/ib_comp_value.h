@@ -15,7 +15,7 @@ namespace ib{
       virtual bool isAutocompleteEnable() const { return false; }
       virtual bool hasDescription() const { return false;}
       virtual const std::string* getContextMenuPath() const = 0;
-      virtual Fl_Image* loadIcon(const int size){ return 0; }
+      virtual Fl_Image* loadIcon(const int size){ return nullptr; }
   }; // }}}
 
   class CompletionPathParts : public CompletionValue { // {{{
@@ -161,7 +161,7 @@ namespace ib{
 
   class HistoryCommand : public BaseCommand { // {{{
     public:
-      HistoryCommand() : BaseCommand(), org_cmd_(0), command_path_(), times_(), raw_score_(0), initialized_(false) {}
+      HistoryCommand() : BaseCommand(), org_cmd_(nullptr), command_path_(), times_(), raw_score_(0), initialized_(false) {}
 
       /* virtual methods */
       const std::string& getCompvalue() const { return path_; }

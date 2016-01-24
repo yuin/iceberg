@@ -237,7 +237,7 @@ void ib::Input::scan() { // {{{
   auto cursor_pos = static_cast<unsigned int>(position());
   prev_cursor_token_index_ = cursor_token_index_;
   cursor_token_index_ = 0;
-  ib::Token *token = 0;
+  ib::Token *token = nullptr;
   unsigned int i = 0;
   for(;i < lexer_.getTokens().size(); ++i){
     token = lexer_.getTokens().at(i);
@@ -448,7 +448,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
   }
 
   char *ptr = strchr(str, '\t');
-  char *description = 0;
+  char *description = nullptr;
   if(ptr) {
     *ptr = 0;
     description = ptr+1;
@@ -506,7 +506,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   char *ptr = strchr(str, '\t');
-  char *description = 0;
+  char *description = nullptr;
   if(ptr) {
     *ptr = 0;
     description = ptr+1;
@@ -573,7 +573,7 @@ int ib::Listbox::handle(int e){ /* {{{ */
   }
   if(e == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE){
     const auto context_path = getValues().at(value()-1)->getContextMenuPath();
-    if(context_path != 0){
+    if(context_path != nullptr){
       ib::oschar osbuf[IB_MAX_PATH];
       ib::platform::utf82oschar_b(osbuf, IB_MAX_PATH, context_path->c_str());
       ib::platform::show_context_menu(osbuf);
@@ -620,10 +620,10 @@ void ib::Listbox::clearAll(){ // {{{
 
 void ib::Listbox::destroyIcon(const int line){ // {{{
   auto image_icon = icon(line);
-  if(image_icon == 0) return;
+  if(image_icon == nullptr) return;
 
   remove_icon(line);
-  icon(line, 0);
+  icon(line, nullptr);
   delete image_icon;
 } // }}}
 

@@ -10,15 +10,15 @@
 // Lua Class "Regex" {{{
 static ib::Regex* to_regex (lua_State *L, int index) {
   auto regex_ptr = reinterpret_cast<ib::Regex**>(lua_touserdata(L, index));
-  if (regex_ptr == 0) luaL_typerror(L, index, "Regex");
+  if (regex_ptr == nullptr) luaL_typerror(L, index, "Regex");
   return *regex_ptr;
 }
 
 static ib::Regex* check_regex (lua_State *L, int index) {
   luaL_checktype(L, index, LUA_TUSERDATA);
   auto regex_ptr = reinterpret_cast<ib::Regex**>(luaL_checkudata(L, index, "Regex"));
-  if (regex_ptr == 0) luaL_typerror(L, index, "Regex");
-  if (*regex_ptr == 0) luaL_error(L, "null Regex");
+  if (regex_ptr == nullptr) luaL_typerror(L, index, "Regex");
+  if (*regex_ptr == nullptr) luaL_error(L, "null Regex");
   return *regex_ptr;
 }
 
@@ -342,7 +342,7 @@ static const luaL_reg Regex_methods[] = {
 
 static int Regex_gc (lua_State *L){
   auto value = to_regex(L, 1);
-  if (value != 0) { delete value; }
+  if (value != nullptr) { delete value; }
   return 0;
 }
 
@@ -588,7 +588,7 @@ int ib::luamodule::find_command(lua_State *L) { // {{{
     lua_settable(L, -3);
 
     auto cmd = dynamic_cast<ib::Command*>(bcmd);
-    if(cmd != 0){
+    if(cmd != nullptr){
       lua_pushstring(L, "path");
       lua_pushstring(L, cmd->getPath().c_str());
       lua_settable(L, -3);
@@ -620,7 +620,7 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
   lua_state.clearStack();
 
   ib::unique_oschar_ptr osname_or_path(ib::platform::utf82oschar(name_or_path));
-  ib::unique_oschar_ptr unquoted_osname_or_path(ib::platform::unquote_string(0, osname_or_path.get()));
+  ib::unique_oschar_ptr unquoted_osname_or_path(ib::platform::unquote_string(nullptr, osname_or_path.get()));
   if(ib::platform::is_path(unquoted_osname_or_path.get())){
     ib::oschar oscwd[IB_MAX_PATH];
     ib::oschar osabs_path[IB_MAX_PATH];
@@ -636,7 +636,7 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
     auto it = commands.find(name_or_path);
     if(it != commands.end()){
       auto cmd = dynamic_cast<ib::Command*>((*it).second);
-      if(cmd != 0){
+      if(cmd != nullptr){
         lua_pushboolean(L, true);
         lua_pushstring(L, cmd->getCommandPath().c_str());
       }else{
@@ -810,7 +810,7 @@ int ib::luamodule::command_execute(lua_State *L) { // {{{
   auto it = commands_.find(cmd);
   if(it != commands_.end()){
     ib::Error error;
-    if((*it).second->execute(args, 0, error) != 0) {
+    if((*it).second->execute(args, nullptr, error) != 0) {
       lua_pushboolean(L, false);
       std::string message("Failed to execute the command:");
       message += cmd;
@@ -854,7 +854,7 @@ int ib::luamodule::default_after_command_action(lua_State *L) { // {{{
   luaL_checktype(L, 1, LUA_TBOOLEAN);
   const auto success = lua_toboolean(L, 1);
   const auto message = luaL_checkstring(L, 2);
-  ib::Singleton<ib::Controller>::getInstance()->afterExecuteCommand(success, strlen(message) != 0 ? message : 0);
+  ib::Singleton<ib::Controller>::getInstance()->afterExecuteCommand(success, strlen(message) != 0 ? message : nullptr);
   lua_state.clearStack();
   return 0;
 } // }}}

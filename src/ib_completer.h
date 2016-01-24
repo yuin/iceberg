@@ -24,8 +24,8 @@ namespace ib {
 
   class CompletionMethodMigemoMixin : public CompletionMethod { // {{{
     public:
-      CompletionMethodMigemoMixin() : CompletionMethod(), regex_(0) {}
-      virtual ~CompletionMethodMigemoMixin() { if(regex_ != 0) delete regex_; }
+      CompletionMethodMigemoMixin() : CompletionMethod(), regex_(nullptr) {}
+      virtual ~CompletionMethodMigemoMixin() { if(regex_ != nullptr) delete regex_; }
       void  beforeMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input);
       double match(const std::string &name, const std::string &input);
       void  afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input);
@@ -64,10 +64,10 @@ namespace ib {
     friend class ib::Singleton<ib::Completer>;
     public:
       ~Completer() {
-        if(method_history_ != 0) delete method_history_;
-        if(method_option_ != 0) delete method_option_;
-        if(method_path_ != 0) delete method_path_;
-        if(method_command_ != 0) delete method_command_;
+        if(method_history_ != nullptr) delete method_history_;
+        if(method_option_ != nullptr) delete method_option_;
+        if(method_path_ != nullptr) delete method_path_;
+        if(method_command_ != nullptr) delete method_command_;
       }
 
       void setOptionFuncFlag(const std::string &name) { option_func_flags_.insert(name); }
@@ -103,8 +103,8 @@ namespace ib {
       CompletionMethod *method_path_;
       CompletionMethod *method_command_;
 
-      Completer(): option_func_flags_(), method_history_(0), method_option_(0),
-                   method_path_(0), method_command_(0) {}
+      Completer(): option_func_flags_(), method_history_(nullptr), method_option_(nullptr),
+                   method_path_(nullptr), method_command_(nullptr) {}
 
 
   };

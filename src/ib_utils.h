@@ -22,7 +22,7 @@ namespace ib {
     template<typename T> void delete_pointer_vectors(std::vector<T*> &vector) {
       for (typename std::vector<T*>::iterator it = vector.begin();
            it != vector.end(); ++it ) {
-        if(*it != 0){ delete *it; }
+        if(*it != nullptr){ delete *it; }
       }
       vector.clear();
       std::vector<T*>().swap (vector);
@@ -30,7 +30,7 @@ namespace ib {
     void exit_application(const int code = 0);
     void reboot_application();
     void scan_search_path(const char *category);
-    void alert_lua_stack(lua_State *L = 0);
+    void alert_lua_stack(lua_State *L = nullptr);
 
     /* string stuff */
     const unsigned char utf8_skip_data[256] = {

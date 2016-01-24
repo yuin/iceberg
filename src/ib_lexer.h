@@ -78,7 +78,7 @@ namespace ib {
 
   class Lexer : private NonCopyable<Lexer> { // {{{
     public:
-      Lexer() : state_(0), c_('\0'), pc_('\0'), ppc_('\0'), utf8_len_(0), ptr_(0), input_(0) {}
+      Lexer() : state_(0), c_('\0'), pc_('\0'), ppc_('\0'), utf8_len_(0), ptr_(0), input_(nullptr) {}
       virtual ~Lexer() {}
       virtual void clear();
       void parse(const char *input);
@@ -99,7 +99,7 @@ namespace ib {
 
   class CommandLexer : public Lexer { // {{{
     public:
-      CommandLexer() : Lexer(), tokens_(), param_values_(), strbuf_(""), token_(0), is_using_cwd_(false) {}
+      CommandLexer() : Lexer(), tokens_(), param_values_(), strbuf_(""), token_(nullptr), is_using_cwd_(false) {}
       ~CommandLexer() { clear(); }
 
       void clear();
@@ -121,7 +121,7 @@ namespace ib {
 
   class SimpleTemplateLexer : public Lexer { // {{{
     public:
-      SimpleTemplateLexer() : Lexer(), strbuf_(""), current_varname_(""), ret_(0), values_(0) {}
+      SimpleTemplateLexer() : Lexer(), strbuf_(""), current_varname_(""), ret_(nullptr), values_(nullptr) {}
       ~SimpleTemplateLexer() { clear(); }
 
       void clear();

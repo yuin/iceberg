@@ -202,7 +202,7 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
   }else{
     for(auto it = candidates.begin(); it != candidates.end();){
       auto base_command = dynamic_cast<ib::BaseCommand*>(*it);
-      if(base_command != 0){
+      if(base_command != nullptr){
         base_command->setScore(0.0);
         score = method_command_->match(base_command->getName(), value);
         if(score > -1){
@@ -223,7 +223,7 @@ void ib::Completer::completeCommand(std::vector<ib::CompletionValue*> &candidate
 
   for(const auto &candidate : candidates) {
     auto *base_command = dynamic_cast<ib::BaseCommand*>(candidate);
-    if(base_command != 0) {
+    if(base_command != nullptr) {
       const auto hist_score = history->calcScore(base_command->getName(), average, se);
       base_command->setScore(base_command->getScore()*rfactor + hist_score * hfactor);
     }
@@ -243,7 +243,7 @@ void ib::CompletionMethodMigemoMixin::beforeMatch(std::vector<ib::CompletionValu
 
     if(regex_->init() != 0){
       delete regex_;
-      regex_ = 0;
+      regex_ = nullptr;
     }else{
       candidates.clear();
     }
@@ -255,16 +255,16 @@ double ib::CompletionMethodMigemoMixin::match(const std::string &name, const std
 } // }}}
 
 void ib::CompletionMethodMigemoMixin::afterMatch(std::vector<ib::CompletionValue*> &candidates, const std::string &input) { // {{{
-  if(regex_ != 0) { 
+  if(regex_ != nullptr) { 
     delete regex_; 
-    regex_ = 0;
+    regex_ = nullptr;
   }
 } // }}}
 // }}}
 
 // class BeginsWithMatchCompletionMethod  {{{
 double ib::BeginsWithMatchCompletionMethod::match(const std::string &name, const std::string &input) {
-  if(regex_ != 0){
+  if(regex_ != nullptr){
     if(regex_->match(name) == 0) return 0.0;
   }
 
@@ -276,7 +276,7 @@ double ib::BeginsWithMatchCompletionMethod::match(const std::string &name, const
 
 // class PartialMatchCompletionMethod  {{{
 double ib::PartialMatchCompletionMethod::match(const std::string &name, const std::string &input) {
-  if(regex_ != 0){
+  if(regex_ != nullptr){
     if(regex_->search(name) == 0) return 0.0;
   }
 
