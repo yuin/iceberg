@@ -391,8 +391,9 @@ void ib::MainWindow::updateIconbox() { // {{{
     return;
   }
   const auto &cmd = input->getFirstValue();
-  auto it = ib::Singleton<ib::Controller>::getInstance()->getCommands().find(cmd);
-  if(it != ib::Singleton<ib::Controller>::getInstance()->getCommands().end()){
+  const auto &commands = ib::Singleton<ib::Controller>::getInstance()->getCommands();
+  auto it = commands.find(cmd);
+  if(it != commands.end()){
     setIconbox((*it).second->loadIcon(IB_ICON_SIZE_LARGE));
   }else{
     CompletionString comp_value(cmd.c_str());
@@ -602,9 +603,10 @@ ib::CompletionValue* ib::Listbox::selectedValue() const { // {{{
 void ib::Listbox::clearAll(){ // {{{
   ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
+  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
 
-  if(ib::Singleton<ib::MainWindow>::getInstance()->getInput()->getCursorTokenIndex() == 0) {
-    ib::Singleton<ib::MainWindow>::getInstance()->clearIconbox();
+  if(main_window->getInput()->getCursorTokenIndex() == 0) {
+    main_window->clearIconbox();
   }
   for(int i = 1, last = size(); i <= last; ++i){ destroyIcon(i); }
   for(auto &v : values_) {
@@ -639,7 +641,9 @@ void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
     if(size() == 0) { max_width_ = 0;}
     if(isEmpty()) return;
 
-    auto max_candidates = ib::Singleton<ib::Config>::getInstance()->getMaxCandidates();
+    const auto cfg = ib::Singleton<ib::Config>::getInstance();
+
+    auto max_candidates = cfg->getMaxCandidates();
     if(max_candidates == 0) max_candidates = UINT_MAX;
     int width = 0;
     unsigned int i = 1;
@@ -667,7 +671,7 @@ void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
     adjustSize();
   }
 
-  if(ib::Singleton<ib::Config>::getInstance()->getEnableIcons()){
+  if(cfg->getEnableIcons()){
     ib::Singleton<ib::IconManager>::getInstance()->loadCompletionListIcons();
   }
 } /* }}} */
