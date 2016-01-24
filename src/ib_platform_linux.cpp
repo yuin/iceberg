@@ -818,8 +818,10 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     return -1;
   };
 
+  auto server = ib::Singleton<ib::Server>::getInstance();
+
   // shutdown the server to prevent socket fd passing.
-  ib::Server::inst().shutdown();
+  server->shutdown();
   ib::Regex proto_reg("^(\\w+)://.*", ib::Regex::I);
   proto_reg.init();
   ret = 0;
@@ -883,7 +885,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   }
 
 finally:
-  if(ib::Server::inst().start(error) != 0) ret = -1;
+  if(server->start(error) != 0) ret = -1;
   ib::platform::set_current_workdir(wd, error);
   return ret;
 } // }}}
