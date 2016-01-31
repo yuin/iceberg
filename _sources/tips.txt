@@ -117,7 +117,7 @@ foobar2000を操作する
         
         foobar2000 = { 
           path=[[foobar2000のパス]],
-          completion = function(values) 
+          completion = function(values, pos)
             return {
               {value="/playpause", description = "再生/一時停止"},
               {value="/stop", description = "停止"},

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; iceberg 0.9.8 documentation</title>
+    <title>API &mdash; iceberg 0.9.9 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.8',
+        VERSION:     '0.9.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.8 documentation" href="index.html" />
-    <link rel="next" title="既知の問題" href="knownissues.html" />
+    <link rel="top" title="iceberg 0.9.9 documentation" href="index.html" />
+    <link rel="next" title="プラグイン" href="plugin.html" />
     <link rel="prev" title="Tips" href="tips.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.8 documentation</span></a></h1>
+          <span>iceberg 0.9.9 documentation</span></a></h1>
         <h2 class="heading"><span>API</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -39,7 +39,7 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        <a href="plugin.html">プラグイン</a>&#160;&#160;»
         </p>
 
       </div>
@@ -719,6 +719,130 @@
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="icebergsupport.table_find">
+<code class="descclassname">icebergsupport.</code><code class="descname">table_find</code><span class="sig-paren">(</span><em>table</em>, <em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.table_find" title="Permalink to this definition">¶</a></dt>
+<dd><p>配列 <code class="docutils literal"><span class="pre">table</span></code> 内に <code class="docutils literal"><span class="pre">obj</span></code> が含まれるか検索します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>table</strong> (<em>table</em>) &#8211; table</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">見つかった場合その位置(1はじまり)、そうでない場合は <code class="docutils literal"><span class="pre">0</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id13">
+<h3>補完・オプション解析<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="icebergsupport.getopts">
+<code class="descclassname">icebergsupport.</code><code class="descname">getopts</code><span class="sig-paren">(</span><em>args</em>, <em>option</em><span class="optional">[</span>, <em>option</em>, <em>option ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.getopts" title="Permalink to this definition">¶</a></dt>
+<dd><p>コマンド引数の配列からオプションの解析を行います。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> (<em>table</em>) &#8211; コマンド引数の配列(たとえば <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code> のような)</li>
+<li><strong>option</strong> (<em>string</em>) &#8211; 解析する引数名。たとえば <code class="docutils literal"><span class="pre">-a</span></code> のような。引数が値を受け取るときは <code class="docutils literal"><span class="pre">-a:</span></code> のように <code class="docutils literal"><span class="pre">:</span></code> を末尾に付与する。</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[table:解析できたoption, table:その他の値の配列]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="icebergsupport.comp_state">
+<code class="descclassname">icebergsupport.</code><code class="descname">comp_state</code><span class="sig-paren">(</span><em>values</em>, <em>pos</em>, <em>option</em><span class="optional">[</span>, <em>option</em>, <em>option ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.comp_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>補完候補リストの生成と補完状態の解析を実施します。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong> (<em>table</em>) &#8211; コマンド引数の配列(たとえば <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code> のような)</li>
+<li><strong>pos</strong> (<em>number</em>) &#8211; 現在カーソルがさしている <code class="docutils literal"><span class="pre">values</span></code> における位置</li>
+<li><strong>option</strong> (<em>table</em>) &#8211; オプション定義</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[string:補完状態を示す文字列, table:オプションの補完候補リスト]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>これらの関数は補完関数の実装や、Luaコマンド実行時のオプション解析に使用します。
+補完関数内で以下のように <a class="reference internal" href="#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.comp_state()</span></code></a> を使用します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">state</span><span class="p">,</span> <span class="n">opts</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">comp_state</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-a&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">aaa&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">--abcd&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">--aefg&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-b&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-c&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b option&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s">-a&quot;</span><span class="p">}}</span>
+  <span class="p">)</span>
+  <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">aaa&quot;</span> <span class="k">then</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">file1&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">file2&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">file3&quot;</span><span class="p">}</span>
+  <span class="k">elseif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">opt&quot;</span> <span class="k">then</span>
+    <span class="k">return</span> <span class="n">opts</span>
+  <span class="k">else</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">action1&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">action2&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">action3&quot;</span><span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>オプション定義は以下より構成されます。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">opt:</th><td class="field-body">オプション名です。かならず <code class="docutils literal"><span class="pre">-</span></code> ではじめなければいけません。</td>
+</tr>
+<tr class="field-even field"><th class="field-name">description:</th><td class="field-body">補完候補として表示する際に利用されるオプションの説明です。</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">state:</th><td class="field-body">その引数が指定されている時の状態名です。たとえば <code class="docutils literal"><span class="pre">-b</span> <span class="pre">-a</span> <span class="pre">A</span></code> と入力されており今 <code class="docutils literal"><span class="pre">A</span></code> にカーソルがある場合上記の例だと <code class="docutils literal"><span class="pre">aaa</span></code> という状態になります。</td>
+</tr>
+<tr class="field-even field"><th class="field-name">exclude:</th><td class="field-body">同時に指定できないオプションです。上記の例では <code class="docutils literal"><span class="pre">-c</span></code> オプションは <code class="docutils literal"><span class="pre">-a</span></code> が指定されている場合には補完候補に含まれなくなります。</td>
+</tr>
+</tbody>
+</table>
+<p>また、たとえば <code class="docutils literal"><span class="pre">value</span> <span class="pre">-</span></code> のように入力されており、今 <code class="docutils literal"><span class="pre">-</span></code> の後ろにカーソルがある場合(つまり <code class="docutils literal"><span class="pre">-</span></code> を入力した直後)は <code class="docutils literal"><span class="pre">&quot;opt&quot;</span></code> という状態になります。</p>
+<p>コマンドの実行時などのオプション解析は以下のように <a class="reference internal" href="#icebergsupport.getopts" title="icebergsupport.getopts"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.getopts()</span></code></a> を使用します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">getopts</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-a:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-c&quot;</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">opts</span><span class="p">.</span><span class="n">a</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">-a must not be empty.&quot;</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="p">.</span><span class="n">b</span> <span class="k">then</span>
+      <span class="n">ibs</span><span class="p">.</span><span class="n">shell_execute</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+      <span class="c1">-- blah blah blah</span>
+    <span class="k">elseif</span> <span class="n">opt</span><span class="p">.</span><span class="n">c</span> <span class="k">then</span>
+      <span class="c1">-- blah blah blah</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">opts</span></code> には引数で渡されたオプション名から <code class="docutils literal"><span class="pre">-</span></code> を取り除いた名前で値が登録された <code class="docutils literal"><span class="pre">table</span></code> です。 オプション名の末尾に <code class="docutils literal"><span class="pre">:</span></code> を付与するとそのオプションは次の文字列を値として読み込みます。未知のオプションは位置パラメータは <code class="docutils literal"><span class="pre">args</span></code> 配列に格納されます。</p>
+<p>たとえば上記の例で <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;file1&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code> の場合、 <code class="docutils literal"><span class="pre">opts.a</span> <span class="pre">=</span> <span class="pre">&quot;file1&quot;;</span> <span class="pre">opts.b</span> <span class="pre">=</span> <span class="pre">true;</span> <span class="pre">args</span> <span class="pre">=</span> <span class="pre">{&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code> という結果になります。</p>
 </div>
 <div class="section" id="iceberg">
 <h3>iceberg操作<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h3>
@@ -1229,8 +1353,8 @@
 </dd></dl>
 
 </div>
-<div class="section" id="id13">
-<h2>クラス<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id14">
+<h2>クラス<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="Regex.new">
 <em class="property">class </em><code class="descclassname">Regex.</code><code class="descname">new</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em><span class="sig-paren">)</span><a class="headerlink" href="#Regex.new" title="Permalink to this definition">¶</a></dt>
@@ -1363,13 +1487,13 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        <a href="plugin.html">プラグイン</a>&#160;&#160;»
         </p>
 
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2015, Yusuke Inuzuka.
+        &copy; Copyright 2012-2016, Yusuke Inuzuka.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
     </div>
   </body>

@@ -43,7 +43,7 @@ Linux(Ubuntu 14.04)
 
 `Release <https://github.com/yuin/iceberg/releases>`_ で配布されているソースコードを任意の場所に解凍してください。その後
 
-    .. code-block:: lua
+    .. code-block:: bash
     
         % ./tools/install_requires.sh
         % make
@@ -170,4 +170,4 @@ Windowsの場合、iceberg実行ファイルのディレクトリに ``migemo.dl
 より進んだ使い方
 ------------------------
 
-詳しい使い方や設定方法は :doc:`config` , :doc:`api` や :doc:`tips` を参照してください。
+詳しい使い方や設定方法は :doc:`config` , :doc:`api` , :doc:`plugin` や :doc:`tips` を参照してください。

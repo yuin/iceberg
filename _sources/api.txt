@@ -288,6 +288,91 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
 
    :param table table: table
 
+.. lua:function:: icebergsupport.table_find(table, obj)
+
+   配列 ``table`` 内に ``obj`` が含まれるか検索します。
+
+   :param table table: table
+   :returns: 見つかった場合その位置(1はじまり)、そうでない場合は ``0``
+
+補完・オプション解析
+~~~~~~~~~~~~~~~~~~~~~
+
+.. lua:function:: icebergsupport.getopts(args, option, [option, option ...])
+
+   コマンド引数の配列からオプションの解析を行います。
+
+   :param table args: コマンド引数の配列(たとえば ``{"-a", "-b", "action"}`` のような)
+   :param string option: 解析する引数名。たとえば ``-a`` のような。引数が値を受け取るときは ``-a:`` のように ``:`` を末尾に付与する。
+   :returns: [table:解析できたoption, table:その他の値の配列]
+
+.. lua:function:: icebergsupport.comp_state(values, pos, option, [option, option ...])
+
+   補完候補リストの生成と補完状態の解析を実施します。
+
+   :param table values: コマンド引数の配列(たとえば ``{"-a", "-b", "action"}`` のような)
+   :param number pos: 現在カーソルがさしている ``values`` における位置
+   :param table option: オプション定義
+   :returns: [string:補完状態を示す文字列, table:オプションの補完候補リスト]
+
+
+これらの関数は補完関数の実装や、Luaコマンド実行時のオプション解析に使用します。
+補完関数内で以下のように :lua:func:`icebergsupport.comp_state` を使用します。
+
+    .. code-block:: lua
+    
+        function(values, pos)
+          local state, opts = ibs.comp_state(values, pos,
+            {opt="-a", description="a option", state="aaa"},
+            {opt="--abcd", description="a option"},
+            {opt="--aefg", description="a option"},
+            {opt="-b", description="b option"},
+            {opt="-c", description="b option", exclude={"-a"}}
+          )
+          if state == "aaa" then
+            return {"file1", "file2", "file3"}
+          elseif state == "opt" then
+            return opts
+          else
+            return {"action1", "action2", "action3"}
+          end
+        end
+
+オプション定義は以下より構成されます。
+
+:opt:
+    オプション名です。かならず ``-`` ではじめなければいけません。
+:description:
+    補完候補として表示する際に利用されるオプションの説明です。
+:state:
+    その引数が指定されている時の状態名です。たとえば ``-b -a A`` と入力されており今 ``A`` にカーソルがある場合上記の例だと ``aaa`` という状態になります。
+:exclude:
+    同時に指定できないオプションです。上記の例では ``-c`` オプションは ``-a`` が指定されている場合には補完候補に含まれなくなります。
+
+また、たとえば ``value -`` のように入力されており、今 ``-`` の後ろにカーソルがある場合(つまり ``-`` を入力した直後)は ``"opt"`` という状態になります。
+
+コマンドの実行時などのオプション解析は以下のように :lua:func:`icebergsupport.getopts` を使用します。
+
+    .. code-block:: lua
+    
+        function(args)
+          local opts, args = ibs.getopts(args, "-a:", "-b", "-c")
+          if opts.a == nil then
+            ibs.message("-a must not be empty.")
+          else
+            if opt.b then
+              ibs.shell_execute(args[1])
+              -- blah blah blah
+            elseif opt.c then
+              -- blah blah blah
+            end
+          end
+        end
+
+``opts`` には引数で渡されたオプション名から ``-`` を取り除いた名前で値が登録された ``table`` です。 オプション名の末尾に ``:`` を付与するとそのオプションは次の文字列を値として読み込みます。未知のオプションは位置パラメータは ``args`` 配列に格納されます。
+
+たとえば上記の例で ``{"-a", "file1", "-b", "action", "parameter"}`` の場合、 ``opts.a = "file1"; opts.b = true; args = {"action", "parameter"}`` という結果になります。
+
 iceberg操作
 ~~~~~~~~~~~~~~
 .. lua:function:: icebergsupport.version()

@@ -194,7 +194,7 @@ systemグローバル変数
         
             -- 引数補完のための関数 --
             option_func = {
-              [":scan_search_path"] = function(values) 
+              [":scan_search_path"] = function(values, pos)
                 local candidates = {"all"}
                 local keys       = {all = true}
                 for i, value in ipairs(system.search_path) do
@@ -231,13 +231,13 @@ icebergではコマンドが入力された際の引数を補完する関数を�
 
     .. code-block:: lua
         
-        function(values)
+        function(values, pos)
           return {"a", "b", "c"}
         end
 
         -- もしくは
 
-        function(values)
+        function(values, pos)
           return { 
            {value="a", icon="path_to/icon.png", description="desc"}, 
            {value="b", icon="path_to/icon.jpg", description="desc"},
@@ -245,7 +245,7 @@ icebergではコマンドが入力された際の引数を補完する関数を�
           }
         end
 
-``values`` は入力されているコマンドと引数の配列です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。
+``values`` は入力されている引数の配列です。引数が空の場合、空文字1要素になります。 ``pos`` は現在カーソルがある引数の配列における位置です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。
 
 :value:
     補完文字列です。この項目は必須です。
@@ -257,6 +257,8 @@ icebergではコマンドが入力された際の引数を補完する関数を�
     ``true`` を設定するとどんな入力にもマッチするようになり、選択時に入力欄が更新されなくなります。例えばWEB検索結果をただ表示する場合などに利用します。
 
 補完関数は補完以外に情報表示だけのために利用することもできます。デフォルトの ``weather`` コマンドを参照してください。
+
+またオプションを含む複雑な補完関数を書く場合は :lua:func:`icebergsupport.comp_state` も参照してください。
 
 
 commandsグローバル変数
@@ -286,7 +288,7 @@ commandsグローバル変数
                 ibs.message(ibs.table_to_string(explorer))
               end
             end,
-            completion = function(values)
+            completion = function(values, pos)
               return {"1","2","3"}
             end
             description="Sample Lua command"},

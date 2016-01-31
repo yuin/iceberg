@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>プラグイン &mdash; iceberg 0.9.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="iceberg 0.9.9 documentation" href="index.html" />
+    <link rel="next" title="既知の問題" href="knownissues.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+  </head>
+  <body role="document">
+      <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.9 documentation</span></a></h1>
+        <h2 class="heading"><span>プラグイン</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="api.html">API</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="id1">
+<h1>プラグイン<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>概要<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>icebergには柔軟に機能を追加できるプラグイン機能があります。ここではプラグインの使用方法と開発方法を記載します。</p>
+</div>
+<div class="section" id="id3">
+<h2>プラグインの使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>配布されているプラグインを icebergディレクトリ配下の <code class="docutils literal"><span class="pre">plugins</span></code> ディレクトリに配置します。配置されたプラグインはiceberg起動時に自動的にロードされます。</p>
+<p>また、プラグインのディレクトリ名を <code class="docutils literal"><span class="pre">_</span></code> ではじまるようにリネームするとプラグインを無効にする事ができます。</p>
+</div>
+<div class="section" id="id4">
+<h2>プラグインの開発方法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>プラグインの構造<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>プラグインは <code class="docutils literal"><span class="pre">main.lua</span></code> が配置された単純なディレクトリです。典型的には以下のような構造です。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre>plugin-name          - プラグイン名のディレクトリ
+  |
+  +---- main.lua     - プラグインのメインスクリプト
+  |
+  +---- icon.svg     - アイコン
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="main-lua">
+<h3>main.luaテンプレート<a class="headerlink" href="#main-lua" title="Permalink to this headline">¶</a></h3>
+<p>以下にプラグインのテンプレートを示します。</p>
+<blockquote>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
+<span class="mi">02</span>  <span class="kd">local</span> <span class="n">script_path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">source</span><span class="p">:</span><span class="n">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="mi">03</span>
+<span class="mi">04</span>  <span class="kd">local</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+<span class="mi">05</span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">myplugin&quot;</span><span class="p">,</span>
+<span class="mi">06</span>    <span class="n">conf1</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">aaa&quot;</span>
+<span class="mi">07</span>  <span class="p">}</span>
+<span class="mi">08</span>  <span class="n">ibs</span><span class="p">.</span><span class="n">merge_table</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">plugin_myplugin</span> <span class="ow">or</span> <span class="p">{})</span>
+<span class="mi">09</span>
+<span class="mi">10</span>  <span class="n">commands</span><span class="p">[</span><span class="n">config</span><span class="p">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="mi">11</span>    <span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="mi">12</span>    <span class="k">end</span><span class="p">,</span>
+<span class="mi">13</span>    <span class="n">completion</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<span class="mi">14</span>    <span class="k">end</span><span class="p">,</span>
+<span class="mi">15</span>    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">My plugin&quot;</span><span class="p">,</span>
+<span class="mi">16</span>    <span class="n">icon</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">script_path</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">icon.svg&quot;</span><span class="p">),</span>
+<span class="mi">17</span>    <span class="n">history</span><span class="o">=</span><span class="kc">false</span>
+<span class="mi">18</span>  <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li>04行目 : 設定をローカル変数に保持します。</li>
+<li>08行目 : <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> というグローバル変数で設定変更が可能なようにします。具体的には <code class="docutils literal"><span class="pre">config</span></code> ローカル変数を <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> グローバル変数で上書きします。</li>
+<li>09行目 : コマンドを登録します。コマンドの定義方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>プラグイン<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>いくつかプラグインを紹介します。</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/yuin/iceberg-ip">iceberg-ip</a> : ローカルマシンのIPアドレスを表示します。</li>
+<li><a class="reference external" href="https://github.com/yuin/iceberg-worldtime">iceberg-worldtime</a> : 世界の都市の時間を表示します。</li>
+</ul>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="api.html">API</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+    </div>
+  </body>
+</html>
