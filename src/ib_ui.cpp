@@ -635,13 +635,12 @@ void ib::Listbox::startUpdate(){ /* {{{ */
 } /* }}} */
 
 void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   {
     ib::platform::ScopedLock lock(&mutex_);
     incOperationCount();
     if(size() == 0) { max_width_ = 0;}
     if(isEmpty()) return;
-
-    const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
     auto max_candidates = cfg->getMaxCandidates();
     if(max_candidates == 0) max_candidates = UINT_MAX;
