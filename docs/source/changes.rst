@@ -1,6 +1,6 @@
 変更履歴
 =======================
-0.9.9 (2016-01-13)
+0.9.9 (2016-01-31)
 -----------------------
 - IMPROVED: 補完関数の第二引数に現在の引数の位置を渡すようになった。
 - NEW: ``icebergsupport.table_find`` , ``icebergsupport.getopts`` , ``icebergsupport.comp_state`` を追加
