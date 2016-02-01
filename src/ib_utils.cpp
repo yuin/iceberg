@@ -52,12 +52,12 @@ long ib::utils::malloc_count() { // {{{
 
 void ib::utils::exit_application(const int code) { // {{{
   auto config = ib::Singleton<ib::Config>::getInstance();
-  auto history = ib::Singleton<ib::History>::getInstance();
-  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
 
   if(code == 0) { 
-    if(history != 0) history->dump();
-    if(config->getEnableIcons() && icon_manager != 0){
+    auto history = ib::Singleton<ib::History>::getInstance();
+    auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
+    if(history != nullptr) history->dump();
+    if(config->getEnableIcons() && icon_manager != nullptr){
       icon_manager->dump();
     }
   }

@@ -262,6 +262,8 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   int         key_buf[3];
   int         number;
   int         i;
+  std::string error_msg;
+  auto completer = ib::Singleton<ib::Completer>::getInstance();
 #define READ_UNSIGNED_INT(name) \
   luint = lua_tointeger(IB_LUA, -1); \
   if(luint < 0) { fl_alert(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
@@ -270,7 +272,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 #define READ_UNSIGNED_INT_M(name, max) \
   luint = lua_tointeger(IB_LUA, -1); \
   if(luint < 0) { fl_alert(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
-  if(luint > max) { fl_alert(#name "is too large."); ib::utils::exit_application(1); } \
+  if(luint > max) { fl_alert(#name "is too large(must be < %d).", max); ib::utils::exit_application(1); } \
   number = (int)luint;
 #define GET_FIELD(name, type) lua_getfield(IB_LUA, -1, name); if(!lua_isnil(IB_LUA, -1) && !lua_is##type(IB_LUA, -1)) { fl_alert(#name " must be " #type); ib::utils::exit_application(1); } if(!lua_isnil(IB_LUA, -1))
 #define GET_LIST(index, type) lua_pushinteger(IB_LUA, index); lua_gettable(IB_LUA, -2); if(lua_isnil(IB_LUA, -1)){lua_pop(IB_LUA, 1);break;}if(!lua_is##type(IB_LUA, -1)) { fl_alert("index" #index " must be " #type); ib::utils::exit_application(1); }
@@ -413,10 +415,9 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
           }
           lua_pop(IB_LUA, 1);
 
-          ib::unique_string_ptr error_msg1(new std::string(""));
           ib::Regex re1(search_path->getPattern().c_str(), ib::Regex::I);
-          if(re1.init(error_msg1.get()) != 0) {
-            fl_alert("search_path(%s, pattern) : %s", search_path->getPath().c_str(), error_msg1.get()->c_str());
+          if(re1.init(&error_msg) != 0) {
+            fl_alert("search_path(%s, pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
             ib::utils::exit_application(1);
           }
 
@@ -425,10 +426,9 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
           }
           lua_pop(IB_LUA, 1);
 
-          ib::unique_string_ptr error_msg2(new std::string(""));
           ib::Regex re2(search_path->getExcludePattern().c_str(), ib::Regex::I);
-          if(re2.init(error_msg2.get()) != 0) {
-            fl_alert("search_path(%s, exclude_pattern) : %s", search_path->getPath().c_str(), error_msg2.get()->c_str());
+          if(re2.init(&error_msg) != 0) {
+            fl_alert("search_path(%s, exclude_pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
             ib::utils::exit_application(1);
           }
           
@@ -439,67 +439,45 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
+    auto compmethod_by_constant = [](int n, const char *name) -> ib::CompletionMethod* {
+      switch(n) {
+        case ib::CompletionMethod::BEGINS_WITH:
+          return new ib::BeginsWithMatchCompletionMethod();
+        case ib::CompletionMethod::PARTIAL:
+          return new ib::PartialMatchCompletionMethod();
+        case ib::CompletionMethod::ABBR:
+          return new ib::AbbrMatchCompletionMethod();
+      }
+      fl_alert("unknown completer(%s).", name);
+      ib::utils::exit_application(1);
+      return nullptr;
+    };
+
     GET_FIELD("completer", table) {
       GET_FIELD("command", number) {
         READ_UNSIGNED_INT("command");
-        if(number == ib::CompletionMethod::BEGINS_WITH) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodCommand(new ib::BeginsWithMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::PARTIAL) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodCommand(new ib::PartialMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::ABBR) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodCommand(new ib::AbbrMatchCompletionMethod());
-        }else{
-          fl_alert("unknown completer.");
-          ib::utils::exit_application(1);
-        }
+        completer->setMethodCommand(compmethod_by_constant(number, "command"));
       }
       lua_pop(IB_LUA, 1);
       GET_FIELD("path", number) {
         READ_UNSIGNED_INT("path");
-        if(number == ib::CompletionMethod::BEGINS_WITH) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodPath(new ib::BeginsWithMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::PARTIAL) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodPath(new ib::PartialMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::ABBR) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodPath(new ib::AbbrMatchCompletionMethod());
-        }else{
-          fl_alert("unknown completer.");
-          ib::utils::exit_application(1);
-        }
+        completer->setMethodPath(compmethod_by_constant(number, "path"));
       }
       lua_pop(IB_LUA, 1);
       GET_FIELD("history", number) {
         READ_UNSIGNED_INT("history");
-        if(number == ib::CompletionMethod::BEGINS_WITH) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodHistory(new ib::BeginsWithMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::PARTIAL) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodHistory(new ib::PartialMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::ABBR) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodHistory(new ib::AbbrMatchCompletionMethod());
-        }else{
-          fl_alert("unknown completer.");
-          ib::utils::exit_application(1);
-        }
+        completer->setMethodHistory(compmethod_by_constant(number, "history"));
       }
       lua_pop(IB_LUA, 1);
       GET_FIELD("option", number) {
         READ_UNSIGNED_INT("option");
-        if(number == ib::CompletionMethod::BEGINS_WITH) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodOption(new ib::BeginsWithMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::PARTIAL) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodOption(new ib::PartialMatchCompletionMethod());
-        }else if(number == ib::CompletionMethod::ABBR) {
-          ib::Singleton<ib::Completer>::getInstance()->setMethodOption(new ib::AbbrMatchCompletionMethod());
-        }else{
-          fl_alert("unknown completer.");
-          ib::utils::exit_application(1);
-        }
+        completer->setMethodOption(compmethod_by_constant(number, "history"));
       }
       lua_pop(IB_LUA, 1);
 
       GET_FIELD("option_func", table) {
         ENUMERATE_TABLE {
-          ib::Singleton<ib::Completer>::getInstance()->setOptionFuncFlag(luaL_checkstring(IB_LUA, -2));
+          completer->setOptionFuncFlag(luaL_checkstring(IB_LUA, -2));
           lua_pop(IB_LUA, 1);
         }
       }
@@ -769,6 +747,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 #undef GET_LIST
 #undef GET_FIELD
 #undef READ_UNSIGNED_INT
+#undef READ_UNSIGNED_INT_M
 
   cfg->setLoaded(true);
 } // }}}
