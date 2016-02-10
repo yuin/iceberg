@@ -33,7 +33,7 @@ static void ib_input_cut_callback(Fl_Widget*, void *userdata) { // {{{
 // void ib::Input::initLayout(){ /* {{{ */
 static void _blink_cursor(void *p) {
   static int state = 0;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   auto input = reinterpret_cast<ib::Input*>(p);
   state =!state;
   if(state){ input->cursor_color(cfg->getStyleInputFontColor());
@@ -42,7 +42,7 @@ static void _blink_cursor(void *p) {
   Fl::repeat_timeout(0.5,_blink_cursor, (void*)input);
 }
 void ib::Input::initLayout(){
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   textfont(ib::Fonts::input);
   textcolor(cfg->getStyleInputFontColor());
@@ -71,8 +71,8 @@ void ib::_key_event_handler(void *p) {
 
 int ib::Input::handle(int e){ /* {{{ */
   int accept = 0;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto controller = ib::Singleton<ib::Controller>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto controller = ib::Singleton<ib::Controller>::getInstance();
   auto key = Fl::event_key();
   const auto state = Fl::event_state();
   const auto mods = state & (FL_META|FL_CTRL|FL_ALT);
@@ -264,8 +264,8 @@ void ib::Input::clear() { // {{{
 } // }}}
 
 void ib::Input::adjustSize() { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
   int screen_x, screen_y, screen_w, screen_h;
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
 
@@ -321,7 +321,7 @@ void ib::Input::draw() { // {{{
 void ib::MainWindow::initLayout(){ /* {{{ */
   begin();
   int screen_x, screen_y, screen_w, screen_h;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
   const auto w = cfg->getStyleWindowWidth();
@@ -385,7 +385,7 @@ void ib::MainWindow::setIconbox(Fl_Image *image) { // {{{
 
 void ib::MainWindow::updateIconbox() { // {{{
   if(!ib::Singleton<ib::Config>::getInstance()->getEnableIcons()) return;
-  auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   if(input->isEmpty()) {
     clearIconbox();
     return;
@@ -418,7 +418,7 @@ struct FL_BLINE {  // {{{
 void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // {{{
   auto l = reinterpret_cast<FL_BLINE*>(item);
   auto str = l->txt;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   const auto line = reinterpret_cast<std::size_t>(l->data);
   if(line%2 == 0){
@@ -504,7 +504,7 @@ int ib::Listbox::item_height(void *item) const { // {{{
 int ib::Listbox::item_width(void *item) const{ // {{{
   auto l = reinterpret_cast<FL_BLINE*>(item);
   char* str = l->txt;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   char *ptr = strchr(str, '\t');
   char *description = nullptr;
@@ -546,7 +546,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
 } // }}}
 
 void ib::Listbox::initLayout(){ // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   textfont(ib::Fonts::list);
   textcolor(cfg->getStyleListFontColor());
@@ -603,7 +603,7 @@ ib::CompletionValue* ib::Listbox::selectedValue() const { // {{{
 void ib::Listbox::clearAll(){ // {{{
   ib::platform::ScopedLock lock(&mutex_);
   incOperationCount();
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
 
   if(main_window->getInput()->getCursorTokenIndex() == 0) {
     main_window->clearIconbox();
@@ -635,7 +635,7 @@ void ib::Listbox::startUpdate(){ /* {{{ */
 } /* }}} */
 
 void ib::Listbox::endUpdate(const bool use_max_candidates){ /* {{{ */
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   {
     ib::platform::ScopedLock lock(&mutex_);
     incOperationCount();
@@ -722,9 +722,9 @@ void ib::Listbox::selectLine(const int line, const bool move2middle) { // {{{
 // }}}
 
 void ib::Listbox::adjustSize() { // {{{
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
-  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
-  const auto cfg   = ib::Singleton<ib::Config>::getInstance();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto* const cfg   = ib::Singleton<ib::Config>::getInstance();
   const auto font_size    = cfg->getStyleListFontSize();
 
   int screen_x, screen_y, screen_w, screen_h;
@@ -780,8 +780,8 @@ void ib::ListWindow::close() { // {{{
 
 void ib::ListWindow::initLayout(){ // {{{
   begin();
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
 
   const auto pad_x = cfg->getStyleListPadx();
   const auto pad_y = cfg->getStyleListPady();

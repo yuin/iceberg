@@ -14,7 +14,7 @@ struct iconlist {
 };
 
 static void _main_thread_awaker(void *p){
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
   auto ilist = reinterpret_cast<struct iconlist*>(p);
   auto pos = ilist->pos;
   for(auto it = ilist->icons.begin(), last = ilist->icons.end(); it != last; ++it, ++pos){
@@ -29,7 +29,7 @@ static void _main_thread_awaker(void *p){
 void ib::_icon_loader(void *p) {
   const int MAX_FLUSH = 200;
 
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
 
   std::vector<Fl_Image*> buf;
   int current_operation_count = -1;
@@ -75,7 +75,7 @@ void ib::IconManager::loadCompletionListIcons() { // {{{
 
 void ib::IconManager::load() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::unique_oschar_ptr osicon_path(ib::platform::utf82oschar(cfg->getIconCachePath().c_str()));
   if(!ib::platform::file_exists(osicon_path.get())) return;
 
@@ -115,7 +115,7 @@ void ib::IconManager::load() { // {{{
 
 void ib::IconManager::dump() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg->getIconCachePath().c_str()));
   std::ofstream ofs(loicon_path.get(), std::ios::out|std::ios::binary|std::ios::trunc);
   int intvalue;

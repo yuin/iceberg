@@ -469,7 +469,7 @@ finalize:
 int ib::platform::init_system() { // {{{
   int ret;
   long style;
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   ib_g_hwnd_main = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
   ib_g_hwnd_list = fl_xid(ib::Singleton<ib::ListWindow>::getInstance());
@@ -626,7 +626,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
 } // }}}
 
 static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
 #ifdef IB_OS_WIN64

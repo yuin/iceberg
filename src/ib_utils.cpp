@@ -51,11 +51,11 @@ long ib::utils::malloc_count() { // {{{
 } // }}}
 
 void ib::utils::exit_application(const int code) { // {{{
-  auto config = ib::Singleton<ib::Config>::getInstance();
+  const auto* const config = ib::Singleton<ib::Config>::getInstance();
 
   if(code == 0) { 
-    auto history = ib::Singleton<ib::History>::getInstance();
-    auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
+    const auto history = ib::Singleton<ib::History>::getInstance();
+    const auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
     if(history != nullptr) history->dump();
     if(config->getEnableIcons() && icon_manager != nullptr){
       icon_manager->dump();
@@ -74,8 +74,8 @@ void ib::utils::reboot_application() { // {{{
   snprintf(options, 32, "%d", ib::platform::get_pid());
   params.push_back(ib::unique_string_ptr(new std::string(options)));
 
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto server = ib::Singleton<ib::Server>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto server = ib::Singleton<ib::Server>::getInstance();
   ib::Error error;
   server->shutdown();
   if(ib::platform::shell_execute(cfg->getSelfPath(), params, cfg->getInitialWorkdir(), "auto", error) != 0) {
@@ -89,7 +89,7 @@ void ib::utils::reboot_application() { // {{{
 // ib::utils::scan_search_path() { // {{{
 static void scan_search_path_awaker1(void *p){ 
   const auto category = reinterpret_cast<const char*>(p);
-  auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   std::string message = "Scanning search paths";
   message +="(category: ";
   message += category;
@@ -112,7 +112,7 @@ static ib::threadret scan_search_path_thread(void *p){
 }
 
 void ib::utils::scan_search_path(const char *category) {
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::oschar oscache_path[IB_MAX_PATH];
   ib::platform::utf82oschar_b(oscache_path, IB_MAX_PATH, cfg->getCommandCachePath().c_str());
   if(ib::platform::file_exists(oscache_path)){
@@ -472,7 +472,7 @@ void ib::utils::parse_key_bind(int *result, const char *string) { // {{{
 } // }}}
 
 void ib::utils::get_clipboard(std::string &ret) { // {{{
-  auto clipboard = ib::Singleton<ib::MainWindow>::getInstance()->_getClipboard();
+  const auto clipboard = ib::Singleton<ib::MainWindow>::getInstance()->_getClipboard();
   Fl::paste(*clipboard, 1);
   ret = clipboard->value();
   clipboard->value("");
@@ -502,7 +502,7 @@ std::string ib::utils::to_command_name(const std::string &string){ // {{{
 } // }}}
 
 int ib::utils::open_directory(const std::string &path, ib::Error &error) { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Command cmd;
   cmd.setName("tmp");
   cmd.setPath(cfg->getFileBrowser());

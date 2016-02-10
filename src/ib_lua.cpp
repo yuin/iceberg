@@ -390,7 +390,7 @@ int Regex_register (lua_State *L){
 
 // class LuaState {{{
 void ib::LuaState::init() { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   luaL_openlibs(l_);
   lua_register(l_, "_iceberg_module", &ib::luamodule::create);
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
@@ -486,7 +486,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
 } // }}}
 
 int ib::luamodule::config_dir(lua_State *L) { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::oschar osbuf[IB_MAX_PATH];
   ib::oschar osconfig[IB_MAX_PATH];
   ib::platform::utf82oschar_b(osconfig, IB_MAX_PATH, cfg->getConfigPath().c_str());
@@ -498,7 +498,7 @@ int ib::luamodule::config_dir(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::build_platform(lua_State *L) { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   lua_pushstring(L, cfg->getPlatform().c_str());
   return 1;
 } // }}}
@@ -792,7 +792,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
 } // }}}
 
 int ib::luamodule::command_execute(lua_State *L) { // {{{
-  auto controller = ib::Singleton<ib::Controller>::getInstance();
+  const auto controller = ib::Singleton<ib::Controller>::getInstance();
   ib::LuaState lua_state(L);
   std::vector<std::string*> args;
   const auto top = lua_gettop(L);

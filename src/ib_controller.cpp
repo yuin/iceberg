@@ -12,7 +12,7 @@
 #include "ib_singleton.h"
 
 void ib::Controller::initFonts(){ // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   Fl::set_font(ib::Fonts::input, cfg->getStyleInputFont().c_str());
   Fl::set_font(ib::Fonts::list, cfg->getStyleListFont().c_str());
 
@@ -63,8 +63,8 @@ void ib::Controller::initBoxtypes(){ // {{{
 } // }}}
 
 void ib::Controller::executeCommand() { // {{{
-  auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
 
   const bool is_empty = input->isEmpty();
 
@@ -120,7 +120,7 @@ void ib::Controller::executeCommand() { // {{{
   }
 
   afterExecuteCommand(success, message.empty() ? nullptr : message.c_str());
-  auto history = ib::Singleton<ib::History>::getInstance();
+  const auto history = ib::Singleton<ib::History>::getInstance();
   if(success){
     if(it != commands_.end()){
       if((*it).second->isEnabledHistory()){
@@ -137,10 +137,10 @@ void ib::Controller::executeCommand() { // {{{
 } // }}}
 
 void ib::Controller::afterExecuteCommand(const bool success, const char *message) { // {{{
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
-  auto input = main_window->getInput();
-  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
-  auto listbox = list_window->getListbox();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto input = main_window->getInput();
+  const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto listbox = list_window->getListbox();
   if(success){
     setHistorySearchMode(false, false);
     listbox->clearAll();
@@ -164,7 +164,7 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
 
 void ib::Controller::hideApplication() { // {{{
   ib::platform::hide_window(ib::Singleton<ib::MainWindow>::getInstance());
-  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
   if(list_window->visible()) {
     ib::platform::hide_window(list_window);
     list_window->set_visible();
@@ -174,8 +174,8 @@ void ib::Controller::hideApplication() { // {{{
 } // }}}
 
 void ib::Controller::showApplication() { // {{{
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
-  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
   if(list_window->getListbox()->isEmpty()) {
     list_window->hide();
   }else {
@@ -186,7 +186,7 @@ void ib::Controller::showApplication() { // {{{
 } // }}}
 
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
-  auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Error error;
 
   const char *usage = "Usage: iceberg.exe [-c CONFIG_FILE] [-m message]";
@@ -263,7 +263,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   int         number;
   int         i;
   std::string error_msg;
-  auto completer = ib::Singleton<ib::Completer>::getInstance();
+  const auto completer = ib::Singleton<ib::Completer>::getInstance();
 #define READ_UNSIGNED_INT(name) \
   luint = lua_tointeger(IB_LUA, -1); \
   if(luint < 0) { fl_alert(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
@@ -801,7 +801,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
 }
 
 void ib::Controller::cacheCommandsInSearchPath(const char *category) {
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   const auto &search_paths = cfg->getSearchPath();
   const auto is_all = strcmp(category, "all") == 0;
   long prev_index = 0;
@@ -851,8 +851,8 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
 
 // void ib::Controller::loadCachedCommands() { // {{{
 void ib::Controller::loadCachedCommands() {
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   input->value("Loading commands...");
   ib::unique_char_ptr locache_path(ib::platform::utf82local(cfg->getCommandCachePath().c_str()));
   std::ifstream ifs(locache_path.get());
@@ -891,8 +891,8 @@ void ib::Controller::addCommand(const std::string &name, ib::BaseCommand *comman
 } // }}}
 
 void ib::Controller::completionInput() { // {{{
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
-  auto input= ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto input= ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   if(!listbox->hasSelectedIndex()) return;
 
   std::size_t position = 0;
@@ -955,9 +955,9 @@ static int cmp_command(const ib::CompletionValue *a, const ib::CompletionValue *
 }
 
 void ib::Controller::showCompletionCandidates() {
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
-  auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
-  auto completer = ib::Singleton<ib::Completer>::getInstance();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto completer = ib::Singleton<ib::Completer>::getInstance();
 
   input->scan();
   if(input->getPrevCursorValue().size() != 0 && input->getCursorToken()->getValue().find(input->getPrevCursorValue()) != 0) {
@@ -1046,14 +1046,14 @@ void ib::Controller::showCompletionCandidates() {
 } // }}}
 
 void ib::Controller::selectNextCompletion(){ // {{{
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
   if(listbox->isEmpty()) { return; }
   listbox->selectNext();
   completionInput();
 } // }}}
 
 void ib::Controller::selectPrevCompletion(){ // {{{
-  auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+  const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
   if(listbox->isEmpty()) { return; }
   listbox->selectPrev();
   completionInput();
@@ -1080,7 +1080,7 @@ int ib::Controller::setCwd(const char *value, ib::Error &error){ // {{{
 
 void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{{
   if(display){
-    auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+    const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
     const char *text;
     if(value){
       text = "(history mode)";
@@ -1092,7 +1092,7 @@ void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{
 
     input->position(0);
     input->mark(static_cast<int>(strlen(text)));
-    auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
+    const auto listbox = ib::Singleton<ib::ListWindow>::getInstance()->getListbox();
     listbox->clearAll();
     ib::Singleton<ib::ListWindow>::getInstance()->hide();
   }
@@ -1101,12 +1101,12 @@ void ib::Controller::setHistorySearchMode(const bool value, bool display){ // {{
 
 void ib::Controller::setResultText(const char *value){ // {{{
   result_text_ = value;
-  auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   input->getKeyEvent().cancelEvent();
 } // }}}
 
 void ib::Controller::killWord() { // {{{
-  auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
+  const auto input   = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
 
   input->scan();
   std::string buf;
@@ -1144,8 +1144,8 @@ void ib::Controller::killWord() { // {{{
 
 void ib::Controller::handleIpcMessage(const char* message){ // {{{
   ib::FlScopedLock lock;
-  auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
-  auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
 
   {
     ib::Regex re_exec("exec (.*)", ib::Regex::NONE);
@@ -1182,7 +1182,7 @@ void ib::Controller::handleIpcMessage(const char* message){ // {{{
 } // }}}
 
 void ib::Controller::appendClipboardHistory(const char* text){ // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   std::string data(text);
   if(clipboard_histories_.size() >= cfg->getMaxClipboardHistories()){

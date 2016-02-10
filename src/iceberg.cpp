@@ -62,8 +62,8 @@ int main(int argc, char **argv) { // {{{
   ib::OnigrumaService::init();
 
   init_common_singletons();
-  auto cfg = ib::Singleton<ib::Config>::getInstance();
-  auto controller = ib::Singleton<ib::Controller>::getInstance();
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto controller = ib::Singleton<ib::Controller>::getInstance();
   setlocale(LC_ALL, "");
 
   if(ib::platform::startup_system() != 0) {
@@ -93,11 +93,11 @@ int main(int argc, char **argv) { // {{{
   Fl::visual(FL_DOUBLE|FL_INDEX);
   init_gui_singletons();
 
-  auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
-  auto listwin = ib::Singleton<ib::ListWindow>::getInstance();
-  auto server = ib::Singleton<ib::Server>::getInstance();
-  auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
-  auto history = ib::Singleton<ib::History>::getInstance();
+  const auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
+  const auto listwin = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto server = ib::Singleton<ib::Server>::getInstance();
+  const auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
+  const auto history = ib::Singleton<ib::History>::getInstance();
 
   mainwin->show();
   listwin->show();

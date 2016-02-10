@@ -94,6 +94,8 @@ namespace ib {
     private: 
       NonCopyable (const NonCopyable &);
       NonCopyable& operator=(const NonCopyable &);
+      NonCopyable (NonCopyable&&);
+      NonCopyable& operator=(NonCopyable&&);
   }; // }}}
 
   template <typename T>

@@ -818,7 +818,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
     return -1;
   };
 
-  auto server = ib::Singleton<ib::Server>::getInstance();
+  const auto server = ib::Singleton<ib::Server>::getInstance();
 
   // shutdown the server to prevent socket fd passing.
   server->shutdown();

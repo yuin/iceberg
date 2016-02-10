@@ -6,7 +6,7 @@
 #include "ib_singleton.h"
 
 void ib::History::load() { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::unique_oschar_ptr oshistory_path(ib::platform::utf82oschar(cfg->getHistoryPath().c_str()));
   if(!ib::platform::file_exists(oshistory_path.get())) return;
 
@@ -29,7 +29,7 @@ void ib::History::load() { // {{{
 } // }}}
 
 void ib::History::dump() { // {{{
-  const auto cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Error error;
 
   ib::oschar osbkfile[IB_MAX_PATH];
