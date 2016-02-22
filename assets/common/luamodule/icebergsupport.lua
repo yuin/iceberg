@@ -266,7 +266,13 @@ t.merge_table = function(dest, ...) -- {{{
   local srcs = {...}
   for i, src in ipairs(srcs) do
     if dest[1] ~= nil then -- array
-      table.insert(dest, src)
+      if type(src) == "table" and src[1] ~= nil then
+        for j, v in ipairs(src) do
+          table.insert(dest, v)
+        end
+      else
+        table.insert(dest, src)
+      end
     else -- map
       for k, v in pairs(src) do
         if type(dest[k]) == "table" and type(v) == "table" then
