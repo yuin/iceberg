@@ -20,23 +20,23 @@ namespace ib {
     void finalize_system();
     void get_runtime_platform(char *result);
     /* string conversion functions */
-    ib::oschar* utf82oschar(const char *src);
+    std::unique_ptr<ib::oschar[]> utf82oschar(const char *src);
     void utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, const char *src);
-    char* oschar2utf8(const ib::oschar *src);
+    std::unique_ptr<char[]> oschar2utf8(const ib::oschar *src);
     void oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src);
-    char* oschar2local(const ib::oschar *src);
+    std::unique_ptr<char[]> oschar2local(const ib::oschar *src);
     void oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src);
-    char* utf82local(const char *src);
-    char* local2utf8(const char *src);
-    ib::oschar* quote_string(ib::oschar *result, const ib::oschar *str);
-    ib::oschar* unquote_string(ib::oschar *result, const ib::oschar *str);
+    std::unique_ptr<char[]> utf82local(const char *src);
+    std::unique_ptr<char[]> local2utf8(const char *src);
+    std::unique_ptr<ib::oschar[]> quote_string(ib::oschar *result, const ib::oschar *str);
+    std::unique_ptr<ib::oschar[]> unquote_string(ib::oschar *result, const ib::oschar *str);
 
     /* application functions */
     void hide_window(Fl_Window *window);
     void activate_window(Fl_Window *window);
     void raise_window(Fl_Window *window);
     void set_window_alpha(Fl_Window *window, int alpha);
-    int  shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error& error);
+    int  shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error& error);
     int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error& error);
     int command_output(std::string &sstdout, std::string &sstderr, const char *command, ib::Error &error);
     int show_context_menu(ib::oschar *path);
@@ -58,12 +58,12 @@ namespace ib {
     bool directory_exists(const ib::oschar *path);
     bool file_exists(const ib::oschar *path);
     bool path_exists(const ib::oschar *path);
-    int walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive = false);
+    int walk_dir(std::vector<std::unique_ptr<ib::oschar[]>> &result, const ib::oschar *dir, ib::Error &error, bool recursive = false);
     ib::oschar* get_self_path(ib::oschar *result);
     ib::oschar* get_current_workdir(ib::oschar *result);
     int set_current_workdir(const ib::oschar *dir, ib::Error &error);
     bool which(ib::oschar *result, const ib::oschar *name);
-    int list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error);
+    int list_drives(std::vector<std::unique_ptr<ib::oschar[]>> &result, ib::Error &error);
     ib::oschar* icon_cache_key(ib::oschar *result, const ib::oschar *path);
 
     /* filesystem functions */

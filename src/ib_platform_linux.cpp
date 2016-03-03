@@ -71,7 +71,7 @@ static int read_fd_all(int fd, std::string &out) {
   return 0;
 }
 
-static int parse_cmdline(std::vector<ib::unique_char_ptr> &result, const char *cmdline) {
+static int parse_cmdline(std::vector<std::unique_ptr<char[]>> &result, const char *cmdline) {
   ib::Regex space_r("\\s+", ib::Regex::I);
   ib::Regex string_r("\"((((?<=\\\\)\")|[^\"])*)((?<!\\\\)\")", ib::Regex::I);
   ib::Regex value_r("([^\\(\\[\\)\\]\\s\"]+)", ib::Regex::I);
@@ -87,13 +87,13 @@ static int parse_cmdline(std::vector<ib::unique_char_ptr> &result, const char *c
       auto cap = string_r._1();
       auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
-      result.push_back(ib::unique_char_ptr(buf));
+      result.push_back(std::unique_ptr<char[]>(buf));
       pos = string_r.getEndpos(0) + 1;
     } else if(value_r.match(cmdline, pos) == 0) {
       auto cap = value_r._1();
       auto buf = new char[cap.length()+1];
       strcpy(buf, cap.c_str());
-      result.push_back(ib::unique_char_ptr(buf));
+      result.push_back(std::unique_ptr<char[]>(buf));
       pos = value_r.getEndpos(0) + 1;
     } else {
       return -1;
@@ -476,7 +476,7 @@ void FreeDesktopThemeRepos::buildHelper(const char *basepath) {
   char path[IB_MAX_PATH];
   char index_path[IB_MAX_PATH];
   ib::Error error;
-  std::vector<ib::unique_oschar_ptr> files;
+  std::vector<std::unique_ptr<ib::oschar[]>> files;
 
   if(ib::platform::walk_dir(files, basepath, error, false) != 0) {
     return; //ignore errors
@@ -673,50 +673,51 @@ void ib::platform::finalize_system(){ // {{{
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
 } // }}}
 
-ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
+std::unique_ptr<ib::oschar[]> ib::platform::utf82oschar(const char *src) { // {{{
   auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
-  return buff;
+  return std::unique_ptr<ib::oschar[]>(buff);
 } // }}}
 
 void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, const char *src) { // {{{
   strncpy_s(buf, src, bufsize);
 } // }}}
 
-char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
+std::unique_ptr<char[]> ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
   auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
 void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
   strncpy_s(buf, src, bufsize);
 } // }}}
 
-char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
+std::unique_ptr<char[]> ib::platform::oschar2local(const ib::oschar *src) { // {{{
   auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
 void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
   strncpy_s(buf, src, bufsize);
 } // }}}
 
-char* ib::platform::utf82local(const char *src) { // {{{
+std::unique_ptr<char[]> ib::platform::utf82local(const char *src) { // {{{
   auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
-char* ib::platform::local2utf8(const char *src) { // {{{
+std::unique_ptr<char[]> ib::platform::local2utf8(const char *src) { // {{{
   auto buff = new char[strlen(src)+1];
   strcpy(buff, src);
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
-ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+std::unique_ptr<ib::oschar[]> ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
+  bool ret_unique = false;
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; ret_unique = true; }
   bool need_quote = false;
   bool all_space = true;
 
@@ -732,7 +733,7 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
 
   if((strlen(str) != 0 && str[0] == '"') || !need_quote || all_space) {
     strncpy_s(result, str, IB_MAX_PATH);
-    return result;
+    return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr);
   }
 
   ib::oschar *cur = result + 1;
@@ -749,21 +750,22 @@ ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str
   cur++;
   *cur = '\0';
 
-  return result;
+  return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr);
 } // }}}
 
-ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+std::unique_ptr<ib::oschar[]> ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
+  bool ret_unique = false;
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; ret_unique = true;}
   auto len = strlen(str);
-  if(len == 0) { result[0] = '\0'; return result; }
-  if(len == 1) { strcpy(result, str); return result; }
+  if(len == 0) { result[0] = '\0'; return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr); }
+  if(len == 1) { strcpy(result, str); return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr); }
   if(*str == '"') str++;
   strncpy_s(result, str, IB_MAX_PATH);
   len = strlen(result);
   if(result[len-1] == '"') {
     result[len-1] = '\0';
   }
-  return result;
+  return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr);
 } // }}}
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
@@ -890,7 +892,7 @@ finally:
   return ret;
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
     ib::oschar qparam[IB_MAX_PATH];
@@ -918,7 +920,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
   int infd[2];
   pid_t pid;
 
-  std::vector<ib::unique_char_ptr> argv;
+  std::vector<std::unique_ptr<char[]>> argv;
   if(parse_cmdline(argv, cmd) != 0) {
     error.setMessage("Invalid command line.");
     error.setCode(1);
@@ -1029,7 +1031,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
       }
       auto prop_exec = kvf.get(SECTION_KEY, "Exec");
       if(!prop_exec.empty()) {
-        std::vector<ib::unique_oschar_ptr> cmdline;
+        std::vector<std::unique_ptr<ib::oschar[]>> cmdline;
         std::string command;
         parse_cmdline(cmdline, prop_exec.c_str());
         if(cmdline.size() != 0) {
@@ -1285,7 +1287,7 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
   return access(path, F_OK) == 0;
 } // }}}
 
-int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
+int ib::platform::walk_dir(std::vector<std::unique_ptr<ib::oschar[]>> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
     auto d = opendir(dir);
     if (!d) {
       set_errno(error);
@@ -1304,7 +1306,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
                 } else {
                   snprintf(path, IB_MAX_PATH, "%s", d_name);
                 }
-                result.push_back(ib::unique_oschar_ptr(path));
+                result.push_back(std::unique_ptr<ib::oschar[]>(path));
                 if(recursive) {
                   ib::platform::walk_dir(result, path, error, recursive);
                 }
@@ -1316,13 +1318,13 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
           } else {
             snprintf(path, IB_MAX_PATH, "%s", d_name);
           }
-          result.push_back(ib::unique_oschar_ptr(path));
+          result.push_back(std::unique_ptr<ib::oschar[]>(path));
         }
     }
     if(closedir(d)){
       // ignore errors...
     }
-    std::sort(result.begin(), result.end(), [](const ib::unique_oschar_ptr &left, const ib::unique_oschar_ptr &right) {
+    std::sort(result.begin(), result.end(), [](const std::unique_ptr<ib::oschar[]> &left, const std::unique_ptr<ib::oschar[]> &right) {
         return strcmp(left.get(), right.get()) < 0;
     });
 

@@ -71,7 +71,7 @@ ib::oschar* tcstokread(ib::oschar *buf, const ib::oschar sep) { // {{{
   }
 } // }}}
 
-static char* ib_platform_get_last_error_message(){ // {{{
+static std::unique_ptr<char[]> ib_platform_get_last_error_message(){ // {{{
   void* msg_buf;
   FormatMessage(
     FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -81,14 +81,14 @@ static char* ib_platform_get_last_error_message(){ // {{{
     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
     (LPTSTR) &msg_buf, 0, nullptr);
   auto ret = ib::platform::oschar2utf8(reinterpret_cast<const ib::oschar*>(msg_buf));
-  ret[strlen(ret)-2] = '\0';
+  ret.get()[strlen(ret.get())-2] = '\0';
   LocalFree(msg_buf);
   return ret;
 } // }}}
 
 static void ib_platform_set_error(ib::Error &error){ // {{{
   error.setCode(GetLastError());
-  ib::unique_char_ptr msg(ib_platform_get_last_error_message());
+  auto msg = ib_platform_get_last_error_message();
   error.setMessage(msg.get());
 } // }}}
 
@@ -289,7 +289,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
         HANDLE htext = GetClipboardData(CF_TEXT);
         if(htext != nullptr) {
             auto text = reinterpret_cast<char*>(GlobalLock(htext));
-            ib::unique_char_ptr utf8text(ib::platform::local2utf8(text));
+            auto utf8text = ib::platform::local2utf8(text);
             ib::Regex reg("\r\n", ib::Regex::NONE);
             reg.init();
             ib::Singleton<ib::Controller>::getInstance()->appendClipboardHistory(reg.gsub(utf8text.get(), "\n").c_str());
@@ -528,7 +528,7 @@ void ib::platform::get_runtime_platform(char *ret){ // {{{
                 type == 0 ? "x32" : (type == 1 ? "wow64" : "x64"));
 } // }}}
 
-ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
+std::unique_ptr<ib::oschar[]> ib::platform::utf82oschar(const char *src) { // {{{
   const auto _srclen = strlen(src);
   const unsigned int srclen = (_srclen) > UINT_MAX ? UINT_MAX : (unsigned int)_srclen;
 
@@ -537,7 +537,7 @@ ib::oschar* ib::platform::utf82oschar(const char *src) { // {{{
   auto wbuf = new wchar_t[wlen];
   wlen = fl_utf8toUtf16(src, srclen, reinterpret_cast<unsigned short*>(wbuf), wlen);
   wbuf[wlen] = 0;
-  return wbuf;
+  return std::unique_ptr<ib::oschar[]>(wbuf);
 } // }}}
 
 void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, const char *src) { // {{{
@@ -547,13 +547,13 @@ void ib::platform::utf82oschar_b(ib::oschar *buf, const unsigned int bufsize, co
   buf[wlen] = 0;
 } // }}}
 
-char* ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
+std::unique_ptr<char[]> ib::platform::oschar2utf8(const ib::oschar *src) { // {{{
   auto size = WideCharToMultiByte(CP_UTF8, 0, src, -1, nullptr, 0, nullptr, nullptr);
   size++;
   auto buff = new char[size];
   size = WideCharToMultiByte(CP_UTF8, 0, src, -1, buff, size, nullptr, nullptr);
   buff[size] = 0;
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
 void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
@@ -561,13 +561,13 @@ void ib::platform::oschar2utf8_b(char *buf, const unsigned int bufsize, const ib
   buf[size] = 0;
 } // }}}
 
-char* ib::platform::oschar2local(const ib::oschar *src) { // {{{
+std::unique_ptr<char[]> ib::platform::oschar2local(const ib::oschar *src) { // {{{
   auto size = WideCharToMultiByte(GetACP(), 0, src, -1, nullptr, 0, nullptr, nullptr);
   size++;
   auto buff = new char[size];
   size = WideCharToMultiByte(GetACP(), 0, src, -1, buff, size, nullptr, nullptr);
   buff[size] = 0;
-  return buff;
+  return std::unique_ptr<char[]>(buff);
 } // }}}
 
 void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const ib::oschar *src) { // {{{
@@ -575,12 +575,12 @@ void ib::platform::oschar2local_b(char *buf, const unsigned int bufsize, const i
   buf[size] = 0;
 } // }}}
 
-char* ib::platform::utf82local(const char *src) { // {{{
-  ib::unique_oschar_ptr osstring(ib::platform::utf82oschar(src));
+std::unique_ptr<char[]> ib::platform::utf82local(const char *src) { // {{{
+  auto osstring = ib::platform::utf82oschar(src);
   return ib::platform::oschar2local(osstring.get());
 } // }}}
 
-char* ib::platform::local2utf8(const char *src) { // {{{
+std::unique_ptr<char[]> ib::platform::local2utf8(const char *src) { // {{{
   auto size = MultiByteToWideChar(GetACP(), 0, src, -1, nullptr, 0);
   size++;
   auto buff = new ib::oschar[size];
@@ -591,18 +591,20 @@ char* ib::platform::local2utf8(const char *src) { // {{{
   return ret;
 } // }}}
 
-ib::oschar* ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+std::unique_ptr<ib::oschar[]> ib::platform::quote_string(ib::oschar *result, const ib::oschar *str) { // {{{
+  bool ret_unique = false;
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; ret_unique = true;}
   if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathQuoteSpaces(result);
-  return result;
+  return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr);
 } // }}}
 
-ib::oschar* ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
-  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+std::unique_ptr<ib::oschar[]> ib::platform::unquote_string(ib::oschar *result, const ib::oschar *str) { // {{{
+  bool ret_unique = false;
+  if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; ret_unique = true;}
   if(result != str) { tcsncpy_s(result, str, IB_MAX_PATH); }
   PathUnquoteSpaces(result);
-  return result;
+  return std::unique_ptr<ib::oschar[]>(ret_unique ? result: nullptr);
 } // }}}
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
@@ -635,9 +637,9 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   int ret;
 #endif
   if(reg.match(path.c_str()) == 0){
-    ib::unique_wchar_ptr wpath(ib::platform::utf82oschar("control.exe"));
-    ib::unique_wchar_ptr wparams(ib::platform::utf82oschar(path.c_str()));
-    ib::unique_wchar_ptr wcwd(ib::platform::utf82oschar(cwd.c_str()));
+    auto wpath = ib::platform::utf82oschar("control.exe");
+    auto wparams = ib::platform::utf82oschar(path.c_str());
+    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
 #ifdef IB_OS_WIN64
     ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
 #else
@@ -657,9 +659,9 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       ib::utils::delete_pointer_vectors(args);
       return ret;
     }
-    ib::unique_wchar_ptr wpath(ib::platform::utf82oschar(path.c_str()));
-    ib::unique_wchar_ptr wparams(ib::platform::utf82oschar(strparams.c_str()));
-    ib::unique_wchar_ptr wcwd(ib::platform::utf82oschar(cwd.c_str()));
+    auto wpath = ib::platform::utf82oschar(path.c_str());
+    auto wparams = ib::platform::utf82oschar(strparams.c_str());
+    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
 #ifdef IB_OS_WIN64
     ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
 #else
@@ -691,12 +693,12 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   return -1;
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<ib::unique_string_ptr> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
-    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p.get()->c_str()));
-    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(nullptr, osparam.get()));
-    ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
+    auto osparam = ib::platform::utf82oschar(p.get()->c_str());
+    auto osescaped_param = ib::platform::quote_string(nullptr, osparam.get());
+    auto escaped_param = ib::platform::oschar2utf8(osescaped_param.get());
     strparams += escaped_param.get();
     strparams += " ";
   }
@@ -706,9 +708,9 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<ib::u
 int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
-    ib::unique_oschar_ptr osparam(ib::platform::utf82oschar(p->c_str()));
-    ib::unique_oschar_ptr osescaped_param(ib::platform::quote_string(nullptr, osparam.get()));
-    ib::unique_char_ptr   escaped_param(ib::platform::oschar2utf8(osescaped_param.get()));
+    auto osparam = ib::platform::utf82oschar(p->c_str());
+    auto osescaped_param = ib::platform::quote_string(nullptr, osparam.get());
+    auto escaped_param = ib::platform::oschar2utf8(osescaped_param.get());
     strparams += escaped_param.get();
     strparams += " ";
   }
@@ -716,7 +718,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
-  ib::unique_oschar_ptr command(ib::platform::utf82oschar(cmd));
+  auto command = ib::platform::utf82oschar(cmd);
   int funcret = 0;
   
   HANDLE read_pipe = 0, write_pipe = 0;
@@ -1142,7 +1144,7 @@ bool ib::platform::path_exists(const ib::oschar *path) { // {{{
   return false;
 } // }}}
 
-int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
+int ib::platform::walk_dir(std::vector<std::unique_ptr<ib::oschar[]>> &result, const ib::oschar *dir, ib::Error &error, bool recursive) { // {{{
 
   const auto dir_length = _tcslen(dir);
   const ib::oschar *sep = (dir[dir_length-1] == L'\\' || dir[dir_length-1] == L'/') ? L"" : L"\\";
@@ -1151,7 +1153,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
       std::vector<ib::oschar*> servers;
       ib_platform_list_network_servers(servers, nullptr, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
       for(const auto &s : servers) {
-        result.push_back(ib::unique_oschar_ptr(s));
+        result.push_back(std::unique_ptr<ib::oschar[]>(s));
       }
       return 0;
     }else{
@@ -1170,7 +1172,7 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
           tcsncpy_s(not_const_dir, dir, IB_MAX_PATH);
           ib_platform_list_network_shares(shares, not_const_dir);
           for(const auto &s : shares) {
-            result.push_back(ib::unique_oschar_ptr(s));
+            result.push_back(std::unique_ptr<ib::oschar[]>(s));
           }
           return 0;
         }else{
@@ -1210,25 +1212,25 @@ int ib::platform::walk_dir(std::vector<ib::unique_oschar_ptr> &result, const ib:
           if(recursive){
             tmp_full_path = new ib::oschar[dir_length+1+file_name_length+1];
             swprintf(tmp_full_path, L"%ls%ls%ls", dir, sep, fd.cFileName);
-            result.push_back(ib::unique_oschar_ptr(tmp_full_path));
+            result.push_back(std::unique_ptr<ib::oschar[]>(tmp_full_path));
             if(ib::platform::walk_dir(result, tmp_full_path, error, recursive) != 0){
               return 1;
             };
           }else{
             tmp_full_path = new ib::oschar[file_name_length+1];
             swprintf(tmp_full_path, L"%ls", fd.cFileName);
-            result.push_back(ib::unique_oschar_ptr(tmp_full_path));
+            result.push_back(std::unique_ptr<ib::oschar[]>(tmp_full_path));
           }
         }
       }else {
         if(recursive){
           tmp_full_path = new ib::oschar[dir_length+1+file_name_length+1];
           swprintf(tmp_full_path, L"%ls%ls%ls", dir, sep, fd.cFileName);
-          result.push_back(ib::unique_oschar_ptr(tmp_full_path));
+          result.push_back(std::unique_ptr<ib::oschar[]>(tmp_full_path));
         }else{
           tmp_full_path = new ib::oschar[file_name_length+1];
           swprintf(tmp_full_path, L"%ls", fd.cFileName);
-          result.push_back(ib::unique_oschar_ptr(tmp_full_path));
+          result.push_back(std::unique_ptr<ib::oschar[]>(tmp_full_path));
         }
       }
     }while ( FindNextFile( h, &fd ) );
@@ -1600,7 +1602,7 @@ size_t ib::platform::win_calc_text_width(ib::oschar *str){ // {{{
 
 } // }}}
 
-int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Error &error) { // {{{
+int ib::platform::list_drives(std::vector<std::unique_ptr<ib::oschar[]>> &result, ib::Error &error) { // {{{
   ib::oschar buf[128]; 
   ib::oschar *ptr;
   ib::oschar *tmp;
@@ -1616,7 +1618,7 @@ int ib::platform::list_drives(std::vector<ib::unique_oschar_ptr> &result, ib::Er
     length = _tcslen(ptr);
     tmp = new ib::oschar[length+1];
     swprintf(tmp, L"%ls", ptr);
-    result.push_back(ib::unique_oschar_ptr(tmp));
+    result.push_back(std::unique_ptr<ib::oschar[]>(tmp));
     ptr += length;
   }
   return 0;

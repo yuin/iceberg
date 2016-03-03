@@ -34,7 +34,7 @@ static int Regex_new (lua_State *L) {
   const auto pattern = luaL_checkstring(L, 1);
   const auto flags = static_cast<unsigned int>(luaL_checkint(L, 2));
   auto value = new ib::Regex(pattern, flags);
-  ib::unique_string_ptr msg(new std::string());
+  std::unique_ptr<std::string> msg(new std::string());
   if(value->init(msg.get()) != 0) {
     return luaL_error(L, "Invalid regular expression: %s", msg.get()->c_str());
   };
@@ -619,8 +619,8 @@ int ib::luamodule::to_path(lua_State *L) { // {{{
   const auto name_or_path = luaL_checkstring(L, 1);
   lua_state.clearStack();
 
-  ib::unique_oschar_ptr osname_or_path(ib::platform::utf82oschar(name_or_path));
-  ib::unique_oschar_ptr unquoted_osname_or_path(ib::platform::unquote_string(nullptr, osname_or_path.get()));
+  auto osname_or_path = ib::platform::utf82oschar(name_or_path);
+  auto unquoted_osname_or_path = ib::platform::unquote_string(nullptr, osname_or_path.get());
   if(ib::platform::is_path(unquoted_osname_or_path.get())){
     ib::oschar oscwd[IB_MAX_PATH];
     ib::oschar osabs_path[IB_MAX_PATH];
@@ -753,7 +753,7 @@ int ib::luamodule::get_clipboard_histories(lua_State *L) { // {{{
 
 int ib::luamodule::shell_execute(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
-  std::vector<ib::unique_string_ptr> args;
+  std::vector<std::unique_ptr<std::string>> args;
   const auto top = lua_gettop(L);
   const std::string cmd(luaL_checkstring(L, 1));
   std::string workdir;
@@ -772,7 +772,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
         lua_pop(IB_LUA, 1);
         break;
       }
-      args.push_back(ib::unique_string_ptr(new std::string(luaL_checkstring(L,-1))));
+      args.push_back(std::unique_ptr<std::string>(new std::string(luaL_checkstring(L,-1))));
       lua_pop(IB_LUA, 1);
     }
     lua_pop(L, 1);
@@ -913,7 +913,7 @@ int ib::luamodule::selected_index(lua_State *L) { // {{{
 int ib::luamodule::utf82local(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   const auto text = luaL_checkstring(L, 1);
-  ib::unique_char_ptr ret(ib::platform::utf82local(text));
+  auto ret = ib::platform::utf82local(text);
 
   lua_state.clearStack();
   lua_pushstring(L, ret.get());
@@ -923,7 +923,7 @@ int ib::luamodule::utf82local(lua_State *L) { // {{{
 int ib::luamodule::local2utf8(lua_State *L) { // {{{
   ib::LuaState lua_state(L);
   const auto text = luaL_checkstring(L, 1);
-  ib::unique_char_ptr ret(ib::platform::local2utf8(text));
+  auto ret = ib::platform::local2utf8(text);
 
   lua_state.clearStack();
   lua_pushstring(L, ret.get());
@@ -1099,7 +1099,7 @@ int ib::luamodule::list_dir(lua_State *L) { // {{{
   ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, path);
 
   char file[IB_MAX_PATH_BYTE];
-  std::vector<ib::unique_oschar_ptr> files;
+  std::vector<std::unique_ptr<ib::oschar[]>> files;
   ib::Error error;
   if(ib::platform::walk_dir(files, ospath, error, false) != 0){
     lua_pushboolean(L, false);

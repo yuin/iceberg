@@ -76,10 +76,10 @@ void ib::IconManager::loadCompletionListIcons() { // {{{
 void ib::IconManager::load() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
-  ib::unique_oschar_ptr osicon_path(ib::platform::utf82oschar(cfg->getIconCachePath().c_str()));
+  auto osicon_path = ib::platform::utf82oschar(cfg->getIconCachePath().c_str());
   if(!ib::platform::file_exists(osicon_path.get())) return;
 
-  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg->getIconCachePath().c_str()));
+  auto loicon_path = ib::platform::utf82local(cfg->getIconCachePath().c_str());
   std::ifstream ifs(loicon_path.get(), std::ios::in|std::ios::binary);
 
   deleteCachedIcons();
@@ -116,7 +116,7 @@ void ib::IconManager::load() { // {{{
 void ib::IconManager::dump() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
-  ib::unique_char_ptr loicon_path(ib::platform::utf82local(cfg->getIconCachePath().c_str()));
+  auto loicon_path = ib::platform::utf82local(cfg->getIconCachePath().c_str());
   std::ofstream ofs(loicon_path.get(), std::ios::out|std::ios::binary|std::ios::trunc);
   int intvalue;
   char *intptr = (char*)&intvalue;
@@ -194,7 +194,7 @@ Fl_Image* ib::IconManager::getAssociatedIcon(const char *path, const int size){ 
 
 Fl_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(png_file));
+  auto lopath = ib::platform::utf82local(png_file);
   Fl_RGB_Image *tmp_image = new Fl_PNG_Image(lopath.get());
   Fl_Image *result_image;
   if(tmp_image->w() != size){
@@ -208,7 +208,7 @@ Fl_Image* ib::IconManager::readPngFileIcon(const char *png_file, const int size)
 
 Fl_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(jpeg_file));
+  auto lopath = ib::platform::utf82local(jpeg_file);
   Fl_RGB_Image *tmp_image = new Fl_JPEG_Image(lopath.get());
   Fl_Image *result_image;
   if(tmp_image->w() != size){
@@ -222,7 +222,7 @@ Fl_Image* ib::IconManager::readJpegFileIcon(const char *jpeg_file, const int siz
 
 Fl_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(gif_file));
+  auto lopath = ib::platform::utf82local(gif_file);
   Fl_Image *tmp_image = new Fl_GIF_Image(lopath.get());
   Fl_Image *result_image;
   if(tmp_image->w() != size){
@@ -236,7 +236,7 @@ Fl_Image* ib::IconManager::readGifFileIcon(const char *gif_file, const int size)
 
 Fl_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(svg_file));
+  auto lopath = ib::platform::utf82local(svg_file);
   auto buf = ib::rasterize_svg_file(svg_file, size);
   if(buf == nullptr) return nullptr;
   auto result_image = new Fl_RGB_Image(buf, size, size, 4);
@@ -245,7 +245,7 @@ Fl_Image* ib::IconManager::readSvgFileIcon(const char *svg_file, const int size)
 
 Fl_Image* ib::IconManager::readXpmFileIcon(const char *xpm_file, const int size){ // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
-  ib::unique_char_ptr lopath(ib::platform::utf82local(xpm_file));
+  auto lopath = ib::platform::utf82local(xpm_file);
   Fl_Image *tmp_image = new Fl_XPM_Image(lopath.get());
   Fl_Image *result_image;
   if(tmp_image->w() != size){

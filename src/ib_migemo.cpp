@@ -7,7 +7,7 @@ const unsigned int ib::Migemo::MIN_LENGTH = 3;
 
 void ib::Migemo::init() {
   ib::Error error;
-  ib::unique_oschar_ptr name(ib::platform::utf82oschar("migemo"));
+  auto name = ib::platform::utf82oschar("migemo");
   if(ib::platform::load_library(dl_, name.get(), error) == 0){
     has_migemo_ = true;
     _open = (migemo* (*)(const char*))ib::platform::get_dynamic_symbol(dl_, "migemo_open");

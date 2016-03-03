@@ -79,7 +79,7 @@ void ib::Controller::executeCommand() { // {{{
   }
 
   const std::string cmd(is_empty ? ":empty" : input->getFirstValue());
-  ib::unique_oschar_ptr os_cmd(ib::platform::utf82oschar(cmd.c_str()));
+  auto os_cmd = ib::platform::utf82oschar(cmd.c_str());
   ib::Error error;
   bool success = false;
   std::string message;
@@ -211,45 +211,45 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
   ib::oschar osbuf[IB_MAX_PATH];
   ib::platform::get_current_workdir(osbuf);
-  ib::unique_char_ptr current_workdir(ib::platform::oschar2utf8(osbuf));
+  auto current_workdir = ib::platform::oschar2utf8(osbuf);
   ib::platform::get_self_path(osbuf);
-  ib::unique_char_ptr self_path(ib::platform::oschar2utf8(osbuf));
-  ib::unique_oschar_ptr osself_dir(ib::platform::dirname(nullptr, osbuf));
+  auto self_path = ib::platform::oschar2utf8(osbuf);
+  std::unique_ptr<ib::oschar[]> osself_dir(ib::platform::dirname(nullptr, osbuf));
   cfg->setSelfPath(self_path.get());
   cfg->setInitialWorkdir(current_workdir.get());
   setCwd(current_workdir.get(), error);
   if(cfg->getConfigPath().size() == 0) {
     ib::oschar osconf_dir[IB_MAX_PATH];
     ib::platform::default_config_path(osconf_dir);
-    ib::unique_oschar_ptr osconfig_name(ib::platform::utf82oschar("config.lua"));
-    ib::unique_oschar_ptr oscconfig_path(ib::platform::join_path(nullptr, osconf_dir, osconfig_name.get()));
-    ib::unique_char_ptr   cconfig_path(ib::platform::oschar2utf8(oscconfig_path.get()));
+    auto osconfig_name = ib::platform::utf82oschar("config.lua");
+    std::unique_ptr<ib::oschar[]> oscconfig_path(ib::platform::join_path(nullptr, osconf_dir, osconfig_name.get()));
+    auto cconfig_path = ib::platform::oschar2utf8(oscconfig_path.get());
     cfg->setConfigPath(cconfig_path.get());
   }
-  ib::unique_oschar_ptr osconfig_path(ib::platform::utf82oschar(cfg->getConfigPath().c_str()));
+  auto osconfig_path = ib::platform::utf82oschar(cfg->getConfigPath().c_str());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
-  ib::unique_oschar_ptr oscmd_cache_name(ib::platform::utf82oschar("commands.cache"));
-  ib::unique_oschar_ptr oscmd_cache_path(ib::platform::join_path(nullptr, osbuf, oscmd_cache_name.get()));
-  ib::unique_char_ptr   cmd_cache_path(ib::platform::oschar2utf8(oscmd_cache_path.get()));
+  auto oscmd_cache_name = ib::platform::utf82oschar("commands.cache");
+  std::unique_ptr<ib::oschar[]> oscmd_cache_path(ib::platform::join_path(nullptr, osbuf, oscmd_cache_name.get()));
+  auto cmd_cache_path = ib::platform::oschar2utf8(oscmd_cache_path.get());
   cfg->setCommandCachePath(cmd_cache_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
-  ib::unique_oschar_ptr oshistory_name(ib::platform::utf82oschar("history.txt"));
-  ib::unique_oschar_ptr oshistory_path(ib::platform::join_path(nullptr, osbuf, oshistory_name.get()));
-  ib::unique_char_ptr   history_path(ib::platform::oschar2utf8(oshistory_path.get()));
+  auto oshistory_name = ib::platform::utf82oschar("history.txt");
+  std::unique_ptr<ib::oschar[]> oshistory_path(ib::platform::join_path(nullptr, osbuf, oshistory_name.get()));
+  auto history_path = ib::platform::oschar2utf8(oshistory_path.get());
   cfg->setHistoryPath(history_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
-  ib::unique_oschar_ptr osicon_cache_name(ib::platform::utf82oschar("icons.cache"));
-  ib::unique_oschar_ptr osicon_cache_path(ib::platform::join_path(nullptr, osbuf, osicon_cache_name.get()));
-  ib::unique_char_ptr   icon_cache_path(ib::platform::oschar2utf8(osicon_cache_path.get()));
+  auto osicon_cache_name = ib::platform::utf82oschar("icons.cache");
+  std::unique_ptr<ib::oschar[]> osicon_cache_path(ib::platform::join_path(nullptr, osbuf, osicon_cache_name.get()));
+  auto icon_cache_path = ib::platform::oschar2utf8(osicon_cache_path.get());
   cfg->setIconCachePath(icon_cache_path.get());
 
   ib::platform::dirname(osbuf, osconfig_path.get());
-  ib::unique_oschar_ptr osmigemo_dict_name(ib::platform::utf82oschar("dict"));
-  ib::unique_oschar_ptr osmigemo_dict_path(ib::platform::normalize_join_path(nullptr, osbuf, osmigemo_dict_name.get()));
-  ib::unique_char_ptr   migemo_dict_path(ib::platform::oschar2utf8(osmigemo_dict_path.get()));
+  auto osmigemo_dict_name = ib::platform::utf82oschar("dict");
+  std::unique_ptr<ib::oschar[]> osmigemo_dict_path(ib::platform::normalize_join_path(nullptr, osbuf, osmigemo_dict_name.get()));
+  auto migemo_dict_path = ib::platform::oschar2utf8(osmigemo_dict_path.get());
   cfg->setMigemoDictPath(migemo_dict_path.get());
 
   cfg->setPlatform(IB_OS_STRING);
@@ -768,7 +768,7 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
   ib::Regex re(pattern.c_str(), ib::Regex::I);
   re.init();
 
-  std::vector<ib::unique_oschar_ptr> files;
+  std::vector<std::unique_ptr<ib::oschar[]>> files;
   ib::oschar osdir[IB_MAX_PATH];
   ib::platform::utf82oschar_b(osdir, IB_MAX_PATH, path);
   ib::Error error;
@@ -830,7 +830,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     }
   }
 
-  ib::unique_char_ptr locache_path(ib::platform::utf82local(cfg->getCommandCachePath().c_str()));
+  auto locache_path = ib::platform::utf82local(cfg->getCommandCachePath().c_str());
   std::ofstream ofs(locache_path.get());
   for(const auto &c : commands) {
     ofs << c->getCategory() << std::endl;
@@ -854,7 +854,7 @@ void ib::Controller::loadCachedCommands() {
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   const auto input = ib::Singleton<ib::MainWindow>::getInstance()->getInput();
   input->value("Loading commands...");
-  ib::unique_char_ptr locache_path(ib::platform::utf82local(cfg->getCommandCachePath().c_str()));
+  auto locache_path = ib::platform::utf82local(cfg->getCommandCachePath().c_str());
   std::ifstream ifs(locache_path.get());
   std::string buf;
 
@@ -912,7 +912,7 @@ void ib::Controller::completionInput() { // {{{
         if(!input->getCursorToken()->isValueToken()) {
           buf += cursor_value;
         }
-        ib::unique_oschar_ptr os_value(ib::platform::utf82oschar(cursor_value.c_str()));
+        auto os_value = ib::platform::utf82oschar(cursor_value.c_str());
         if(ib::platform::is_path(os_value.get())){
           ib::oschar os_dirname[IB_MAX_PATH];
           ib::platform::dirname(os_dirname, os_value.get());
@@ -927,9 +927,9 @@ void ib::Controller::completionInput() { // {{{
           buf += completed_path;
         }else{
           const auto &comp_value = listbox->selectedValue()->getCompvalue();
-          ib::unique_oschar_ptr oscomp_value(ib::platform::utf82oschar(comp_value.c_str()));
-          ib::unique_oschar_ptr osquoted_value(ib::platform::quote_string(nullptr, oscomp_value.get()));
-          ib::unique_char_ptr   quoted_value(ib::platform::oschar2utf8(osquoted_value.get()));
+          auto oscomp_value = ib::platform::utf82oschar(comp_value.c_str());
+          auto osquoted_value = ib::platform::quote_string(nullptr, oscomp_value.get());
+          auto quoted_value = ib::platform::oschar2utf8(osquoted_value.get());
           buf += quoted_value.get();
         }
         position = buf.length();
@@ -971,13 +971,13 @@ void ib::Controller::showCompletionCandidates() {
   listbox->startUpdate();
   const auto &first_value = input->getFirstValue();
   const auto &cursor_value = input->getCursorValue();
-  ib::unique_oschar_ptr os_cursor_value(ib::platform::utf82oschar(cursor_value.c_str()));
+  auto os_cursor_value = ib::platform::utf82oschar(cursor_value.c_str());
   std::vector<ib::CompletionValue*> candidates;
 
   bool use_max_candidates = false;
 #ifdef IB_OS_WIN
   if(first_value == "/" || first_value == "\\"){
-    std::vector<ib::unique_oschar_ptr> os_drives;
+    std::vector<std::unique_ptr<ib::oschar[]>> os_drives;
     ib::Error error;
     char drive[16];
     if(ib::platform::list_drives(os_drives, error) == 0){
@@ -1007,7 +1007,7 @@ void ib::Controller::showCompletionCandidates() {
         if(it != commands_.end()){
           ib::platform::utf82oschar_b(oscwd, IB_MAX_PATH, (*it).second->getWorkdir().c_str());
         }else{
-          ib::unique_oschar_ptr osfirst_value(ib::platform::utf82oschar(cmdname.c_str()));
+          auto osfirst_value = ib::platform::utf82oschar(cmdname.c_str());
           if(ib::platform::is_path(osfirst_value.get())){
             ib::platform::dirname(oscwd, osfirst_value.get());
           }
@@ -1116,7 +1116,7 @@ void ib::Controller::killWord() { // {{{
   for(auto it = tokens.begin(), last = tokens.end(); it != last; ++it, ++i){
     if(i == input->getCursorTokenIndex()){
       const auto &cursor_value = (*it)->getValue();
-      ib::unique_oschar_ptr os_value(ib::platform::utf82oschar(cursor_value.c_str()));
+      auto os_value = ib::platform::utf82oschar(cursor_value.c_str());
       if(ib::platform::is_path(os_value.get())){
         ib::oschar os_dirname[IB_MAX_PATH];
         ib::platform::dirname(os_dirname, os_value.get());

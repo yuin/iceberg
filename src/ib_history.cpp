@@ -7,10 +7,10 @@
 
 void ib::History::load() { // {{{
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
-  ib::unique_oschar_ptr oshistory_path(ib::platform::utf82oschar(cfg->getHistoryPath().c_str()));
+  auto oshistory_path = ib::platform::utf82oschar(cfg->getHistoryPath().c_str());
   if(!ib::platform::file_exists(oshistory_path.get())) return;
 
-  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg->getHistoryPath().c_str()));
+  auto lohistory_path = ib::platform::utf82local(cfg->getHistoryPath().c_str());
   std::ifstream ifs(lohistory_path.get());
   std::string buf;
   ib::Regex re("\t", ib::Regex::NONE);
@@ -39,7 +39,7 @@ void ib::History::dump() { // {{{
   ib::platform::remove_file(osbkfile, error); // ignore errors
   ib::platform::copy_file(osfile, osbkfile, error); // ignore errors
 
-  ib::unique_char_ptr lohistory_path(ib::platform::utf82local(cfg->getHistoryPath().c_str()));
+  auto lohistory_path = ib::platform::utf82local(cfg->getHistoryPath().c_str());
   std::ofstream ofs(lohistory_path.get());
   auto it = ordered_commands_.begin();
   if(ordered_commands_.size() > cfg->getMaxHistories()){

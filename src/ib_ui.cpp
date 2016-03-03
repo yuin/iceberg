@@ -277,7 +277,7 @@ void ib::Input::adjustSize() { // {{{
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
   // fl_width on windwos is slow. 
-  ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(value()));
+  auto osstr = ib::platform::utf82oschar(value());
   auto isize = ib::platform::win_calc_text_width(osstr.get()) + tsize;
 #else
   auto isize = fl_width(value()) + tsize;
@@ -467,7 +467,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
 
 #ifdef IB_OS_WIN
   // fl_draw on windwos is slow.
-  ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(str));
+  auto osstr = ib::platform::utf82oschar(str);
   ib::platform::win_draw_text(osstr.get(), left, top, width);
 #else
   fl_draw(str, left, top);
@@ -483,7 +483,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
     fl_color(lcol);
 #ifdef IB_OS_WIN
     // fl_draw on windwos is slow.
-    ib::unique_oschar_ptr osdesc(ib::platform::utf82oschar(description));
+    auto osdesc = ib::platform::utf82oschar(description);
     ib::platform::win_draw_text(osdesc.get(), left, top, width);
 #else
     fl_draw(description, left, top);
@@ -522,7 +522,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   fl_font(font, tsize);
 #ifdef IB_OS_WIN
   // fl_width on windwos is slow. 
-  ib::unique_oschar_ptr osstr(ib::platform::utf82oschar(str));
+  auto osstr = ib::platform::utf82oschar(str);
   size_t w1 = ib::platform::win_calc_text_width(osstr.get()) + tsize*2;
 #else
   size_t w1 = fl_width(str) + tsize;
@@ -535,7 +535,7 @@ int ib::Listbox::item_width(void *item) const{ // {{{
     fl_font(font, tsize);
 #ifdef IB_OS_WIN
   // fl_width on windwos is slow. 
-    ib::unique_oschar_ptr osdesc(ib::platform::utf82oschar(description));
+    auto osdesc = ib::platform::utf82oschar(description);
     w2 = ib::platform::win_calc_text_width(osdesc.get()) + tsize*2;
 #else
     w2 = fl_width(description) + tsize;

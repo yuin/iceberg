@@ -68,11 +68,11 @@ void ib::utils::exit_application(const int code) { // {{{
 } // }}}
 
 void ib::utils::reboot_application() { // {{{
-  std::vector<ib::unique_string_ptr> params;
-  params.push_back(ib::unique_string_ptr(new std::string("-p")));
+  std::vector<std::unique_ptr<std::string>> params;
+  params.push_back(std::unique_ptr<std::string>(new std::string("-p")));
   char options[32];
   snprintf(options, 32, "%d", ib::platform::get_pid());
-  params.push_back(ib::unique_string_ptr(new std::string(options)));
+  params.push_back(std::unique_ptr<std::string>(new std::string(options)));
 
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   const auto server = ib::Singleton<ib::Server>::getInstance();

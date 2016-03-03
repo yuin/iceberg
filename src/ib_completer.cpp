@@ -170,7 +170,7 @@ void ib::Completer::completePath(std::vector<ib::CompletionValue*> &candidates, 
 
   method_path_->beforeMatch(candidates, basename);
 
-  std::vector<ib::unique_oschar_ptr> files;
+  std::vector<std::unique_ptr<ib::oschar[]>> files;
   ib::Error error;
   if(ib::platform::walk_dir(files, os_dirname, error, false) == 0) {
     char compvalue[IB_MAX_PATH_BYTE];

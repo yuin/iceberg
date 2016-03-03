@@ -94,18 +94,14 @@ const int         IB_ICON_SIZE_LARGE = 32;
 namespace ib {
   typedef std::map<std::string, std::string> string_map;
   typedef std::pair<std::string, std::string> string_pair;
+  #ifdef IB_OS_WIN
+    typedef wchar_t oschar;
+    typedef std::wstring osstring;
+  #else
+    typedef char oschar;
+    typedef std::string osstring;
+  #endif
 
-  typedef std::unique_ptr<std::string> unique_string_ptr;
-  typedef std::unique_ptr<wchar_t[]> unique_wchar_ptr;
-  typedef std::unique_ptr<char[]> unique_char_ptr;
-#ifdef IB_OS_WIN
-  typedef wchar_t oschar;
-  typedef std::wstring osstring;
-#else
-  typedef char oschar;
-  typedef std::string osstring;
-#endif
-  typedef std::unique_ptr<oschar[]> unique_oschar_ptr;
 
 #if ( INT_MAX == 2147483647 )
   typedef unsigned       u32;

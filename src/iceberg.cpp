@@ -114,7 +114,7 @@ int main(int argc, char **argv) { // {{{
     ib::utils::exit_application(1);
   }
 
-  ib::unique_oschar_ptr oscache_path(ib::platform::utf82oschar(cfg->getCommandCachePath().c_str()));
+  auto oscache_path = ib::platform::utf82oschar(cfg->getCommandCachePath().c_str());
   if(ib::platform::file_exists(oscache_path.get())){
     controller->loadCachedCommands();
   }
