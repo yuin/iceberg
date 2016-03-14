@@ -44,6 +44,7 @@
 #include <unordered_set>
 #include <deque>
 
+#define FL_INTERNALS
 #include <FL/Fl.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Box.H>

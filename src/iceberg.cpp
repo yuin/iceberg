@@ -101,6 +101,8 @@ int main(int argc, char **argv) { // {{{
 
   mainwin->show();
   listwin->show();
+  mainwin->wait_for_expose();
+  listwin->wait_for_expose();
 
   if(ib::platform::init_system() < 0) {
     fl_alert("Failed to initialize the application.(init_system)");

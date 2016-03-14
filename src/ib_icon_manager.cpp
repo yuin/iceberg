@@ -327,6 +327,10 @@ Fl_Image* ib::IconManager::getLuaIcon(const int size) { // {{{
   return getEmbededIcon(lua_png, "lua", IB_ICON_SIZE_LARGE, size);
 } // }}}
 
+Fl_Image* ib::IconManager::getIcebergIcon(const int size) { // {{{
+  return getEmbededIcon(iceberg_png, "iceberg", IB_ICON_SIZE_LARGE, size);
+} // }}}
+
 void ib::IconManager::deleteCachedIcons() { // {{{
   ib::platform::ScopedLock lock(&cache_mutex_);
   for(auto &pair : cached_icons_) {

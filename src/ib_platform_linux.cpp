@@ -11,8 +11,20 @@
 #include "ib_server.h"
 #include "ib_singleton.h"
 
+#define SYSTEM_TRAY_REQUEST_DOCK 0
+
 static char ib_g_lang[32];
 static int  ib_g_hotkey;
+class TrayIcon;
+typedef struct atoms_ {
+  Atom xembed_info;
+  Atom xembed;
+  Atom net_wm_window_opacity;
+  Atom net_wm_desktop;
+  Atom net_system_tray_opecode;
+  Atom net_active_window;
+} atoms;
+static atoms ib_g_atoms;
 
 // utilities {{{
 
@@ -223,13 +235,13 @@ class FreeDesktopMime: private ib::NonCopyable<FreeDesktopMime> { // {{{
     static FreeDesktopMime *instance_;
     static FreeDesktopMime* inst() { return instance_; }
     static void init() { instance_ = new FreeDesktopMime(); instance_->build();}
-    
+
     FreeDesktopMime() : globs_() {};
     void build();
     bool findByPath(std::string &typ, std::string &subtyp, const char *path);
   protected:
     std::vector<std::tuple<int, std::string, std::string, std::string> > globs_;
-}; 
+};
 
 FreeDesktopMime* FreeDesktopMime::instance_ = nullptr;
 
@@ -490,7 +502,7 @@ void FreeDesktopThemeRepos::buildHelper(const char *basepath) {
         if(kvf->parse() < 0) { delete kvf; continue; /* ignore errors */ }
         auto name = kvf->get("Icon Theme", "Name", false);
         if(name.empty()) {
-          delete kvf; 
+          delete kvf;
           continue;
           // TODO How we should handle an inheritance?
         }
@@ -518,6 +530,108 @@ void FreeDesktopThemeRepos::findIcon(std::string &result, const char *theme, con
 //////////////////////////////////////////////////
 // X11 functions {{{
 //////////////////////////////////////////////////
+static void xsend_message_la(Window w, Atom a, long d0, long d1, long d2, long d3, long d4) {
+  XClientMessageEvent ev = {0};
+  ev.type = ClientMessage;
+  ev.window = w;
+  ev.message_type = a;
+  ev.format = 32;
+  ev.data.l[0] = d0;
+  ev.data.l[1] = d1;
+  ev.data.l[2] = d2;
+  ev.data.l[3] = d3;
+  ev.data.l[4] = d4;
+  XSendEvent(fl_display, DefaultRootWindow(fl_display), 0,
+    SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+}
+
+static int tray_event_handler(int e, Fl_Window* w);
+class TrayIcon : public Fl_Window {
+  private:
+    uint32_t parent_xid_;
+    Fl_Box     *box_;
+
+    void replaceXid() {
+      Colormap colormap = fl_colormap;
+      XSetWindowAttributes attr;
+      attr.border_pixel = 0;
+      attr.colormap = colormap;
+      attr.bit_gravity = 0;
+      attr.backing_store = Always;
+      attr.event_mask = ExposureMask | StructureNotifyMask | KeyPressMask
+        | KeyReleaseMask | KeymapStateMask | FocusChangeMask | ButtonPressMask
+        | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | PointerMotionMask;
+
+      Fl_X::set_xid(this,
+        XCreateWindow(fl_display, parent_xid_,
+          this->x(), this->y(), std::max<int>(this->w(), 1), std::max<int>(this->h(), 1),
+          0, fl_visual->depth, InputOutput, fl_visual->visual,
+          CWBorderPixel|CWColormap|CWEventMask|CWBitGravity|CWBackingStore, &attr));
+    };
+
+    void setXembedInfo(unsigned long flags) {
+     unsigned long buffer[2] = {1, flags};
+     XChangeProperty (fl_display, fl_xid(this),
+       ib_g_atoms.xembed_info, ib_g_atoms.xembed_info, 32, PropModeReplace,
+       (unsigned char *)buffer, 2);
+    };
+
+  public:
+    TrayIcon() : Fl_Window(64, 64), parent_xid_(0), box_(nullptr) {
+      parent_xid_ = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
+      end();
+      replaceXid();
+      setXembedInfo(1);
+      begin();
+      box_ = new Fl_Box(0,0, w(), h());
+      Fl::event_dispatch(tray_event_handler);
+      end();
+      clear_border();
+      copy_tooltip("iceberg - click to restore");
+    };
+    ~TrayIcon() {
+      if(box_ != nullptr){
+       if(box_->image() != nullptr) delete box_->image();
+       delete box_;
+      }
+    }
+    int handle(int e) {
+      if(e == FL_PUSH) {
+       ib::Singleton<ib::Controller>::getInstance()->showApplication();
+       return 1;
+      }
+      return Fl_Window::handle(e);
+    }
+    Fl_Box* getBox() const { return box_; }
+    uint32_t getParentXid() const { return parent_xid_; }
+};
+
+static int tray_event_handler(int e, Fl_Window* w) {
+  if(fl_xevent->type == ClientMessage) {
+    if (fl_xevent->xclient.message_type == ib_g_atoms.xembed) {
+      long message = fl_xevent->xclient.data.l[1];
+      auto icon = ib::Singleton<TrayIcon>::getInstance();
+      if(message == 0) { // XEMBED_EMBEDDED_NOTIFY
+         auto xid = fl_xevent->xclient.data.l[3];
+         XWindowAttributes attr;
+         XGetWindowAttributes(fl_display, xid, &attr);
+         auto w = attr.width;
+         auto h = attr.height;
+         uint32_t opacity = 0xC0000000;
+         XChangeProperty(fl_display, fl_xid(icon), ib_g_atoms.net_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&opacity, 1);
+         icon->getBox()->resize(0,0, w, h);
+         icon->getBox()->image(ib::Singleton<ib::IconManager>::getInstance()->getIcebergIcon(w-2));
+         icon->box(FL_NO_BOX);
+
+      } else if(message == 1) { //XEMBED_WINDOW_ACTIVATE
+        if (w) {
+          w->resize(0,0, w->w(), w->h());
+        }
+      }
+    }
+  }
+  return Fl::handle_(e, w);
+};
 
 static int xerror_handler(Display* d, XErrorEvent* e) {
   char buf1[128], buf2[128];
@@ -529,14 +643,12 @@ static int xerror_handler(Display* d, XErrorEvent* e) {
 }
 
 static int xevent_handler(int e){
-  if (!e) {
-    //Window window = fl_xevent->xany.window;
-    switch(fl_xevent->type){
-      case KeyPress: // hotkey
-        ib::Singleton<ib::Controller>::getInstance()->showApplication();
-        return 1;
-    }
-  } 
+  //Window window = fl_xevent->xany.window;
+  switch(fl_xevent->type){
+    case KeyPress: // hotkey
+      ib::Singleton<ib::Controller>::getInstance()->showApplication();
+      return 1;
+  }
   return 0;
 }
 
@@ -557,6 +669,26 @@ static int xregister_hotkey() {
   return 0;
 }
 
+static int xregister_systray_icon() {
+  char atom_tray_name[128];
+  sprintf(atom_tray_name, "_NET_SYSTEM_TRAY_S%i", fl_screen);
+  Atom sys_tray_atom = XInternAtom(fl_display, atom_tray_name, False);
+  Window dock = XGetSelectionOwner(fl_display, sys_tray_atom);
+  if(!dock) {
+    // no system tray found.
+    return 0;
+  }
+
+  ib::Singleton<TrayIcon>::initInstance();
+  auto trayicon = ib::Singleton<TrayIcon>::getInstance();
+  trayicon->show();
+  trayicon->wait_for_expose();
+
+  xsend_message_la(dock, ib_g_atoms.net_system_tray_opecode, fl_event_time, SYSTEM_TRAY_REQUEST_DOCK, fl_xid(trayicon), 0, 0);
+  XSync(fl_display, False);
+  return 0;
+}
+
 static void signal_handler(int s){
   ib::utils::exit_application(0);
 }
@@ -574,21 +706,6 @@ static void* xget_property(Window w, const char *prop, Atom typ) {
     return nullptr;
   }
   return ptr;
-}
-
-static void xsend_message_l(Window w, const char *msg, long d0, long d1, long d2, long d3, long d4) {
-  XClientMessageEvent ev = {0};
-  ev.type = ClientMessage;
-  ev.window = w;
-  ev.message_type = XInternAtom(fl_display, msg, False);
-  ev.format = 32;
-  ev.data.l[0] = d0;
-  ev.data.l[1] = d1;
-  ev.data.l[2] = d2;
-  ev.data.l[3] = d3;
-  ev.data.l[4] = d4;
-  XSendEvent(fl_display, DefaultRootWindow(fl_display), 0,
-    SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
 }
 
 static int xcurrent_desktop() {
@@ -635,10 +752,23 @@ int ib::platform::startup_system() { // {{{
 
 int ib::platform::init_system() { // {{{
   ib::Singleton<ib::ListWindow>::getInstance()->set_menu_window();
+  auto intern_atom = [](const char *msg) -> Atom { return XInternAtom(fl_display, msg, False); };
+  ib_g_atoms.xembed = intern_atom("_XEMBED");
+  ib_g_atoms.xembed_info = intern_atom("_XEMBED_INFO");
+  ib_g_atoms.net_wm_window_opacity = intern_atom("_NET_WM_WINDOW_OPACITY");
+  ib_g_atoms.net_wm_desktop = intern_atom("_NET_WM_DESKTOP");
+  ib_g_atoms.net_system_tray_opecode = intern_atom("_NET_SYSTEM_TRAY_OPCODE");
+  ib_g_atoms.net_active_window = intern_atom("_NET_ACTIVE_WINDOW");
   XAllowEvents(fl_display, AsyncKeyboard, CurrentTime);
   XkbSetDetectableAutoRepeat(fl_display, true, nullptr);
+
   if(xregister_hotkey() < 0 ) {
     fl_alert("%s", "Failed to register hotkeys.");
+    ib::utils::exit_application(1);
+  }
+
+  if(xregister_systray_icon() < 0 ) {
+    fl_alert("%s", "Failed to register a system tray icon.");
     ib::utils::exit_application(1);
   }
 
@@ -656,7 +786,7 @@ int ib::platform::init_system() { // {{{
   return 0;
 } // }}}
 
-void ib::platform::finalize_system(){ // {{{ 
+void ib::platform::finalize_system(){ // {{{
   if(fl_display != 0) {
     auto root = XRootWindow(fl_display, fl_screen);
     const auto keycode = XKeysymToKeycode(fl_display, ib_g_hotkey & 0xFFFF);
@@ -665,12 +795,12 @@ void ib::platform::finalize_system(){ // {{{
     XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|16, root); // NumLock
     XUngrabKey(fl_display, keycode, (ib_g_hotkey>>16)|18, root); // both
   }
-  
+
   delete FreeDesktopThemeRepos::inst();
   delete FreeDesktopMime::inst();
 } // }}}
 
-void ib::platform::get_runtime_platform(char *ret){ // {{{ 
+void ib::platform::get_runtime_platform(char *ret){ // {{{
 } // }}}
 
 std::unique_ptr<ib::oschar[]> ib::platform::utf82oschar(const char *src) { // {{{
@@ -775,13 +905,8 @@ void ib::platform::hide_window(Fl_Window *window){ // {{{
 } // }}}
 
 void ib::platform::activate_window(Fl_Window *window){ // {{{
-  //Atom wm_states[3];
-  //Atom wm_state;
-  //wm_state = XInternAtom(fl_display, "_NET_WM_STATE", False);
-  //wm_states[1] = XInternAtom(fl_display, "_NET_WM_STATE_SKIP_TASKBAR", False);
-  //XChangeProperty(fl_display, fl_xid(window), wm_state, XA_ATOM, 32, PropModeReplace,(unsigned char *) wm_states, 3);
   window->set_visible_focus();
-  xsend_message_l(fl_xid(window), "_NET_ACTIVE_WINDOW", 1, CurrentTime, 0,0,0);
+  xsend_message_la(fl_xid(window), ib_g_atoms.net_active_window, 1, CurrentTime, 0,0,0);
   XFlush(fl_display);
 } // }}}
 
@@ -795,8 +920,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   if(!visible) window->show();
   double  a = alpha/255.0;
   uint32_t cardinal_alpha = (uint32_t) (a * (uint32_t)-1) ;
-  XChangeProperty(fl_display, fl_xid(window), 
-                 XInternAtom(fl_display, "_NET_WM_WINDOW_OPACITY", 0),
+  XChangeProperty(fl_display, fl_xid(window), ib_g_atoms.net_wm_window_opacity,
                  XA_CARDINAL, 32, PropModeReplace, (uint8_t*)&cardinal_alpha, 1) ;
   if(!visible) window->hide();
 } // }}}
@@ -1494,7 +1618,7 @@ void ib::platform::exit_thread(int exit_code) { // {{{
 
 void ib::platform::create_mutex(ib::mutex *m) { /* {{{ */
   pthread_mutexattr_t attr;
-  pthread_mutexattr_init(&attr); 
+  pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
   const auto ret = pthread_mutex_init(m, &attr);
   if(ret == 0) {
@@ -1638,7 +1762,7 @@ int ib::platform::convert_keysym(int key){ // {{{
 void ib::platform::move_to_current_desktop(Fl_Window *w) {
   const auto desktop = xcurrent_desktop();
   if(desktop >= 0) {
-    xsend_message_l(fl_xid(w), "_NET_WM_DESKTOP", desktop,0,0,0,0);
+    xsend_message_la(fl_xid(w), ib_g_atoms.net_wm_desktop, desktop,0,0,0,0);
   }
 }
 //////////////////////////////////////////////////
