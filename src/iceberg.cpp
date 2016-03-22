@@ -90,7 +90,7 @@ int main(int argc, char **argv) { // {{{
   controller->initFonts();
   controller->initBoxtypes();
 
-  Fl::visual(FL_DOUBLE|FL_INDEX);
+  Fl::visual(FL_DOUBLE|FL_RGB);
   init_gui_singletons();
 
   const auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
@@ -142,6 +142,7 @@ int main(int argc, char **argv) { // {{{
     ib::utils::exit_application(result);
   }
 
+  mainwin->getInput()->take_focus();
   int flag = false;
   while (Fl::wait() > 0) {
 #ifdef WIN32 

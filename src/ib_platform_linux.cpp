@@ -15,6 +15,8 @@
 
 static char ib_g_lang[32];
 static int  ib_g_hotkey;
+static const int XERROR_MSG_SIZE = 1024;
+static char ib_g_xerror_msg[XERROR_MSG_SIZE];
 class TrayIcon;
 typedef struct atoms_ {
   Atom xembed_info;
@@ -530,6 +532,19 @@ void FreeDesktopThemeRepos::findIcon(std::string &result, const char *theme, con
 //////////////////////////////////////////////////
 // X11 functions {{{
 //////////////////////////////////////////////////
+static int xerror_handler(Display* d, XErrorEvent* e) {
+  char buf1[128], buf2[128];
+  sprintf(buf1, "XRequest.%d", e->request_code);
+  XGetErrorDatabaseText(d,"",buf1,buf1,buf2,128);
+  XGetErrorText(d, e->error_code, buf1, 128);
+  snprintf(ib_g_xerror_msg, XERROR_MSG_SIZE, "xerror: %s(%d): %s 0x%lx\n", buf2, e->error_code, buf1, e->resourceid);
+  return 0;
+}
+
+static void xclear_error() { ib_g_xerror_msg[0] = '\0'; }
+
+static bool xhas_error() { return ib_g_xerror_msg[0] != '\0'; }
+
 static void xsend_message_la(Window w, Atom a, long d0, long d1, long d2, long d3, long d4) {
   XClientMessageEvent ev = {0};
   ev.type = ClientMessage;
@@ -541,32 +556,36 @@ static void xsend_message_la(Window w, Atom a, long d0, long d1, long d2, long d
   ev.data.l[2] = d2;
   ev.data.l[3] = d3;
   ev.data.l[4] = d4;
-  XSendEvent(fl_display, DefaultRootWindow(fl_display), 0,
-    SubstructureRedirectMask |SubstructureNotifyMask, (XEvent*)&ev);
+  xclear_error();
+  XSendEvent(fl_display, w, 0, NoEventMask, (XEvent*)&ev);
+  if(xhas_error()) {
+    fprintf(stdout, "%s\n", ib_g_xerror_msg); fflush(stdout);
+  }
+  XSync(fl_display, False);
 }
 
-static int tray_event_handler(int e, Fl_Window* w);
-class TrayIcon : public Fl_Window {
+class TrayIcon : public Fl_Double_Window {
   private:
     uint32_t parent_xid_;
-    Fl_Box     *box_;
+    Fl_Box*  box_;
 
     void replaceXid() {
       Colormap colormap = fl_colormap;
       XSetWindowAttributes attr;
-      attr.border_pixel = 0;
+      attr.border_pixel = None;
+      attr.background_pixel = None;
       attr.colormap = colormap;
       attr.bit_gravity = 0;
       attr.backing_store = Always;
+      attr.override_redirect = 1;
       attr.event_mask = ExposureMask | StructureNotifyMask | KeyPressMask
         | KeyReleaseMask | KeymapStateMask | FocusChangeMask | ButtonPressMask
         | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | PointerMotionMask;
 
       Fl_X::set_xid(this,
-        XCreateWindow(fl_display, parent_xid_,
-          this->x(), this->y(), std::max<int>(this->w(), 1), std::max<int>(this->h(), 1),
+        XCreateWindow(fl_display, parent_xid_, 0, 0, 1, 1 ,
           0, fl_visual->depth, InputOutput, fl_visual->visual,
-          CWBorderPixel|CWColormap|CWEventMask|CWBitGravity|CWBackingStore, &attr));
+          CWBorderPixel|CWBackPixel|CWColormap|CWEventMask|CWBitGravity|CWBackingStore|CWOverrideRedirect , &attr));
     };
 
     void setXembedInfo(unsigned long flags) {
@@ -577,22 +596,21 @@ class TrayIcon : public Fl_Window {
     };
 
   public:
-    TrayIcon() : Fl_Window(64, 64), parent_xid_(0), box_(nullptr) {
-      parent_xid_ = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
+    TrayIcon() : Fl_Double_Window(64, 64), parent_xid_(0), box_(nullptr) {}
+    void init(Window xid) {
+      parent_xid_ = xid;
       end();
       replaceXid();
       setXembedInfo(1);
-      begin();
-      box_ = new Fl_Box(0,0, w(), h());
-      Fl::event_dispatch(tray_event_handler);
-      end();
-      clear_border();
       copy_tooltip("iceberg - click to restore");
+      begin();
+        box_ = new Fl_Box(0,0,1,1);
+      end();
     };
     ~TrayIcon() {
-      if(box_ != nullptr){
-       if(box_->image() != nullptr) delete box_->image();
-       delete box_;
+      if(box_) {
+        if(box_->image()) delete box_->image();
+        delete box_;
       }
     }
     int handle(int e) {
@@ -602,11 +620,11 @@ class TrayIcon : public Fl_Window {
       }
       return Fl_Window::handle(e);
     }
-    Fl_Box* getBox() const { return box_; }
     uint32_t getParentXid() const { return parent_xid_; }
+    Fl_Box*  getBox() const { return box_; }
 };
 
-static int tray_event_handler(int e, Fl_Window* w) {
+static int event_handler(int e, Fl_Window* w) {
   if(fl_xevent->type == ClientMessage) {
     if (fl_xevent->xclient.message_type == ib_g_atoms.xembed) {
       long message = fl_xevent->xclient.data.l[1];
@@ -615,14 +633,15 @@ static int tray_event_handler(int e, Fl_Window* w) {
          auto xid = fl_xevent->xclient.data.l[3];
          XWindowAttributes attr;
          XGetWindowAttributes(fl_display, xid, &attr);
-         auto w = attr.width;
-         auto h = attr.height;
-         uint32_t opacity = 0xC0000000;
-         XChangeProperty(fl_display, fl_xid(icon), ib_g_atoms.net_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&opacity, 1);
-         icon->getBox()->resize(0,0, w, h);
-         icon->getBox()->image(ib::Singleton<ib::IconManager>::getInstance()->getIcebergIcon(w-2));
-         icon->box(FL_NO_BOX);
-
+         auto size = std::max(attr.width, attr.height);
+         auto box = icon->getBox();
+         auto iconmanager = ib::Singleton<ib::IconManager>::getInstance();
+         icon->resize(0,0,size, size);
+         box->resize(0,0,size,size);
+         box->box(FL_NO_BOX);
+         icon->shape(iconmanager->getIcebergIcon(size));
+         if(box->image()) delete box->image();
+         box->image(iconmanager->getIcebergIcon(size));
       } else if(message == 1) { //XEMBED_WINDOW_ACTIVATE
         if (w) {
           w->resize(0,0, w->w(), w->h());
@@ -632,15 +651,6 @@ static int tray_event_handler(int e, Fl_Window* w) {
   }
   return Fl::handle_(e, w);
 };
-
-static int xerror_handler(Display* d, XErrorEvent* e) {
-  char buf1[128], buf2[128];
-  sprintf(buf1, "XRequest.%d", e->request_code);
-  XGetErrorDatabaseText(d,"",buf1,buf1,buf2,128);
-  XGetErrorText(d, e->error_code, buf1, 128);
-  printf("xerror: %s(%d): %s 0x%lx\n", buf2, e->error_code, buf1, e->resourceid);
-  return 0;
-}
 
 static int xevent_handler(int e){
   //Window window = fl_xevent->xany.window;
@@ -678,12 +688,11 @@ static int xregister_systray_icon() {
     // no system tray found.
     return 0;
   }
-
-  ib::Singleton<TrayIcon>::initInstance();
-  auto trayicon = ib::Singleton<TrayIcon>::getInstance();
+  auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
+  auto trayicon = ib::Singleton<TrayIcon>::initInstance();
+  trayicon->init(fl_xid(mainwin));
   trayicon->show();
   trayicon->wait_for_expose();
-
   xsend_message_la(dock, ib_g_atoms.net_system_tray_opecode, fl_event_time, SYSTEM_TRAY_REQUEST_DOCK, fl_xid(trayicon), 0, 0);
   XSync(fl_display, False);
   return 0;
@@ -762,6 +771,9 @@ int ib::platform::init_system() { // {{{
   XAllowEvents(fl_display, AsyncKeyboard, CurrentTime);
   XkbSetDetectableAutoRepeat(fl_display, true, nullptr);
 
+  Fl::event_dispatch(event_handler);
+  Fl::add_handler(xevent_handler);
+
   if(xregister_hotkey() < 0 ) {
     fl_alert("%s", "Failed to register hotkeys.");
     ib::utils::exit_application(1);
@@ -780,7 +792,6 @@ int ib::platform::init_system() { // {{{
     ib::utils::get_clipboard(tmp);
   }, nullptr);
 
-  Fl::add_handler(xevent_handler);
   XFlush(fl_display);
 
   return 0;
