@@ -787,7 +787,11 @@ void _walk_search_path(std::vector<ib::Command*> &commands,
           auto cmdname = ib::utils::to_command_name(file);
           command->setName(cmdname);
           command->setCategory(category);
+#ifdef IB_OS_WIN
           command->setWorkdir(path);
+#else
+          command->setWorkdir(".");
+#endif
           ib::platform::quote_string(tmp_path, osfull_path);
           ib::platform::oschar2utf8_b(quoted_path, IB_MAX_PATH_BYTE, tmp_path);
           command->setPath(quoted_path);

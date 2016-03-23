@@ -794,6 +794,9 @@ int ib::platform::init_system() { // {{{
 
   XFlush(fl_display);
 
+  ib::Error e;
+  ib::Singleton<ib::Controller>::getInstance()->setCwd(getenv("HOME"), e);
+
   return 0;
 } // }}}
 
