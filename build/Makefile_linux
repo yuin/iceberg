@@ -98,7 +98,7 @@ install:
 
 # doc: show this message.
 help:
-	@awk 'BEGIN{d=""} match($$0, /^# *doc *: */) {d=substr($$0, RSTART+RLENGTH);next} d != "" && match($$0, /[:space:]*[a-zA-Z0-9\-\.\_]+:/) { printf("%-10s\t%s\n", substr($$0, RSTART, RLENGTH), d); d="";next}' build/Makefile_linux
+	@awk 'BEGIN{d=""} match($$0, /^# *doc *: */) {d=substr($$0, RSTART+RLENGTH);next} d != "" && match($$0, /[[:space:]]*[a-zA-Z0-9\-\.\_]+:/) { printf("%-10s\t%s\n", substr($$0, RSTART, RLENGTH), d); d="";next}' build/Makefile_linux
 
 $(TESTPACKAGE): $(TESTOBJS)
 	$(LD) $^ -o $@ $(LDFLAGS)
