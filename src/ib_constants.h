@@ -36,6 +36,7 @@
 #include <locale>
 #include <ctime>
 #include <cassert>
+#include <cmath>
 #include <vector>
 #include <map>
 #include <algorithm>

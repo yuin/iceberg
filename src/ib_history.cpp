@@ -140,8 +140,8 @@ double ib::History::calcScoreSe(){ // {{{
   double sum = 0;
   for(const auto &c : commands_) {
     ib::HistoryCommand *cmd = c.second;
-    sum += pow(cmd->getRawScore() - avr, 2);
+    sum += std::pow(cmd->getRawScore() - avr, 2);
   }
-  return sqrt(sum / commands_.size());
+  return std::sqrt(sum / commands_.size());
 } // }}}
 

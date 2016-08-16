@@ -19,7 +19,11 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.3" ]; then
   if [ "${IB_OSTYPE}" != "windows" ]; then
     ./configure --enable-threads --enable-xft --enable-xdbe
   else
-    ./configure --enable-threads
+    if [ "${IB_ARCH}" = "x86_64" ]; then
+      ./configure --build=x86_64-w64-mingw32 --enable-threads
+    else
+      ./configure --build=i686-w64-mingw32 --enable-threads
+    fi
   fi
   make
 else
@@ -166,7 +170,16 @@ if [ "${IB_OSTYPE}" = "windows" ]; then
   
     echo "make Oniguruma 5.9.6"
     cd onig-5.9.6
-    ./configure
+    if 
+    if [ "${IB_OSTYPE}" != "windows" ]; then
+      ./configure
+    else
+      if [ "${IB_ARCH}" = "x86_64" ]; then
+        ./configure --build=x86_64-w64-mingw32
+      else
+        ./configure --build=i686-w64-mingw32
+      fi
+    fi
     make
   else
     echo "Oniguruma 5.9.6: installed"
