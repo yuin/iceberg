@@ -21,6 +21,11 @@ lib.foreground_explorer = function()
     }
     var windows = enumToArray(shell.Windows());
     for(var i=0,l=windows.length; i<l; i++){
+      try {
+        windows[i].hwnd;
+      }catch(e){
+        continue;
+      }
       if(windows[i].LocationURL.match(/^file:.*/)) {
         WScript.Echo(windows[i].hwnd);
         WScript.Echo(decodeURIComponent(windows[i].LocationURL.replace("file:///", "")).replace(/\//g, "\\"));
