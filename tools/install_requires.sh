@@ -170,7 +170,6 @@ if [ "${IB_OSTYPE}" = "windows" ]; then
   
     echo "make Oniguruma 5.9.6"
     cd onig-5.9.6
-    if 
     if [ "${IB_OSTYPE}" != "windows" ]; then
       ./configure
     else
