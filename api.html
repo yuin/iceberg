@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; iceberg 0.9.9 documentation</title>
+    <title>API &#8212; iceberg 0.9.10 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.9',
+        VERSION:     '0.9.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.9 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.10 documentation" href="index.html" />
     <link rel="next" title="プラグイン" href="plugin.html" />
     <link rel="prev" title="Tips" href="tips.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.9 documentation</span></a></h1>
+          <span>iceberg 0.9.10 documentation</span></a></h1>
         <h2 class="heading"><span>API</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -585,7 +585,7 @@
 <code class="descclassname">icebergsupport.</code><code class="descname">regex_gsub</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em>, <em>string</em>, <em>repl</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.regex_gsub" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal"><span class="pre">string</span></code> から <code class="docutils literal"><span class="pre">pattern</span></code> を検索し <code class="docutils literal"><span class="pre">repl</span></code> で置換します。
 <code class="docutils literal"><span class="pre">repl</span></code> には後方参照( <code class="docutils literal"><span class="pre">%1,</span> <span class="pre">%2</span> <span class="pre">...</span></code> )が使用できます。以下に例を示します。</p>
-<div class="highlight-lua"><div class="highlight"><pre><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span><span class="p">)</span>
+<div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span><span class="p">)</span>
 
 <span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span>
 
@@ -788,7 +788,7 @@
 <p>これらの関数は補完関数の実装や、Luaコマンド実行時のオプション解析に使用します。
 補完関数内で以下のように <a class="reference internal" href="#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.comp_state()</span></code></a> を使用します。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">state</span><span class="p">,</span> <span class="n">opts</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">comp_state</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
     <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-a&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">aaa&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">--abcd&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">},</span>
@@ -825,7 +825,7 @@
 <p>また、たとえば <code class="docutils literal"><span class="pre">value</span> <span class="pre">-</span></code> のように入力されており、今 <code class="docutils literal"><span class="pre">-</span></code> の後ろにカーソルがある場合(つまり <code class="docutils literal"><span class="pre">-</span></code> を入力した直後)は <code class="docutils literal"><span class="pre">&quot;opt&quot;</span></code> という状態になります。</p>
 <p>コマンドの実行時などのオプション解析は以下のように <a class="reference internal" href="#icebergsupport.getopts" title="icebergsupport.getopts"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.getopts()</span></code></a> を使用します。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">getopts</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-a:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-c&quot;</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">opts</span><span class="p">.</span><span class="n">a</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
     <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">-a must not be empty.&quot;</span><span class="p">)</span>
@@ -1278,7 +1278,7 @@
 <dt id="icebergsupport.group_command">
 <code class="descclassname">icebergsupport.</code><code class="descname">group_command</code><span class="sig-paren">(</span><em>command</em><span class="optional">[</span>, <em>commmand</em>, <em>command ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.group_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>以下のように使用することで、複数のコマンドを順次実行するコマンドを作成することができます。各コマンドは <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_execute()</span></code></a> を通じて実行されるので、該当のコマンドが登録済みである必要があります。</p>
-<div class="highlight-lua"><div class="highlight"><pre><span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">userdir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
+<div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">userdir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1493,8 +1493,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+        &#169; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

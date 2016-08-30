@@ -159,6 +159,9 @@ systemグローバル変数
           -- 引数の補完時に自動補完を有効にする
           option_autocomplete = true,
 
+          -- DirectDrawを無効にする:Windowsでのみ有効 --
+          disable_direct_draw = false,
+
           -- コマンド・ヒストリの補完時は自動補完は常に有効です --
         
           -- キー設定 --

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>概要 &mdash; iceberg 0.9.9 documentation</title>
+    <title>概要 &#8212; iceberg 0.9.10 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.9',
+        VERSION:     '0.9.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.9 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.10 documentation" href="index.html" />
     <link rel="next" title="環境設定" href="config.html" />
     <link rel="prev" title="icebergドキュメント" href="index.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.9 documentation</span></a></h1>
+          <span>iceberg 0.9.10 documentation</span></a></h1>
         <h2 class="heading"><span>概要</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -89,7 +89,7 @@
 </ul>
 <p><a class="reference external" href="https://github.com/yuin/iceberg/releases">Release</a> で配布されているソースコードを任意の場所に解凍してください。その後</p>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre>% ./tools/install_requires.sh
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>% ./tools/install_requires.sh
 % make
 % sudo make install
 </pre></div>
@@ -141,7 +141,7 @@
 </dd>
 </dl>
 </li>
-<li><p class="first">configファイルに直接記載する方法: 詳しい設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</p>
+<li><p class="first">configファイルに直接記載する方法: 詳しい設定方法は <a class="reference internal" href="config.html"><span class="doc">環境設定</span></a> を参照してください。</p>
 </li>
 </ul>
 </div>
@@ -209,14 +209,14 @@
 <div class="section" id="migemo">
 <h3>migemo検索<a class="headerlink" href="#migemo" title="Permalink to this headline">¶</a></h3>
 <p>Windowsの場合、iceberg実行ファイルのディレクトリに <code class="docutils literal"><span class="pre">migemo.dll</span></code> を <code class="docutils literal"><span class="pre">dict</span></code> ディレクトリ配下に辞書ファイルを配置することによりmigemo機能が有効となります。migemoのバージョンは <code class="docutils literal"><span class="pre">cmigemo-1.3c</span></code> で動作確認をしています。前方一致・部分一致検索を行う場合に日本語ファイルにもマッチするようになります。ファイル配置は以下のようになります。:</p>
-<div class="highlight-python"><div class="highlight"><pre>iceberg.exe
-migemo.dll
-dict/
-   han2zen.dat
-   hira2kata.dat
-   migemo-dict
-   roma2hira.dat
-   zen2han.dat
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span>
+<span class="n">migemo</span><span class="o">.</span><span class="n">dll</span>
+<span class="nb">dict</span><span class="o">/</span>
+   <span class="n">han2zen</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">hira2kata</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">migemo</span><span class="o">-</span><span class="nb">dict</span>
+   <span class="n">roma2hira</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">zen2han</span><span class="o">.</span><span class="n">dat</span>
 </pre></div>
 </div>
 <p>その他のプラットフォームの場合、ライブラリパスに <code class="docutils literal"><span class="pre">libmigemo.so</span></code> を、 <code class="docutils literal"><span class="pre">~/.iceberg/dict</span></code> ディレクトリ配下に辞書ファイルを配置するとmigemo機能が有効となります。辞書ファイルの文字コードはutf-8のものを利用してください。</p>
@@ -224,16 +224,16 @@ dict/
 <div class="section" id="id12">
 <h3>外部からのコマンド送信<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>以下のように起動することで、外部から起動済みのicebergにコマンドを送信することができます。この機能を利用するためには <code class="docutils literal"><span class="pre">system.server_port</span></code> を <code class="docutils literal"><span class="pre">0</span></code> 以外に設定しておく必要があります。</p>
-<div class="highlight-python"><div class="highlight"><pre>iceberg.exe -m &quot;exec 実行したいコマンド&quot;
-iceberg.exe -m &quot;set 入力欄にセットしたい文字列&quot;
-iceberg.exe -m &quot;activate&quot;
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;exec 実行したいコマンド&quot;</span>
+<span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;set 入力欄にセットしたい文字列&quot;</span>
+<span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;activate&quot;</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="id13">
 <h2>より進んだ使い方<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
-<p>詳しい使い方や設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> , <a class="reference internal" href="api.html"><em>API</em></a> , <a class="reference internal" href="plugin.html"><em>プラグイン</em></a> や <a class="reference internal" href="tips.html"><em>Tips</em></a> を参照してください。</p>
+<p>詳しい使い方や設定方法は <a class="reference internal" href="config.html"><span class="doc">環境設定</span></a> , <a class="reference internal" href="api.html"><span class="doc">API</span></a> , <a class="reference internal" href="plugin.html"><span class="doc">プラグイン</span></a> や <a class="reference internal" href="tips.html"><span class="doc">Tips</span></a> を参照してください。</p>
 </div>
 </div>
 
@@ -252,8 +252,8 @@ iceberg.exe -m &quot;activate&quot;
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+        &#169; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

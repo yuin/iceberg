@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tips &mdash; iceberg 0.9.9 documentation</title>
+    <title>Tips &#8212; iceberg 0.9.10 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.9',
+        VERSION:     '0.9.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.9 documentation" href="index.html" />
+    <link rel="top" title="iceberg 0.9.10 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="環境設定" href="config.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.9 documentation</span></a></h1>
+          <span>iceberg 0.9.10 documentation</span></a></h1>
         <h2 class="heading"><span>Tips</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -57,7 +57,7 @@
 <p><a class="reference external" href="http://www.geocities.jp/pochi_s2004/pochi.html">ポチエス</a> はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 <code class="docutils literal"><span class="pre">shift-enter</span></code> を押すことでポスエスで実行する設定例を示します。</p>
 <p>コマンド定義</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
   <span class="n">esExt5</span>  <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="o">#</span><span class="n">args</span> <span class="o">~=</span> <span class="mi">0</span> <span class="k">then</span>
       <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">to_path</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -73,7 +73,7 @@
 </div></blockquote>
 <p>ショートカット定義</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
   <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">shift-enter&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">esExt5&quot;</span> <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -84,7 +84,7 @@
 <h2>現在の日付・時刻をクリップボードにコピー<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>以下のようなコマンド定義を行います。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
 <span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
 </pre></div>
 </div>
@@ -94,7 +94,7 @@
 <h2>エクスプローラで選択しているファイルをエディタで開く<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>エクスプローラでファイルを選択し、iceberg上で <code class="docutils literal"><span class="pre">ctrl-m</span></code> を実行するとvimでファイルを開く設定です。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
   <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ctrl-m&quot;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
@@ -120,7 +120,7 @@
 <h2>数式入力で計算を行う<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p>以下のように <code class="docutils literal"><span class="pre">on_enter</span></code> を定義することで <code class="docutils literal"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></code> のように数式を入力してEnterを押下するとすぐに計算を実行することができます。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
   <span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">get_input_text</span><span class="p">()</span>
@@ -140,7 +140,7 @@
 <h2>起動時に自動的に:scan_search_pathを行う<a class="headerlink" href="#scan-search-path" title="Permalink to this headline">¶</a></h2>
 <p>以下のように <code class="docutils literal"><span class="pre">on_initialize</span></code> を定義することで起動時に自動的に <code class="docutils literal"><span class="pre">:scan_search_path</span></code> することができます。 <code class="docutils literal"><span class="pre">all</span></code> 以外のカテゴリで実行したい場合は <code class="docutils literal"><span class="pre">{&quot;all&quot;}</span></code> となっている場所を書き変えてください。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="k">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
   <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
   <span class="kd">local</span> <span class="n">autoscan_file</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">.autoscan&quot;</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">ibs</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span> <span class="k">then</span>
@@ -162,7 +162,7 @@
 <h2>foobar2000を操作する<a class="headerlink" href="#foobar2000" title="Permalink to this headline">¶</a></h2>
 <p>以下の様に定義するとicebergからfoobar2000が操作できます。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">foobar2000</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">foobar2000</span> <span class="o">=</span> <span class="p">{</span>
   <span class="n">path</span><span class="o">=</span><span class="s">[[foobar2000のパス]]</span><span class="p">,</span>
   <span class="n">completion</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
@@ -201,8 +201,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+        &#169; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>
