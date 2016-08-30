@@ -51,6 +51,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Device.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Select_Browser.H>
@@ -70,7 +71,7 @@
 #include <migemo.h>
 
 // constants {{{
-#define IB_VERSION "0.9.9"
+#define IB_VERSION "0.9.10"
 #ifdef IB_PUBLIC
 #      define IB_EXPORT
 #else

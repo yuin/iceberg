@@ -11,6 +11,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <lm.h>
+#include <D2d1.h>
+#include <Dwrite.h>
 
 namespace ib{
   typedef int          socklen;
@@ -33,8 +35,6 @@ namespace ib{
   namespace platform {
     const char PATHSEP = '/';
 
-    void win_draw_text(ib::oschar *str, int x, int y, int w = 0, int h = 0);
-    size_t win_calc_text_width(ib::oschar *str);
     int list_drives(std::vector<std::unique_ptr<ib::oschar[]>> &result, ib::Error &error);
   }
 }

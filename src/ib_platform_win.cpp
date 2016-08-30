@@ -35,6 +35,11 @@ static NOTIFYICONDATA ib_g_trayicon;
 static WNDPROC ib_g_wndproc;
 static HWND ib_g_hwnd_clbchain_next;
 
+static ID2D1Factory* ib_g_d2d_factory;
+static IDWriteFactory *ib_g_dwrite_factory;
+static std::unordered_map<HWND, ID2D1DCRenderTarget*> ib_g_rndrt_map;
+static std::unordered_map<HFONT, IDWriteTextFormat*> ib_g_textformat_map;
+
 const char *strcasestr(const char *haystack, const char *needle) { // {{{
   int haypos;
   int needlepos;
@@ -54,9 +59,9 @@ const char *strcasestr(const char *haystack, const char *needle) { // {{{
   return nullptr;
 } // }}}
 
-void tcsncpy_s(ib::oschar *dest, const ib::oschar *src, std::size_t bufsize) {
+void tcsncpy_s(ib::oschar *dest, const ib::oschar *src, std::size_t bufsize) { // {{{
   _tcsncpy_s(dest, bufsize, src, _TRUNCATE);
-}
+} // }}}
 
 ib::oschar* tcstokread(ib::oschar *buf, const ib::oschar sep) { // {{{
   while(1){
@@ -91,6 +96,127 @@ static void ib_platform_set_error(ib::Error &error){ // {{{
   auto msg = ib_platform_get_last_error_message();
   error.setMessage(msg.get());
 } // }}}
+
+// DirectWrite stuff {{{
+static void ib_g_create_current_dwrite_font_data() {
+  Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
+  LOGFONT lfont;
+  GetObject(font_desc->fid, sizeof(LOGFONT), &lfont);
+  IDWriteTextFormat *format = nullptr;
+
+  ib_g_dwrite_factory->CreateTextFormat(
+    lfont.lfFaceName,
+    NULL,
+    DWRITE_FONT_WEIGHT_NORMAL,
+    DWRITE_FONT_STYLE_NORMAL,
+    DWRITE_FONT_STRETCH_NORMAL,
+    font_desc->size, L"", &format);
+  ib_g_textformat_map[font_desc->fid] = format;
+}
+
+static IDWriteTextFormat* ib_platform_current_textformat() {
+  Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
+  IDWriteTextFormat *format = ib_g_textformat_map[font_desc->fid];
+  if(format != nullptr) return format;
+  ib_g_create_current_dwrite_font_data();
+  return ib_g_textformat_map[font_desc->fid];
+}
+
+static std::unique_ptr<ib::oschar[]> ib_platform_utf2oschar_n(const char *src, int n) {
+  auto wlen = fl_utf8toUtf16(src, n, nullptr, 0);
+  wlen++;
+  auto wbuf = new wchar_t[wlen];
+  wlen = fl_utf8toUtf16(src, n, reinterpret_cast<unsigned short*>(wbuf), wlen);
+  wbuf[wlen] = 0;
+  return std::unique_ptr<ib::oschar[]>(wbuf);
+}
+
+class Fl_GDIDWrite_Graphics_Driver : public Fl_GDI_Graphics_Driver {
+public:
+  double width(const char *str, int n) {
+    auto osstr = ib_platform_utf2oschar_n(str, n);
+    auto buf = osstr.get();
+    size_t i;
+    for(i = 0; buf[i] != L'\0'; i++) {
+      if(buf[i] == L' ') buf[i] = L'_';
+      if(buf[i] == L'　') buf[i] = L'＿';
+    }
+
+    IDWriteTextLayout *layout = nullptr;
+    ib_g_dwrite_factory->CreateTextLayout(buf, i, ib_platform_current_textformat(), 99999, 99999, &layout);
+    DWRITE_TEXT_METRICS metrics;
+    layout->GetMetrics(&metrics);
+    layout->Release();
+    return metrics.width;
+  }
+
+  void draw(const char* str, int n, int x, int y) {
+    auto osstr = ib_platform_utf2oschar_n(str, n);
+    ID2D1DCRenderTarget *target = ib_g_rndrt_map[fl_window];
+    if(target == nullptr) {
+      Fl_GDI_Graphics_Driver::draw(str, n, x, y);
+      return;
+    }
+
+    RECT rc;
+    GetClientRect(fl_window, &rc);
+    target->BindDC(fl_gc, &rc);
+    target->BeginDraw();
+
+    Fl_Font_Descriptor *font_desc = font_descriptor();
+    COLORREF cref = fl_RGB();
+
+    IDWriteTextFormat *form = ib_platform_current_textformat();
+
+    D2D1_RECT_F rect;
+    rect.left = x;
+    rect.top = y - descent()*3 - 4; // FIXME: magic number
+    rect.right = x + 99999; // reduce width calculation time
+    rect.bottom  = y + font_desc->size + 2;
+
+    ID2D1SolidColorBrush* brush  = NULL;
+    target->CreateSolidColorBrush(        
+              D2D1::ColorF(((BYTE)cref)/255.0F,  ((BYTE)(((WORD)(cref)) >> 8))/255.0F,  ((BYTE)((cref)>>16))/255.0F), &brush); 
+
+    target->DrawTextW(osstr.get(), _tcslen(osstr.get()), form, rect, brush);
+    target->EndDraw();
+    brush->Release();
+  }
+
+  void draw(int angle, const char *str, int n, int x, int y) {
+    draw(str, n, x, y); // ignore angles, iceberg does not use angled texts.
+  }
+};
+
+class Fl_FastGDI_Graphics_Driver : public Fl_GDI_Graphics_Driver {
+public:
+  double width(const char *str, int n) {
+    auto osstr = ib_platform_utf2oschar_n(str, n);
+    COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
+    SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
+    RECT rect;
+    DrawTextW(fl_gc, osstr.get(), -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_CALCRECT);
+    SetTextColor(fl_gc, oldColor);
+    return (rect.right - rect.left);
+  }
+
+  void draw(const char* str, int n, int x, int y) {
+    auto osstr = ib_platform_utf2oschar_n(str, n);
+    COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
+    SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
+    RECT rect;
+    rect.left = x;
+    rect.top  = y;
+    rect.right = rect.left + 99999; // // reduce width calculation time
+    DrawTextW(fl_gc, osstr.get(), -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_PATH_ELLIPSIS | DT_NOPREFIX);
+    SetTextColor(fl_gc, oldColor);
+  }
+
+  void draw(int angle, const char *str, int n, int x, int y) {
+    draw(str, n, x, y); // ignore angles, iceberg does not use angled texts.
+  }
+};
+// }}}
 
 // ib_platform_key2os_key {{{
 // code from fltk1.3: Fl_get_key_win32.cxx
@@ -451,6 +577,17 @@ static void ib_platform_list_network_shares(std::vector<ib::oschar*> &result, ib
 
 int ib::platform::startup_system() { // {{{
   int ret = 0;
+
+  if(!SUCCEEDED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,&ib_g_d2d_factory))) {
+    ret = 1;
+    goto finalize;
+  }
+
+  if(!SUCCEEDED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&ib_g_dwrite_factory)))) {
+    ret = 1;
+    goto finalize;
+  }
+
   if(!SUCCEEDED(CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE))){
     ret = 1;
     goto finalize;
@@ -467,13 +604,40 @@ finalize:
 } // }}}
 
 int ib::platform::init_system() { // {{{
-  int ret;
+  int ret = 0;
   long style;
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
 
   ib_g_hwnd_main = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
   ib_g_hwnd_list = fl_xid(ib::Singleton<ib::ListWindow>::getInstance());
   ib_g_hinst    = fl_display;
+
+  if(cfg->getDisableDirectDraw()) {
+    Fl_Surface_Device::surface()->driver(new Fl_FastGDI_Graphics_Driver);
+  } else {
+    Fl_Surface_Device::surface()->driver(new Fl_GDIDWrite_Graphics_Driver);
+  }
+
+
+  D2D1_RENDER_TARGET_PROPERTIES props =
+      D2D1::RenderTargetProperties( 
+          D2D1_RENDER_TARGET_TYPE_DEFAULT, 
+          D2D1::PixelFormat( 
+              DXGI_FORMAT_B8G8R8A8_UNORM, 
+              D2D1_ALPHA_MODE_IGNORE 
+          ) , 0.0F, 0.0F, 
+          D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE
+      ); 
+  ID2D1DCRenderTarget *target;
+  if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+    return -1;
+  }
+  ib_g_rndrt_map[ib_g_hwnd_main] = target;
+
+  if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+    return -1;
+  }
+  ib_g_rndrt_map[ib_g_hwnd_list] = target;
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));
   SetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC, ib_platform_wnd_proc);
@@ -487,7 +651,6 @@ int ib::platform::init_system() { // {{{
   ib::platform::set_window_alpha(ib::Singleton<ib::ListWindow>::getInstance(), cfg->getStyleListAlpha());
 
   PostMessage(ib_g_hwnd_main, IB_WM_INIT, (WPARAM)0, (LPARAM)0);
-  ret = 0;
 
   return ret;
 } // }}}
@@ -497,6 +660,15 @@ void ib::platform::finalize_system(){ // {{{
   Shell_NotifyIcon(NIM_DELETE, &ib_g_trayicon);
   CoUninitialize();
   WSACleanup();
+
+  for(auto it = ib_g_textformat_map.begin(); it != ib_g_textformat_map.end(); ++it) {
+    if(it->second != nullptr) it->second->Release();
+  }
+  for(auto it = ib_g_rndrt_map.begin(); it != ib_g_rndrt_map.end(); ++it) {
+    if(it->second != nullptr) it->second->Release();
+  }
+  if(ib_g_dwrite_factory != nullptr) ib_g_dwrite_factory->Release();
+  if(ib_g_d2d_factory != nullptr) ib_g_d2d_factory->Release();
 } // }}}
 
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
@@ -1577,30 +1749,6 @@ int ib::platform::convert_keysym(int key){ // {{{
 //////////////////////////////////////////////////
 // platform specific functions {{{
 //////////////////////////////////////////////////
-void ib::platform::win_draw_text(ib::oschar *str, int x, int y, int w, int h){ // {{{
-  COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
-  SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
-  RECT rect;
-  rect.left = x;
-  rect.top  = y;
-  if(w != 0) rect.right = x + w;
-  if(h != 0) {
-    rect.bottom  = y + h;
-  }
-  //TextOut(fl_gc, rect.left, rect.top, str, _tcslen(str));
-  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_PATH_ELLIPSIS | DT_NOPREFIX);
-  SetTextColor(fl_gc, oldColor);
-} // }}}
-
-size_t ib::platform::win_calc_text_width(ib::oschar *str){ // {{{
-  COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
-  SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
-  RECT rect;
-  DrawTextW(fl_gc, str, -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_CALCRECT);
-  SetTextColor(fl_gc, oldColor);
-  return (rect.right - rect.left);
-
-} // }}}
 
 int ib::platform::list_drives(std::vector<std::unique_ptr<ib::oschar[]>> &result, ib::Error &error) { // {{{
   ib::oschar buf[128]; 

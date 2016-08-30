@@ -357,6 +357,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
+    GET_FIELD("disable_direct_draw", boolean) {
+       cfg->setDisableDirectDraw(lua_toboolean(IB_LUA, -1) != 0);
+    }
+    lua_pop(IB_LUA, 1);
+
     GET_FIELD("hot_key", string) {
       PARSE_KEY_BIND("hot_key");
       cfg->setHotKey(key_buf);

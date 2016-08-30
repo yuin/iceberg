@@ -13,6 +13,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 
 定数
 ---------------------------------
+
 .. lua:attribute:: icebergsupport.EVENT_STATE_*
 
   :lua:func:`icebergsupport.matches_key` などで使用できるイベント定数群です。詳細は :lua:func:`icebergsupport.matches_key` を参照してください。
@@ -29,6 +30,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 ---------------------------------
 パス操作
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.dirname(path)
 
    ``path`` のディレクトリパスを返します。
@@ -95,6 +97,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 
 ビット演算
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.band(number[, number, number ...])
 
    ``numbers`` の論理積を返します。numberはlua_Integer型として扱われます。
@@ -135,6 +138,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 
 システム
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.build_platform()
 
    ビルドされたプラットフォーム情報を返します。
@@ -149,6 +153,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 
 外部コマンド
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.shell_execute(path [, args, workdir])
 
    外部コマンドを起動します。
@@ -167,6 +172,7 @@ icebergは内部的にutf8で処理を行っています。そのためAPIでや
 
 文字コード
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.utf82local(text)
 
    ``text`` をutf-8からマシンローカルの文字コードに変換します。
@@ -250,6 +256,7 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
 
 その他
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.dump_lua_object(object, indent, isarrayval)
 
    ``object`` をLuaの文法で解釈できる文字列に変換します。
@@ -375,6 +382,7 @@ utf-8を正しく扱える正規表現関連APIです。正規表現フラグは
 
 iceberg操作
 ~~~~~~~~~~~~~~
+
 .. lua:function:: icebergsupport.version()
 
    icebergのバージョン文字列を返します。

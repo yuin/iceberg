@@ -275,13 +275,7 @@ void ib::Input::adjustSize() { // {{{
   Fl_Font font = textfont();
   auto tsize = cfg->getStyleInputFontSize();
   fl_font(font, tsize);
-#ifdef IB_OS_WIN
-  // fl_width on windwos is slow. 
-  auto osstr = ib::platform::utf82oschar(value());
-  auto isize = ib::platform::win_calc_text_width(osstr.get()) + tsize;
-#else
   auto isize = fl_width(value()) + tsize;
-#endif
   const auto curret_w = w();
   auto new_window_width = mainwin->w() + (isize - curret_w);
   auto new_input_width  = w() + (isize - curret_w);
@@ -464,14 +458,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
   if (!active_r())  lcol = fl_inactive(lcol);
   fl_font(font, tsize);
   fl_color(lcol);
-
-#ifdef IB_OS_WIN
-  // fl_draw on windwos is slow.
-  auto osstr = ib::platform::utf82oschar(str);
-  ib::platform::win_draw_text(osstr.get(), left, top, width);
-#else
   fl_draw(str, left, top);
-#endif
 
   if(description){
     top += cfg->getStyleListFontSize()-2;
@@ -481,13 +468,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
     if (!active_r())  lcol = fl_inactive(lcol);
     fl_font(font, cfg->getStyleListDescFontSize());
     fl_color(lcol);
-#ifdef IB_OS_WIN
-    // fl_draw on windwos is slow.
-    auto osdesc = ib::platform::utf82oschar(description);
-    ib::platform::win_draw_text(osdesc.get(), left, top, width);
-#else
     fl_draw(description, left, top);
-#endif
   }
 } // }}}
 
@@ -520,26 +501,14 @@ int ib::Listbox::item_width(void *item) const{ // {{{
   int tsize = cfg->getStyleListFontSize();
   Fl_Font font = textfont();
   fl_font(font, tsize);
-#ifdef IB_OS_WIN
-  // fl_width on windwos is slow. 
-  auto osstr = ib::platform::utf82oschar(str);
-  size_t w1 = ib::platform::win_calc_text_width(osstr.get()) + tsize*2;
-#else
   size_t w1 = fl_width(str) + tsize;
-#endif
   size_t w2 = 0;
 
   if(description){
     *ptr = '\t';
     tsize = cfg->getStyleListDescFontSize();
     fl_font(font, tsize);
-#ifdef IB_OS_WIN
-  // fl_width on windwos is slow. 
-    auto osdesc = ib::platform::utf82oschar(description);
-    w2 = ib::platform::win_calc_text_width(osdesc.get()) + tsize*2;
-#else
     w2 = fl_width(description) + tsize;
-#endif
   }
 
   return (int)(std::max<int>((int)w1, (int)w2)) + left_pad;

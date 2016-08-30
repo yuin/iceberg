@@ -20,6 +20,7 @@ system = {
   server_port = 40000,
   path_autocomplete = true,
   option_autocomplete = true,
+  disable_direct_draw = false,
 
   hot_key = "ctrl-space",
   escape_key = "escape",
