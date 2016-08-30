@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>プラグイン &#8212; iceberg 0.9.10 documentation</title>
+    <title>プラグイン &mdash; iceberg 0.9.10 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -63,7 +63,7 @@
 <h3>プラグインの構造<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>プラグインは <code class="docutils literal"><span class="pre">main.lua</span></code> が配置された単純なディレクトリです。典型的には以下のような構造です。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span>plugin-name          - プラグイン名のディレクトリ
+<div><div class="highlight-lua"><div class="highlight"><pre>plugin-name          - プラグイン名のディレクトリ
   |
   +---- main.lua     - プラグインのメインスクリプト
   |
@@ -76,7 +76,7 @@
 <h3>main.luaテンプレート<a class="headerlink" href="#main-lua" title="Permalink to this headline">¶</a></h3>
 <p>以下にプラグインのテンプレートを示します。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
 <span class="mi">02</span>  <span class="kd">local</span> <span class="n">script_path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">source</span><span class="p">:</span><span class="n">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="mi">03</span>
 <span class="mi">04</span>  <span class="kd">local</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
@@ -100,7 +100,7 @@
 <ul class="simple">
 <li>04行目 : 設定をローカル変数に保持します。</li>
 <li>08行目 : <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> というグローバル変数で設定変更が可能なようにします。具体的には <code class="docutils literal"><span class="pre">config</span></code> ローカル変数を <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> グローバル変数で上書きします。</li>
-<li>09行目 : コマンドを登録します。コマンドの定義方法は <a class="reference internal" href="config.html"><span class="doc">環境設定</span></a> を参照してください。</li>
+<li>09行目 : コマンドを登録します。コマンドの定義方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</li>
 </ul>
 </div>
 </div>
@@ -129,8 +129,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+        &copy; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
     </div>
   </body>
 </html>

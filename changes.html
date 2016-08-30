@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>変更履歴 &#8212; iceberg 0.9.10 documentation</title>
+    <title>変更履歴 &mdash; iceberg 0.9.10 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -58,7 +58,7 @@
 <ul class="simple">
 <li>0.9.10をダウンロードしてください。</li>
 <li>0.9.10から <code class="docutils literal"><span class="pre">iceberg.exe</span></code> をコピーして既存の0.9.9側に上書きしてください。</li>
-<li><code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に <code class="docutils literal"><span class="pre">disable_direct_draw=true</span></code>  を追加してください。DirectDraw機能を利用する場合は <code class="docutils literal"><span class="pre">false</span></code> をセットしてください。(ただし、現段階では描画が遅いです)</li>
+<li><code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に <code class="docutils literal"><span class="pre">disable_direct_write=true</span></code>  を追加してください。DirectDraw機能を利用する場合は <code class="docutils literal"><span class="pre">false</span></code> をセットしてください。(ただし、現段階では少々描画が遅いです)</li>
 </ul>
 </div>
 </div>
@@ -105,7 +105,7 @@
 </li>
 <li><p class="first">Windowsの場合、 <code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に以下のように <code class="docutils literal"><span class="pre">terminal</span></code>  を追加してください。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span>system = {
+<div><div class="highlight-lua"><div class="highlight"><pre>system = {
   (他の設定)
   terminal = &quot;cmd /k ${1}&quot;,
   (他の設定)
@@ -116,7 +116,7 @@
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">config.lua</span></code> の末尾に以下を追加してください。Linuxの場合、 末尾の <code class="docutils literal"><span class="pre">load_config_d()</span></code> は削除した上で追加してください(関数定義も削除して問題ありません)。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">ibs</span><span class="p">.</span><span class="n">load_lua_files</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">script_path</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">config.d&quot;</span><span class="p">))</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span class="n">ibs</span><span class="p">.</span><span class="n">load_lua_files</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">script_path</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">config.d&quot;</span><span class="p">))</span>
 <span class="n">ibs</span><span class="p">.</span><span class="n">load_plugins</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -162,7 +162,7 @@
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に以下のように <code class="docutils literal"><span class="pre">path_autocomplete</span></code> と <code class="docutils literal"><span class="pre">option_autocomplete</span></code> を追加してください。</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span>system = {
+<div><div class="highlight-lua"><div class="highlight"><pre>system = {
   (他の設定)
   -- パス補完時にオートコンプリートを行うか
   path_autocomplete = true,
@@ -260,8 +260,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+        &copy; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
     </div>
   </body>
 </html>
