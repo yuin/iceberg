@@ -51,14 +51,14 @@
 <div class="section" id="id2">
 <h2>0.9.10 (2016-08-30)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>IMPROVED: 試験的にWindowsでDirectWriteを実装。パフォーマンス上の問題があるためデフォルトはGDIのままとする。</li>
+<li>IMPROVED: WindowsでDirectWriteを実装。</li>
 </ul>
 <div class="section" id="id3">
 <h3>0.9.9からのアップグレード方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>0.9.10をダウンロードしてください。</li>
 <li>0.9.10から <code class="docutils literal"><span class="pre">iceberg.exe</span></code> をコピーして既存の0.9.9側に上書きしてください。</li>
-<li><code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に <code class="docutils literal"><span class="pre">disable_direct_write=true</span></code>  を追加してください。DirectDraw機能を利用する場合は <code class="docutils literal"><span class="pre">false</span></code> をセットしてください。(ただし、現段階では少々描画が遅いです)</li>
+<li><code class="docutils literal"><span class="pre">config.lua</span></code> の <code class="docutils literal"><span class="pre">system</span></code> グローバル変数に <code class="docutils literal"><span class="pre">disable_direct_write=true</span></code>  を追加してください。DirectWrite機能を利用する場合は <code class="docutils literal"><span class="pre">false</span></code> をセットしてください(ただし、現段階では少々描画が遅いです)。</li>
 </ul>
 </div>
 </div>
