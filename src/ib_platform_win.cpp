@@ -39,6 +39,7 @@ static ID2D1Factory* ib_g_d2d_factory;
 static IDWriteFactory *ib_g_dwrite_factory;
 static std::unordered_map<HWND, ID2D1DCRenderTarget*> ib_g_rndrt_map;
 static std::unordered_map<HFONT, IDWriteTextFormat*> ib_g_textformat_map;
+static std::unordered_map<HFONT, double> ib_g_fontheight_map;
 
 const char *strcasestr(const char *haystack, const char *needle) { // {{{
   int haypos;
@@ -112,6 +113,14 @@ static void ib_g_create_current_dwrite_font_data() {
     DWRITE_FONT_STRETCH_NORMAL,
     font_desc->size, L"", &format);
   ib_g_textformat_map[font_desc->fid] = format;
+
+  IDWriteTextLayout *layout = nullptr;
+  wchar_t buf[] = {L'|', L'\0'};
+  ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 99999, &layout);
+  DWRITE_TEXT_METRICS metrics;
+  layout->GetMetrics(&metrics);
+  layout->Release();
+  ib_g_fontheight_map[font_desc->fid] = metrics.height;
 }
 
 static IDWriteTextFormat* ib_platform_current_textformat() {
@@ -167,12 +176,13 @@ public:
     COLORREF cref = fl_RGB();
 
     IDWriteTextFormat *form = ib_platform_current_textformat();
+    double font_height = ib_g_fontheight_map[font_desc->fid];
 
     D2D1_RECT_F rect;
     rect.left = x;
-    rect.top = y - descent()*3 - 4; // FIXME: magic number
+    rect.top = y - font_height + descent();;
     rect.right = x + 99999; // reduce width calculation time
-    rect.bottom  = y + font_desc->size + 2;
+    rect.bottom  = rect.top + font_height + descent();
 
     ID2D1SolidColorBrush* brush  = NULL;
     target->CreateSolidColorBrush(        
