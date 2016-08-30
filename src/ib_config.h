@@ -62,8 +62,8 @@ namespace ib {
       bool getOptionAutocomplete() const { return option_autocomplete_; }
       void setOptionAutocomplete(const bool value){ option_autocomplete_ = value; }
 
-      bool getDisableDirectDraw() const { return disable_direct_draw_; }
-      void setDisableDirectDraw(const bool value){ disable_direct_draw_ = value; }
+      bool getDisableDirectWrite() const { return disable_direct_write_; }
+      void setDisableDirectWrite(const bool value){ disable_direct_write_ = value; }
 
       const std::vector<ib::SearchPath*>& getSearchPath() const { return search_path_; }
       void addSearchPath(ib::SearchPath *search_path) {
@@ -255,7 +255,7 @@ namespace ib {
         server_port_(0),
         path_autocomplete_(false),
         option_autocomplete_(false),
-        disable_direct_draw_(false),
+        disable_direct_write_(false),
         search_path_(),
         completer_(0),
 
@@ -331,7 +331,7 @@ namespace ib {
       unsigned int server_port_;
       bool         path_autocomplete_;
       bool         option_autocomplete_;
-      bool         disable_direct_draw_;
+      bool         disable_direct_write_;
       std::vector<ib::SearchPath*> search_path_;
       ib::Completer *completer_;
 

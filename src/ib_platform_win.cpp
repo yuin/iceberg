@@ -178,18 +178,19 @@ public:
     IDWriteTextFormat *form = ib_platform_current_textformat();
     double font_height = ib_g_fontheight_map[font_desc->fid];
 
-    D2D1_RECT_F rect;
-    rect.left = x;
-    rect.top = y - font_height + descent();;
-    rect.right = x + 99999; // reduce width calculation time
-    rect.bottom  = rect.top + font_height + descent();
+    D2D1_POINT_2F points;
+    points.x = x;
+    points.y = y - font_height + descent();
 
     ID2D1SolidColorBrush* brush  = NULL;
     target->CreateSolidColorBrush(        
               D2D1::ColorF(((BYTE)cref)/255.0F,  ((BYTE)(((WORD)(cref)) >> 8))/255.0F,  ((BYTE)((cref)>>16))/255.0F), &brush); 
 
-    target->DrawTextW(osstr.get(), _tcslen(osstr.get()), form, rect, brush);
+    IDWriteTextLayout* layout = NULL;
+    ib_g_dwrite_factory->CreateTextLayout(osstr.get(), _tcslen(osstr.get()), form, 99999, font_height+ descent()*2, &layout);
+    target->DrawTextLayout (points, layout, brush);
     target->EndDraw();
+    layout->Release();
     brush->Release();
   }
 
@@ -622,7 +623,7 @@ int ib::platform::init_system() { // {{{
   ib_g_hwnd_list = fl_xid(ib::Singleton<ib::ListWindow>::getInstance());
   ib_g_hinst    = fl_display;
 
-  if(cfg->getDisableDirectDraw()) {
+  if(cfg->getDisableDirectWrite()) {
     Fl_Surface_Device::surface()->driver(new Fl_FastGDI_Graphics_Driver);
   } else {
     Fl_Surface_Device::surface()->driver(new Fl_GDIDWrite_Graphics_Driver);
