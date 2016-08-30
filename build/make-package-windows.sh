@@ -27,7 +27,7 @@ LUAWINALTTAB_FILES=./ext/luawinalttab-1.0.0/winalttab.dll
 
 # make a package
 gcc --version | grep i686 > /dev/null 2>&1;
-if [ $? -eq 0 ]; then
+if [ "${MSYSTEM}" = "MINGW32" ]; then
   ARCH=x86_32;
 else
   ARCH=x86_64;
