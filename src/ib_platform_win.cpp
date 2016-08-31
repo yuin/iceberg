@@ -116,11 +116,11 @@ static void ib_g_create_current_dwrite_font_data() {
 
   IDWriteTextLayout *layout = nullptr;
   wchar_t buf[] = {L'|', L'\0'};
-  ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 99999, &layout);
+  ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 0, &layout);
   DWRITE_TEXT_METRICS metrics;
   layout->GetMetrics(&metrics);
   layout->Release();
-  ib_g_fontheight_map[font_desc->fid] = metrics.height;
+  ib_g_fontheight_map[font_desc->fid] = metrics.height*0.8;
 }
 
 static IDWriteTextFormat* ib_platform_current_textformat() {
@@ -145,27 +145,21 @@ public:
   double width(const char *str, int n) {
     auto osstr = ib_platform_utf2oschar_n(str, n);
     auto buf = osstr.get();
-    size_t i;
-    for(i = 0; buf[i] != L'\0'; i++) {
-      if(buf[i] == L' ') buf[i] = L'_';
-      if(buf[i] == L'　') buf[i] = L'＿';
-    }
-
     IDWriteTextLayout *layout = nullptr;
-    ib_g_dwrite_factory->CreateTextLayout(buf, i, ib_platform_current_textformat(), 99999, 99999, &layout);
+    ib_g_dwrite_factory->CreateTextLayout(buf, _tcslen(buf), ib_platform_current_textformat(), 99999, 0, &layout);
     DWRITE_TEXT_METRICS metrics;
     layout->GetMetrics(&metrics);
     layout->Release();
-    return metrics.width;
+    return metrics.widthIncludingTrailingWhitespace;
   }
 
   void draw(const char* str, int n, int x, int y) {
-    auto osstr = ib_platform_utf2oschar_n(str, n);
     ID2D1DCRenderTarget *target = ib_g_rndrt_map[fl_window];
     if(target == nullptr) {
       Fl_GDI_Graphics_Driver::draw(str, n, x, y);
       return;
     }
+    auto osstr = ib_platform_utf2oschar_n(str, n);
 
     RECT rc;
     GetClientRect(fl_window, &rc);
@@ -180,14 +174,14 @@ public:
 
     D2D1_POINT_2F points;
     points.x = x;
-    points.y = y - font_height + descent();
+    points.y = y - font_height;
 
     ID2D1SolidColorBrush* brush  = NULL;
     target->CreateSolidColorBrush(        
               D2D1::ColorF(((BYTE)cref)/255.0F,  ((BYTE)(((WORD)(cref)) >> 8))/255.0F,  ((BYTE)((cref)>>16))/255.0F), &brush); 
 
     IDWriteTextLayout* layout = NULL;
-    ib_g_dwrite_factory->CreateTextLayout(osstr.get(), _tcslen(osstr.get()), form, 99999, font_height+ descent()*2, &layout);
+    ib_g_dwrite_factory->CreateTextLayout(osstr.get(), _tcslen(osstr.get()), form, 99999, 0, &layout);
     target->DrawTextLayout (points, layout, brush);
     target->EndDraw();
     layout->Release();
