@@ -35,8 +35,8 @@ static NOTIFYICONDATA ib_g_trayicon;
 static WNDPROC ib_g_wndproc;
 static HWND ib_g_hwnd_clbchain_next;
 
-static ID2D1Factory* ib_g_d2d_factory;
-static IDWriteFactory *ib_g_dwrite_factory;
+static ID2D1Factory* ib_g_d2d_factory = nullptr;
+static IDWriteFactory *ib_g_dwrite_factory = nullptr;
 static std::unordered_map<HWND, ID2D1DCRenderTarget*> ib_g_rndrt_map;
 static std::unordered_map<HFONT, IDWriteTextFormat*> ib_g_textformat_map;
 static std::unordered_map<HFONT, double> ib_g_fontheight_map;
@@ -115,15 +115,11 @@ static void set_winapi_error(ib::Error &error){ // {{{
 
 // DirectWrite stuff {{{
 static void create_current_dwrite_font_data() {
+  const auto fontname = Fl::get_font(fl_font());
   Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
-  LOGFONT lfont;
-  if(GetObject(font_desc->fid, sizeof(LOGFONT), &lfont) == 0) {
-    hresult(E_FAIL);
-  };
   IDWriteTextFormat *format = nullptr;
-
   hresult(ib_g_dwrite_factory->CreateTextFormat(
-    lfont.lfFaceName,
+    ib::platform::utf82oschar(fontname).get(),
     nullptr,
     DWRITE_FONT_WEIGHT_NORMAL,
     DWRITE_FONT_STYLE_NORMAL,
@@ -708,28 +704,28 @@ int ib::platform::init_system() { // {{{
     Fl_Surface_Device::surface()->driver(new Fl_FastGDI_Graphics_Driver);
   } else {
     Fl_Surface_Device::surface()->driver(new Fl_GDIDWrite_Graphics_Driver);
+    D2D1_RENDER_TARGET_PROPERTIES props =
+        D2D1::RenderTargetProperties( 
+            D2D1_RENDER_TARGET_TYPE_DEFAULT, 
+            D2D1::PixelFormat( 
+                DXGI_FORMAT_B8G8R8A8_UNORM, 
+                D2D1_ALPHA_MODE_IGNORE 
+            ) , 0.0F, 0.0F, 
+            D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE
+        ); 
+    ID2D1DCRenderTarget *target;
+    if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+      return -1;
+    }
+    ib_g_rndrt_map[ib_g_hwnd_main] = target;
+
+    if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+      return -1;
+    }
+    ib_g_rndrt_map[ib_g_hwnd_list] = target;
   }
 
 
-  D2D1_RENDER_TARGET_PROPERTIES props =
-      D2D1::RenderTargetProperties( 
-          D2D1_RENDER_TARGET_TYPE_DEFAULT, 
-          D2D1::PixelFormat( 
-              DXGI_FORMAT_B8G8R8A8_UNORM, 
-              D2D1_ALPHA_MODE_IGNORE 
-          ) , 0.0F, 0.0F, 
-          D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE
-      ); 
-  ID2D1DCRenderTarget *target;
-  if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
-    return -1;
-  }
-  ib_g_rndrt_map[ib_g_hwnd_main] = target;
-
-  if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
-    return -1;
-  }
-  ib_g_rndrt_map[ib_g_hwnd_list] = target;
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));
   SetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC, wnd_proc);
