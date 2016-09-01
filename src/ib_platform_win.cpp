@@ -77,7 +77,14 @@ ib::oschar* tcstokread(ib::oschar *buf, const ib::oschar sep) { // {{{
   }
 } // }}}
 
-static std::unique_ptr<char[]> ib_platform_get_last_error_message(){ // {{{
+template <class T> static void safe_release(T **p) { // {{{
+  if (*p) {
+      (*p)->Release();
+      *p = nullptr;
+  }
+} // }}}
+
+static std::unique_ptr<char[]> get_last_winapi_error_message(){ // {{{
   void* msg_buf;
   FormatMessage(
     FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -92,46 +99,56 @@ static std::unique_ptr<char[]> ib_platform_get_last_error_message(){ // {{{
   return ret;
 } // }}}
 
-static void ib_platform_set_error(ib::Error &error){ // {{{
+static void hresult(HRESULT hr) { // {{{
+  if(!SUCCEEDED(hr)) {
+    auto message = get_last_winapi_error_message();
+    fl_alert("%s", message.get());
+    ib::utils::exit_application(1);
+  }
+} // }}}
+
+static void set_winapi_error(ib::Error &error){ // {{{
   error.setCode(GetLastError());
-  auto msg = ib_platform_get_last_error_message();
+  auto msg = get_last_winapi_error_message();
   error.setMessage(msg.get());
 } // }}}
 
 // DirectWrite stuff {{{
-static void ib_g_create_current_dwrite_font_data() {
+static void create_current_dwrite_font_data() {
   Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
   LOGFONT lfont;
-  GetObject(font_desc->fid, sizeof(LOGFONT), &lfont);
+  if(GetObject(font_desc->fid, sizeof(LOGFONT), &lfont) == 0) {
+    hresult(E_FAIL);
+  };
   IDWriteTextFormat *format = nullptr;
 
-  ib_g_dwrite_factory->CreateTextFormat(
+  hresult(ib_g_dwrite_factory->CreateTextFormat(
     lfont.lfFaceName,
-    NULL,
+    nullptr,
     DWRITE_FONT_WEIGHT_NORMAL,
     DWRITE_FONT_STYLE_NORMAL,
     DWRITE_FONT_STRETCH_NORMAL,
-    font_desc->size, L"", &format);
+    font_desc->size, L"", &format));
   ib_g_textformat_map[font_desc->fid] = format;
 
   IDWriteTextLayout *layout = nullptr;
   wchar_t buf[] = {L'|', L'\0'};
-  ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 0, &layout);
+  hresult(ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 0, &layout));
   DWRITE_TEXT_METRICS metrics;
-  layout->GetMetrics(&metrics);
-  layout->Release();
+  hresult(layout->GetMetrics(&metrics));
+  safe_release(&layout);
   ib_g_fontheight_map[font_desc->fid] = metrics.height*0.8;
 }
 
-static IDWriteTextFormat* ib_platform_current_textformat() {
+static IDWriteTextFormat* current_dwrite_text_format() {
   Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
   IDWriteTextFormat *format = ib_g_textformat_map[font_desc->fid];
   if(format != nullptr) return format;
-  ib_g_create_current_dwrite_font_data();
+  create_current_dwrite_font_data();
   return ib_g_textformat_map[font_desc->fid];
 }
 
-static std::unique_ptr<ib::oschar[]> ib_platform_utf2oschar_n(const char *src, int n) {
+static std::unique_ptr<ib::oschar[]> utf82ochar_n(const char *src, int n) {
   auto wlen = fl_utf8toUtf16(src, n, nullptr, 0);
   wlen++;
   auto wbuf = new wchar_t[wlen];
@@ -143,13 +160,13 @@ static std::unique_ptr<ib::oschar[]> ib_platform_utf2oschar_n(const char *src, i
 class Fl_GDIDWrite_Graphics_Driver : public Fl_GDI_Graphics_Driver {
 public:
   double width(const char *str, int n) {
-    auto osstr = ib_platform_utf2oschar_n(str, n);
+    auto osstr = utf82ochar_n(str, n);
     auto buf = osstr.get();
     IDWriteTextLayout *layout = nullptr;
-    ib_g_dwrite_factory->CreateTextLayout(buf, _tcslen(buf), ib_platform_current_textformat(), 99999, 0, &layout);
+    hresult(ib_g_dwrite_factory->CreateTextLayout(buf, _tcslen(buf), current_dwrite_text_format(), 99999, 0, &layout));
     DWRITE_TEXT_METRICS metrics;
-    layout->GetMetrics(&metrics);
-    layout->Release();
+    hresult(layout->GetMetrics(&metrics));
+    safe_release(&layout);
     return metrics.widthIncludingTrailingWhitespace;
   }
 
@@ -159,33 +176,37 @@ public:
       Fl_GDI_Graphics_Driver::draw(str, n, x, y);
       return;
     }
-    auto osstr = ib_platform_utf2oschar_n(str, n);
+    auto osstr = utf82ochar_n(str, n);
 
     RECT rc;
     GetClientRect(fl_window, &rc);
-    target->BindDC(fl_gc, &rc);
-    target->BeginDraw();
-
     Fl_Font_Descriptor *font_desc = font_descriptor();
     COLORREF cref = fl_RGB();
 
-    IDWriteTextFormat *form = ib_platform_current_textformat();
+    IDWriteTextFormat *form = current_dwrite_text_format();
     double font_height = ib_g_fontheight_map[font_desc->fid];
+    
+    // iceberg never use multiline texts, so we optimize this function for single line texts.
+    rc.top    = std::max((int)(y - font_height), 0);
+    rc.bottom = std::min((int)(rc.top + font_height*1.5), (int)rc.bottom);
+    hresult(target->BindDC(fl_gc, &rc));
+    target->BeginDraw();
 
     D2D1_POINT_2F points;
     points.x = x;
-    points.y = y - font_height;
+    points.y = 0;
+    //points.y = y - font_height;
 
-    ID2D1SolidColorBrush* brush  = NULL;
-    target->CreateSolidColorBrush(        
-              D2D1::ColorF(((BYTE)cref)/255.0F,  ((BYTE)(((WORD)(cref)) >> 8))/255.0F,  ((BYTE)((cref)>>16))/255.0F), &brush); 
+    ID2D1SolidColorBrush* brush  = nullptr;
+    hresult(target->CreateSolidColorBrush(        
+              D2D1::ColorF(((BYTE)cref)/255.0F,  ((BYTE)(((WORD)(cref)) >> 8))/255.0F,  ((BYTE)((cref)>>16))/255.0F), &brush)); 
 
-    IDWriteTextLayout* layout = NULL;
-    ib_g_dwrite_factory->CreateTextLayout(osstr.get(), _tcslen(osstr.get()), form, 99999, 0, &layout);
+    IDWriteTextLayout* layout = nullptr;
+    hresult(ib_g_dwrite_factory->CreateTextLayout(osstr.get(), _tcslen(osstr.get()), form, 99999, 0, &layout));
     target->DrawTextLayout (points, layout, brush);
     target->EndDraw();
-    layout->Release();
-    brush->Release();
+    safe_release(&layout);
+    safe_release(&brush);
   }
 
   void draw(int angle, const char *str, int n, int x, int y) {
@@ -196,7 +217,7 @@ public:
 class Fl_FastGDI_Graphics_Driver : public Fl_GDI_Graphics_Driver {
 public:
   double width(const char *str, int n) {
-    auto osstr = ib_platform_utf2oschar_n(str, n);
+    auto osstr = utf82ochar_n(str, n);
     COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
     SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
     RECT rect;
@@ -206,7 +227,7 @@ public:
   }
 
   void draw(const char* str, int n, int x, int y) {
-    auto osstr = ib_platform_utf2oschar_n(str, n);
+    auto osstr = utf82ochar_n(str, n);
     COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
     SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
     RECT rect;
@@ -223,7 +244,7 @@ public:
 };
 // }}}
 
-// ib_platform_key2os_key {{{
+// key2oskey {{{
 // code from fltk1.3: Fl_get_key_win32.cxx
 static const struct {unsigned short vk, key;} vktab[] = {
   {VK_SPACE,    ' '},
@@ -297,7 +318,7 @@ static const struct {unsigned short vk, key;} vktab[] = {
   {VK_DELETE,    FL_Delete}
 };
 
-static int ib_platform_key2os_key(const int key){
+static int key2oskey(const int key){
   auto b = sizeof(vktab)/sizeof(*vktab);
   for(unsigned int i=0; i < b; i++) {
     if (vktab[i].key == key) return vktab[i].vk;
@@ -306,7 +327,7 @@ static int ib_platform_key2os_key(const int key){
 }
 // }}}
 
-static int ib_platform_modkey2os_modkey(const int key){ // {{{
+static int modkey2osmodkey(const int key){ // {{{
   switch(key){
     case FL_SHIFT:
       return MOD_SHIFT;
@@ -320,7 +341,7 @@ static int ib_platform_modkey2os_modkey(const int key){ // {{{
   return 0;
 } // }}}
 
-static int ib_platform_register_hotkey() { /* {{{ */
+static int register_hotkey() { /* {{{ */
   int mod, len;
   const auto hot_key = ib::Singleton<ib::Config>::getInstance()->getHotKey();
   len = 0;
@@ -328,15 +349,15 @@ static int ib_platform_register_hotkey() { /* {{{ */
   len--;
   mod = 0;
   for(int i = 0; i < len; ++i){
-    mod |= ib_platform_modkey2os_modkey(hot_key[i]);
+    mod |= modkey2osmodkey(hot_key[i]);
   }
-  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, ib_platform_key2os_key(hot_key[len])) == 0){
+  if(RegisterHotKey(ib_g_hwnd_main, IB_IDH_HOTKEY, mod, key2oskey(hot_key[len])) == 0){
     return -1;
   }
   return 0;
 } /* }}} */
 
-static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) { /* {{{ */
+static LRESULT CALLBACK wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) { /* {{{ */
   static int m_end_composition = 0;
 
   switch(umsg) {
@@ -371,7 +392,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
       return 0;
 
     case IB_WM_INIT: {
-        if(ib_platform_register_hotkey() < 0){
+        if(register_hotkey() < 0){
             fl_alert("%s", "Failed to register hotkeys.");
             ib::utils::exit_application(1);
         }
@@ -481,7 +502,7 @@ static LRESULT CALLBACK ib_platform_wnd_proc(HWND hwnd, UINT umsg, WPARAM wparam
   return CallWindowProc(ib_g_wndproc, hwnd, umsg, wparam, lparam);
 } /* }}} */
 
-static uchar * ib_platform_read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h, int alpha) { /* {{{ */
+static uchar * read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h, int alpha) { /* {{{ */
   int d;
   
   d = alpha ? 4 : 3;
@@ -542,7 +563,7 @@ static uchar * ib_platform_read_hbitmap(HBITMAP hbm, int X, int Y, int w, int h,
   return p;
 } /* }}} */
 
-static void ib_platform_list_network_servers(std::vector<ib::oschar*> &result, const ib::oschar *domain, const DWORD types){ // {{{
+static void list_network_servers(std::vector<ib::oschar*> &result, const ib::oschar *domain, const DWORD types){ // {{{
   SERVER_INFO_100* server_info = 0;
   DWORD read;
   DWORD num_servers;
@@ -561,7 +582,7 @@ static void ib_platform_list_network_servers(std::vector<ib::oschar*> &result, c
   }
 } // }}}
 
-static void ib_platform_list_network_shares(std::vector<ib::oschar*> &result, ib::oschar *server){ // {{{
+static void list_network_shares(std::vector<ib::oschar*> &result, ib::oschar *server){ // {{{
   SHARE_INFO_502* share_info = nullptr;
   DWORD read;
   DWORD num_shares;
@@ -578,6 +599,72 @@ static void ib_platform_list_network_shares(std::vector<ib::oschar*> &result, ib
   if (share_info) {
     NetApiBufferFree((void*)share_info);
   }
+} // }}}
+
+static int shell_execute_(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
+  reg.init();
+#ifdef IB_OS_WIN64
+  long long ret;
+#else
+  int ret;
+#endif
+  if(reg.match(path.c_str()) == 0){
+    auto wpath = ib::platform::utf82oschar("control.exe");
+    auto wparams = ib::platform::utf82oschar(path.c_str());
+    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
+#ifdef IB_OS_WIN64
+    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
+#else
+    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
+#endif
+  }else{
+    if(terminal == "yes") {
+      std::vector<std::string*> args;
+      // TODO escape quotations and spaces
+      args.push_back(new std::string(path + " " + strparams));
+      ib::Command cmd;
+      cmd.setName("tmp");
+      cmd.setPath(cfg->getTerminal());
+      cmd.setTerminal("no");
+      cmd.init();
+      auto ret = cmd.execute(args, &cwd, error);
+      ib::utils::delete_pointer_vectors(args);
+      return ret;
+    }
+    auto wpath = ib::platform::utf82oschar(path.c_str());
+    auto wparams = ib::platform::utf82oschar(strparams.c_str());
+    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
+#ifdef IB_OS_WIN64
+    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
+#else
+    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
+#endif
+  }
+
+
+  if(ret > 32){ return 0; }
+
+  char buf[1024];
+  error.setCode((int)ret);
+  switch(ret) {
+    case 0:
+      sprintf(buf, "%d: %s", error.getCode(), "The operating system is out of memory or resources.");
+      break;
+    case ERROR_FILE_NOT_FOUND:
+    case ERROR_PATH_NOT_FOUND:
+      sprintf(buf, "%d: %s", error.getCode(), "The specified path was not found.");
+      break;
+    case SE_ERR_ACCESSDENIED:
+      sprintf(buf, "%d: %s", error.getCode(), "The operating system denied access to the specified file.");
+      break;
+    default:
+      sprintf(buf, "%d: %s", error.getCode(), "Error.");
+  }
+  error.setMessage(buf);
+
+  return -1;
 } // }}}
 
 int ib::platform::startup_system() { // {{{
@@ -645,7 +732,7 @@ int ib::platform::init_system() { // {{{
   ib_g_rndrt_map[ib_g_hwnd_list] = target;
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));
-  SetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC, ib_platform_wnd_proc);
+  SetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC, wnd_proc);
 
   style = (GetWindowLongPtrW64(ib_g_hwnd_main, GWL_EXSTYLE));
   SetWindowLongPtrW64(ib_g_hwnd_main, GWL_EXSTYLE, style | WS_EX_LAYERED);
@@ -667,13 +754,13 @@ void ib::platform::finalize_system(){ // {{{
   WSACleanup();
 
   for(auto it = ib_g_textformat_map.begin(); it != ib_g_textformat_map.end(); ++it) {
-    if(it->second != nullptr) it->second->Release();
+    safe_release(&(it->second));
   }
   for(auto it = ib_g_rndrt_map.begin(); it != ib_g_rndrt_map.end(); ++it) {
-    if(it->second != nullptr) it->second->Release();
+    safe_release(&(it->second));
   }
-  if(ib_g_dwrite_factory != nullptr) ib_g_dwrite_factory->Release();
-  if(ib_g_d2d_factory != nullptr) ib_g_d2d_factory->Release();
+  safe_release(&ib_g_dwrite_factory);
+  safe_release(&ib_g_d2d_factory);
 } // }}}
 
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
@@ -804,72 +891,6 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   SetLayeredWindowAttributes(fl_xid(window), 0, alpha, LWA_ALPHA);
 } // }}}
 
-static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
-  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
-  ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
-  reg.init();
-#ifdef IB_OS_WIN64
-  long long ret;
-#else
-  int ret;
-#endif
-  if(reg.match(path.c_str()) == 0){
-    auto wpath = ib::platform::utf82oschar("control.exe");
-    auto wparams = ib::platform::utf82oschar(path.c_str());
-    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
-#ifdef IB_OS_WIN64
-    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
-#else
-    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
-#endif
-  }else{
-    if(terminal == "yes") {
-      std::vector<std::string*> args;
-      // TODO escape quotations and spaces
-      args.push_back(new std::string(path + " " + strparams));
-      ib::Command cmd;
-      cmd.setName("tmp");
-      cmd.setPath(cfg->getTerminal());
-      cmd.setTerminal("no");
-      cmd.init();
-      auto ret = cmd.execute(args, &cwd, error);
-      ib::utils::delete_pointer_vectors(args);
-      return ret;
-    }
-    auto wpath = ib::platform::utf82oschar(path.c_str());
-    auto wparams = ib::platform::utf82oschar(strparams.c_str());
-    auto wcwd = ib::platform::utf82oschar(cwd.c_str());
-#ifdef IB_OS_WIN64
-    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
-#else
-    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
-#endif
-  }
-
-
-  if(ret > 32){ return 0; }
-
-  char buf[1024];
-  error.setCode((int)ret);
-  switch(ret) {
-    case 0:
-      sprintf(buf, "%d: %s", error.getCode(), "The operating system is out of memory or resources.");
-      break;
-    case ERROR_FILE_NOT_FOUND:
-    case ERROR_PATH_NOT_FOUND:
-      sprintf(buf, "%d: %s", error.getCode(), "The specified path was not found.");
-      break;
-    case SE_ERR_ACCESSDENIED:
-      sprintf(buf, "%d: %s", error.getCode(), "The operating system denied access to the specified file.");
-      break;
-    default:
-      sprintf(buf, "%d: %s", error.getCode(), "Error.");
-  }
-  error.setMessage(buf);
-
-  return -1;
-} // }}}
-
 int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
@@ -879,7 +900,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
+  return shell_execute_(path, strparams, cwd, terminal, error);
 } /* }}} */
 
 int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
@@ -891,7 +912,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
+  return shell_execute_(path, strparams, cwd, terminal, error);
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
@@ -954,7 +975,7 @@ int ib::platform::command_output(std::string &sstdout, std::string &sstderr, con
     CloseHandle(process_info.hProcess);
     CloseHandle(process_info.hThread);
   }else{
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     funcret = -1;
   }
   
@@ -1011,8 +1032,8 @@ int ib::platform::show_context_menu(ib::oschar *path){ // {{{
   ret = context_menu->InvokeCommand(&ici);
 
 finalize:
-  if(context_menu != nullptr) context_menu->Release();
-  if(shell_folder != nullptr) shell_folder->Release();
+  safe_release(&context_menu);
+  safe_release(&shell_folder);
   if(abslist != nullptr) ILFree(abslist);
 
   return ret == S_OK ? 0 : 1;
@@ -1078,8 +1099,8 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
         cmd->setDescription(new_description);
       }
     }
-    persist_file_if->Release();
-    if(shell_link_if) shell_link_if->Release();
+    safe_release(&persist_file_if);
+    safe_release(&shell_link_if);
   }
 } // }}}
 
@@ -1155,7 +1176,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
    SelectObject(hdc2, hbmp);
    DrawIconEx(hdc2, 0, 0, hicon, size, size, 0, 0, DI_NORMAL); 
 
-   data = ib_platform_read_hbitmap(hbmp, 0, 0, size, size, 1);
+   data = read_hbitmap(hbmp, 0, 0, size, size, 1);
    result_image = new Fl_RGB_Image((const uchar*)data, size, size, 4);
    result_image->alloc_array = 1;
 
@@ -1328,7 +1349,7 @@ int ib::platform::walk_dir(std::vector<std::unique_ptr<ib::oschar[]>> &result, c
   if(_tcscmp(dir, L"\\\\") == 0){
     if(!recursive){
       std::vector<ib::oschar*> servers;
-      ib_platform_list_network_servers(servers, nullptr, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
+      list_network_servers(servers, nullptr, SV_TYPE_WORKSTATION | SV_TYPE_SERVER);
       for(const auto &s : servers) {
         result.push_back(std::unique_ptr<ib::oschar[]>(s));
       }
@@ -1347,7 +1368,7 @@ int ib::platform::walk_dir(std::vector<std::unique_ptr<ib::oschar[]>> &result, c
           std::vector<ib::oschar*> shares;
           ib::oschar not_const_dir[IB_MAX_PATH];
           tcsncpy_s(not_const_dir, dir, IB_MAX_PATH);
-          ib_platform_list_network_shares(shares, not_const_dir);
+          list_network_shares(shares, not_const_dir);
           for(const auto &s : shares) {
             result.push_back(std::unique_ptr<ib::oschar[]>(s));
           }
@@ -1430,7 +1451,7 @@ ib::oschar* ib::platform::get_current_workdir(ib::oschar *result){ // {{{
 
 int ib::platform::set_current_workdir(const ib::oschar *dir, ib::Error &error){ // {{{
   if(SetCurrentDirectory(dir) == 0){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return -1;
   }else{
     return 0;
@@ -1525,7 +1546,7 @@ int ib::platform::remove_file(const ib::oschar *path, ib::Error &error){ // {{{
   SetLastError(NO_ERROR);
   auto ret = DeleteFile(path);
   if(ret == 0){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   };
   return 0;
@@ -1535,7 +1556,7 @@ int ib::platform::copy_file(const ib::oschar *source, const ib::oschar *dest, ib
   SetLastError(NO_ERROR);
   auto ret = CopyFile(source, dest, FALSE);
   if(ret == 0){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   };
   return 0;
@@ -1545,12 +1566,12 @@ int ib::platform::file_size(size_t &size, const ib::oschar *path, ib::Error &err
   SetLastError(NO_ERROR);
   HANDLE file = CreateFile(path, GENERIC_READ, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
   if(file == INVALID_HANDLE_VALUE ){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   }
   auto sz = GetFileSize(file, nullptr );
   if(sz == (DWORD)-1){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   }
   size = sz;
@@ -1705,7 +1726,7 @@ int ib::platform::load_library(ib::module &dl, const ib::oschar *name, ib::Error
   SetLastError(NO_ERROR);
   dl = LoadLibrary(name);
   if(dl == 0){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   }
   return 0;
@@ -1763,7 +1784,7 @@ int ib::platform::list_drives(std::vector<std::unique_ptr<ib::oschar[]>> &result
 
   SetLastError(NO_ERROR);
   if(GetLogicalDriveStrings(sizeof(buf), buf) == 0){
-    ib_platform_set_error(error);
+    set_winapi_error(error);
     return 1;
   }
 
