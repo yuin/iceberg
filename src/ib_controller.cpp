@@ -278,6 +278,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 #define GET_LIST(index, type) lua_pushinteger(IB_LUA, index); lua_gettable(IB_LUA, -2); if(lua_isnil(IB_LUA, -1)){lua_pop(IB_LUA, 1);break;}if(!lua_is##type(IB_LUA, -1)) { fl_alert("index" #index " must be " #type); ib::utils::exit_application(1); }
 #define ENUMERATE_TABLE lua_pushnil(IB_LUA);while (lua_next(IB_LUA, -2) != 0) 
 #define PARSE_KEY_BIND(name) memset(key_buf, 0, sizeof(key_buf));ib::utils::parse_key_bind(key_buf, lua_tostring(IB_LUA, -1));if(key_buf[0] == 0) { fl_alert("Invalid key bind:" #name);ib::utils::exit_application(1);}
+#define PARSE_KEY_BIND_CONST(value) memset(key_buf, 0, sizeof(key_buf));ib::utils::parse_key_bind(key_buf, value);
 
 
   // System {{{
@@ -362,8 +363,16 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
+    GET_FIELD("direct_write_params", string) {
+      cfg->setDirectWriteParams(lua_tostring(IB_LUA, -1));
+    }
+    lua_pop(IB_LUA, 1);
+
     GET_FIELD("hot_key", string) {
       PARSE_KEY_BIND("hot_key");
+      cfg->setHotKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("ctrl-space");
       cfg->setHotKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
@@ -371,11 +380,17 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     GET_FIELD("escape_key", string) {
       PARSE_KEY_BIND("escape_key");
       cfg->setEscapeKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("escape");
+      cfg->setEscapeKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
 
     GET_FIELD("list_next_key", string) {
       PARSE_KEY_BIND("list_next_key");
+      cfg->setListNextKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("ctrl-n");
       cfg->setListNextKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
@@ -383,17 +398,26 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     GET_FIELD("list_prev_key", string) {
       PARSE_KEY_BIND("list_prev_key");
       cfg->setListPrevKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("list_prev_key");
+      cfg->setListPrevKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
 
     GET_FIELD("toggle_mode_key", string) {
       PARSE_KEY_BIND("toggle_mode_key");
       cfg->setToggleModeKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("ctrl-r");
+      cfg->setToggleModeKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
 
     GET_FIELD("kill_word_key", string) {
       PARSE_KEY_BIND("kill_word_key");
+      cfg->setKillWordKey(key_buf);
+    } else {
+      PARSE_KEY_BIND_CONST("ctrl-w");
       cfg->setKillWordKey(key_buf);
     }
     lua_pop(IB_LUA, 1);
@@ -747,6 +771,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   assert(lua_gettop(IB_LUA) == 0);
   // }}}
 
+#undef PARSE_KEY_BIND_CONST
 #undef PARSE_KEY_BIND
 #undef ENUMERATE_TABLE
 #undef GET_LIST

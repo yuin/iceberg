@@ -162,6 +162,9 @@ systemグローバル変数
           -- DirectWriteを無効にする:Windowsでのみ有効 --
           disable_direct_write = false,
 
+          -- DirectWriteの詳細設定:空文字の場合デフォルト値 --
+          direct_write_params="gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.5,pixel_geometry=0,rendering_mode=5",
+
           -- コマンド・ヒストリの補完時は自動補完は常に有効です --
         
           -- キー設定 --

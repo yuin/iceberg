@@ -114,6 +114,72 @@ static void set_winapi_error(ib::Error &error){ // {{{
 } // }}}
 
 // DirectWrite stuff {{{
+
+static int create_renderer_taget(HWND w) {
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  const auto& custom_params = cfg->getDirectWriteParams();
+
+  D2D1_RENDER_TARGET_PROPERTIES props =
+      D2D1::RenderTargetProperties( 
+          D2D1_RENDER_TARGET_TYPE_DEFAULT, 
+          D2D1::PixelFormat( 
+              DXGI_FORMAT_B8G8R8A8_UNORM, 
+              D2D1_ALPHA_MODE_IGNORE 
+          ) , 0.0F, 0.0F, 
+          D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE
+      ); 
+  ID2D1DCRenderTarget *target;
+  if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+    return -1;
+  }
+  target->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
+  ib_g_rndrt_map[w] = target;
+
+  if(!custom_params.empty()) {
+    IDWriteRenderingParams *oldparams = nullptr;
+    IDWriteRenderingParams *params = nullptr;
+    hresult(ib_g_dwrite_factory->CreateRenderingParams(&oldparams));
+    FLOAT gamma = oldparams->GetGamma();
+    FLOAT enchanced_conrast = oldparams->GetEnhancedContrast();
+    FLOAT clear_type_level = oldparams->GetClearTypeLevel();
+    DWRITE_PIXEL_GEOMETRY pixel_geometry = oldparams->GetPixelGeometry();
+    DWRITE_RENDERING_MODE rendering_mode = oldparams->GetRenderingMode();
+
+    ib::Regex splitter("\\s*,\\s*", ib::Regex::NONE);
+    splitter.init();
+    ib::Regex reg("([^=]+)=([^,\\s]+),?", ib::Regex::NONE);
+    reg.init();
+    auto custom_param_values = splitter.split(custom_params);
+    for(const auto custom_param_value : custom_param_values) {
+      if(reg.match(custom_param_value) != 0) {
+        fl_message("invalid direct_write_params:%s", custom_param_value.c_str());
+        continue;
+      }
+      auto name = reg._1();
+      auto value = reg._2();
+      if(name == "gamma") {
+         gamma = std::stof(value);
+      } else if(name == "enchanced_conrast") {
+         enchanced_conrast = std::stof(value);
+      } else if(name == "clear_type_level") {
+         clear_type_level = std::stof(value);
+      } else if(name == "pixel_geometry") {
+         pixel_geometry = static_cast<DWRITE_PIXEL_GEOMETRY>(std::stoi(value));
+      } else if(name == "rendering_mode") {
+         rendering_mode = static_cast<DWRITE_RENDERING_MODE>(std::stoi(value));
+      }
+    }
+    hresult(ib_g_dwrite_factory->CreateCustomRenderingParams(gamma, enchanced_conrast, clear_type_level, pixel_geometry, rendering_mode, &params));
+    target->SetTextRenderingParams(params);
+
+    safe_release(&oldparams);
+    safe_release(&params);
+  }
+
+
+  return 0;
+}
+
 static void create_current_dwrite_font_data() {
   const auto fontname = Fl::get_font(fl_font());
   Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
@@ -704,28 +770,13 @@ int ib::platform::init_system() { // {{{
     Fl_Surface_Device::surface()->driver(new Fl_FastGDI_Graphics_Driver);
   } else {
     Fl_Surface_Device::surface()->driver(new Fl_GDIDWrite_Graphics_Driver);
-    D2D1_RENDER_TARGET_PROPERTIES props =
-        D2D1::RenderTargetProperties( 
-            D2D1_RENDER_TARGET_TYPE_DEFAULT, 
-            D2D1::PixelFormat( 
-                DXGI_FORMAT_B8G8R8A8_UNORM, 
-                D2D1_ALPHA_MODE_IGNORE 
-            ) , 0.0F, 0.0F, 
-            D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE
-        ); 
-    ID2D1DCRenderTarget *target;
-    if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+    if(create_renderer_taget(ib_g_hwnd_main) != 0) {
       return -1;
     }
-    ib_g_rndrt_map[ib_g_hwnd_main] = target;
-
-    if(!SUCCEEDED(ib_g_d2d_factory->CreateDCRenderTarget(&props, &target))) {
+    if(create_renderer_taget(ib_g_hwnd_list) != 0) {
       return -1;
     }
-    ib_g_rndrt_map[ib_g_hwnd_list] = target;
   }
-
-
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));
   SetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC, wnd_proc);

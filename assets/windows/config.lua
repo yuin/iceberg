@@ -21,6 +21,7 @@ system = {
   path_autocomplete = true,
   option_autocomplete = true,
   disable_direct_write = true,
+  direct_write_params = "",
 
   hot_key = "ctrl-space",
   escape_key = "escape",

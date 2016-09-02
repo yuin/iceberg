@@ -65,6 +65,10 @@ namespace ib {
       bool getDisableDirectWrite() const { return disable_direct_write_; }
       void setDisableDirectWrite(const bool value){ disable_direct_write_ = value; }
 
+      const std::string& getDirectWriteParams() const { return direct_write_params_; }
+      void setDirectWriteParams(const std::string &value){ direct_write_params_ = value; }
+      void setDirectWriteParams(const char *value){ direct_write_params_ = value; }
+
       const std::vector<ib::SearchPath*>& getSearchPath() const { return search_path_; }
       void addSearchPath(ib::SearchPath *search_path) {
         search_path_.push_back(search_path);
@@ -241,21 +245,22 @@ namespace ib {
 
     protected:
       Config() :
-        default_search_path_depth_(5),
+        default_search_path_depth_(2),
         enable_icons_(true),
         icon_theme_("Hicolor"),
-        max_cached_icons_(1000),
-        key_event_threshold_(200),
-        max_histories_(200),
-        max_candidates_(0),
-        max_clipboard_histories_(0),
-        history_factor_(0.3),
-        file_browser_(),
-        terminal_(),
+        max_cached_icons_(999999),
+        key_event_threshold_(50),
+        max_histories_(500),
+        max_candidates_(15),
+        max_clipboard_histories_(15),
+        history_factor_(0.8),
+        file_browser_("explorer ${1}"),
+        terminal_("cmd /k ${1}"),
         server_port_(0),
-        path_autocomplete_(false),
-        option_autocomplete_(false),
-        disable_direct_write_(false),
+        path_autocomplete_(true),
+        option_autocomplete_(true),
+        disable_direct_write_(true),
+        direct_write_params_(""),
         search_path_(),
         completer_(0),
 
@@ -266,42 +271,42 @@ namespace ib {
         toggle_mode_key_(),
         kill_word_key_(),
 
-        style_window_boxtype_(FL_FLAT_BOX),
+        style_window_boxtype_(FL_BORDER_BOX),
         style_window_posx_(0),
         style_window_posy_(0),
         style_window_posx_auto_(true),
         style_window_posy_auto_(true),
-        style_window_width_(300),
+        style_window_width_(400),
         style_window_height_(50),
-        style_window_padx_(5),
-        style_window_pady_(5),
-        style_window_bg_color_(fl_rgb_color(0,0,0)),
-        style_taskbar_height_(0),
+        style_window_padx_(7),
+        style_window_pady_(7),
+        style_window_bg_color_(fl_rgb_color(238,238,238)),
+        style_taskbar_height_(40),
         style_window_alpha_(255),
 
         style_input_boxtype_(FL_FLAT_BOX),
-        style_input_font_("Arial"),
-        style_input_font_size_(16),
-        style_input_font_color_(fl_rgb_color(255,255,255)),
-        style_input_bg_color_(fl_rgb_color(50,50,50)),
-        style_input_selection_bg_color_(fl_rgb_color(64,64,64)),
+        style_input_font_("Verdana"),
+        style_input_font_size_(24),
+        style_input_font_color_(fl_rgb_color(238,238,238)),
+        style_input_bg_color_(fl_rgb_color(33,33,33)),
+        style_input_selection_bg_color_(fl_rgb_color(99,99,99)),
 
-        style_list_boxtype_(FL_FLAT_BOX),
+        style_list_boxtype_(FL_BORDER_BOX),
         style_list_padx_(5),
         style_list_pady_(5),
-        style_list_font_("Arial"),
-        style_list_font_size_(16),
-        style_list_desc_font_size_(12),
-        style_list_font_color_(fl_rgb_color(255,255,255)),
-        style_list_desc_font_color_(fl_rgb_color(200,200,200)),
-        style_list_selection_font_color_(fl_rgb_color(255,255,255)),
-        style_list_selection_desc_font_color_(fl_rgb_color(200,200,200)),
+        style_list_font_("Verdana"),
+        style_list_font_size_(15),
+        style_list_desc_font_size_(11),
+        style_list_font_color_(fl_rgb_color(238,238,238)),
+        style_list_desc_font_color_(fl_rgb_color(220,220,220)),
+        style_list_selection_font_color_(fl_rgb_color(238,238,238)),
+        style_list_selection_desc_font_color_(fl_rgb_color(220,220,220)),
         style_list_bg_color1_(fl_rgb_color(50,50,50)),
-        style_list_selection_bg_color1_(fl_rgb_color(120,120,120)),
+        style_list_selection_bg_color1_(fl_rgb_color(99,99,99)),
         style_list_bg_color2_(fl_rgb_color(50,50,50)),
-        style_list_selection_bg_color2_(fl_rgb_color(120,120,120)),
-        style_list_border_color_(fl_rgb_color(120,120,120)),
-        style_list_alpha_(255),
+        style_list_selection_bg_color2_(fl_rgb_color(99,99,99)),
+        style_list_border_color_(fl_rgb_color(99,99,99)),
+        style_list_alpha_(220),
 
         loaded_(false),
         self_path_(),
@@ -332,6 +337,7 @@ namespace ib {
       bool         path_autocomplete_;
       bool         option_autocomplete_;
       bool         disable_direct_write_;
+      std::string  direct_write_params_;
       std::vector<ib::SearchPath*> search_path_;
       ib::Completer *completer_;
 
