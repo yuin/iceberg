@@ -239,10 +239,26 @@ end -- }}}
 
 t.load_lua_files = function(directory) -- {{{
   local _, files = assert(t.list_dir(directory))
+  local gblkeys = {system = 1, commands = 1, styles = 1, shortcuts = 1}
   table.sort(files)
   for i, file in ipairs(files) do
     if t.regex_match("^[^_].*\\.lua$", Regex.NONE, file) then
-      dofile(t.join_path(directory, file))
+      local fn = assert(loadfile(t.join_path(directory, file)))
+      local gbl = {}
+      local auto_merge = false
+      setmetatable(gbl, {__index = _G, __newindex=function(tbl, key, value)
+        if key == "auto_merge" then 
+          auto_merge = true 
+          return
+        end
+        if auto_merge and gblkeys[key] ~= nil then
+          t.merge_table(_G[key], value)
+          return
+        end
+        _G[key] = value
+      end})
+      setfenv(fn, gbl)
+      fn()
     end
   end
 end -- }}}
