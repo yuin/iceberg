@@ -65,6 +65,7 @@ int main(int argc, char **argv) { // {{{
   const auto cfg = ib::Singleton<ib::Config>::getInstance();
   const auto controller = ib::Singleton<ib::Controller>::getInstance();
   setlocale(LC_ALL, "");
+  controller->loadConfig(argc, argv);
 
   if(ib::platform::startup_system() != 0) {
     std::cerr << "Failed to start an application." << std::endl;
@@ -72,7 +73,6 @@ int main(int argc, char **argv) { // {{{
     exit(1);
   }
 
-  controller->loadConfig(argc, argv);
   if(cfg->getOldPid() > -1){
     if(ib::platform::wait_pid(cfg->getOldPid()) != 0){
       fl_alert("Failed to reboot iceberg.");

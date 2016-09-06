@@ -182,7 +182,12 @@ static int create_renderer_taget(HWND w) {
 
 static void create_current_dwrite_font_data() {
   const auto fontname = Fl::get_font(fl_font());
-  Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
+  const auto font_desc = fl_graphics_driver->font_descriptor();
+  double factor = 1.0;
+  if(fl_font() == ib::Fonts::input) {
+    factor = 0.8;
+  }
+  double size = font_desc->size * factor;
   IDWriteTextFormat *format = nullptr;
   hresult(ib_g_dwrite_factory->CreateTextFormat(
     ib::platform::utf82oschar(fontname).get(),
@@ -190,7 +195,7 @@ static void create_current_dwrite_font_data() {
     DWRITE_FONT_WEIGHT_NORMAL,
     DWRITE_FONT_STYLE_NORMAL,
     DWRITE_FONT_STRETCH_NORMAL,
-    font_desc->size, L"", &format));
+    size, L"", &format));
   ib_g_textformat_map[font_desc->fid] = format;
 
   IDWriteTextLayout *layout = nullptr;
@@ -199,7 +204,7 @@ static void create_current_dwrite_font_data() {
   DWRITE_TEXT_METRICS metrics;
   hresult(layout->GetMetrics(&metrics));
   safe_release(&layout);
-  ib_g_fontheight_map[font_desc->fid] = metrics.height*0.8;
+  ib_g_fontheight_map[font_desc->fid] = metrics.height*0.82;
 }
 
 static IDWriteTextFormat* current_dwrite_text_format() {
@@ -731,6 +736,7 @@ static int shell_execute_(const std::string &path, const std::string &strparams,
 
 int ib::platform::startup_system() { // {{{
   int ret = 0;
+  const auto cfg = ib::Singleton<ib::Config>::getInstance();
 
   if(!SUCCEEDED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,&ib_g_d2d_factory))) {
     ret = 1;
@@ -751,6 +757,10 @@ int ib::platform::startup_system() { // {{{
   if (WSAStartup(MAKEWORD(2,0), &wsa) != 0) {
     ret = 1;
     goto finalize;
+  }
+
+  if(!cfg->getDisableDirectWrite()) {
+    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.2));
   }
 
 finalize:
