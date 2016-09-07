@@ -39,7 +39,8 @@ static ID2D1Factory* ib_g_d2d_factory = nullptr;
 static IDWriteFactory *ib_g_dwrite_factory = nullptr;
 static std::unordered_map<HWND, ID2D1DCRenderTarget*> ib_g_rndrt_map;
 static std::unordered_map<HFONT, IDWriteTextFormat*> ib_g_textformat_map;
-static std::unordered_map<HFONT, double> ib_g_fontheight_map;
+static std::unordered_map<HFONT, DWRITE_TEXT_METRICS> ib_g_metrics_map;
+static float ib_g_dpi_x, ib_g_dpi_y;
 
 const char *strcasestr(const char *haystack, const char *needle) { // {{{
   int haypos;
@@ -115,6 +116,22 @@ static void set_winapi_error(ib::Error &error){ // {{{
 
 // DirectWrite stuff {{{
 
+static inline int xdpi2px(int dpi) {
+  return ceil(dpi * ib_g_dpi_x / 96.f);
+}
+
+static inline int ydpi2px(int dpi) {
+  return ceil(dpi * ib_g_dpi_y / 96.f);
+}
+
+static inline int xpx2dpi(int px) {
+  return ceil(px / ib_g_dpi_x / 96.f);
+}
+
+static inline int ypx2dpi(int px) {
+  return ceil(px * ib_g_dpi_y / 96.f);
+}
+
 static int create_renderer_taget(HWND w) {
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   const auto& custom_params = cfg->getDirectWriteParams();
@@ -187,7 +204,7 @@ static void create_current_dwrite_font_data() {
   if(fl_font() == ib::Fonts::input) {
     factor = 0.8;
   }
-  double size = font_desc->size * factor;
+  double size = ypx2dpi(font_desc->size * factor);
   IDWriteTextFormat *format = nullptr;
   hresult(ib_g_dwrite_factory->CreateTextFormat(
     ib::platform::utf82oschar(fontname).get(),
@@ -197,14 +214,15 @@ static void create_current_dwrite_font_data() {
     DWRITE_FONT_STRETCH_NORMAL,
     size, L"", &format));
   ib_g_textformat_map[font_desc->fid] = format;
+  format->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, size, size*0.8);
 
   IDWriteTextLayout *layout = nullptr;
-  wchar_t buf[] = {L'|', L'\0'};
-  hresult(ib_g_dwrite_factory->CreateTextLayout(buf, 1, format, 99999, 0, &layout));
+  const wchar_t *buf = L"|gy^A";
+  hresult(ib_g_dwrite_factory->CreateTextLayout(buf, 5, format, 99999, 0, &layout));
   DWRITE_TEXT_METRICS metrics;
   hresult(layout->GetMetrics(&metrics));
   safe_release(&layout);
-  ib_g_fontheight_map[font_desc->fid] = metrics.height*0.82;
+  ib_g_metrics_map[font_desc->fid] = metrics;
 }
 
 static IDWriteTextFormat* current_dwrite_text_format() {
@@ -247,22 +265,21 @@ public:
 
     RECT rc;
     GetClientRect(fl_window, &rc);
-    Fl_Font_Descriptor *font_desc = font_descriptor();
-    COLORREF cref = fl_RGB();
+    auto font_desc = font_descriptor();
+    auto cref = fl_RGB();
 
-    IDWriteTextFormat *form = current_dwrite_text_format();
-    double font_height = ib_g_fontheight_map[font_desc->fid];
+    auto form = current_dwrite_text_format();
+    auto &metrics = ib_g_metrics_map[font_desc->fid];
     
     // iceberg never use multiline texts, so we optimize this function for single line texts.
-    rc.top    = std::max((int)(y - font_height), 0);
-    rc.bottom = std::min((int)(rc.top + font_height*1.5), (int)rc.bottom);
+    rc.top    = y - metrics.height*0.8; // 0.8 is baseline
+    rc.bottom = rc.top + metrics.height;
     hresult(target->BindDC(fl_gc, &rc));
     target->BeginDraw();
 
     D2D1_POINT_2F points;
     points.x = x;
     points.y = 0;
-    //points.y = y - font_height;
 
     ID2D1SolidColorBrush* brush  = nullptr;
     hresult(target->CreateSolidColorBrush(        
@@ -743,6 +760,8 @@ int ib::platform::startup_system() { // {{{
     goto finalize;
   }
 
+   ib_g_d2d_factory->GetDesktopDpi(&ib_g_dpi_x, &ib_g_dpi_y);
+
   if(!SUCCEEDED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&ib_g_dwrite_factory)))) {
     ret = 1;
     goto finalize;
@@ -753,14 +772,15 @@ int ib::platform::startup_system() { // {{{
     goto finalize;
   }
 
+
+  if(!cfg->getDisableDirectWrite()) {
+    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.2));
+  }
+
   WSADATA wsa;
   if (WSAStartup(MAKEWORD(2,0), &wsa) != 0) {
     ret = 1;
     goto finalize;
-  }
-
-  if(!cfg->getDisableDirectWrite()) {
-    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.2));
   }
 
 finalize:
