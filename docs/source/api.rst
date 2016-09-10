@@ -503,6 +503,12 @@ iceberg操作
    入力欄に ``text`` を設定します。
 
    :param string text: 設定する文字列
+   
+.. lua:function:: icebergsupport.get_input_text_values()
+
+   現在入力されている文字列をパースし、文字列のリストを返します。この関数は入力欄に入力されている文字列を解析します。そのため、オートコンプリートを利用しており補完内容も含めて解析したい場合、事前に :lua:func:`icebergsupport.do_autocomplete` を実行する必要があります。
+
+   :returns: table:文字列のリスト
 
 .. lua:function:: icebergsupport.get_clipboard()
 

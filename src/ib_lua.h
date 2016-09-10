@@ -59,6 +59,7 @@ namespace ib {
     int scan_search_path(lua_State *L); // category:string -> void
     int get_input_text(lua_State *L); // void -> string
     int set_input_text(lua_State *L); // string -> void
+    int get_input_text_values(lua_State *L); // void -> [string]
     int get_clipboard(lua_State *L); // void -> string
     int set_clipboard(lua_State *L); // string -> void
     int get_clipboard_histories(lua_State *L); // void -> clipboard_histories:list

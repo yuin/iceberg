@@ -451,6 +451,7 @@ int ib::luamodule::create(lua_State *L){ // {{{
   REGISTER_FUNCTION(scan_search_path);
   REGISTER_FUNCTION(get_input_text);
   REGISTER_FUNCTION(set_input_text);
+  REGISTER_FUNCTION(get_input_text_values);
   REGISTER_FUNCTION(get_clipboard);
   REGISTER_FUNCTION(set_clipboard);
   REGISTER_FUNCTION(get_clipboard_histories);
@@ -716,6 +717,27 @@ int ib::luamodule::set_input_text(lua_State *L) { // {{{
   ib::Singleton<ib::MainWindow>::getInstance()->getInput()->setValue(msg);
   lua_state.clearStack();
   return 0;
+} // }}}
+
+int ib::luamodule::get_input_text_values(lua_State *L) { // {{{
+  ib::FlScopedLock fllock;
+  ib::CommandLexer lexer;
+  const auto* const value = ib::Singleton<ib::MainWindow>::getInstance()->getInput()->value();
+  lexer.parse(value);
+  lua_newtable(L);
+  ib::Token *token = nullptr;
+  unsigned int i = 0;
+  unsigned int index = 1;
+  for(;i < lexer.getTokens().size(); ++i){
+    token = lexer.getTokens().at(i);
+    if(token->isValueToken()) {
+      lua_pushnumber(L, index++);
+      lua_pushstring(L, token->getValue().c_str());
+      lua_settable(L, -3);
+    }
+  }
+  lexer.clear();
+  return 1;
 } // }}}
 
 int ib::luamodule::get_clipboard(lua_State *L) { // {{{

@@ -51,14 +51,13 @@ void ib::History::dump() { // {{{
     ofs << cmd->getName() << "\t" << cmd->getPath() << "\t" << cmd->getTimes().at(0) << std::endl;
   }
   ofs.close();
-  /*
+
   size_t file_size = 0;
   ib::platform::file_size(file_size, osfile, error);
   if(file_size == 0){
     ib::platform::copy_file(osbkfile, osfile, error); // ignore errors
   }
   ib::platform::remove_file(osbkfile, error); // ignore errors
-  */
 } // }}}
 
 void ib::History::addCommand(ib::HistoryCommand *command) { // {{{

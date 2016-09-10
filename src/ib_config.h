@@ -260,7 +260,7 @@ namespace ib {
         path_autocomplete_(true),
         option_autocomplete_(true),
         disable_direct_write_(true),
-        direct_write_params_(""),
+        direct_write_params_("rendering_mode=5"),
         search_path_(),
         completer_(0),
 
