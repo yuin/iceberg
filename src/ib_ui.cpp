@@ -461,7 +461,7 @@ void ib::Listbox::item_draw (void *item, int X, int Y, int W, int H) const { // 
   fl_draw(str, left, top);
 
   if(description){
-    top += cfg->getStyleListFontSize()-2;
+    top += cfg->getStyleListFontSize();
     *ptr = '\t';
     lcol = cfg->getStyleListDescFontColor();
     if (l->flags & 1) lcol = cfg->getStyleListSelectionDescFontColor();
@@ -533,15 +533,19 @@ void ib::Listbox::initLayout(){ // {{{
 
 int ib::Listbox::handle(int e){ /* {{{ */
   if(e == FL_RELEASE) return 1;
+  const auto controller = ib::Singleton<ib::Controller>::getInstance();
   auto selected_b = value();
   auto ret = Fl_Select_Browser::handle(e);
   auto selected_a = value();
-  if(selected_b != selected_a){
+  const auto is_leftclick = e == FL_PUSH && Fl::event_button() == FL_LEFT_MOUSE;
+  const auto is_rightclick = e == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE;
+  if(selected_b != selected_a || 
+    (is_leftclick && selected_a == 1 && selected_b == 1)) {
     selectLine(selected_a, false);
-    ib::Singleton<ib::Controller>::getInstance()->completionInput();
+    controller->completionInput();
     ret = 1;
   }
-  if(e == FL_PUSH && Fl::event_button() == FL_RIGHT_MOUSE){
+  if(is_rightclick){
     const auto context_path = getValues().at(value()-1)->getContextMenuPath();
     if(context_path != nullptr){
       ib::oschar osbuf[IB_MAX_PATH];
@@ -549,6 +553,10 @@ int ib::Listbox::handle(int e){ /* {{{ */
       ib::platform::show_context_menu(osbuf);
     }
     ret = 1;
+  }
+  if(is_leftclick && Fl::event_clicks() > 0) {
+    Fl::event_clicks(0);
+    controller->executeCommand();
   }
   return ret;
 } /* }}} */
