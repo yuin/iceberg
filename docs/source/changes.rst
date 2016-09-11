@@ -1,5 +1,18 @@
 変更履歴
 =======================
+0.9.11 (2016-xx-xx)
+-----------------------
+- IMPROVED: DirectWriteの描画速度を改善
+- IMPROVED: ``direct_write_params`` オプション追加。DirectWrite使用時に細かい描画設定が可能になった。
+- CHANGED:  Luaモジュールのディレクトリ名を ``luamodule`` から ``lualibs`` に変更
+- NEW: ``icebergsupport.get_input_text_values`` を追加
+
+0.9.10からのアップグレード方法
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- 0.9.11をダウンロードしてください。
+- 0.9.11から ``iceberg.exe`` をコピーして既存の0.9.10側に上書きしてください。
+- ``config.lua`` と ``luamodule/winsupport.lua`` の ``luamodule`` を ``lualibs`` に置換してください。
+
 0.9.10 (2016-08-30)
 -----------------------
 - IMPROVED: WindowsでDirectWriteを実装。

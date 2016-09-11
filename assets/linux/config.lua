@@ -1,6 +1,6 @@
 local dot_iceberg = _iceberg_config_dir()
-package.path = dot_iceberg .. [[/luamodule/?.lua;]] .. package.path
-package.cpath = dot_iceberg ..[[/luamodule/?.so;]] .. package.path
+package.path = dot_iceberg .. [[/lualibs/?.lua;]] .. package.path
+package.cpath = dot_iceberg ..[[/lualibs/?.so;]] .. package.path
 local ibs = require("icebergsupport")
 
 -- configurations --

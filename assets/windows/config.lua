@@ -1,6 +1,6 @@
 local script_path = _iceberg_config_dir()
-package.path = script_path .. [[\luamodule\?.lua;]] .. package.path
-package.cpath = script_path ..[[\luamodule\?.dll;]] .. package.path
+package.path = script_path .. [[\lualibs\?.lua;]] .. package.path
+package.cpath = script_path ..[[\lualibs\?.dll;]] .. package.path
 local ibs = require("icebergsupport")
 local wins = require("winsupport")
 local winalttab = require("winalttab")
