@@ -2,11 +2,31 @@
 =================================
 概要
 --------------------
-設定は `Lua <http://www.lua.org>`_ による設定ファイルに記載します。Windowsの場合iceberg実行ファイルと同一ディレクトリ、Linuxの場合 ``~/.iceberg`` の ``config.lua`` が読み込まれます。ヒストリファイルなどは設定ファイルと同一のディレクトリに保存されます。
+設定は `Lua <http://www.lua.org>`_ による設定ファイルに記載します。設定ファイルの配置ディレクトリはWindowsの場合iceberg実行ファイルと同一ディレクトリ、Linuxの場合以下の順で決定されます。
 
-また、Linuxの場合 ``~/.iceberg/config.d/*.lua`` ファイルが起動時に自動的に読み込まれるためこちらに設定を記載することも可能です。
+    - ``XDG_CONFIG_HOME`` 環境変数が存在する場合、 ``${XDG_CONFIG_HOME}/iceberg``
+    - ``${HOME}/.config`` ディレクトリが存在する場合、 ``${HOME}/.config``
+    - ``${HOME}/.iceberg``
+
+これらのディレクトリを以下ではicebergディレクトリまたはICEBERG_CONFIG_HOMEと記載します。
 
 設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。
+
+設定は ``${ICEBERG_CONFIG_HOME}/config.d/*.lua`` ファイルが起動時に自動的に読み込まれるためこちらに記載することも可能です。
+
+``config.d`` で読み込まれるファイルでは自動マージ機能が利用できます。
+
+    .. code-block:: lua
+
+        local ibs = require("icebergsupport")
+
+        auto_merge = true -- この行以降の ``system`` , ``commands`` といった設定用グローバル変数は自動的にマージされる
+
+        system = {
+            enable_icons = false
+        }
+
+``auto_merge`` を ``true`` に設定した行以降の設定用グローバル変数は自動的に既存の値にマージされるようになります。 ``auto_merge`` を設定しない場合変数全体が置き換えられるため注意してください。
 
 キー名称
 --------------------

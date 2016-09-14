@@ -1232,6 +1232,17 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
 
 ib::oschar* ib::platform::default_config_path(ib::oschar *result) { // {{{
   if(result == nullptr){ result = new ib::oschar[IB_MAX_PATH]; }
+  if(getenv("XDG_CONFIG_HOME") != nullptr) {
+    snprintf(result, IB_MAX_PATH, "%s/iceberg", getenv("XDG_CONFIG_HOME"));
+    return result;
+  }
+
+  snprintf(result, IB_MAX_PATH, "%s/.config", getenv("HOME"));
+  if(ib::platform::directory_exists(result)) {
+    snprintf(result, IB_MAX_PATH, "%s/.config/iceberg", getenv("HOME"));
+    return result;
+  }
+
   snprintf(result, IB_MAX_PATH, "%s/%s", getenv("HOME"), ".iceberg");
   return result;
 } // }}}

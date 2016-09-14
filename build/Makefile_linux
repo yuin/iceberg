@@ -36,6 +36,18 @@ else
   DEBUGOPT=
   STRIPALL=strip --strip-all $(MAINPACKAGE)
 endif
+
+INSTALLDIR=
+ifneq "$(wildcard $(XDG_CONFIG_HOME) )" ""
+  INSTALLDIR=$(XDG_CONFIG_HOME)/iceberg
+else
+  ifneq "$(wildcard /home/$(SUDO_USER)/.config )" ""
+    INSTALLDIR=/home/$(SUDO_USER)/.config/iceberg
+  else
+    INSTALLDIR=/home/$(SUDO_USER)/.iceberg
+  endif
+endif
+
 RM=rm -rf
 CP=cp
 VIRTUALENV=virtualenv
@@ -86,15 +98,15 @@ install:
 	install -o root -g root -m 0755 $(MAINPACKAGE) /usr/bin/
 	install -o root -g root -m 0755 $(ASSETDIR)/linux/iceberg.desktop /usr/share/applications/
 	install -o root -g root -m 0755 ./src/iceberg.svg /usr/share/pixmaps/
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/config.d
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/shortcuts
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/lualibs
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/images
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d /home/${SUDO_USER}/.iceberg/plugins
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/linux/config.lua /home/${SUDO_USER}/.iceberg/
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/images/* /home/${SUDO_USER}/.iceberg/images
-	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/lualibs/icebergsupport.lua /home/${SUDO_USER}/.iceberg/lualibs/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/config.d
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/shortcuts
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/lualibs
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/images
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/plugins
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/linux/config.lua $(INSTALLDIR)
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/images/* $(INSTALLDIR)/images
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/lualibs/icebergsupport.lua $(INSTALLDIR)/lualibs/
 
 # doc: show this message.
 help:
