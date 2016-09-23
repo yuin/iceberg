@@ -270,10 +270,15 @@ public:
 
     auto form = current_dwrite_text_format();
     auto &metrics = ib_g_metrics_map[font_desc->fid];
+
+    int height_adj = 5;
+    if(fl_font() == ib::Fonts::input) {
+      height_adj = 0;
+    }
     
     // iceberg never use multiline texts, so we optimize this function for single line texts.
     rc.top    = y - metrics.height*0.8; // 0.8 is baseline
-    rc.bottom = rc.top + metrics.height;
+    rc.bottom = rc.top + metrics.height + height_adj;
     hresult(target->BindDC(fl_gc, &rc));
     target->BeginDraw();
 
@@ -774,7 +779,7 @@ int ib::platform::startup_system() { // {{{
 
 
   if(!cfg->getDisableDirectWrite()) {
-    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.2));
+    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.25));
   }
 
   WSADATA wsa;
