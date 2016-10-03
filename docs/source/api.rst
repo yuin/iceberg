@@ -1,659 +1,661 @@
 API
 =================================
-概要
+Overview
 ---------------------------------
-icebergは `Lua <http://www.lua.org>`_ を拡張言語として組み込んでいます。ユーザはLuaスクリプトによってicebergの機能を拡張することができます。 ``icebergsupport`` モジュールには拡張用の関数やクラスが用意されています。
+iceberg uses `Lua <http://www.lua.org>`_ as a configuration and an extension language. Users can extend the functionality by using lua scripts. ``icebergsupport`` package has many APIs for extending iceberg.
 
-文字コード
+Charcter encodings
 ---------------------------------
-icebergは内部的にutf8で処理を行っています。そのためAPIでやりとりされる文字列は基本的にutf8が用いられます。ただし、 :lua:func:`icebergsupport.command_output` はコマンドが出力した文字コードのまま結果を返します。
+iceberg uses UTF-8 as an internal encoding, so most APIs accept and return UTF-8 encoded strings. However, :lua:func:`icebergsupport.command_output` returns a string output by the command without any character encoding conversion. 
 
-`Lua <http://www.lua.org>`_ はマルチバイト文字を扱うAPIを持ちません。マルチバイト文字を文字単位で操作したい場合は `icebergsupport` モジュールの正規表現APIを利用してください。
+`Lua <http://www.lua.org>`_ does not have multibyte aware string APIs. If you want to correctly iterate over actual characters in a UTF-8 encoded string, you have to use regular expression APIs in the `icebergsupport` package.
 
-
-定数
+Constants
 ---------------------------------
 
 .. lua:attribute:: icebergsupport.EVENT_STATE_*
 
-  :lua:func:`icebergsupport.matches_key` などで使用できるイベント定数群です。詳細は :lua:func:`icebergsupport.matches_key` を参照してください。
+  Constants used for :lua:func:`icebergsupport.matches_key` etc. Please refer to :lua:func:`icebergsupport.matches_key` for further information.
 
 .. lua:attribute:: icebergsupport.COMP_*
 
-   補完方法を示す定数です。
+    Constants mean completion methods.
 
-   - ``COMP_BEGINSWITH`` : 前方一致
-   - ``COMP_PARTIAL`` : 部分一致
-   - ``COMP_ABBR`` : 曖昧検索
+    - ``COMP_BEGINSWITH`` : prefix match
+    - ``COMP_PARTIAL`` : partial match
+    - ``COMP_ABBR`` : fuzzy match
 
-関数
+Functions
 ---------------------------------
-パス操作
+Paths
 ~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.dirname(path)
 
-   ``path`` のディレクトリパスを返します。
+    Returns the directory name of the pathname ``path`` .
 
-   :param string path: パス
-   :returns: string:ディレクトリパス
+    :param string path: the path
+    :returns: string
 
 .. lua:function:: icebergsupport.basename(path)
 
-   ``path`` のbasenameを返します。
+    Returns the base name of pathname ``path`` .
 
-   :param string path: パス
-   :returns: string:basename
+    :param string path: the path
+    :returns: string
 
 .. lua:function:: icebergsupport.directory_exists(path)
 
-   ``path`` で示されるディレクトリが存在するか返します。
+    Returns ``true`` if ``path`` refers to an existing directory.
 
-   :param string path: パス
-   :returns: bool:存在すればtrue,でなければfalse 
+    :param string path: the path
+    :returns: bool
 
 .. lua:function:: icebergsupport.file_exists(path)
 
-   ``path`` で示されるファイルが存在するか返します。
+    Returns ``true`` if ``path`` refers to an existing file.
 
-   :param string path: パス
-   :returns: bool:存在すればtrue,でなければfalse 
+    :param string path: the path
+    :returns: bool
 
 .. lua:function:: icebergsupport.path_exists(path)
 
-   ``path`` で示されるパスが存在するか返します。
+    Returns ``true`` if ``path`` refers to an existing file or directory.
 
-   :param string path: パス
-   :returns: bool:存在すればtrue,でなければfalse 
+    :param string path: the path
+    :returns: bool
 
 .. lua:function:: icebergsupport.join_path(pathparts[, pathparts, pathparts ...])
 
-   ``pathparts`` をパスとして結合します。
+    Joins one or more path components.
 
-   :param string pathparts: パス
-   :returns: string:結合後の文字列
+    :param string pathparts: a path component 
+    :returns: string
 
 .. lua:function:: icebergsupport.list_dir(path)
 
-   ``path`` で示されるディレクトリ配下のファイルリストを返します。
+    Returns a list containing the names of the entries in the directory given by ``path`` .
 
-   :param string path: パス
-   :returns: [bool:成功すればtrue,でなければfalse, table or string:成功すればファイルのリストを示すtable,でなければエラーメッセージ]
+    :param string path: the directory path
+    :returns: [bool:true if no errors, false otherwise, table or string:a table contains names if no errors, an error message otherwise]
 
 .. lua:function:: icebergsupport.quote_path(path)
 
-   ``path`` に空白が含まれる場合 ``"`` で囲います。
+    Searches a ``path`` for spaces. If spaces are found, the entire path is enclosed in ``"`` .
 
-   :param string path: パス
-   :returns: string: 変換後パス
+    :param string path: the path
+    :returns: string: a quoted path if spaces found, given path otherwise
 
 .. lua:function:: icebergsupport.unquote_path(path)
 
-   ``path`` が ``"`` で囲われている場合、 ``"`` をとりのぞきます。
+    Removes ``"`` at beginning or the end of ``path`` if ``path`` is enclosed in ``"``
 
-   :param string path: パス
-   :returns: string: 変換後パス
+    :param string path: the path
+    :returns: string: an unquote path if enclosed in ``"``, given path otherwise
 
 
-ビット演算
-~~~~~~~~~~~~~~
+Bitwise operations
+~~~~~~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.band(number[, number, number ...])
 
-   ``numbers`` の論理積を返します。numberはlua_Integer型として扱われます。
+    Returns the bitwise and of ``numbers`` . ``numbers`` are interpreted as a ``lua_Integer``.
 
-   :param [number] number: 数値
-   :returns: number: 結果の値
+    :param [number] number:
+    :returns: number
 
 .. lua:function:: icebergsupport.bor(number[, number, number ...])
 
-   ``numbers`` の論理和を返します。numberはlua_Integer型として扱われます。
+    Returns the bitwise and of ``numbers`` . ``numbers`` are interpreted as a ``lua_Integer``.
 
-   :param [number] number: 数値
-   :returns: number: 結果の値
+    :param [number] number:
+    :returns: number
 
 .. lua:function:: icebergsupport.bxor(number[, number, number ...])
 
-   ``numbers`` の排他的論理和を返します。numberはlua_Integer型として扱われます。
+    Returns the bitwise exclusive or of ``numbers`` . ``numbers`` are interpreted as a ``lua_Integer``.
 
-   :param [number] number: 数値
-   :returns: number: 結果の値
+    :param [number] number:
+    :returns: number
 
 .. lua:function:: icebergsupport.brshift(number, disp)
 
-   ``number`` を ``disp`` ビット右にシフトした値を返します。numberはlua_Integer型として扱われます。
+    Returns the number ``number`` shifted ``disp`` bits to the right. ``number`` and ``disp`` are interpreted as a ``lua_Integer``.
 
-   :param number number: 数値
-   :param number disp: シフト分
-   :returns: number: 結果の値
+    :param number number:
+    :param number disp:
+    :returns: number
 
 .. lua:function:: icebergsupport.blshift(number, disp)
 
-   ``number`` を ``disp`` ビット左にシフトした値を返します。numberはlua_Integer型として扱われます。
+    Returns the number ``number`` shifted ``disp`` bits to the left. ``number`` and ``disp`` are interpreted as a ``lua_Integer``.
 
-   :param number number: 数値
-   :param number disp: シフト分
-   :returns: number: 結果の値
+    :param number number:
+    :param number disp:
+    :returns: number
 
-
-システム
-~~~~~~~~~~~~~~
+System information
+~~~~~~~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.build_platform()
 
-   ビルドされたプラットフォーム情報を返します。
+    Returns the platform where iceberg was compiled.
 
-   :returns: string: ``win_64`` のような文字列
+    :returns: string: a string such as ``win_64``
 
 .. lua:function:: icebergsupport.runtime_platform()
 
-   実行しているプラットフォーム情報を返します。
+    Returns the platform where iceberg are currently running.
 
-   :returns: string: ``6.1.7601 x64`` のような文字列
+    :returns: string: a string such as ``6.1.7601 x64``
 
-外部コマンド
+Sub processes
 ~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.shell_execute(path [, args, workdir])
 
-   外部コマンドを起動します。
+    Runs the sub process. If path is not a executable file, path will be opened by an application associated with its extension. 
 
-   :param string path: 実行するコマンドのパス
-   :param [string] args: コマンドに対する引数の配列
-   :param string workdir: 実行ディレクトリ。指定が無い場合はカレントディレクトリで実行されます。
-   :returns: [bool:成功ならtrueでなければfalse, string:エラーメッセージ]
+    :param string path: the file path
+    :param [string] args: arguments for the command
+    :param string workdir: a working directory. This defaults to the current directory.
+    :returns: [bool:true if no errors, false otherwise, string:an error message]
 
 .. lua:function:: icebergsupport.command_output(command)
 
-    外部コマンド ``command`` を実行し標準出力と標準エラー出力を返します。
+    Runs the sub process and returns contents of stdout and stderr .
 
-   :param string command: 実行するコマンド
-   :returns: [bool:成功ならtrueでなければfalse, string:標準出力, string:標準エラー出力]
+    :param string command:
+    :returns: [bool:true if no errors, false otherwise, string:stdout, string:stderr]
 
-文字コード
+Charcter sets
 ~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.utf82local(text)
 
-   ``text`` をutf-8からマシンローカルの文字コードに変換します。
+    Converts ``text`` from utf-8 to the local encoding.
 
-   :param string text: 文字列
-   :returns: string:変換後の文字列
+    :param string text:
+    :returns: string
 
 .. lua:function:: icebergsupport.local2utf8(text)
 
-   ``text`` マシンローカルの文字コードからutf-8に変換します。
+    Converts ``text`` from the local encoding to utf-8.
 
-   :param string text: 文字列
-   :returns: string:変換後の文字列
+    :param string text:
+    :returns: string
 
 .. lua:function:: icebergsupport.crlf2lf(text)
 
-   ``text`` の改行コードを ``crlf`` から ``lf`` に変換します。
+    Converts newline characters in ``text`` from ``crlf`` to ``lf`` .
 
-   :param string text: 文字列
-   :returns: string:変換後の文字列
+    :param string text:
+    :returns: string
 
-正規表現
-~~~~~~~~~~~~~~
-utf-8を正しく扱える正規表現関連APIです。正規表現フラグは :lua:attr:`Regex.S` や :lua:attr:`Regex.I` の論理和( :lua:func:`icebergsupport.bor` が利用できます) として表現されます。無指定の場合は :lua:attr:`Regex.NONE` を指定します。
+Regular expressions
+~~~~~~~~~~~~~~~~~~~~~~
+UTF-8 aware regular expression APIs.  Flags are a bitwise or of :lua:attr:`Regex.S` , :lua:attr:`Regex.I` and so on. ( :lua:func:`icebergsupport.bor` can be used for bitwise operations). You must pass :lua:attr:`Regex.NONE` if no flags.
 
 .. lua:function:: icebergsupport.regex_match(pattern, flags, string[, startpos, endpos])
 
-   ``string`` から ``pattern`` を検索します。(完全一致)
+    Searches for ``pattern`` in ``string`` . (completely matching)
 
-   :param string pattern: 正規表現
-   :param number flags: 正規表現フラグ
-   :param string string: 文字列
-   :param number startpos: 検索開始位置
-   :param number endpos: 検索終了位置
-   :returns: [bool:見つかればtrue,でなければfalse, Regex:Regexオブジェクト]
+    :param string pattern: the regular expression
+    :param number flags: the flags for searching
+    :param string string: the  string to be searched
+    :param number startpos: a starting byte position for searching
+    :param number endpos: an ending byte position for searching
+    :returns: [bool:true if found, false otherwise, Regex:Regex object]
 
 .. lua:function:: icebergsupport.regex_search(pattern, flags, string[, startpos, endpos])
 
-   ``string`` から ``pattern`` を検索します。(部分一致)
+    Searches for ``pattern`` in ``string`` . (partial matching)
 
-   :param string pattern: 正規表現
-   :param number flags: 正規表現フラグ
-   :param string string: 文字列
-   :param number startpos: 検索開始位置
-   :param number endpos: 検索終了位置
-   :returns: [bool:見つかればtrue,でなければfalse, Regex:Regexオブジェクト]
+    :param string pattern: the regular expression
+    :param number flags: the flags for searching
+    :param string string: the  string to be searched
+    :param number startpos: a starting byte position for searching
+    :param number endpos: an ending byte position for searching
+    :returns: [bool:true if found, false otherwise, Regex:Regex object]
 
 .. lua:function:: icebergsupport.regex_split(pattern, flags, string)
 
-   ``string`` を ``pattern`` で分割します。
+    Splits ``string`` by the occurrences of ``pattern`` .
 
-   :param string pattern: 正規表現
-   :param number flags: 正規表現フラグ
-   :param string string: 文字列
-   :returns: [string]:文字列のリスト
+    :param string pattern: the regular expression
+    :param number flags: the flags for searching
+    :param string string: the string to be splitted
+    :returns: [string]
 
 .. lua:function:: icebergsupport.regex_gsub(pattern, flags, string, repl)
 
-   ``string`` から ``pattern`` を検索し ``repl`` で置換します。
-   ``repl`` には後方参照( ``%1, %2 ...`` )が使用できます。以下に例を示します。
+     Returns the string obtained by replacing the leftmost non-overlapping occurrences of pattern in ``string`` by the replacement ``repl``. Backreferences, such as ``%1``, ``%2``, can be used in ``repl`` . Examples:
 
-   .. code-block:: lua
+    .. code-block:: lua
 
-       icebergsupport.regex_gsub("ABC([A-Z]+)", Regex.NONE, "ABCDEFG", "REPLACED")
+        icebergsupport.regex_gsub("ABC([A-Z]+)", Regex.NONE, "ABCDEFG", "REPLACED")
 
-       # -> "REPLACED"
+        # -> "REPLACED"
 
-       icebergsupport.regex_gsub("ABC([A-Z]+)", Regex.NONE, "ABCDEFG", function(re)
-        return re:_1()
-       end))
+        icebergsupport.regex_gsub("ABC([A-Z]+)", Regex.NONE, "ABCDEFG", function(re)
+         return re:_1()
+        end))
 
-       # -> "DEFG"
+        # -> "DEFG"
 
-   :param string pattern: 正規表現
-   :param number flags: 正規表現フラグ
-   :param string string: 置換対象文字列
-   :param callback repl: コールバック関数もしくは文字列
-   :returns: string:置換後文字列
+    :param string pattern: the regular expression
+    :param number flags: the flags for searching
+    :param string string: the string to be replaced
+    :param callback repl: the callback function or a string
+    :returns: string
+
+Completions and Options
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. lua:function:: icebergsupport.getopts(args, option, [option, option ...])
+
+    Parses options.
+
+    :param table args: the list of arguments, such as ``{"-a", "-b", "action"}``
+    :param string option: option names to parse, such as ``-a`` . An option must have suffix ``:`` such as ``-a:`` if the option requires a value
+    :returns: [table:successfully parsed options, table:rest values]
+
+.. lua:function:: icebergsupport.comp_state(values, pos, option, [option, option ...])
+
+    Creates a list of completion candidates and analyzes a completion state.
+
+    :param table values: the list of arguments, such as ``{"-a", "-b", "action"}``
+    :param number pos: the position in ``values`` that is pointed by the cursor.
+    :param table option: option definitions
+    :returns: [string:a completion state, table:a list of completion candidates]
+
+These functions are used for implementing completion functions and analyzing options.
+
+:lua:func:`icebergsupport.comp_state` is used in completion functions like the following:
+
+     .. code-block:: lua
+     
+         function(values, pos)
+           local state, opts = ibs.comp_state(values, pos,
+             {opt="-a", description="a option", state="aaa"},
+             {opt="--abcd", description="a option"},
+             {opt="--aefg", description="a option"},
+             {opt="-b", description="b option"},
+             {opt="-c", description="b option", exclude={"-a"}}
+           )
+           if state == "aaa" then
+             return {"file1", "file2", "file3"}
+           elseif state == "opt" then
+             return opts
+           else
+             return {"action1", "action2", "action3"}
+           end
+         end
+
+An option definition consists of 
+
+:opt:
+     An option name. This must start with ``-``.
+:description:
+     A description for this option.
+:state:
+     A state name when this option is selected. If the input box value is ``-b -a A`` and now the cursor is just after ``A``, the state name is ``aaa`` in above example.
+:exclude:
+     Options that cannot be specified if this option is specified. In above example, ``-c`` will not be included in completion candidates if ``-a`` is specified.
+
+In addition, the input box value is ``value -`` and now the cursor is just after the ``-``, the state name is special value ``"opt"`` .
+
+:lua:func:`icebergsupport.getopts` is used in command functions like the following:
+
+     .. code-block:: lua
+     
+         function(a)
+           local opts, args = ibs.getopts(a, "-a:", "-b", "-c")
+           if opts.a == nil then
+             ibs.message("-a must not be empty.")
+           else
+             if opt.b then
+               ibs.shell_execute(args[1])
+               -- blah blah blah
+             elseif opt.c then
+               -- blah blah blah
+             end
+           end
+         end
+
+``opts`` is a table with keys that are an option name without ``-`` prefix. If the option has a ``:`` suffix, the next argument will be evaluated as a value. Unknown options are stored in ``args`` .
+
+In above example, If ``a`` is ``{"-a", "file1", "-b", "action", "parameter"}``, ``getopts`` returns ``opts.a = "file1"; opts.b = true; args = {"action", "parameter"}`` .
 
 
+iceberg operations
+~~~~~~~~~~~~~~~~~~~
 
-その他
+.. lua:function:: icebergsupport.version()
+
+    Returns a version string of iceberg.
+
+    :returns: string
+
+.. lua:function:: icebergsupport.hide_application()
+
+    Hides all windows of iceberg.
+
+.. lua:function:: icebergsupport.show_application()
+
+    Shows iceberg.
+
+.. lua:function:: icebergsupport.do_autocomplete()
+
+    Runs the autocompletion.
+
+.. lua:function:: icebergsupport.get_cwd()
+
+    Returns the current working directory of iceberg.
+
+    :returns: string
+
+.. lua:function:: icebergsupport.set_cwd(path)
+
+    Changes the current working directory of iceberg.
+
+    :param string path: the directory path
+    :returns: [bool:true if no errors, false otherwise, string:an error message]
+
+.. lua:function:: icebergsupport.set_result_text(text)
+
+    Sets ``text`` to the input box as a message.
+
+    :param string text: the message
+
+.. lua:function:: icebergsupport.find_command(name)
+
+    Tries to find a command and returns the command as a table.
+
+    :param string name: the name of the command
+    :returns:
+        [bool:true if the command is found, false otherwise. , table or string:a table if the command is found, an error message otherwise]
+
+        table consists of 
+
+        :name: a command name
+        :path: a command path. This is a ``string`` or a ``function`` 
+        :cmdpath: a command path without arguments
+        :workdir: a directory that will be used as the current directory
+        :description: a description
+        :icon: an icon path
+        :terminal: whether this command must be run in the terminal( ``"yes"`` , ``"no"``  or ``"auto"`` )
+        :history: whether this command is added to the history.
+        
+.. lua:function:: icebergsupport.to_path(text)
+
+    Returns ``text`` if ``text`` is a path, otherwise tries to find a command named ``text`` and returns ``path`` of the command.
+
+    :param string text:
+    :returns: [bool:true if no errors, false otherwise. , string: a path if no errors, an error message otherwise]
+
+.. lua:function:: icebergsupport.to_directory_path(text)
+
+    Returns ``text`` if ``text`` is a path, otherwise tries to find a command named ``text`` and returns ``path`` of the command.
+
+    :param string text:
+    :returns: [bool:true if no errors, false otherwise. , string: a path if no errors, an error message otherwise]
+
+.. lua:function:: icebergsupport.message(text)
+
+    Shows a popup message.
+
+    :param string text: the message
+
+.. lua:function:: icebergsupport.event_key()
+
+    Returns a number corresponds to the current GUI event.
+
+    :returns: number
+
+.. lua:function:: icebergsupport.event_state()
+
+    Returns a number that is a bitfield of what modifier keys were on during the most recent GUI event. This bitfield consists of :lua:data:`icebergsupport.EVENT_STATE_*` .
+
+    :returns: number
+
+.. lua:function:: icebergsupport.matches_key(key)
+
+    Returns true if event ``key`` is held, false otherwise. ``key`` is a string such as ``ctrl-a`` and ``ctrl-alt-space`` .
+
+    :param string key:
+    :returns: bool
+
+.. lua:function:: icebergsupport.exit_application()
+
+    Shuts iceberg down.
+
+.. lua:function:: icebergsupport.reboot_application()
+
+    Reboots iceberg.
+
+.. lua:function:: icebergsupport.scan_search_path(category)
+
+    Scans the search path that belongs to ``category`` .
+
+    :param string category:
+
+.. lua:function:: icebergsupport.get_input_text()
+
+    Returns a value of the input box.
+
+    :returns: string
+
+.. lua:function:: icebergsupport.set_input_text(text)
+
+    Sets ``text`` to the input box.
+
+    :param string text:
+    
+.. lua:function:: icebergsupport.get_input_text_values()
+
+    Parses the value of the input box and returns a list of strings. This function parses a text that is shown in the input box, so if you want to parse a value including an autocompleted text, you have to call :lua:func:`icebergsupport.do_autocomplete` before calling this function.
+
+    :returns: table
+
+.. lua:function:: icebergsupport.get_clipboard()
+
+    Returns the content of the clipboard.
+
+    :returns: string
+
+.. lua:function:: icebergsupport.set_clipboard(text)
+
+    Sets ``text`` to the clipboard
+
+    :param string text:
+
+.. lua:function:: icebergsupport.get_clipboard_histories()
+
+    Returns the list of the clipboard histories.
+
+    :returns: table
+
+.. lua:function:: icebergsupport.selected_index()
+
+    Returns the index of the selected completion candidate. An index starts at 1(not 0). 0 means no selection.
+
+    :returns: number
+
+.. lua:function:: icebergsupport.command_execute(name [, args])
+
+    Runs the command named ``name`` .
+
+    :param string name:
+    :param [string] args: a list of arguments
+    :returns: [bool:true if no errors, false otherwise. , string:an error message]
+
+.. lua:function:: icebergsupport.default_after_command_action(success, message)
+
+    Make the default behavior after the command execution. If ``success`` is true, this function clears the input box and hides all iceberg windows, otherwise shows ``message`` using the popup window. Typically, this function is used in combination with :lua:func:`icebergsupport.command_execute` such as ``icebergsupport.default_after_command_action(icebergsupport.command_execute("cmd", {"arg0", "arg1"}))``
+
+    :param bool success: whether the command was succeeded
+    :param string message:
+
+.. lua:function:: icebergsupport.add_history(input [, name])
+
+    Adds ``input`` to the last of the history. If you want to add a command that is registered with iceberg, pass the command name as ``name`` .
+
+    :param string input: the text to be added to the history(including all arguments)
+    :param string name: a command name if ``input`` is registered with iceberg, nil otherwise
+
+.. lua:function:: icebergsupport.open_dir(path)
+
+    Opens ``path`` with the application ``system.file_browser`` .
+
+    :param string path: the directory path
+    :returns: [bool:true if no errors, false otherwise. , string:an error message]
+
+.. lua:function:: icebergsupport.group_command(command[, commmand, command ...])
+
+    Creates a new command that executes several commands in sequence. Each commands are run by :lua:func:`icebergsupport.command_execute`, so commands must be registered with iceberg.
+
+    .. code-block:: lua
+
+        group_sample = { path = ibs.group_command({"userdir", {}}, {"np", {}}), description = "runs a group of commands"},
+
+.. lua:function:: icebergsupport.bind_key(key, func)
+
+    Executes ``func`` when ``key`` is pressed. This function is used in the ``on_key_down`` callback function.
+
+    :param string key: the string such as ``ctrl-m``
+    :param function func:
+
+.. lua:function:: icebergsupport.is_modifier_pressed(keycode)
+
+    Returns true if modifier keys ``keycode`` are pressed.
+
+    :param number keycode: the bitwise or of the :lua:data:`icebergsupport.EVENT_STATE_*` constants
+    :returns: bool
+
+Miscs
 ~~~~~~~~~~~~~~
 
 .. lua:function:: icebergsupport.dump_lua_object(object, indent, isarrayval)
 
-   ``object`` をLuaの文法で解釈できる文字列に変換します。
+    Converts ``object`` to a string that can be interpreted as a Lua code.
 
-   :param object object: Luaのオブジェクト
-   :param number indent: インデント、呼び出し時は0とする
-   :param bool isarrayval: ``object`` が配列の場合trueとする
-   :returns: string:変換後の文字列
+    :param object object:
+    :param number indent: the indent level of the result, this must be 0
+    :param bool isarrayval: pass ``true`` if ``object`` is an array
+    :returns: string
 
 .. lua:function:: icebergsupport.load_lua_object(text)
 
-   ``text`` で示されるLuaオブジェクトを返します。
+    Parses ``text`` as a lua code and returns a table.
 
-   :param string text: Luaのオブジェクトを示す文字列
-   :returns: [bool:成功ならtrue,でなければfalse, object or string: 成功ならLuaオブジェクト,でなければエラーメッセージ]
+    :param string text:
+    :returns: [bool:true if no errors, false otherwise, table or string: a table if no errors, an error message otherwise]
 
 .. lua:function:: icebergsupport.grep(text, pattern [, flags])
 
-   ``text`` のうち 正規表現 ``pattern`` にマッチする行のみを返します。
+    Returns the lines of ``text`` that include a regular expression ``pattern``
 
-   :param string text: 文字列
-   :param string pattern: 正規表現
-   :param number flags: 正規表現のフラグ
-   :returns: string: 文字列
+    :param string text:
+    :param string pattern:
+    :param number flags:
+    :returns: [string]
 
 .. lua:function:: icebergsupport.is_array(table)
 
-   ``table`` が配列かどうか判定します。すべての添え字が数値の場合配列と判定されます。
+    Returns ``true`` if ``table`` is an array. ``table`` is considered as an array if all indecies are a positive number.
 
-   :param table table: table
-   :returns: 配列であればtrue, でなければfalse
+    :param table table:
+    :returns: bool
 
 .. lua:function:: icebergsupport.merge_table(table, [obj, obj ...])
 
-   第一引数の ``table`` と第二引数以降をマージします。第一引数の ``table`` が配列の場合、末尾に要素が追加されます。そうでない場合、第二引数以降の ``table`` のキーを第一引数の ``table`` に上書きします。
+    Merges multiple tables into the first ``table`` . Elements will be appended after the last element of ``table`` if ``table`` is a list.
 
-   :param table table: table
+    :param table table:
 
 .. lua:function:: icebergsupport.table_find(table, obj)
 
-   配列 ``table`` 内に ``obj`` が含まれるか検索します。
+    Returns the lowest index in the ``table`` where the ``obj`` is found. Returns 0 if ``obj`` is not found.
 
-   :param table table: table
-   :returns: 見つかった場合その位置(1はじまり)、そうでない場合は ``0``
+    :param table table:
+    :returns: number
 
-補完・オプション解析
-~~~~~~~~~~~~~~~~~~~~~
 
-.. lua:function:: icebergsupport.getopts(args, option, [option, option ...])
-
-   コマンド引数の配列からオプションの解析を行います。
-
-   :param table args: コマンド引数の配列(たとえば ``{"-a", "-b", "action"}`` のような)
-   :param string option: 解析する引数名。たとえば ``-a`` のような。引数が値を受け取るときは ``-a:`` のように ``:`` を末尾に付与する。
-   :returns: [table:解析できたoption, table:その他の値の配列]
-
-.. lua:function:: icebergsupport.comp_state(values, pos, option, [option, option ...])
-
-   補完候補リストの生成と補完状態の解析を実施します。
-
-   :param table values: コマンド引数の配列(たとえば ``{"-a", "-b", "action"}`` のような)
-   :param number pos: 現在カーソルがさしている ``values`` における位置
-   :param table option: オプション定義
-   :returns: [string:補完状態を示す文字列, table:オプションの補完候補リスト]
-
-
-これらの関数は補完関数の実装や、Luaコマンド実行時のオプション解析に使用します。
-補完関数内で以下のように :lua:func:`icebergsupport.comp_state` を使用します。
-
-    .. code-block:: lua
-    
-        function(values, pos)
-          local state, opts = ibs.comp_state(values, pos,
-            {opt="-a", description="a option", state="aaa"},
-            {opt="--abcd", description="a option"},
-            {opt="--aefg", description="a option"},
-            {opt="-b", description="b option"},
-            {opt="-c", description="b option", exclude={"-a"}}
-          )
-          if state == "aaa" then
-            return {"file1", "file2", "file3"}
-          elseif state == "opt" then
-            return opts
-          else
-            return {"action1", "action2", "action3"}
-          end
-        end
-
-オプション定義は以下より構成されます。
-
-:opt:
-    オプション名です。かならず ``-`` ではじめなければいけません。
-:description:
-    補完候補として表示する際に利用されるオプションの説明です。
-:state:
-    その引数が指定されている時の状態名です。たとえば ``-b -a A`` と入力されており今 ``A`` にカーソルがある場合上記の例だと ``aaa`` という状態になります。
-:exclude:
-    同時に指定できないオプションです。上記の例では ``-c`` オプションは ``-a`` が指定されている場合には補完候補に含まれなくなります。
-
-また、たとえば ``value -`` のように入力されており、今 ``-`` の後ろにカーソルがある場合(つまり ``-`` を入力した直後)は ``"opt"`` という状態になります。
-
-コマンドの実行時などのオプション解析は以下のように :lua:func:`icebergsupport.getopts` を使用します。
-
-    .. code-block:: lua
-    
-        function(args)
-          local opts, args = ibs.getopts(args, "-a:", "-b", "-c")
-          if opts.a == nil then
-            ibs.message("-a must not be empty.")
-          else
-            if opt.b then
-              ibs.shell_execute(args[1])
-              -- blah blah blah
-            elseif opt.c then
-              -- blah blah blah
-            end
-          end
-        end
-
-``opts`` には引数で渡されたオプション名から ``-`` を取り除いた名前で値が登録された ``table`` です。 オプション名の末尾に ``:`` を付与するとそのオプションは次の文字列を値として読み込みます。未知のオプションは位置パラメータは ``args`` 配列に格納されます。
-
-たとえば上記の例で ``{"-a", "file1", "-b", "action", "parameter"}`` の場合、 ``opts.a = "file1"; opts.b = true; args = {"action", "parameter"}`` という結果になります。
-
-iceberg操作
-~~~~~~~~~~~~~~
-
-.. lua:function:: icebergsupport.version()
-
-   icebergのバージョン文字列を返します。
-
-   :returns: string:バージョン文字列
-
-.. lua:function:: icebergsupport.hide_application()
-
-   icebergを非表示にします。
-
-.. lua:function:: icebergsupport.show_application()
-
-   icebergを表示します。
-
-.. lua:function:: icebergsupport.do_autocomplete()
-
-   オートコンプリートを実行します。
-
-.. lua:function:: icebergsupport.get_cwd()
-
-   icebergのカレントディレクトリを返します。
-
-   :returns: string:カレントディレクトリのパス
-
-.. lua:function:: icebergsupport.set_cwd(path)
-
-   icebergのカレントディレクトリを変更します。
-
-   :param string path: ディレクトリパス
-   :returns: [bool:成功ならtrue,でなければfalse, string:エラーメッセージ]
-
-.. lua:function:: icebergsupport.set_result_text(text)
-
-   icebergの入力欄にメッセージを設定します。
-
-   :param string text: 設定したいテキスト
-
-.. lua:function:: icebergsupport.find_command(name)
-
-   コマンドを検索します。
-
-   :param string name: コマンド名
-   :returns:
-       [bool:見つかればtrue,でなければfalse, table or string:見つかった場合はコマンド情報を含むtableでなければエラーメッセージ]
-
-       tableは以下の内容を含みます。
-
-       :name: コマンド名
-       :path: コマンドパス
-       :cmdpath: コマンドパスから引数を除いたもの
-       :workdir: 実行ディレクトリ
-       :description: 説明
-       :icon: アイコンパス
-       :terminal: ターミナルで実行するか(yes:する, no:しない, auto:自動)
-       :history: ヒストリへ追加するか
-       
-.. lua:function:: icebergsupport.to_path(text)
-
-   ``text`` をパスに変換します。 ``text`` がicebergにコマンドとして登録されている場合、そのパスを返します。また、 ``text`` がパスである場合入力をそのまま返します。
-
-   :param string text: 文字列
-   :returns: [bool:成功ならtrue,でなければfalse, string:成功ならパス、でなければエラーメッセージ]
-
-.. lua:function:: icebergsupport.to_directory_path(text)
-
-   ``text`` をディレクトリパスに変換します。 ``text`` がicebergにコマンドとして登録されている場合、そのパスを返します。また、 ``text`` がパスである場合入力をそのまま返します。
-
-   :param string text: 文字列
-   :returns: [bool:成功ならtrue,でなければfalse, string:成功ならパス、でなければエラーメッセージ]
-
-.. lua:function:: icebergsupport.message(text)
-
-   ポップアップメッセージを表示します。
-
-   :param string text: 表示したいテキスト
-
-.. lua:function:: icebergsupport.event_key()
-
-   現在のイベントに対するキーを返します。
-
-   :returns: number:キー
-
-.. lua:function:: icebergsupport.event_state()
-
-   修飾キーの押下状況を示すビット列(number)を返します。この配列は :lua:data:`icebergsupport.EVENT_STATE_*` とのビット演算に使用できます。
-
-   :returns: number:ビット配列
-
-.. lua:function:: icebergsupport.matches_key(key)
-
-   ``key`` で示されるキーが現在のイベントで発生しているかを返します。 ``key`` は ``ctrl-a`` や ``ctrl-alt-space`` のようにすべて小文字で記載し、修飾キーは ``-`` で繋ぎます。
-
-   :param string key: キーを示す文字列
-   :returns: bool:イベントが発生している場合true,でない場合false
-
-.. lua:function:: icebergsupport.exit_application()
-
-   icebergを終了します。
-
-.. lua:function:: icebergsupport.reboot_application()
-
-   icebergを再起動します。
-
-.. lua:function:: icebergsupport.scan_search_path(category)
-
-   ``category`` で指定されるsearch pathを再スキャンします。
-
-   :param string category: search pathのカテゴリ
-
-.. lua:function:: icebergsupport.get_input_text()
-
-   現在入力されている文字列を返します。
-
-   :returns: string:入力されている文字列
-
-.. lua:function:: icebergsupport.set_input_text(text)
-
-   入力欄に ``text`` を設定します。
-
-   :param string text: 設定する文字列
-   
-.. lua:function:: icebergsupport.get_input_text_values()
-
-   現在入力されている文字列をパースし、文字列のリストを返します。この関数は入力欄に入力されている文字列を解析します。そのため、オートコンプリートを利用しており補完内容も含めて解析したい場合、事前に :lua:func:`icebergsupport.do_autocomplete` を実行する必要があります。
-
-   :returns: table:文字列のリスト
-
-.. lua:function:: icebergsupport.get_clipboard()
-
-   クリップボード上の文字列を返します。
-
-   :returns: string:クリップボード上の文字列
-
-.. lua:function:: icebergsupport.set_clipboard(text)
-
-   クリップボードに ``text`` を設定します。
-
-   :param string text: 設定する文字列
-
-.. lua:function:: icebergsupport.get_clipboard_histories()
-
-   クリップボードの履歴文字列のリストを返します(この関数はWindowsでのみサポートされます)。
-
-   :returns: [string:クリップボード文字列]
-
-.. lua:function:: icebergsupport.selected_index()
-
-   選択されている補完候補のインデックスを返します。インデックスは1からはじまります。選択されていない場合0を返します。
-
-   :returns: number:インデックス
-
-.. lua:function:: icebergsupport.command_execute(name [, args])
-
-   icebergに ``name`` で登録されているコマンドを実行します。
-
-   :param string name: 実行するコマンドのname
-   :param [string] args: コマンドに対する引数の配列
-   :returns: [bool:成功ならtrueでなければfalse, string:エラーメッセージ]
-
-.. lua:function:: icebergsupport.default_after_command_action(success, message)
-
-   icebergのコマンド実行後のデフォルトアクションを実行します。 ``success`` が ``true`` の場合は入力テキストをクリアし、ウインドウを隠します。 ``false`` の場合は ``message`` を表示します。典型的には ``icebergsupport.default_after_command_action(icebergsupport.command_execute("cmd", {"arg0", "arg1"}))`` のように :lua:func:`icebergsupport.command_execute` と組み合わせて使用します。
-
-   :param bool success: コマンドが成功したかどうか
-   :param string message: コマンド失敗時のメッセージ
-
-.. lua:function:: icebergsupport.add_history(input [, name])
-
-   ``input`` をヒストリに追加します。登録済みコマンドのヒストリを追加する場合は ``name`` にコマンド名を渡します。 それ以外の場合は ``input`` のみで構いません。
-
-   :param string input: ヒストリに追加する文字列
-   :param string name: ``input`` が登録済みコマンドの場合、コマンド名
-
-.. lua:function:: icebergsupport.open_dir(path)
-
-   ``path`` でしめされるディレクトリを ``system.file_browser`` で指定されているアプリケーションで開きます。
-
-   :param string path: ディレクトリパス
-   :returns: [bool:成功ならtrueでなければfalse, string:エラーメッセージ]
-
-.. lua:function:: icebergsupport.group_command(command[, commmand, command ...])
-
-   以下のように使用することで、複数のコマンドを順次実行するコマンドを作成することができます。各コマンドは :lua:func:`icebergsupport.command_execute` を通じて実行されるので、該当のコマンドが登録済みである必要があります。
-
-   .. code-block:: lua
-
-       group_sample = { path = ibs.group_command({"userdir", {}}, {"np", {}}), description = "runs a group of commands"},
-
-.. lua:function:: icebergsupport.bind_key(key, func)
-
-   ``key`` で示されるキーを押下じに ``func`` を実行します。この関数は ``on_key_down`` 内で利用されます。
-
-   :param string key: ``ctrl-m`` のようなキーを示す文字列
-   :param function func: 実行する関数
-
-.. lua:function:: icebergsupport.is_modifier_pressed(keycode)
-
-   :param number keycode: :lua:data:`icebergsupport.EVENT_STATE_*` 定数
-   :returns: bool:キーが押下されていればtrue,でなければfalse
-
-Windows補助
+Windows support functions
 ---------------------------------
 
 .. lua:function:: winsupport.foreground_explorer()
 
-   最前面で表示されているエクスプローラの情報を返します。
+    Returns information of the foreground explorer.exe
 
-   :returns: table:次の要をを含む。{path=エクスプローラのパス, selected={選択されているファイル名の配列}}
+    :returns: {path= a path of the explorer, selected={a list of the selected file names}}
 
 .. lua:function:: winsupport.foreground_explorer_path()
 
-   最前面で表示されているエクスプローラのパスを返します。
+    Returns a path of the foreground explorer.exe. When no explorer exists, returns an empty string.
 
-   :returns: string:エクスプローラで開いているパス、該当がない場合は空文字列
+    :returns: string
+ 
 
-
-クラス
+Classes
 ---------------------------------
 
 .. lua:class:: Regex.new(pattern, flags)
 
-   utf8を正しく解釈可能な正規表現を示すクラスです。
-   ``icebergsupport.regex_*`` 関数で利用されます。
+    A regular expression object that handles UTF-8 strings correctly. This object is used in ``icebergsupport.regex_*`` functions.
 
-   :param string pattern: 正規表現
-   :param number flags:   正規表現フラグ
+    :param string pattern: the regular expression that can be used in the Oniguruma
+    :param number flags: the regular expression flags(Regex.NONE or a bitwise or of the Regex.S,M and I)
 
 .. lua:attribute:: Regex.NONE
 
-   無指定を示す正規表現フラグです。
+    A regular expression flag that means no flags are set.
 
 .. lua:attribute:: Regex.S
 
-   perlのsフラグと同一です。
+    A regular expression flag that is equivalent to the Perl's s flag.
 
 .. lua:attribute:: Regex.M
 
-   perlのmフラグと同一です。
+    A regular expression flag that is equivalent to the Perl's m flag.
 
 .. lua:attribute:: Regex.I
 
-   perlのiフラグと同一です。
+    A regular expression flag that is equivalent to the Perl's i flag.
 
 .. lua:function:: Regex.escape(text)
 
-   正規表現をエスケープした文字列を返します。
+    Escapes all meta characters in ``text``
 
-   :param string text: 文字列
-   :returns: string:エスケープ後の文字列
+    :param string text:
+    :returns: string
 
 .. lua:function:: Regex:_1()
 
-   マッチしたグループの文字列を返します。
-   ``Regex:_1()`` , ``Regex:_2()`` ... ``Regex:_9()`` まで定義されています。
+    Returns the subgroup string of the match.
 
-   :returns: string:マッチした部分文字列
+    ``Regex:_1()`` , ``Regex:_2()`` ... ``Regex:_9()`` are defined.
+
+    :returns: string
 
 .. lua:function:: Regex:group(group)
 
-   ``group`` 番目のグループの文字列を返します。
+    Returns the subgroup string of the match.
 
-   :returns: string:マッチした部分文字列
+    :param number group:
+    :returns: string
 
 .. lua:function:: Regex:startpos(group)
 
-   ``group`` 番目のグループの開始位置を返します。
+    Returns the index of the start of the substring matched by ``group`` .
 
-   :returns: number:開始位置
+    :param number group:
+    :returns: number
 
 .. lua:function:: Regex:endpos(group)
 
-   ``group`` 番目のグループの終了位置を返します。
+    Returns the index of the end of the substring matched by ``group`` .
 
-   :returns: number:終了位置
+    :param number group:
+    :returns: number

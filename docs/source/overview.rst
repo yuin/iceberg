@@ -1,13 +1,14 @@
-概要
+Overview
 =========================
-icebergとは
+iceberg?
 -------------------------
-icebergはシンプルで拡張性の高いコマンドラインランチャです。以下のような機能があります。
+iceberg is a simple and extensible keystroke application launcher.
 
-- 前方一致、部分一致、あいまい検索
-- migemo検索
-- ヒストリ検索
-- Lua関数の呼び出し
+- Prefix match, Partial match, Fuzzy match
+- Migemo search(Japanese text search by English alphabets)
+- History search
+- Execute lua functions
+- Lua APIs
 
 .. image:: images/screenshot_01.jpg
 
@@ -15,15 +16,15 @@ icebergはシンプルで拡張性の高いコマンドラインランチャで�
 
 .. image:: images/iceberg_demo_02.gif
 
-インストール
+How to install
 -------------------------
 Windows
 ~~~~~~~~~~~~~~~
-`Release <https://github.com/yuin/iceberg/releases>`_ で配布されているアーカイブを任意の場所に解凍してください。レジストリは使用していません。
+Download a zip file from `Release <https://github.com/yuin/iceberg/releases>`_ and unzip it where you want. iceberg does not use the registry.
 
 Linux(Ubuntu 14.04)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-以下のライブラリが必要です。 ``apt-get`` コマンドでインストールしてください。
+iceberg requires the following packages. You can install these packages with ``apt-get install`` .
 
 - g++
 - gdb
@@ -41,7 +42,9 @@ Linux(Ubuntu 14.04)
 - libonig-dev
 - libmigemo-dev
 
-`Release <https://github.com/yuin/iceberg/releases>`_ で配布されているソースコードを任意の場所に解凍してください。その後
+Next, download a zip file from `Release <https://github.com/yuin/iceberg/releases>`_ and unzip it .
+
+And then run the following commands :
 
     .. code-block:: bash
     
@@ -49,101 +52,112 @@ Linux(Ubuntu 14.04)
         % make
         % sudo make install
 
-と実行してください。sudoを実行したユーザのホームディレクトリに ``.iceberg`` ディレクトリが作成され、デフォルトの設定ファイルなどがコピーされます。
+On Linux, only UTF-8 is supported for system encodings.
 
-
-Linux上での文字コードはutf-8のみがサポートされています。
-
-Linux(その他)
+Linux(others)
 ~~~~~~~~~~~~~~~
-動作確認されていませんが、Ubuntuと同等のライブラリをインストールすればコンパイルできる可能性があります。g++は4.9以上を利用してください。また、動作が確認できましたらぜひ作者までお知らせください。
+Not verified though, It may be possible to compile with libraries that are equivalent to avobe packages. g++ must be newer than 4.9 .
 
-使用法
+How to use
 -------------------------
-以下ではデフォルトの設定を例にします。
+In this example we will use the default configurations.
 
-コマンド登録
-~~~~~~~~~~~~~~~
-
-まず、コマンドを登録する必要があります。 ``:scan_search_path all`` と入力しEnterを押下してください。この操作でスタートメニューのアプリケーションが自動で登録されます。ユーザが独自にコマンドを登録する簡単な方法は以下です。
-
-コマンド履歴、キャッシュなどはすべてWindowsの場合iceberg.exeが存在するディレクトリ、その他のプラットフォームの場合 ``~/.iceberg`` ディレクトリに作成されます。これをicebergディレクトリと呼びます。
-
-1. icebergディレクトリにある ``shortcuts`` ディレクトリ内にショートカット( Windowsの場合、 ``*.lnk`` , Linuxの場合 ``.desktop`` )を作成します。
-    - ショートカットに設定した実行ディレクトリ、コメントはicebergにも引き継がれます。
-2. icebergで ``:scan_search_path shortcuts`` を実行します。
-
-icebergではそのほか、以下のような方法でコマンド登録が行えます。
-
-- サーチパスを用いる方法
-    1. configファイルにサーチパスを定義します。
-    2. ``:scan_search_path CATEGORY`` を実行します。 ``CATEGORY`` には1で定義したサーチパスのカテゴリもしくは ``all`` を入力します。
-        - サーチパスにマッチするファイルがicebergのコマンドとして取り込まれます。
-- configファイルに直接記載する方法: 詳しい設定方法は :doc:`config` を参照してください。
-
-組み込みコマンド
+Add commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-以下のコマンドが組み込みコマンドとして提供されています。組み込みコマンドは ``:`` から始まります。
+First, you need to add applications. Input ``:scan_search_path all`` and hit Enter. Now iceberg scans your applications and add these applications to iceberg.
 
-- `:version` : icebergのバージョンを表示します。
-- `:exit` : icebergを終了します。
-- `:reboot` : icebergを終了します。
-- `:pwd` : icebergのカレントディレクトリを表示します。
-- `:cd`  : icebergのカレントディレクトリを変更します。
-- `:scan_search_path`  : サーチパスを再検索します。
-- `:opendir` : 引数のコマンドもしくはディレクトリを開きます。
-- `:empty` : 特別なコマンドです。入力欄になにも入力せずにEnterを実行した場合このコマンドが実行されます。デフォルトではWinowsの場合、最前面のエクスプローラで表示しているディレクトリをカレントディレクトリとしてコマンドプロンプトを開きます。その他のプラットフォームの場合、icebergのカレントディレクトリでターミナルを開きます。
+A default configuration directory differs depending on your platform.
 
-その他、以下のコマンドがデフォルトで用意されています。
+Windows:
 
-- `google` : Googleで第一引数の単語を検索する。
-- `cal` : ``cal 10+2`` のように計算を行える計算機。
+- Same directory as the base directory of iceberg executable file
 
-以下はWindows版のみデフォルトで用意されています。
+Linux:
 
-- `control_panel` : コントロールパネルを表示する。
-- `windows_service` : サービスを表示する。
-- `my_computer` : マイコンピュータを表示する。
-- `network_computer` : ネットワークコンピュータを表示する。
-- `mkdir` : 最前面のエクスプローラで表示されているディレクトリに第一引数の名前をもつディレクトリを作成する。
-- `weather` : 日本の主要都市の天気を表示します(このコマンドはインターネット上から情報を取得するため、インターネット接続不可の場合情報が表示できません）。 ``weather`` と入力した後半角スペースを入力すると天気リストが表示されます。
-- `alttab` : ``alt+tab`` キーを押したときのような、ウインドウ切り替えコマンドです。 ``alttab`` と入力した後半角スペースを入力するとウインドウリストが表示されます。
-- `clipboard` : クリップボード履歴一覧を表示します。候補を選択するとクリップボードにコピーされます。
+iceberg searchs the default configuration directory in the following order:
 
-以下はLinux版のみデフォルトで用意されています。
+- ``${XDG_CONFIG_HOME}/iceberg`` if ``XDG_CONFIG_HOME`` environment variable exists.
+- ``${HOME}/.config/iceberg`` if ``${HOME}/.config`` is an existing directory path.
+- ``${HOME}/.iceberg``
 
-- `locate` : ``locate .txt`` のようにするとファイルを検索することができます。
-- `kill` : killコマンドを実行します。対象プロセス名で補完することができます。
+This directory shall be expressed as ``ICEBERG_CONFIG_HOME`` in this document.
 
-カレントディレクトリ
+There are many way to add your applications.
+
+1. Create shortcuts( ``*.link`` On Windows or ``.desktop`` On Linux) under ``${ICEBERG_CONFIG_HOME}/shortcuts}`` .
+2. Execute ``:scan_search_path shortcuts`` in iceberg.
+
+In addition, iceberg has the following method to add applications.
+
+- Search paths
+    1. Define search paths in configuration files.
+    2. Execute ``:scan_search_path CATEGORY``. ``CATEGORY`` must be a category that was defined in 1 or ``all`` .
+        - Files that match search path patterns will be added to iceberg.
+- Write commands in configuration files: Please refer to :doc:`config` for further information.
+
+Built-in internal commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+iceberg has several commands called built-in internal commands. All built-in internal command names start with ``:`` .
+
+- `:version` : Shows the version of iceberg.
+- `:exit` : Shut iceberg down.
+- `:reboot` : Reboot iceberg.
+- `:pwd` : Shows the current directory of iceberg.
+- `:cd`  : Changes the current directory of iceberg.
+- `:scan_search_path`  : Scans search paths and add files to iceberg.
+- `:opendir` : Opens a first argument as a directory.
+- `:empty` : This command will be executed when the inputbox is empty. On Windows, iceberg opens a terminal with the foreground explorer's path by default. On other platforms, iceberg opens a terminal with the current directory of iceberg.
+
+And the following commands are added by default.
+
+- `google` : Searchs a first argument by Google.
+- `cal` : A calculator that can be used such as ``cal 10+2``
+
+The following commands are added by default only on Windows.
+
+- `control_panel` : Shows the control panel.
+- `windows_service` : Shows the windows services.
+- `my_computer` : Shows the 'My Computer' .
+- `network_computer` : Shows the network computers.
+- `mkdir` : Creates a new directory named a first argument under the foreground explorer's path.
+- `alttab` : Equivalent to ``alt+tab`` task switcher. Input ``alttab`` and hit space.
+- `clipboard` : Shows a list of the histories. The selected history will be copied into the clipboard when this command is executed.
+
+The following commands are added by default only on Linux.
+
+- `locate` : Equivalent to the ``locate`` command.
+- `kill` : Equivalent to the ``kill`` command, processes can be completed by its name.
+
+Current directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-icebergはカレントディレクトリを保持しています。組み込みコマンド ``:pwd`` で表示、 ``:cd`` で変更できます。
+iceberg has its own current directory. This directory can be shown ``pwd`` command and changed by ``:cd`` command.
 
-表示と実行
-~~~~~~~~~~~~~~~~
-``ctrl-space`` を押下するとicebergが表示されます。なにかキーを入力すると補完候補が表示されます。 ``ctrl-p`` および ``ctrl-n`` で補完候補を選んで ``Enter`` を押すとコマンドが実行されます。その際、 ``!notepad`` のようにコマンドの先頭に ``!`` を付与するとコマンドに紐づけられた実行ディレクトリではなく、icebergのカレントディレクトリで実行されます。入力は ``"aaa bbb"`` のように ``"`` でくくることにより空白を含めることができます。
+Execute commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Once iceberg has been started, you hides it by hitting ``escape`` key. And you bring it forward again by holding the alt key and tapping the space key.
 
-また ``c:/`` や ``./`` のように入力すると簡易ファイラとして利用することができます。Windowsでは  ``/`` または ``\`` を入力するとドライブ一覧を表示します。
+You can then type some keys for searching the commands and select found commands by ``ctrl-p`` and ``ctrl-n``. Once you have selected the command, hit enter to execute the commands. 
+
+If you add a prefix ``!`` such as ``!notepad`` at this time, the commands will be executed under the current directory of iceberg rather than the current directory that is associated with the command itself. You can input a text that include spaces by enclosing the text within ``"`` such as ``"aaaa bbbb"`` .
+
+iceberg also can browse file systems. The file browser mode will start by typing such as ``C:\`` and ``./`` . On Windows, iceberg shows a list of drives by typing ``/`` or ``\`` .
 
 .. note:: 
-    Windowsではパスの区切り文字には ``/`` もしくは ``\`` が使用できますが、特定のケースでは ``/`` しか使用できません。
-    たとえば ``"C:\Document and Settings\name"`` と入力欄に表示されている場合 ``"C:\Document and Settings\name\"`` とは入力できません。 ``name`` の直後の ``\`` は最後の ``"`` に対するエスケープ文字として認識されます。このようなケースでは ``/`` を使用してください。
+    On Windows, you can use both ``/`` and ``\`` as a separator of path components. But in some situations, you can use only ``/`` . If an inputbox value is ``"C:\Document and Settings\name"``, you can not type ``"C:\Document and Settings\name\"`` . ``\`` after ``name`` is considered as an escape character for the tail ``"`` .
 
-ショートカット
+Shortcuts
 ~~~~~~~~~~~~~~~~
-icebergになにかを入力した状態で ``Enter`` 以外の特別なキーを押すことによりicebergに入力されている文字列を引数としてコマンドを実行することができます。例えば、デフォルトではコマンドを入力した状態で ``ctrl-d`` を押すとそのコマンドのディレクトリを開きます。
+You can execute commands with an inputbox value by hitting some special key combinations. By default, ``ctrl-d`` opens a directory that is associated with a selected command. In this case, an inputbox value was passed as an argument to ``:open`` command.
 
-非表示にする
-~~~~~~~~~~~~~~~~
-``escape`` を押下するとicebergを非表示にできます。
+Switch to the history mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can switch mode to the history mode by ``ctrl-r`` . In the history mode, commands will be completed including arguments.
 
-モード切り替え
-~~~~~~~~~~~~~~~~
-``ctrl-r`` を押下するとノーマルモードとヒストリモードを切り替えることができます。ヒストリモードでは引数も含めて過去に入力したコマンドから補完することができます。
+Migemo search
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+iceberg is integrated with the Migemo. To enable the migemo capability, put ``migemo.dll`` or ``libmigemo.so`` on your library path and migemo dictionaries on ``${ICEBERG_CONFIG_HOME}/dict`` . This functionality was verified with ``cmigemo-1.3c`` . On Windows, files should be like the following :
 
-migemo検索
-~~~~~~~~~~~~~~~
-Windowsの場合、iceberg実行ファイルのディレクトリに ``migemo.dll`` を ``dict`` ディレクトリ配下に辞書ファイルを配置することによりmigemo機能が有効となります。migemoのバージョンは ``cmigemo-1.3c`` で動作確認をしています。前方一致・部分一致検索を行う場合に日本語ファイルにもマッチするようになります。ファイル配置は以下のようになります。::
+::
 
     iceberg.exe
     migemo.dll
@@ -154,20 +168,21 @@ Windowsの場合、iceberg実行ファイルのディレクトリに ``migemo.dl
        roma2hira.dat
        zen2han.dat
 
-その他のプラットフォームの場合、ライブラリパスに ``libmigemo.so`` を、 ``~/.iceberg/dict`` ディレクトリ配下に辞書ファイルを配置するとmigemo機能が有効となります。辞書ファイルの文字コードはutf-8のものを利用してください。
+Migemo dictionaries should be encoded in UTF-8.
 
-外部からのコマンド送信
-~~~~~~~~~~~~~~~~~~~~~~~~~
-以下のように起動することで、外部から起動済みのicebergにコマンドを送信することができます。この機能を利用するためには ``system.server_port`` を ``0`` 以外に設定しておく必要があります。
+Send messages from external processes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can interact with an already existing iceberg instance by executing iceberg like the following :
 
 ::
 
-    iceberg.exe -m "exec 実行したいコマンド"
-    iceberg.exe -m "set 入力欄にセットしたい文字列"
+    iceberg.exe -m "exec COMMAND_TO_EXECUTE"
+    iceberg.exe -m "set TEXT_TO_SET_INTO_INPUTBOX"
     iceberg.exe -m "activate"
 
+This functionality will be enabled if ``system.server_port`` is not set to ``0`` .
 
-より進んだ使い方
+Further information
 ------------------------
 
-詳しい使い方や設定方法は :doc:`config` , :doc:`api` , :doc:`plugin` や :doc:`tips` を参照してください。
+Please refer to :doc:`config` , :doc:`api` , :doc:`plugin` and :doc:`tips` for further information.

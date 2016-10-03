@@ -1,50 +1,20 @@
 Tips
 =================================
-概要
+Overview
 --------------------
-このページでは便利な使い方やお勧めの設定を紹介します。
+Here are a few helpful tips for using iceberg.
 
-ポチエス連携
---------------------------------------------
-`ポチエス <http://www.geocities.jp/pochi_s2004/pochi.html>`_ はファイルをどのアプリケーションで実行するか、選択可能にするアプリケーションです。ここでは、コマンドもしくはファイルパスをicebergに入力し、 ``shift-enter`` を押すことでポスエスで実行する設定例を示します。
-
-コマンド定義
-
-    .. code-block:: lua
-
-        commands = {
-          esExt5  = {path=function(args)
-            if #args ~= 0 then
-              local ok, path = ibs.to_path(args[1])
-              if ok then
-                ibs.shell_execute([[ポチエスexeへのパス]], {path}, [[ポチエスのディレクトリ]])
-              end
-            end
-            return 0
-          end, history=false}
-        }
-
-ショートカット定義
-
-    .. code-block:: lua
-        
-        shortcuts = {
-          { key = "shift-enter", name = "esExt5" }
-        }
-
-
-現在の日付・時刻をクリップボードにコピー
+Copy current date or time into the clipboard
 -------------------------------------------------
-以下のようなコマンド定義を行います。
 
     .. code-block:: lua
 
         date_YYYYMMDD = {path = function(args) ibs.set_clipboard(os.date("%Y%m%d")) end, history = false},
         date_YYYYMMDDHHMMSS = {path = function(args) ibs.set_clipboard(os.date("%Y%m%d%H%M%S")) end, history = false},
 
-エクスプローラで選択しているファイルをエディタで開く
---------------------------------------------------------
-エクスプローラでファイルを選択し、iceberg上で ``ctrl-m`` を実行するとvimでファイルを開く設定です。
+Open a file that selected in an explorer with your editor
+-----------------------------------------------------------
+Select a file in an explorer and bring iceberg foward, then hit ``ctrl-m`` .
 
     .. code-block:: lua
 
@@ -63,13 +33,14 @@ Tips
           return accept
         end
 
-コマンド登録されているディレクトリ配下の表示
---------------------------------------------------------
-例えば ``app`` というコマンドとして ``c:\app`` というディレクトリが登録されているとします。このときに ``app`` と入力し ``ctrl-l`` を実行するとカレントディレクトリが ``c:\app`` に変更されます。このあとに ``./`` と入力すると ``c:\app`` の配下のファイルを表示することができます。
+Show files under a directory that is already registered as a command
+---------------------------------------------------------------------
+Consider a case that ``C:\app`` is registered as a command named ``app`` . When you type ``app`` and hit ``ctrl-l`` in this case, the current directory of iceberg will be changed to ``C:\app`` . Files under ``C:\app`` can be shown by typing ``./`` .
 
-数式入力で計算を行う
+
+Instant calculator
 --------------------------------------------------------
-以下のように ``on_enter`` を定義することで ``10 + 20`` のように数式を入力してEnterを押下するとすぐに計算を実行することができます。
+The following ``on_enter`` function allow you to perform numerical calculation quickly. Just type such as ``10 + 20`` and hit Enter.
 
 
     .. code-block:: lua
@@ -87,9 +58,8 @@ Tips
           return accept
         end
 
-起動時に自動的に:scan_search_pathを行う
---------------------------------------------------------
-以下のように ``on_initialize`` を定義することで起動時に自動的に ``:scan_search_path`` することができます。 ``all`` 以外のカテゴリで実行したい場合は ``{"all"}`` となっている場所を書き変えてください。
+Execute :scan_search_path command automatically when you start iceberg
+------------------------------------------------------------------------
 
     .. code-block:: lua
         
@@ -108,27 +78,26 @@ Tips
           return error
         end
 
-foobar2000を操作する
+Interact with foobar2000
 --------------------------------------------------------
-以下の様に定義するとicebergからfoobar2000が操作できます。
 
 
     .. code-block:: lua
         
         foobar2000 = { 
-          path=[[foobar2000のパス]],
+          path=[[path of a foobar2000 executable]],
           completion = function(values, pos)
             return {
-              {value="/playpause", description = "再生/一時停止"},
-              {value="/stop", description = "停止"},
-              {value="/pause", description = "一時停止"},
-              {value="/play", description = "再生"},
-              {value="/prev", description = "前へ"},
-              {value="/next", description = "次へ"},
-              {value="/rand", description = "ランダム再生"},
-              {value="/exit", description = "終了"},
-              {value="/show", description = "表示"},
-              {value="/hide", description = "最小化"}
+              {value="/playpause", description = "Play/Pause"},
+              {value="/stop", description = "Stop"},
+              {value="/pause", description = "Pause"},
+              {value="/play", description = "Play"},
+              {value="/prev", description = "Prev"},
+              {value="/next", description = "Next"},
+              {value="/rand", description = "Random"},
+              {value="/exit", description = "Exit"},
+              {value="/show", description = "Show"},
+              {value="/hide", description = "Hide"}
             }
           end,
           history = false

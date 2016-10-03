@@ -1,32 +1,31 @@
-プラグイン
+Plugins
 =================================
-概要
+Overview
 --------------------
-icebergには柔軟に機能を追加できるプラグイン機能があります。ここではプラグインの使用方法と開発方法を記載します。
+iceberg has a plugin system. This document describes how to use and develop plugins.
 
-プラグインの使用方法
+How to use
 ----------------------
-配布されているプラグインを icebergディレクトリ配下の ``plugins`` ディレクトリに配置します。配置されたプラグインはiceberg起動時に自動的にロードされます。
+Just put a plugin directory under ``${ICEBERG_CONFIG_HOME}/plugins`` .
 
-また、プラグインのディレクトリ名を ``_`` ではじまるようにリネームするとプラグインを無効にする事ができます。
+You can disable a certain plugin by renaming its directory name with a new name starting with ``_`` .
 
-プラグインの開発方法
+How to develop
 ---------------------
-プラグインの構造
+Structures
 ~~~~~~~~~~~~~~~~~~~~~
-プラグインは ``main.lua`` が配置された単純なディレクトリです。典型的には以下のような構造です。
+A plugin is a simple directory that has ``main.lua`` . Typically, plugins have the following structure :
     
     .. code-block:: lua
 
-        plugin-name          - プラグイン名のディレクトリ
+        plugin-name          - plugin directory
           |
-          +---- main.lua     - プラグインのメインスクリプト
+          +---- main.lua     - main script of the plugin
           |
-          +---- icon.svg     - アイコン
+          +---- icon.svg     - icon file
 
-main.luaテンプレート
+main.lua template
 ~~~~~~~~~~~~~~~~~~~~~
-以下にプラグインのテンプレートを示します。
 
     .. code-block:: lua
 
@@ -49,13 +48,12 @@ main.luaテンプレート
       17    history=false
       18  }
 
-- 04行目 : 設定をローカル変数に保持します。
-- 08行目 : ``plugin_プラグイン名`` というグローバル変数で設定変更が可能なようにします。具体的には ``config`` ローカル変数を ``plugin_プラグイン名`` グローバル変数で上書きします。
-- 09行目 : コマンドを登録します。コマンドの定義方法は :doc:`config` を参照してください。
+- Line 04 : Holds configurations for this plugin as a local variable.
+- Line 08 : Users can overwrite the configurations with a global variable named ``plugin_PLUGINNAME`` .
+- Line 09 : Adds a command. Refer to :doc:`config` for further information.
 
-プラグイン
+Available plugins
 ---------------------
-いくつかプラグインを紹介します。
 
-- `iceberg-ip <https://github.com/yuin/iceberg-ip>`_ : ローカルマシンのIPアドレスを表示します。
-- `iceberg-worldtime <https://github.com/yuin/iceberg-worldtime>`_ : 世界の都市の時間を表示します。
+- `iceberg-ip <https://github.com/yuin/iceberg-ip>`_ : Shows your machine IP addresses
+- `iceberg-worldtime <https://github.com/yuin/iceberg-worldtime>`_ : Shows the current time at the cities in the world.

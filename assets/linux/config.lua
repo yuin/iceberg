@@ -19,7 +19,7 @@ system = {
   path_autocomplete = false,
   option_autocomplete = true,
 
-  hot_key = "ctrl-space",
+  hot_key = "ctrl-alt",
   escape_key = "escape",
   list_next_key = "ctrl-n",
   list_prev_key = "ctrl-p",

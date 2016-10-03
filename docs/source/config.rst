@@ -1,47 +1,55 @@
-環境設定
+Configurations
 =================================
-概要
+Overview
 --------------------
-設定は `Lua <http://www.lua.org>`_ による設定ファイルに記載します。設定ファイルの配置ディレクトリはWindowsの場合iceberg実行ファイルと同一ディレクトリ、Linuxの場合以下の順で決定されます。
+All configurations are written in `Lua <http://www.lua.org>`_ . A default configuration directory differs depending on your platform.
 
-    - ``XDG_CONFIG_HOME`` 環境変数が存在する場合、 ``${XDG_CONFIG_HOME}/iceberg``
-    - ``${HOME}/.config`` ディレクトリが存在する場合、 ``${HOME}/.config``
-    - ``${HOME}/.iceberg``
+Windows:
 
-これらのディレクトリを以下ではicebergディレクトリまたはICEBERG_CONFIG_HOMEと記載します。
+- Same directory as the base directory of iceberg executable file
 
-設定ファイルにはいくつかのグローバル変数とグローバル関数を記載します。
+Linux:
 
-設定は ``${ICEBERG_CONFIG_HOME}/config.d/*.lua`` ファイルが起動時に自動的に読み込まれるためこちらに記載することも可能です。
+iceberg searchs a configuration directory in the following order:
 
-``config.d`` で読み込まれるファイルでは自動マージ機能が利用できます。
+- ``${XDG_CONFIG_HOME}/iceberg`` if ``XDG_CONFIG_HOME`` envvar exists.
+- ``${HOME}/.config/iceberg`` if ``${HOME}/.config`` is an existing directory path.
+- ``${HOME}/.iceberg``
+
+This directory shall be expressed as ``ICEBERG_CONFIG_HOME`` in this document.
+
+A configuration file has several global functions and global variables.
+
+Configuration files are also loaded from ``${ICEBERG_CONFIG_HOME}/config.d/*.lua`` .
+
+``auto_merge`` can be used for writing configurations loaded from ``config.d``.
 
     .. code-block:: lua
 
         local ibs = require("icebergsupport")
 
-        auto_merge = true -- この行以降の ``system`` , ``commands`` といった設定用グローバル変数は自動的にマージされる
+        auto_merge = true -- configurations such as ``system`` and ``commands`` after this line will automatically be merged
 
         system = {
             enable_icons = false
         }
 
-``auto_merge`` を ``true`` に設定した行以降の設定用グローバル変数は自動的に既存の値にマージされるようになります。 ``auto_merge`` を設定しない場合変数全体が置き換えられるため注意してください。
+Note that if you do not set ``auto_merge`` to ``true``, all global variables will be overwritten.
 
-キー名称
+Key names
 --------------------
-この後の章で示す設定には以下のキー名称が使用できます。また、修飾キーと通常キーを ``-`` でつなぎ合わせることで同時押しを表現します。同時押しのキーは3つまでです。また、ホットキーの設定のみOSネイティブの仮想キーコードを受け付けます。
+The following key names can be used in configurations. You can combine modifier keys and other keys by ``-`` (up to 3 keys) . The hot key configuration accepts OS native virtual keycodes.
 
-例：
+Examples:
 
     .. code-block:: lua
 
         "alt-space"
         "shift-ctrl-a"
-        "0x1d" -- Windowsにおける「無変換」キー
-        "0x1c" -- Windowsにおける「変換」キー
+        "0x1d" -- Muhenkan on Windows(jp106 keyboard layout)
+        "0x1c" -- Henkan on Windows(jp106 keyboard layout)
 
-- 修飾キー
+- Modifiers
     - ``shift``
     - ``caps_lock``
     - ``ctrl``
@@ -50,9 +58,9 @@
     - ``meta``
     - ``scroll_lock``
 
-- 通常キー
-    - ``a`` ～ ``z``
-    - ``0`` ～ ``9``
+- Others
+    - ``a`` - ``z``
+    - ``0`` - ``9``
     - ``space``
     - ``backspace``
     - ``tab``
@@ -74,7 +82,7 @@
     - ``menu``
     - ``help``
     - ``num_lock``
-    - ``kp0`` : kpから始まるキーはテンキー上のキーです。
+    - ``kp0`` : keys start with "kp" are on a numeric keypad
     - ``kp1``
     - ``kp2``
     - ``kp3``
@@ -126,70 +134,66 @@
     - ``sleep``
     - ``favorites``
 
-systemグローバル変数
----------------------
-設定例
-~~~~~~~~~~~~~~~~~~~~~
-以下に設定例と値の意味を示します。
+System global variable
+---------------------------
+Examples and descriptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     .. code-block:: lua
 
         system = {
-          -- search pathから検索する際の深さのデフォルト値 --
+          -- a default value of limiting the depth of the search path -- 
           default_search_path_depth = 2,
 
-          -- 補完候補のアイコンを表示するか(true:する, false:しない) --
+          -- should show icons on listbox? --
           enable_icons = true,
 
-          -- アイコンテーマ名:Linuxでのみ有効 --
+          -- an icon theme : meaningful only for Linux platforms --
           icon_theme = "nuoveXT.2.2",
 
-          -- 補完候補のアイコンのキャッシュ数 -- 
+          -- a maximum number of cached icon data --
           max_cached_icons = 9999,
 
-          -- 何msキー入力が無い場合に補完候補を表示するか --
-            -- 低速マシンの場合、自身のキータイプ間隔以上の値にすることにより
-            -- 不要な補完動作を抑制することができます。
+          -- show completion candidates after N ms since the last key input --
+          -- you can suppress unnecessary completions by setting this value on low-end machines --
           key_event_threshold = 0,
 
-          -- ヒストリの保存数 -- 
+          -- a maximum number of commands to remember on the history file --
           max_histories = 500,
 
-          -- 補完候補の表示数 -- 
+          -- a maximum number of candidates on the listbox -- 
           max_candidates = 15,
 
-          -- クリップボード履歴の保存数:Windowsでのみ有効 -- 
+          -- a maximum number of clipboard histories : meaningful only for Windows platforms -- 
           max_clipboard_histories = 15,
 
-          -- 補完候補ソート時のヒストリの影響度合い(0.0~1.0)
+          -- degree of influence of histories on completion candidates sorting(0.0~1.0) --
           history_factor = 0.8,
 
-          -- ディレクトリを開く際のコマンド、${1}にディレクトリパスが入る --
+          -- an application to handle directories. ${1} will be replaced with a directory path --
           file_browser = [[explorer ${1}]],
 
-          -- ターミナルでコマンドを実行する際のコマンド、${1}コマンドが入る。ログインターミナルとして起動すること。:Linuxでのみ有効 --
+          -- an application to handle CUI applications. ${1} will be replaced with a command text. This application must be executed as a login shell --
           terminal = [[lxterminal -l -e ${1}]],
 
-          -- 外部からコマンドを受け付けるポート(0: 無効)
+          -- a port number to accept commands from external processes.(0: disabled) --
           server_port = 13505,
 
-          -- パス補完時に自動補完を有効にする
+          -- should do autocompletion in a path completion --
           path_autocomplete = true,
 
-          -- 引数の補完時に自動補完を有効にする
+          -- should do autocompletion in an option completion --
           option_autocomplete = true,
 
-          -- DirectWriteを無効にする:Windowsでのみ有効 --
+          -- do not use DirectWrite --
           disable_direct_write = false,
 
-          -- DirectWriteの詳細設定:空文字の場合デフォルト値 --
+          -- DirectWrite parameters. an empty string means using default parameter --
           direct_write_params="gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.5,pixel_geometry=0,rendering_mode=5",
 
-          -- コマンド・ヒストリの補完時は自動補完は常に有効です --
-        
-          -- キー設定 --
-          -- hot_keyはOS仮想キーコードでも可、単一キーも可。 --
-          --   例: hot_key = "0x1d"  無変換 --
+          -- Keys --
+          -- hot_key accepts OS dependent virtual key codes --
+          --   Example: hot_key = "0x1d"  muhenkan(jp106 keyboard layout) --
           hot_key = "ctrl-space",
           escape_key = "escape",
           list_next_key = "ctrl-n",
@@ -197,28 +201,28 @@ systemグローバル変数
           toggle_mode_key = "ctrl-r",
           kill_word_key = "ctrl-w",
         
-          -- サーチパス --
+          -- Search paths --
           search_path = {
             {category="system", path = [[C:\Windows\System32]], depth = 1, pattern="^.*\\.(exe)$"}, 
             {category="programs", path = [[C:\Users\]] .. os.getenv("USERNAME") .. [[\AppData\Roaming\Microsoft\Windows\Start Menu\Programs]], depth = 10, pattern=[[^.*\.(exe|lnk)$]]},
             {category="programs", path = [[C:\ProgramData\Microsoft\Windows\Start Menu\Programs]], depth = 10, pattern=[[^.*\.(exe|lnk)$]]},
           },
 
-          -- 補完設定 -- 
+          -- Completions -- 
           completer = {
-            -- コマンドの補完:あいまい一致 --
+            -- a command name completion: fuzzy match --
             command = ibs.COMP_ABBR,
 
-            -- パスの補完:前方一致 -- 
+            -- a path completion: prefix match -- 
             path    = ibs.COMP_BEGINSWITH,
 
-            -- ヒストリの補完:部分一致 -- 
+            -- a history completion: partial match -- 
             history = ibs.COMP_PARTIAL,
 
-            -- 引数の補完 -- 
+            -- an option completion -- 
             option  = ibs.COMP_PARTIAL,
         
-            -- 引数補完のための関数 --
+            -- completion functions --
             option_func = {
               [":scan_search_path"] = function(values, pos)
                 local candidates = {"all"}
@@ -235,25 +239,25 @@ systemグローバル変数
           }
         }
 
-サーチパス
+Search paths
 ~~~~~~~~~~~~~~~~~
-サーチパスは、指定したディレクトリ配下を検索し自動的にコマンドとして登録する機能です。サーチパスの構成要素は以下です。
+iceberg can search under search paths and register found commands by single command( ``:scan_search_path`` ). A search path consists of
 
 :category:
-    サーチパスはカテゴリを持つことができます。指定したカテゴリのサーチパスのみを更新することが可能です。無指定の場合自動的に ``default`` というカテゴリに属します。
+    You can pass a category to ``:scan_search_path`` to filter target search paths. If a category is not specified, ``default`` is used as a category.
 
 :path:
-    検索する起点となるディレクトリです。
+    A base directory of this search path.
 
 :depth:
-    ``path`` から何階層検索するかを示す数値です。無指定の場合 ``system.default_search_path_depth`` が適応されます。
+    Limit the depth of the search path to this value. If ``depth`` is not specified, ``system.default_search_path_depth`` is used as ``depth``
 
 :pattern:
-    コマンドとして登録するファイル名の正規表現パターン(完全一致)です。
+    A regular expression to filter files by its name. Files that match this regular expression will be registerd with iceberg.
 
-補完関数
-~~~~~~~~~~~~~~~~~
-icebergではコマンドが入力された際の引数を補完する関数を定義できます。補完関数は以下のシグネチャです。
+Completion functions
+~~~~~~~~~~~~~~~~~~~~~
+Commands can have a completion function.
 
     .. code-block:: lua
         
@@ -271,42 +275,40 @@ icebergではコマンドが入力された際の引数を補完する関数を�
           }
         end
 
-``values`` は入力されている引数の配列です。引数が空の場合、空文字1要素になります。 ``pos`` は現在カーソルがある引数の配列における位置です。関数は補完候補を文字列のリストもしくは次の要素を含むテーブルのリストとして返す必要があります。文字列とテーブルを混在させることはできません。
+``values`` is a list of arguments for the command. If no argument exists, ``value`` will be a list that has single empty string entry. ``pos`` is an index of ``value`` where cursor exists. 
+Completion functions have to return the list of strings or a table contains following keys:
 
 :value:
-    補完文字列です。この項目は必須です。
+    Completion value(required).
 :icon:
-    アイコンとして使用するファイルのパスです。
+    An icon file path for this command
 :description:
-    説明として利用する文字列です。
+    Description
 :always_match:
-    ``true`` を設定するとどんな入力にもマッチするようになり、選択時に入力欄が更新されなくなります。例えばWEB検索結果をただ表示する場合などに利用します。
+    Disables candidate filtering by user text input. Typically this option is set to true in a command such as searching a term in Google.
 
-補完関数は補完以外に情報表示だけのために利用することもできます。デフォルトの ``weather`` コマンドを参照してください。
-
-またオプションを含む複雑な補完関数を書く場合は :lua:func:`icebergsupport.comp_state` も参照してください。
+Please refer to :lua:func:`icebergsupport.comp_state` for writing a complex completion function.
 
 
-commandsグローバル変数
------------------------
-設定例
+commands global variable
+-------------------------
+Examples
 ~~~~~~~~~~~~~~~~~~~~~
-以下に代表的なコマンドの定義例を示します。
 
     .. code-block:: lua
 
 
         commands = { 
-          -- ディレクトリ,ヒストリに残さない --
+          -- A directory, will not be recorded in the history file --
           windir = {path = [[C:\Windows]], history = false},
 
-          -- 実行ファイル, icebergのカレントディレクトリで実行 -- 
+          -- An executable file, runs with a iceberg current directory -- 
           np = {path = [[notepad.exe]], description="Notepad", workdir="."},
 
-          -- シェルスクリプト, ターミナルで実行する --
+          -- A shell script file, executed in the terminal --
           np = {path = [[myscript.sh]], description="My script", terminal="yes"},
 
-          -- lua関数, 補完関数あり -- 
+          -- A lua function, has a completion function -- 
           lua_sample = { 
             path = function(args) 
               local explorer = wins.foreground_explorer()
@@ -320,53 +322,53 @@ commandsグローバル変数
             description="Sample Lua command"},
 
 
-          -- URL, アイコン画像を指定 -- 
+          -- A URL, has a png icon file -- 
           google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false,
                icon = script_path ..[[images\google256.png]]},
 
-          -- グループコマンド：連続してコマンドを実行 -- 
+          -- A group of commands --
           group_sample = { path = ibs.group_command({"windir", {}}, {"np", {}}), description = "runs a group of commands"},
         
         }
 
-コマンド
+Commands
 ~~~~~~~~~~~~~~~~~~~~~~~
-コマンドは以下の要素から構成されます。
+Commands consist of
 
-:name: ``commands`` tableのキーとして表現されます。
+:name: A key of the ``commands`` table.
 :path: 
-    実行対象のパスもしくはLuaの関数です。
-    パスの場合、以下のように引数を含めることができます。また空白を含む場合は ``"`` で囲う必要があります。::
+    A file path or URL or lua function. A path can contain arguments like the following. ::
 
         path = [["C:\s p a c e\bin.exe" arg1 arg2]]
 
-    また入力された変数を参照することができます。 ``google iceberg`` と入力された場合、 ``google`` コマンドの ``path`` が以下の場合、 ``${1}`` に ``iceberg`` が代入されます。::
+    Paths that contain spaces must be enclosed in ``"`` .
+
+    Positional variables can be use in a path. If the inputbox has ``google iceberg`` and a path of the ``google`` command is defined as follows, ``${1}`` will be replaced with ``iceberg``  ::
 
         path = [[http://www.google.com/search?ie=utf8&q=${1}]]
 
-    関数の場合、引数には文字列のリストが与えられます。関数は実行に成功した場合0を、失敗した場合は非0を返す必要があります。
+    In a Lua function, the function receives a list of string. Lua functions should return 0 when function executed successfully, 1 otherwise.
 :completion:
-    ``system.completer.option_func`` と同じ形式の補完関数です。補完関数はコマンドでも ``system.completer.option_func`` でも登録できます。両方登録した場合はコマンドで定義したものが優先されます。
+    A completion function that has same form as ``system.completer.option_func``. Completion functions can either be defined in a command definition or ``system.completer.option_func`` .  This value overrides ``system.completer.option_func`` if both are defined.
 :description:
-    補完候補ウインドウに表示される説明文です。
+    A description for this command.
 :icon:
-    補完候補ウインドウに表示されるアイコン画像のパスです。Linuxの場合、アイコンテーマにおけるアイコン名でもかまいません。アイコン名の場合自動的に最適な画像を選択します。
+    An icon file path. On Linux platforms, an icon name in an icon theme is valid. If an icon name is used, iceberg select the best size of an image automatically.
 :terminal:
-    ターミナルで実行するかを示します。yesの場合常にターミナルで実行します。noの場合ターミナルで実行しません。autoの場合は自動的にターミナルで実行するか判定します。ターミナル実行コマンドは ``system.terminal`` で指定されたコマンドです。
+    If this value is set to ``"yes"``, the command will always be executed in the terminal. ``"no"`` means the command will be executed without the termina. If this value is set to ``"auto"`` , iceberg determines whether or not this command should be executed in the terminal.
 :history:
-    ``false`` を指定するとヒストリに残らなくなります。
+    If this value is set to ``false``, Additional arguments will no be recorded in the history file.
 :workdir:
-    コマンドを実行するディレクトリです。以下の指定が可能です。
+    A working directory of this command.
 
-    - 固定値: そのディレクトリで実行されます。
-    - ``.`` : icebergのカレントディレクトリで実行されます。
-    - Lua関数: 関数の戻り値(文字列)のディレクトリで実行されます。例えば、外部ファイラのディレクトリを返す関数を設定すれば外部ファイラと連携できます。
+    - strings
+    - ``.`` : use iceberg current directory
+    - Lua function: use a return value(string) of the function. You can make iceberg and your file browser cooperate by writing a function that returns a current directory of your file browser.
 
-shortcutsグローバル変数
-------------------------
-設定例
+shortcuts global variables
+----------------------------
+Examples
 ~~~~~~~~~~~~~~~~~~~~~
-以下に代表的なショートカットの定義例を示します。
 
     .. code-block:: lua
 
@@ -375,15 +377,16 @@ shortcutsグローバル変数
           { key = "ctrl-l", name = ":cd" }
         }
 
-上記のようにショートカットを定義し、 ``c:\`` と入力欄に入力された状態で ``ctrl-l`` を押下したとします。その時以下のようにコマンドが実行されます。::
+Consider, when you have pressed ``ctrl-l`` and the inputbox values is ``c:\`` .
+In this situation, the following command will be executed ::
 
     :cd c:\
 
-つまり、コマンドの引数として入力欄に入力されている値が渡されます。
+In short, an inputbox value is passed as an argument to the command.
 
-on_key_upイベントハンドラ
+on_key_up event handler
 --------------------------
-キーが離された時に呼び出されます。
+This function will be executed when you release the key on the keyboard.
 
     .. code-block:: lua
 
@@ -392,11 +395,11 @@ on_key_upイベントハンドラ
           return accept
         end
 
-デフォルトの動作を抑止したい場合はこの関数で1を返してください。
+If you want to prevent default behavior, return 1 .
 
-on_key_downイベントハンドラ
+on_key_down event handler
 ---------------------------------
-キーが押された時に呼び出されます。
+This function will be executed when you press the key on the keyboard.
 
     .. code-block:: lua
 
@@ -405,11 +408,11 @@ on_key_downイベントハンドラ
           return accept
         end
 
-デフォルトの動作を抑止したい場合はこの関数で1を返してください。
+If you want to prevent default behavior, return 1 .
 
-on_enterイベントハンドラ
+on_enter event handler
 --------------------------
-enterキーが押下された際に呼び出されます。
+This function will be executed when you press the Enter key on the keyboard.
 
     .. code-block:: lua
 
@@ -418,11 +421,11 @@ enterキーが押下された際に呼び出されます。
           return accept
         end
 
-デフォルトの動作を抑止したい場合はこの関数で1を返してください。
+If you want to prevent default behavior, return 1 .
 
-on_initializeイベントハンドラ
+on_initialize event handler
 --------------------------------
-起動時に呼び出されます。
+This function will be executed just after iceberg is launched.
 
     .. code-block:: lua
 
@@ -431,4 +434,4 @@ on_initializeイベントハンドラ
           return error
         end
 
-この関数が1を返した場合、起動を停止します。
+If this function returns 1, the launching process will be stopped.

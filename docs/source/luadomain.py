@@ -83,7 +83,7 @@ class LuaObject(ObjectDescription):
     if indextext:
       self.indexnode['entries'].append(('single', indextext,
                         fullname.replace('$', '_S_'),
-                        ''))
+                        '', None))
 
   def get_index_text(self, objectname, name_obj):
     name, obj = name_obj
@@ -160,7 +160,8 @@ class LuaDomain(Domain):
   }
 
   def clear_doc(self, docname):
-    for fullname, (fn, _) in self.data['objects'].items():
+    items = list(self.data['objects'].items())
+    for fullname, (fn, _) in items:
       if fn == docname:
         del self.data['objects'][fullname]
 

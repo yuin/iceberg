@@ -1,12 +1,12 @@
-icebergドキュメント
+iceberg manuals
 ===============================
 
 :Author: Yusuke Inuzuka
 :License: GPLv3
 :Date: |today|
-:Platform: Windows7 64bit, Windows7 32bit(Windows 8系は7互換モードで動作可), Linux(動作確認済み:Ubuntu 14.04)
+:Platform: Windows7(32bit,64bit), Windows 8,10(in 7 compatible mode), Linux(verified:Ubuntu 14.04)
 :Download:  `https://github.com/yuin/iceberg/releases <https://github.com/yuin/iceberg/releases>`_
-:Description: icebergはマルチプラットフォーム(WindowおよびLinux)で利用可能、Lua言語で拡張可能なコマンドライン型ランチャーです。
+:Description: A lightweight hackable keystroke application launcher can run on Windows and Linux
 
 Contents:
 
@@ -18,11 +18,10 @@ Contents:
    tips
    api
    plugin
-   knownissues
    changes
    acknowledgements
 
-Lua APIの索引と検索
+Lua APIs
 ===================
 
 * :ref:`genindex`
