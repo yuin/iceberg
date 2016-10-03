@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>プラグイン &mdash; iceberg 0.9.10 documentation</title>
+    <title>Plugins &#8212; iceberg 0.9.11 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.10',
+        VERSION:     '0.9.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,14 +23,14 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.10 documentation" href="index.html" />
-    <link rel="next" title="既知の問題" href="knownissues.html" />
+    <link rel="top" title="iceberg 0.9.11 documentation" href="index.html" />
+    <link rel="next" title="Changes" href="changes.html" />
     <link rel="prev" title="API" href="api.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.10 documentation</span></a></h1>
-        <h2 class="heading"><span>プラグイン</span></h2>
+          <span>iceberg 0.9.11 documentation</span></a></h1>
+        <h2 class="heading"><span>Plugins</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
       
@@ -39,44 +39,43 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        <a href="changes.html">Changes</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="id1">
-<h1>プラグイン<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id2">
-<h2>概要<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>icebergには柔軟に機能を追加できるプラグイン機能があります。ここではプラグインの使用方法と開発方法を記載します。</p>
+  <div class="section" id="plugins">
+<h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>iceberg has a plugin system. This document describes how to use and develop plugins.</p>
 </div>
-<div class="section" id="id3">
-<h2>プラグインの使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>配布されているプラグインを icebergディレクトリ配下の <code class="docutils literal"><span class="pre">plugins</span></code> ディレクトリに配置します。配置されたプラグインはiceberg起動時に自動的にロードされます。</p>
-<p>また、プラグインのディレクトリ名を <code class="docutils literal"><span class="pre">_</span></code> ではじまるようにリネームするとプラグインを無効にする事ができます。</p>
+<div class="section" id="how-to-use">
+<h2>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<p>Just put a plugin directory under <code class="docutils literal"><span class="pre">${ICEBERG_CONFIG_HOME}/plugins</span></code> .</p>
+<p>You can disable a certain plugin by renaming its directory name with a new name starting with <code class="docutils literal"><span class="pre">_</span></code> .</p>
 </div>
-<div class="section" id="id4">
-<h2>プラグインの開発方法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id5">
-<h3>プラグインの構造<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>プラグインは <code class="docutils literal"><span class="pre">main.lua</span></code> が配置された単純なディレクトリです。典型的には以下のような構造です。</p>
+<div class="section" id="how-to-develop">
+<h2>How to develop<a class="headerlink" href="#how-to-develop" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="structures">
+<h3>Structures<a class="headerlink" href="#structures" title="Permalink to this headline">¶</a></h3>
+<p>A plugin is a simple directory that has <code class="docutils literal"><span class="pre">main.lua</span></code> . Typically, plugins have the following structure :</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre>plugin-name          - プラグイン名のディレクトリ
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span>plugin-name          - plugin directory
   |
-  +---- main.lua     - プラグインのメインスクリプト
+  +---- main.lua     - main script of the plugin
   |
-  +---- icon.svg     - アイコン
+  +---- icon.svg     - icon file
 </pre></div>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="main-lua">
-<h3>main.luaテンプレート<a class="headerlink" href="#main-lua" title="Permalink to this headline">¶</a></h3>
-<p>以下にプラグインのテンプレートを示します。</p>
+<div class="section" id="main-lua-template">
+<h3>main.lua template<a class="headerlink" href="#main-lua-template" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
+<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
 <span class="mi">02</span>  <span class="kd">local</span> <span class="n">script_path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">source</span><span class="p">:</span><span class="n">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="mi">03</span>
 <span class="mi">04</span>  <span class="kd">local</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
@@ -98,18 +97,17 @@
 </div>
 </div></blockquote>
 <ul class="simple">
-<li>04行目 : 設定をローカル変数に保持します。</li>
-<li>08行目 : <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> というグローバル変数で設定変更が可能なようにします。具体的には <code class="docutils literal"><span class="pre">config</span></code> ローカル変数を <code class="docutils literal"><span class="pre">plugin_プラグイン名</span></code> グローバル変数で上書きします。</li>
-<li>09行目 : コマンドを登録します。コマンドの定義方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</li>
+<li>Line 04 : Holds configurations for this plugin as a local variable.</li>
+<li>Line 08 : Users can overwrite the configurations with a global variable named <code class="docutils literal"><span class="pre">plugin_PLUGINNAME</span></code> .</li>
+<li>Line 09 : Adds a command. Refer to <a class="reference internal" href="config.html"><span class="doc">Configurations</span></a> for further information.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="id6">
-<h2>プラグイン<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<p>いくつかプラグインを紹介します。</p>
+<div class="section" id="available-plugins">
+<h2>Available plugins<a class="headerlink" href="#available-plugins" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/yuin/iceberg-ip">iceberg-ip</a> : ローカルマシンのIPアドレスを表示します。</li>
-<li><a class="reference external" href="https://github.com/yuin/iceberg-worldtime">iceberg-worldtime</a> : 世界の都市の時間を表示します。</li>
+<li><a class="reference external" href="https://github.com/yuin/iceberg-ip">iceberg-ip</a> : Shows your machine IP addresses</li>
+<li><a class="reference external" href="https://github.com/yuin/iceberg-worldtime">iceberg-worldtime</a> : Shows the current time at the cities in the world.</li>
 </ul>
 </div>
 </div>
@@ -123,14 +121,14 @@
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="knownissues.html">既知の問題</a>&#160;&#160;»
+        <a href="changes.html">Changes</a>&#160;&#160;»
         </p>
 
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+        &#169; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

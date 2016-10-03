@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>概要 &mdash; iceberg 0.9.10 documentation</title>
+    <title>Overview &#8212; iceberg 0.9.11 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.10',
+        VERSION:     '0.9.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,53 +23,54 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.10 documentation" href="index.html" />
-    <link rel="next" title="環境設定" href="config.html" />
-    <link rel="prev" title="icebergドキュメント" href="index.html" /> 
+    <link rel="top" title="iceberg 0.9.11 documentation" href="index.html" />
+    <link rel="next" title="Configurations" href="config.html" />
+    <link rel="prev" title="iceberg manuals" href="index.html" /> 
   </head>
   <body role="document">
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.10 documentation</span></a></h1>
-        <h2 class="heading"><span>概要</span></h2>
+          <span>iceberg 0.9.11 documentation</span></a></h1>
+        <h2 class="heading"><span>Overview</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
-        «&#160;&#160;<a href="index.html">icebergドキュメント</a>
+        «&#160;&#160;<a href="index.html">iceberg manuals</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="config.html">環境設定</a>&#160;&#160;»
+        <a href="config.html">Configurations</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="id1">
-<h1>概要<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="iceberg">
-<h2>icebergとは<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h2>
-<p>icebergはシンプルで拡張性の高いコマンドラインランチャです。以下のような機能があります。</p>
+<h2>iceberg?<a class="headerlink" href="#iceberg" title="Permalink to this headline">¶</a></h2>
+<p>iceberg is a simple and extensible keystroke application launcher.</p>
 <ul class="simple">
-<li>前方一致、部分一致、あいまい検索</li>
-<li>migemo検索</li>
-<li>ヒストリ検索</li>
-<li>Lua関数の呼び出し</li>
+<li>Prefix match, Partial match, Fuzzy match</li>
+<li>Migemo search(Japanese text search by English alphabets)</li>
+<li>History search</li>
+<li>Execute lua functions</li>
+<li>Lua APIs</li>
 </ul>
 <img alt="_images/screenshot_01.jpg" src="_images/screenshot_01.jpg" />
 <img alt="_images/iceberg_demo_01.gif" src="_images/iceberg_demo_01.gif" />
 <img alt="_images/iceberg_demo_02.gif" src="_images/iceberg_demo_02.gif" />
 </div>
-<div class="section" id="id2">
-<h2>インストール<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="how-to-install">
+<h2>How to install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://github.com/yuin/iceberg/releases">Release</a> で配布されているアーカイブを任意の場所に解凍してください。レジストリは使用していません。</p>
+<p>Download a zip file from <a class="reference external" href="https://github.com/yuin/iceberg/releases">Release</a> and unzip it where you want. iceberg does not use the registry.</p>
 </div>
 <div class="section" id="linux-ubuntu-14-04">
 <h3>Linux(Ubuntu 14.04)<a class="headerlink" href="#linux-ubuntu-14-04" title="Permalink to this headline">¶</a></h3>
-<p>以下のライブラリが必要です。 <code class="docutils literal"><span class="pre">apt-get</span></code> コマンドでインストールしてください。</p>
+<p>iceberg requires the following packages. You can install these packages with <code class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span></code> .</p>
 <ul class="simple">
 <li>g++</li>
 <li>gdb</li>
@@ -87,52 +88,57 @@
 <li>libonig-dev</li>
 <li>libmigemo-dev</li>
 </ul>
-<p><a class="reference external" href="https://github.com/yuin/iceberg/releases">Release</a> で配布されているソースコードを任意の場所に解凍してください。その後</p>
+<p>Next, download a zip file from <a class="reference external" href="https://github.com/yuin/iceberg/releases">Release</a> and unzip it .</p>
+<p>And then run the following commands :</p>
 <blockquote>
-<div><div class="highlight-bash"><div class="highlight"><pre>% ./tools/install_requires.sh
+<div><div class="highlight-bash"><div class="highlight"><pre><span></span>% ./tools/install_requires.sh
 % make
 % sudo make install
 </pre></div>
 </div>
 </div></blockquote>
-<p>と実行してください。sudoを実行したユーザのホームディレクトリに <code class="docutils literal"><span class="pre">.iceberg</span></code> ディレクトリが作成され、デフォルトの設定ファイルなどがコピーされます。</p>
-<p>Linux上での文字コードはutf-8のみがサポートされています。</p>
+<p>On Linux, only UTF-8 is supported for system encodings.</p>
 </div>
-<div class="section" id="linux">
-<h3>Linux(その他)<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
-<p>動作確認されていませんが、Ubuntuと同等のライブラリをインストールすればコンパイルできる可能性があります。g++は4.9以上を利用してください。また、動作が確認できましたらぜひ作者までお知らせください。</p>
+<div class="section" id="linux-others">
+<h3>Linux(others)<a class="headerlink" href="#linux-others" title="Permalink to this headline">¶</a></h3>
+<p>Not verified though, It may be possible to compile with libraries that are equivalent to avobe packages. g++ must be newer than 4.9 .</p>
 </div>
 </div>
-<div class="section" id="id4">
-<h2>使用法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p>以下ではデフォルトの設定を例にします。</p>
-<div class="section" id="id5">
-<h3>コマンド登録<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>まず、コマンドを登録する必要があります。 <code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">all</span></code> と入力しEnterを押下してください。この操作でスタートメニューのアプリケーションが自動で登録されます。ユーザが独自にコマンドを登録する簡単な方法は以下です。</p>
-<p>コマンド履歴、キャッシュなどはすべてWindowsの場合iceberg.exeが存在するディレクトリ、その他のプラットフォームの場合 <code class="docutils literal"><span class="pre">~/.iceberg</span></code> ディレクトリに作成されます。これをicebergディレクトリと呼びます。</p>
-<ol class="arabic">
-<li><dl class="first docutils">
-<dt>icebergディレクトリにある <code class="docutils literal"><span class="pre">shortcuts</span></code> ディレクトリ内にショートカット( Windowsの場合、 <code class="docutils literal"><span class="pre">*.lnk</span></code> , Linuxの場合 <code class="docutils literal"><span class="pre">.desktop</span></code> )を作成します。</dt>
-<dd><ul class="first last simple">
-<li>ショートカットに設定した実行ディレクトリ、コメントはicebergにも引き継がれます。</li>
+<div class="section" id="how-to-use">
+<h2>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will use the default configurations.</p>
+<div class="section" id="add-commands">
+<h3>Add commands<a class="headerlink" href="#add-commands" title="Permalink to this headline">¶</a></h3>
+<p>First, you need to add applications. Input <code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">all</span></code> and hit Enter. Now iceberg scans your applications and add these applications to iceberg.</p>
+<p>A default configuration directory differs depending on your platform.</p>
+<p>Windows:</p>
+<ul class="simple">
+<li>Same directory as the base directory of iceberg executable file</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><p class="first">icebergで <code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">shortcuts</span></code> を実行します。</p>
-</li>
+<p>Linux:</p>
+<p>iceberg searchs the default configuration directory in the following order:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">${XDG_CONFIG_HOME}/iceberg</span></code> if <code class="docutils literal"><span class="pre">XDG_CONFIG_HOME</span></code> environment variable exists.</li>
+<li><code class="docutils literal"><span class="pre">${HOME}/.config/iceberg</span></code> if <code class="docutils literal"><span class="pre">${HOME}/.config</span></code> is an existing directory path.</li>
+<li><code class="docutils literal"><span class="pre">${HOME}/.iceberg</span></code></li>
+</ul>
+<p>This directory shall be expressed as <code class="docutils literal"><span class="pre">ICEBERG_CONFIG_HOME</span></code> in this document.</p>
+<p>There are many way to add your applications.</p>
+<ol class="arabic simple">
+<li>Create shortcuts( <code class="docutils literal"><span class="pre">*.link</span></code> On Windows or <code class="docutils literal"><span class="pre">.desktop</span></code> On Linux) under <code class="docutils literal"><span class="pre">${ICEBERG_CONFIG_HOME}/shortcuts}</span></code> .</li>
+<li>Execute <code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">shortcuts</span></code> in iceberg.</li>
 </ol>
-<p>icebergではそのほか、以下のような方法でコマンド登録が行えます。</p>
+<p>In addition, iceberg has the following method to add applications.</p>
 <ul>
 <li><dl class="first docutils">
-<dt>サーチパスを用いる方法</dt>
+<dt>Search paths</dt>
 <dd><ol class="first last arabic">
-<li><p class="first">configファイルにサーチパスを定義します。</p>
+<li><p class="first">Define search paths in configuration files.</p>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">CATEGORY</span></code> を実行します。 <code class="docutils literal"><span class="pre">CATEGORY</span></code> には1で定義したサーチパスのカテゴリもしくは <code class="docutils literal"><span class="pre">all</span></code> を入力します。</dt>
+<dt>Execute <code class="docutils literal"><span class="pre">:scan_search_path</span> <span class="pre">CATEGORY</span></code>. <code class="docutils literal"><span class="pre">CATEGORY</span></code> must be a category that was defined in 1 or <code class="docutils literal"><span class="pre">all</span></code> .</dt>
 <dd><ul class="first last simple">
-<li>サーチパスにマッチするファイルがicebergのコマンドとして取り込まれます。</li>
+<li>Files that match search path patterns will be added to iceberg.</li>
 </ul>
 </dd>
 </dl>
@@ -141,99 +147,96 @@
 </dd>
 </dl>
 </li>
-<li><p class="first">configファイルに直接記載する方法: 詳しい設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> を参照してください。</p>
+<li><p class="first">Write commands in configuration files: Please refer to <a class="reference internal" href="config.html"><span class="doc">Configurations</span></a> for further information.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h3>組み込みコマンド<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<p>以下のコマンドが組み込みコマンドとして提供されています。組み込みコマンドは <code class="docutils literal"><span class="pre">:</span></code> から始まります。</p>
+<div class="section" id="built-in-internal-commands">
+<h3>Built-in internal commands<a class="headerlink" href="#built-in-internal-commands" title="Permalink to this headline">¶</a></h3>
+<p>iceberg has several commands called built-in internal commands. All built-in internal command names start with <code class="docutils literal"><span class="pre">:</span></code> .</p>
 <ul class="simple">
-<li><cite>:version</cite> : icebergのバージョンを表示します。</li>
-<li><cite>:exit</cite> : icebergを終了します。</li>
-<li><cite>:reboot</cite> : icebergを終了します。</li>
-<li><cite>:pwd</cite> : icebergのカレントディレクトリを表示します。</li>
-<li><cite>:cd</cite>  : icebergのカレントディレクトリを変更します。</li>
-<li><cite>:scan_search_path</cite>  : サーチパスを再検索します。</li>
-<li><cite>:opendir</cite> : 引数のコマンドもしくはディレクトリを開きます。</li>
-<li><cite>:empty</cite> : 特別なコマンドです。入力欄になにも入力せずにEnterを実行した場合このコマンドが実行されます。デフォルトではWinowsの場合、最前面のエクスプローラで表示しているディレクトリをカレントディレクトリとしてコマンドプロンプトを開きます。その他のプラットフォームの場合、icebergのカレントディレクトリでターミナルを開きます。</li>
+<li><cite>:version</cite> : Shows the version of iceberg.</li>
+<li><cite>:exit</cite> : Shut iceberg down.</li>
+<li><cite>:reboot</cite> : Reboot iceberg.</li>
+<li><cite>:pwd</cite> : Shows the current directory of iceberg.</li>
+<li><cite>:cd</cite>  : Changes the current directory of iceberg.</li>
+<li><cite>:scan_search_path</cite>  : Scans search paths and add files to iceberg.</li>
+<li><cite>:opendir</cite> : Opens a first argument as a directory.</li>
+<li><cite>:empty</cite> : This command will be executed when the inputbox is empty. On Windows, iceberg opens a terminal with the foreground explorer&#8217;s path by default. On other platforms, iceberg opens a terminal with the current directory of iceberg.</li>
 </ul>
-<p>その他、以下のコマンドがデフォルトで用意されています。</p>
+<p>And the following commands are added by default.</p>
 <ul class="simple">
-<li><cite>google</cite> : Googleで第一引数の単語を検索する。</li>
-<li><cite>cal</cite> : <code class="docutils literal"><span class="pre">cal</span> <span class="pre">10+2</span></code> のように計算を行える計算機。</li>
+<li><cite>google</cite> : Searchs a first argument by Google.</li>
+<li><cite>cal</cite> : A calculator that can be used such as <code class="docutils literal"><span class="pre">cal</span> <span class="pre">10+2</span></code></li>
 </ul>
-<p>以下はWindows版のみデフォルトで用意されています。</p>
+<p>The following commands are added by default only on Windows.</p>
 <ul class="simple">
-<li><cite>control_panel</cite> : コントロールパネルを表示する。</li>
-<li><cite>windows_service</cite> : サービスを表示する。</li>
-<li><cite>my_computer</cite> : マイコンピュータを表示する。</li>
-<li><cite>network_computer</cite> : ネットワークコンピュータを表示する。</li>
-<li><cite>mkdir</cite> : 最前面のエクスプローラで表示されているディレクトリに第一引数の名前をもつディレクトリを作成する。</li>
-<li><cite>weather</cite> : 日本の主要都市の天気を表示します(このコマンドはインターネット上から情報を取得するため、インターネット接続不可の場合情報が表示できません）。 <code class="docutils literal"><span class="pre">weather</span></code> と入力した後半角スペースを入力すると天気リストが表示されます。</li>
-<li><cite>alttab</cite> : <code class="docutils literal"><span class="pre">alt+tab</span></code> キーを押したときのような、ウインドウ切り替えコマンドです。 <code class="docutils literal"><span class="pre">alttab</span></code> と入力した後半角スペースを入力するとウインドウリストが表示されます。</li>
-<li><cite>clipboard</cite> : クリップボード履歴一覧を表示します。候補を選択するとクリップボードにコピーされます。</li>
+<li><cite>control_panel</cite> : Shows the control panel.</li>
+<li><cite>windows_service</cite> : Shows the windows services.</li>
+<li><cite>my_computer</cite> : Shows the &#8216;My Computer&#8217; .</li>
+<li><cite>network_computer</cite> : Shows the network computers.</li>
+<li><cite>mkdir</cite> : Creates a new directory named a first argument under the foreground explorer&#8217;s path.</li>
+<li><cite>alttab</cite> : Equivalent to <code class="docutils literal"><span class="pre">alt+tab</span></code> task switcher. Input <code class="docutils literal"><span class="pre">alttab</span></code> and hit space.</li>
+<li><cite>clipboard</cite> : Shows a list of the histories. The selected history will be copied into the clipboard when this command is executed.</li>
 </ul>
-<p>以下はLinux版のみデフォルトで用意されています。</p>
+<p>The following commands are added by default only on Linux.</p>
 <ul class="simple">
-<li><cite>locate</cite> : <code class="docutils literal"><span class="pre">locate</span> <span class="pre">.txt</span></code> のようにするとファイルを検索することができます。</li>
-<li><cite>kill</cite> : killコマンドを実行します。対象プロセス名で補完することができます。</li>
+<li><cite>locate</cite> : Equivalent to the <code class="docutils literal"><span class="pre">locate</span></code> command.</li>
+<li><cite>kill</cite> : Equivalent to the <code class="docutils literal"><span class="pre">kill</span></code> command, processes can be completed by its name.</li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h3>カレントディレクトリ<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p>icebergはカレントディレクトリを保持しています。組み込みコマンド <code class="docutils literal"><span class="pre">:pwd</span></code> で表示、 <code class="docutils literal"><span class="pre">:cd</span></code> で変更できます。</p>
+<div class="section" id="current-directory">
+<h3>Current directory<a class="headerlink" href="#current-directory" title="Permalink to this headline">¶</a></h3>
+<p>iceberg has its own current directory. This directory can be shown <code class="docutils literal"><span class="pre">pwd</span></code> command and changed by <code class="docutils literal"><span class="pre">:cd</span></code> command.</p>
 </div>
-<div class="section" id="id8">
-<h3>表示と実行<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">ctrl-space</span></code> を押下するとicebergが表示されます。なにかキーを入力すると補完候補が表示されます。 <code class="docutils literal"><span class="pre">ctrl-p</span></code> および <code class="docutils literal"><span class="pre">ctrl-n</span></code> で補完候補を選んで <code class="docutils literal"><span class="pre">Enter</span></code> を押すとコマンドが実行されます。その際、 <code class="docutils literal"><span class="pre">!notepad</span></code> のようにコマンドの先頭に <code class="docutils literal"><span class="pre">!</span></code> を付与するとコマンドに紐づけられた実行ディレクトリではなく、icebergのカレントディレクトリで実行されます。入力は <code class="docutils literal"><span class="pre">&quot;aaa</span> <span class="pre">bbb&quot;</span></code> のように <code class="docutils literal"><span class="pre">&quot;</span></code> でくくることにより空白を含めることができます。</p>
-<p>また <code class="docutils literal"><span class="pre">c:/</span></code> や <code class="docutils literal"><span class="pre">./</span></code> のように入力すると簡易ファイラとして利用することができます。Windowsでは  <code class="docutils literal"><span class="pre">/</span></code> または <code class="docutils literal"><span class="pre">\</span></code> を入力するとドライブ一覧を表示します。</p>
+<div class="section" id="execute-commands">
+<h3>Execute commands<a class="headerlink" href="#execute-commands" title="Permalink to this headline">¶</a></h3>
+<p>Once iceberg has been started, you hides it by hitting <code class="docutils literal"><span class="pre">escape</span></code> key. And you bring it forward again by holding the alt key and tapping the space key.</p>
+<p>You can then type some keys for searching the commands and select found commands by <code class="docutils literal"><span class="pre">ctrl-p</span></code> and <code class="docutils literal"><span class="pre">ctrl-n</span></code>. Once you have selected the command, hit enter to execute the commands.</p>
+<p>If you add a prefix <code class="docutils literal"><span class="pre">!</span></code> such as <code class="docutils literal"><span class="pre">!notepad</span></code> at this time, the commands will be executed under the current directory of iceberg rather than the current directory that is associated with the command itself. You can input a text that include spaces by enclosing the text within <code class="docutils literal"><span class="pre">&quot;</span></code> such as <code class="docutils literal"><span class="pre">&quot;aaaa</span> <span class="pre">bbbb&quot;</span></code> .</p>
+<p>iceberg also can browse file systems. The file browser mode will start by typing such as <code class="docutils literal"><span class="pre">C:\</span></code> and <code class="docutils literal"><span class="pre">./</span></code> . On Windows, iceberg shows a list of drives by typing <code class="docutils literal"><span class="pre">/</span></code> or <code class="docutils literal"><span class="pre">\</span></code> .</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Windowsではパスの区切り文字には <code class="docutils literal"><span class="pre">/</span></code> もしくは <code class="docutils literal"><span class="pre">\</span></code> が使用できますが、特定のケースでは <code class="docutils literal"><span class="pre">/</span></code> しか使用できません。
-たとえば <code class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name&quot;</span></code> と入力欄に表示されている場合 <code class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name\&quot;</span></code> とは入力できません。 <code class="docutils literal"><span class="pre">name</span></code> の直後の <code class="docutils literal"><span class="pre">\</span></code> は最後の <code class="docutils literal"><span class="pre">&quot;</span></code> に対するエスケープ文字として認識されます。このようなケースでは <code class="docutils literal"><span class="pre">/</span></code> を使用してください。</p>
+<p class="last">On Windows, you can use both <code class="docutils literal"><span class="pre">/</span></code> and <code class="docutils literal"><span class="pre">\</span></code> as a separator of path components. But in some situations, you can use only <code class="docutils literal"><span class="pre">/</span></code> . If an inputbox value is <code class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name&quot;</span></code>, you can not type <code class="docutils literal"><span class="pre">&quot;C:\Document</span> <span class="pre">and</span> <span class="pre">Settings\name\&quot;</span></code> . <code class="docutils literal"><span class="pre">\</span></code> after <code class="docutils literal"><span class="pre">name</span></code> is considered as an escape character for the tail <code class="docutils literal"><span class="pre">&quot;</span></code> .</p>
 </div>
 </div>
-<div class="section" id="id9">
-<h3>ショートカット<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>icebergになにかを入力した状態で <code class="docutils literal"><span class="pre">Enter</span></code> 以外の特別なキーを押すことによりicebergに入力されている文字列を引数としてコマンドを実行することができます。例えば、デフォルトではコマンドを入力した状態で <code class="docutils literal"><span class="pre">ctrl-d</span></code> を押すとそのコマンドのディレクトリを開きます。</p>
+<div class="section" id="shortcuts">
+<h3>Shortcuts<a class="headerlink" href="#shortcuts" title="Permalink to this headline">¶</a></h3>
+<p>You can execute commands with an inputbox value by hitting some special key combinations. By default, <code class="docutils literal"><span class="pre">ctrl-d</span></code> opens a directory that is associated with a selected command. In this case, an inputbox value was passed as an argument to <code class="docutils literal"><span class="pre">:open</span></code> command.</p>
 </div>
-<div class="section" id="id10">
-<h3>非表示にする<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">escape</span></code> を押下するとicebergを非表示にできます。</p>
+<div class="section" id="switch-to-the-history-mode">
+<h3>Switch to the history mode<a class="headerlink" href="#switch-to-the-history-mode" title="Permalink to this headline">¶</a></h3>
+<p>You can switch mode to the history mode by <code class="docutils literal"><span class="pre">ctrl-r</span></code> . In the history mode, commands will be completed including arguments.</p>
 </div>
-<div class="section" id="id11">
-<h3>モード切り替え<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">ctrl-r</span></code> を押下するとノーマルモードとヒストリモードを切り替えることができます。ヒストリモードでは引数も含めて過去に入力したコマンドから補完することができます。</p>
-</div>
-<div class="section" id="migemo">
-<h3>migemo検索<a class="headerlink" href="#migemo" title="Permalink to this headline">¶</a></h3>
-<p>Windowsの場合、iceberg実行ファイルのディレクトリに <code class="docutils literal"><span class="pre">migemo.dll</span></code> を <code class="docutils literal"><span class="pre">dict</span></code> ディレクトリ配下に辞書ファイルを配置することによりmigemo機能が有効となります。migemoのバージョンは <code class="docutils literal"><span class="pre">cmigemo-1.3c</span></code> で動作確認をしています。前方一致・部分一致検索を行う場合に日本語ファイルにもマッチするようになります。ファイル配置は以下のようになります。:</p>
-<div class="highlight-python"><div class="highlight"><pre>iceberg.exe
-migemo.dll
-dict/
-   han2zen.dat
-   hira2kata.dat
-   migemo-dict
-   roma2hira.dat
-   zen2han.dat
+<div class="section" id="migemo-search">
+<h3>Migemo search<a class="headerlink" href="#migemo-search" title="Permalink to this headline">¶</a></h3>
+<p>iceberg is integrated with the Migemo. To enable the migemo capability, put <code class="docutils literal"><span class="pre">migemo.dll</span></code> or <code class="docutils literal"><span class="pre">libmigemo.so</span></code> on your library path and migemo dictionaries on <code class="docutils literal"><span class="pre">${ICEBERG_CONFIG_HOME}/dict</span></code> . This functionality was verified with <code class="docutils literal"><span class="pre">cmigemo-1.3c</span></code> . On Windows, files should be like the following :</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span>
+<span class="n">migemo</span><span class="o">.</span><span class="n">dll</span>
+<span class="nb">dict</span><span class="o">/</span>
+   <span class="n">han2zen</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">hira2kata</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">migemo</span><span class="o">-</span><span class="nb">dict</span>
+   <span class="n">roma2hira</span><span class="o">.</span><span class="n">dat</span>
+   <span class="n">zen2han</span><span class="o">.</span><span class="n">dat</span>
 </pre></div>
 </div>
-<p>その他のプラットフォームの場合、ライブラリパスに <code class="docutils literal"><span class="pre">libmigemo.so</span></code> を、 <code class="docutils literal"><span class="pre">~/.iceberg/dict</span></code> ディレクトリ配下に辞書ファイルを配置するとmigemo機能が有効となります。辞書ファイルの文字コードはutf-8のものを利用してください。</p>
+<p>Migemo dictionaries should be encoded in UTF-8.</p>
 </div>
-<div class="section" id="id12">
-<h3>外部からのコマンド送信<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>以下のように起動することで、外部から起動済みのicebergにコマンドを送信することができます。この機能を利用するためには <code class="docutils literal"><span class="pre">system.server_port</span></code> を <code class="docutils literal"><span class="pre">0</span></code> 以外に設定しておく必要があります。</p>
-<div class="highlight-python"><div class="highlight"><pre>iceberg.exe -m &quot;exec 実行したいコマンド&quot;
-iceberg.exe -m &quot;set 入力欄にセットしたい文字列&quot;
-iceberg.exe -m &quot;activate&quot;
+<div class="section" id="send-messages-from-external-processes">
+<h3>Send messages from external processes<a class="headerlink" href="#send-messages-from-external-processes" title="Permalink to this headline">¶</a></h3>
+<p>You can interact with an already existing iceberg instance by executing iceberg like the following :</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;exec COMMAND_TO_EXECUTE&quot;</span>
+<span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;set TEXT_TO_SET_INTO_INPUTBOX&quot;</span>
+<span class="n">iceberg</span><span class="o">.</span><span class="n">exe</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;activate&quot;</span>
 </pre></div>
 </div>
+<p>This functionality will be enabled if <code class="docutils literal"><span class="pre">system.server_port</span></code> is not set to <code class="docutils literal"><span class="pre">0</span></code> .</p>
 </div>
 </div>
-<div class="section" id="id13">
-<h2>より進んだ使い方<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
-<p>詳しい使い方や設定方法は <a class="reference internal" href="config.html"><em>環境設定</em></a> , <a class="reference internal" href="api.html"><em>API</em></a> , <a class="reference internal" href="plugin.html"><em>プラグイン</em></a> や <a class="reference internal" href="tips.html"><em>Tips</em></a> を参照してください。</p>
+<div class="section" id="further-information">
+<h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<p>Please refer to <a class="reference internal" href="config.html"><span class="doc">Configurations</span></a> , <a class="reference internal" href="api.html"><span class="doc">API</span></a> , <a class="reference internal" href="plugin.html"><span class="doc">Plugins</span></a> and <a class="reference internal" href="tips.html"><span class="doc">Tips</span></a> for further information.</p>
 </div>
 </div>
 
@@ -242,18 +245,18 @@ iceberg.exe -m &quot;activate&quot;
       <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
-        «&#160;&#160;<a href="index.html">icebergドキュメント</a>
+        «&#160;&#160;<a href="index.html">iceberg manuals</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="config.html">環境設定</a>&#160;&#160;»
+        <a href="config.html">Configurations</a>&#160;&#160;»
         </p>
 
       </div>
 
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.3.
+        &#169; Copyright 2012-2016, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
     </div>
   </body>
 </html>

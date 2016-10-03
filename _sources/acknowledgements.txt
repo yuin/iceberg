@@ -1,32 +1,32 @@
-謝辞
+Acknowledgements
 ==========================================
 
-icebergは以下のライブラリを使用もしくはバンドルしています。
+iceberg bundles the following libraries.
 
-- `鬼車 <https://github.com/kkos/oniguruma>`_ 
-    - 作者: K.Kosako
-    - ライセンス: :download:`BSDライセンス <license/oniguruma.txt>`
+- `Oniguruma <https://github.com/kkos/oniguruma>`_ 
+    - Author: K.Kosako
+    - License: :download:`BSD <license/oniguruma.txt>`
 - `fltk <http://www.fltk.org/>`_ 
-    - 作者: Bill Spitzak, FLTK project
-    - ライセンス: :download:`例外条項付きLGPLライセンス <license/fltk.txt>`
+    - Author: Bill Spitzak, FLTK project
+    - License: :download:`LGPL with some exceptions <license/fltk.txt>`
 - `Lua <http://www.lua.org/>`_
-    - 作者: TeCGraf
-    - ライセンス: :download:`MITライセンス <license/lua.txt>`
+    - Author: TeCGraf
+    - License: :download:`MIT <license/lua.txt>`
 - `LuaSocket <http://w3.impa.br/~diego/software/luasocket/>`_
-    - 作者: Diego Nehab
-    - ライセンス: :download:`MITライセンス <license/luasocket.txt>`
+    - Author: Diego Nehab
+    - License: :download:`MIT <license/luasocket.txt>`
 - `LuaFileSystem <http://keplerproject.github.io/luafilesystem/>`_
-    - 作者: Kepler Project
-    - ライセンス: :download:`MITライセンス <license/luafilesystem.txt>`
+    - Author: Kepler Project
+    - License: :download:`MIT <license/luafilesystem.txt>`
 - `Lua CJSON <http://www.kyne.com.au/~mark/software/lua-cjson.php>`_
-    - 作者: Mark Pulford
-    - ライセンス: :download:`MITライセンス <license/luacjson.txt>`
+    - Author: Mark Pulford
+    - License: :download:`MIT <license/luacjson.txt>`
 - `LuaXML <http://viremo.eludi.net/LuaXML/>`_
-    - 作者: Gerald Franz
-    - ライセンス: :download:`MITライセンス <license/luaxml.txt>`
+    - Author: Gerald Franz
+    - License: :download:`MIT <license/luaxml.txt>`
 - `cmigemo <http://www.kaoriya.net/software/cmigemo/>`_
-    - 作者: MURAOKA Taro
-    - ライセンス: :download:`MITライセンス <license/cmigemo.txt>`
+    - Author: MURAOKA Taro
+    - License: :download:`MIT <license/cmigemo.txt>`
 - `nanosvg <https://github.com/memononen/nanosvg>`_
-    - 作者: Mikko Mononen
-    - ライセンス: :download:`zlib license <license/nanosvg.txt>`
+    - Author: Mikko Mononen
+    - License: :download:`zlib <license/nanosvg.txt>`
