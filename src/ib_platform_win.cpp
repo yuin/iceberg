@@ -156,11 +156,11 @@ static int create_renderer_taget(HWND w) {
     IDWriteRenderingParams *oldparams = nullptr;
     IDWriteRenderingParams *params = nullptr;
     hresult(ib_g_dwrite_factory->CreateRenderingParams(&oldparams));
-    FLOAT gamma = oldparams->GetGamma();
-    FLOAT enchanced_conrast = oldparams->GetEnhancedContrast();
-    FLOAT clear_type_level = oldparams->GetClearTypeLevel();
-    DWRITE_PIXEL_GEOMETRY pixel_geometry = oldparams->GetPixelGeometry();
-    DWRITE_RENDERING_MODE rendering_mode = oldparams->GetRenderingMode();
+    auto gamma = oldparams->GetGamma();
+    auto enchanced_conrast = oldparams->GetEnhancedContrast();
+    auto clear_type_level = oldparams->GetClearTypeLevel();
+    auto pixel_geometry = oldparams->GetPixelGeometry();
+    auto rendering_mode = oldparams->GetRenderingMode();
 
     ib::Regex splitter("\\s*,\\s*", ib::Regex::NONE);
     splitter.init();
@@ -204,7 +204,7 @@ static void create_current_dwrite_font_data() {
   if(fl_font() == ib::Fonts::input) {
     factor = 0.8;
   }
-  double size = ypx2dpi(font_desc->size * factor);
+  auto size = ypx2dpi(font_desc->size * factor);
   IDWriteTextFormat *format = nullptr;
   hresult(ib_g_dwrite_factory->CreateTextFormat(
     ib::platform::utf82oschar(fontname).get(),
@@ -226,8 +226,8 @@ static void create_current_dwrite_font_data() {
 }
 
 static IDWriteTextFormat* current_dwrite_text_format() {
-  Fl_Font_Descriptor *font_desc = fl_graphics_driver->font_descriptor();
-  IDWriteTextFormat *format = ib_g_textformat_map[font_desc->fid];
+  const auto font_desc = fl_graphics_driver->font_descriptor();
+  const auto format = ib_g_textformat_map[font_desc->fid];
   if(format != nullptr) return format;
   create_current_dwrite_font_data();
   return ib_g_textformat_map[font_desc->fid];
@@ -256,7 +256,7 @@ public:
   }
 
   void draw(const char* str, int n, int x, int y) {
-    ID2D1DCRenderTarget *target = ib_g_rndrt_map[fl_window];
+    auto target = ib_g_rndrt_map[fl_window];
     if(target == nullptr) {
       Fl_GDI_Graphics_Driver::draw(str, n, x, y);
       return;
@@ -270,10 +270,15 @@ public:
 
     auto form = current_dwrite_text_format();
     auto &metrics = ib_g_metrics_map[font_desc->fid];
+
+    int height_adj = 5;
+    if(fl_font() == ib::Fonts::input) {
+      height_adj = 0;
+    }
     
     // iceberg never use multiline texts, so we optimize this function for single line texts.
     rc.top    = y - metrics.height*0.8; // 0.8 is baseline
-    rc.bottom = rc.top + metrics.height;
+    rc.bottom = rc.top + metrics.height + height_adj;
     hresult(target->BindDC(fl_gc, &rc));
     target->BeginDraw();
 
@@ -302,7 +307,7 @@ class Fl_FastGDI_Graphics_Driver : public Fl_GDI_Graphics_Driver {
 public:
   double width(const char *str, int n) {
     auto osstr = utf82ochar_n(str, n);
-    COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
+    auto oldColor = SetTextColor(fl_gc, fl_RGB());
     SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
     RECT rect;
     DrawTextW(fl_gc, osstr.get(), -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_CALCRECT);
@@ -312,7 +317,7 @@ public:
 
   void draw(const char* str, int n, int x, int y) {
     auto osstr = utf82ochar_n(str, n);
-    COLORREF oldColor = SetTextColor(fl_gc, fl_RGB());
+    auto oldColor = SetTextColor(fl_gc, fl_RGB());
     SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
     RECT rect;
     rect.left = x;
@@ -652,7 +657,7 @@ static void list_network_servers(std::vector<ib::oschar*> &result, const ib::osc
   DWORD read;
   DWORD num_servers;
 
-  NET_API_STATUS ret = NetServerEnum(nullptr, 100, (BYTE**)&server_info, MAX_PREFERRED_LENGTH, &read, &num_servers, types, domain, 0);
+  auto ret = NetServerEnum(nullptr, 100, (BYTE**)&server_info, MAX_PREFERRED_LENGTH, &read, &num_servers, types, domain, 0);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
       auto server_name = new ib::oschar[IB_MAX_PATH];
@@ -671,7 +676,7 @@ static void list_network_shares(std::vector<ib::oschar*> &result, ib::oschar *se
   DWORD read;
   DWORD num_shares;
 
-  NET_API_STATUS ret = NetShareEnum(server, 502, (BYTE**)&share_info,  MAX_PREFERRED_LENGTH, &read, &num_shares, nullptr);
+  auto ret = NetShareEnum(server, 502, (BYTE**)&share_info,  MAX_PREFERRED_LENGTH, &read, &num_shares, nullptr);
   if (ret == NERR_Success) {
     for (DWORD i = 0; i < read; ++i) {
       auto share_name = new ib::oschar[IB_MAX_PATH];
@@ -774,7 +779,7 @@ int ib::platform::startup_system() { // {{{
 
 
   if(!cfg->getDisableDirectWrite()) {
-    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.2));
+    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.25));
   }
 
   WSADATA wsa;
