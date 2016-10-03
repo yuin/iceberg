@@ -1,6 +1,6 @@
 Changes
 =======================
-0.9.11 (2016-xx-xx)
+0.9.11 (2016-10-03)
 -----------------------
 - IMPROVED: Improve DirectWrite drawing perfornamce.
 - IMPROVED: Add ``direct_write_params`` option, This allows you to configure the details of DirectWrite.
