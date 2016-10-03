@@ -60,5 +60,4 @@ rm -rf ${PACKAGE_DIR}/docs/.git;
 mkdir -p  ${PACKAGE_DIR}/config.d;
 mkdir -p  ${PACKAGE_DIR}/shortcuts;
 mkdir -p  ${PACKAGE_DIR}/plugins;
-cp -r assets/common/lualibs/weather/ ${PACKAGE_DIR}/plugins;
 zip -r iceberg-${ARCH}-${VERSION}.zip ${PACKAGE_DIR};
