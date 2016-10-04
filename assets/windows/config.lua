@@ -23,7 +23,7 @@ system = {
   disable_direct_write = false,
   direct_write_params = "gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.2,pixel_geometry=0,rendering_mode=5",
 
-  hot_key = "ctrl-alt",
+  hot_key = "alt-space",
   escape_key = "escape",
   list_next_key = "ctrl-n",
   list_prev_key = "ctrl-p",
