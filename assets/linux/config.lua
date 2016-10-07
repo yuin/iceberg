@@ -1,6 +1,6 @@
-local dot_iceberg = _iceberg_config_dir()
-package.path = dot_iceberg .. [[/lualibs/?.lua;]] .. package.path
-package.cpath = dot_iceberg ..[[/lualibs/?.so;]] .. package.path
+local iceberg_config_dir = _iceberg_config_dir()
+package.path = iceberg_config_dir .. [[/lualibs/?.lua;]] .. package.path
+package.cpath = iceberg_config_dir ..[[/lualibs/?.so;]] .. package.path
 local ibs = require("icebergsupport")
 
 -- configurations --
@@ -27,7 +27,7 @@ system = {
   kill_word_key = "ctrl-w",
 
   search_path = {
-    {category="shortcuts", path = dot_iceberg .. [[/shortcuts]], depth = 5, pattern=[[^.*\.(desktop)$]]},
+    {category="shortcuts", path = iceberg_config_dir .. [[/shortcuts]], depth = 5, pattern=[[^.*\.(desktop)$]]},
     {category="applications(usr/share)", path = [[/usr/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]},
     {category="applications(usr/local)", path = [[/usr/local/share/applications]], depth = 5, pattern=[[^.*\.(desktop)$]]}
   },
@@ -126,7 +126,7 @@ commands = {
       assert(ibs.open_dir(path))
       return 0
     end, history = false},
-  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = dot_iceberg ..[[/images/google256.png]]},
+  google = { path = [[http://www.google.com/search?ie=utf8&q=${1}]], description=[[Searches words on Google]], history=false, icon = iceberg_config_dir ..[[/images/google256.png]]},
   cal = { path = function(args)
       local script = "ret = (" .. table.concat(args, " ") .. ")"
       local func = loadstring(script)
@@ -233,5 +233,5 @@ function on_initialize()
 end
 
 -- load configurations from ~/.iceberg/config.d/*.lua --
-ibs.load_lua_files(ibs.join_path(dot_iceberg, "config.d"))
+ibs.load_lua_files(ibs.join_path(iceberg_config_dir, "config.d"))
 ibs.load_plugins()
