@@ -332,6 +332,8 @@ void FreeDesktopIconFinder::find(std::string &result) {
   const auto theme = ib::Singleton<ib::Config>::getInstance()->getIconTheme().c_str();
   findHelper(result, theme);
   if(!result.empty()) return;
+  findHelper(result, "default");
+  if(!result.empty()) return;
   findHelper(result, "Hicolor");
   if(!result.empty()) return;
 
@@ -475,12 +477,18 @@ void FreeDesktopThemeRepos::build() {
   snprintf(path, IB_MAX_PATH, "%s/.icons", getenv("HOME"));
   buildHelper(path);
 
-  if(getenv("XDG_DATA_DIRS") == nullptr) {
-    snprintf(path, IB_MAX_PATH, "/usr/share/icons");
-  }else{
-    snprintf(path, IB_MAX_PATH, "%s/icons", getenv("XDG_DATA_DIRS"));
-  }
+  snprintf(path, IB_MAX_PATH, "/usr/share/icons");
   buildHelper(path);
+
+  if(getenv("XDG_DATA_DIRS") != nullptr) {
+    ib::Regex sep(":", ib::Regex::I);
+    sep.init();
+    auto parts = sep.split(getenv("XDG_DATA_DIRS"));
+    for(const auto &part : parts) {
+      snprintf(path, IB_MAX_PATH, "%s/icons", part.c_str());
+      buildHelper(path);
+    }
+  }
 
   snprintf(path, IB_MAX_PATH, "/usr/share/pixmaps");
   buildHelper(path);
@@ -522,6 +530,19 @@ FreeDesktopKVFile* FreeDesktopThemeRepos::getTheme(const char *name) const {
 
 
 void FreeDesktopThemeRepos::findIcon(std::string &result, const char *theme, const char *name, int size) {
+
+  std::string sname = std::string(name);
+  const char *exts[] = {"png", "svg", "xpm"};
+  for(int i = 0; i < 3; i++) {
+    std::string ext = ".";
+    ext += exts[i];
+    if(ext.size() > sname.size()) continue;
+    if(std::equal(ext.rbegin(), ext.rend(), sname.rbegin())) {
+      result = name;
+      return;
+    }
+  }
+
   FreeDesktopIconFinder ficon(name, size);
   ficon.find(result);
 }
