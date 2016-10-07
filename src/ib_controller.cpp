@@ -163,14 +163,11 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
 } // }}}
 
 void ib::Controller::hideApplication() { // {{{
-  ib::platform::hide_window(ib::Singleton<ib::MainWindow>::getInstance());
+  const auto main_window = ib::Singleton<ib::MainWindow>::getInstance();
   const auto list_window = ib::Singleton<ib::ListWindow>::getInstance();
-  if(list_window->visible()) {
-    ib::platform::hide_window(list_window);
-    list_window->set_visible();
-  }
-  //ib::Singleton<ib::MainWindow>::getInstance()->hide();
-  //ib::Singleton<ib::ListWindow>::getInstance()->hide();
+
+  main_window->hide();
+  list_window->hide();
 } // }}}
 
 void ib::Controller::showApplication() { // {{{
@@ -183,6 +180,7 @@ void ib::Controller::showApplication() { // {{{
   }
   main_window->show();
   ib::platform::activate_window(main_window);
+  main_window->getInput()->take_focus();
 } // }}}
 
 void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
