@@ -567,18 +567,21 @@ static void xclear_error() { ib_g_xerror_msg[0] = '\0'; }
 static bool xhas_error() { return ib_g_xerror_msg[0] != '\0'; }
 
 static void xsend_message_la(Window w, Atom a, long d0, long d1, long d2, long d3, long d4) {
-  XClientMessageEvent ev = {0};
-  ev.type = ClientMessage;
-  ev.window = w;
-  ev.message_type = a;
-  ev.format = 32;
-  ev.data.l[0] = d0;
-  ev.data.l[1] = d1;
-  ev.data.l[2] = d2;
-  ev.data.l[3] = d3;
-  ev.data.l[4] = d4;
+  XEvent event = {0};
+  long mask = SubstructureRedirectMask | SubstructureNotifyMask;
+  event.xclient.type = ClientMessage;
+  event.xclient.serial = 0;
+  event.xclient.send_event = True;
+  event.xclient.window = w;
+  event.xclient.message_type = a;
+  event.xclient.format = 32;
+  event.xclient.data.l[0] = d0;
+  event.xclient.data.l[1] = d1;
+  event.xclient.data.l[2] = d2;
+  event.xclient.data.l[3] = d3;
+  event.xclient.data.l[4] = d4;
   xclear_error();
-  XSendEvent(fl_display, w, 0, NoEventMask, (XEvent*)&ev);
+  XSendEvent(fl_display, DefaultRootWindow(fl_display), False, mask, &event);
   if(xhas_error()) {
     fprintf(stdout, "%s\n", ib_g_xerror_msg); fflush(stdout);
   }
@@ -741,7 +744,10 @@ static void* xget_property(Window w, const char *prop, Atom typ) {
 static int xcurrent_desktop() {
   auto desktop = reinterpret_cast<long*>(xget_property(DefaultRootWindow(fl_display), "_NET_CURRENT_DESKTOP", XA_CARDINAL));
   if(desktop == nullptr) {
-    return -1;
+    desktop = reinterpret_cast<long*>(xget_property(DefaultRootWindow(fl_display), "_WIN_WORKSPACE", XA_CARDINAL));
+    if(desktop == nullptr) {
+      return -1;
+    }
   }
   auto ret = reinterpret_cast<int&>(desktop[0]);
   XFree(desktop);
