@@ -708,10 +708,10 @@ static int xregister_systray_icon() {
   sprintf(atom_tray_name, "_NET_SYSTEM_TRAY_S%i", fl_screen);
   Atom sys_tray_atom = XInternAtom(fl_display, atom_tray_name, False);
   Window dock = XGetSelectionOwner(fl_display, sys_tray_atom);
-  if(!dock) {
-    // no system tray found.
-    return 0;
-  }
+  // if(!dock) {
+  //   // no system tray found.
+  //   return 0;
+  // }
   auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
   auto trayicon = ib::Singleton<TrayIcon>::initInstance();
   trayicon->init(fl_xid(mainwin));
