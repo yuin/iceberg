@@ -717,6 +717,7 @@ static int shell_execute_(const std::string &path, const std::string &strparams,
       cmd.setName("tmp");
       cmd.setPath(cfg->getTerminal());
       cmd.setTerminal("no");
+      cmd.setIsSudo(sudo);
       cmd.init();
       auto ret = cmd.execute(args, &cwd, error);
       ib::utils::delete_pointer_vectors(args);
