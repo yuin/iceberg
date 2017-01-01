@@ -111,7 +111,7 @@ void ib::Controller::executeCommand() { // {{{
       char dirpath[IB_MAX_PATH_BYTE];
       ib::platform::oschar2utf8_b(dirpath, IB_MAX_PATH_BYTE, osdirpath);
       std::string strdirpath = dirpath;
-      if(ib::platform::shell_execute(abspath, input->getParamValues(), strdirpath, "auto", error) != 0){
+      if(ib::platform::shell_execute(abspath, input->getParamValues(), strdirpath, "auto", false, error) != 0){
         message = error.getMessage();
       }else{
         success = true;
@@ -728,6 +728,11 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
       GET_FIELD("terminal", string) {
         command->setTerminal(luaL_checkstring(IB_LUA, -1));
+      }
+      lua_pop(IB_LUA, 1);
+
+      GET_FIELD("sudo", boolean) {
+        command->setIsSudo(lua_toboolean(IB_LUA, -1) != 0);
       }
       lua_pop(IB_LUA, 1);
 

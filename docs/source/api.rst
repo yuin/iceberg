@@ -152,13 +152,14 @@ System information
 Sub processes
 ~~~~~~~~~~~~~~
 
-.. lua:function:: icebergsupport.shell_execute(path [, args, workdir])
+.. lua:function:: icebergsupport.shell_execute(path [, args, workdir, sudo])
 
     Runs the sub process. If path is not a executable file, path will be opened by an application associated with its extension. 
 
     :param string path: the file path
     :param [string] args: arguments for the command
     :param string workdir: a working directory. This defaults to the current directory.
+    :param bool sudo : If sudo is true, the sub process will be run as an administrator user.
     :returns: [bool:true if no errors, false otherwise, string:an error message]
 
 .. lua:function:: icebergsupport.command_output(command)

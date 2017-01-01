@@ -305,6 +305,9 @@ Examples
           -- An executable file, runs with a iceberg current directory -- 
           np = {path = [[notepad.exe]], description="Notepad", workdir="."},
 
+          -- An executable file, will be run as an administrator user
+          admin_cmd = {path = [[cmd.exe]], description="cmd.exe(runas admin)", sudo = true},
+
           -- A shell script file, executed in the terminal --
           np = {path = [[myscript.sh]], description="My script", terminal="yes"},
 
@@ -364,6 +367,8 @@ Commands consist of
     - strings
     - ``.`` : use iceberg current directory
     - Lua function: use a return value(string) of the function. You can make iceberg and your file browser cooperate by writing a function that returns a current directory of your file browser.
+:sudo:
+    If this value is set to ``true``, this command will be run as an administrator user.
 
 shortcuts global variables
 ----------------------------

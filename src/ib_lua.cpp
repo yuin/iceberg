@@ -778,7 +778,12 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
   std::vector<std::unique_ptr<std::string>> args;
   const auto top = lua_gettop(L);
   const std::string cmd(luaL_checkstring(L, 1));
+  bool sudo = false;
   std::string workdir;
+  if(top > 3) {
+    sudo = lua_toboolean(IB_LUA, -1) != 0;
+    lua_pop(L, 1);
+  }
   if(top > 2) {
     workdir = luaL_checkstring(L, -1);
     lua_pop(L, 1);
@@ -803,7 +808,7 @@ int ib::luamodule::shell_execute(lua_State *L) { // {{{
   lua_state.clearStack();
 
   ib::Error error;
-  if(ib::platform::shell_execute(cmd, args, workdir, "auto", error) != 0){
+  if(ib::platform::shell_execute(cmd, args, workdir, "auto", sudo, error) != 0){
     lua_pushboolean(L, false);
     lua_pushstring(L, error.getMessage().c_str());
   }else{

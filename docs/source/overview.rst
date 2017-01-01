@@ -41,6 +41,7 @@ iceberg requires the following packages. You can install these packages with ``a
 - libxft-dev
 - libonig-dev
 - libmigemo-dev
+- gksu
 
 Next, download a zip file from `Release <https://github.com/yuin/iceberg/releases>`_ and unzip it .
 

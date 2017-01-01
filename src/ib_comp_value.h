@@ -107,6 +107,8 @@ namespace ib{
       const std::string& getTerminal() const { return terminal_; }
       void setTerminal(const std::string &value){ terminal_ = value; }
       void setTerminal(const char *value){ terminal_ = value; }
+      bool isSudo() const { return is_sudo_; }
+      void setIsSudo(const bool value){ is_sudo_ = value; }
       bool isEnabledHistory() const { return is_enabled_history_;}
       void setEnablesHistory(const bool value){ is_enabled_history_ = value; }
       double getScore() const { return score_; }
@@ -122,6 +124,7 @@ namespace ib{
       std::string description_;
       std::string icon_file_;
       std::string terminal_;
+      bool        is_sudo_;
       bool        is_enabled_history_;
       double      score_;
       bool        is_dynamic_workdir_;

@@ -690,7 +690,7 @@ static void list_network_shares(std::vector<ib::oschar*> &result, ib::oschar *se
   }
 } // }}}
 
-static int shell_execute_(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+static int shell_execute_(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
   ib::Regex reg(".*\\.(cpl)", ib::Regex::NONE);
   reg.init();
@@ -725,10 +725,11 @@ static int shell_execute_(const std::string &path, const std::string &strparams,
     auto wpath = ib::platform::utf82oschar(path.c_str());
     auto wparams = ib::platform::utf82oschar(strparams.c_str());
     auto wcwd = ib::platform::utf82oschar(cwd.c_str());
+    auto wverb = sudo ? L"runas" : L"open";
 #ifdef IB_OS_WIN64
-    ret = (long long)(ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
+    ret = (long long)(ShellExecute(ib_g_hwnd_main, wverb, wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL));
 #else
-    ret = (int)ShellExecute(ib_g_hwnd_main, L"open", wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
+    ret = (int)ShellExecute(ib_g_hwnd_main, wverb, wpath.get(), wparams.get(), wcwd.get(), SW_SHOWNORMAL);
 #endif
   }
 
@@ -973,7 +974,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   SetLayeredWindowAttributes(fl_xid(window), 0, alpha, LWA_ALPHA);
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
     auto osparam = ib::platform::utf82oschar(p.get()->c_str());
@@ -982,10 +983,10 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return shell_execute_(path, strparams, cwd, terminal, error);
+  return shell_execute_(path, strparams, cwd, terminal, sudo, error);
 } /* }}} */
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
     auto osparam = ib::platform::utf82oschar(p->c_str());
@@ -994,7 +995,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     strparams += escaped_param.get();
     strparams += " ";
   }
-  return shell_execute_(path, strparams, cwd, terminal, error);
+  return shell_execute_(path, strparams, cwd, terminal, sudo, error);
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{

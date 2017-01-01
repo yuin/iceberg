@@ -179,7 +179,7 @@ int ib::Command::execute(const std::vector<std::string*> &args, const std::strin
       error.setMessage(e.getMessage());
       ret = 1;
     }
-  }else if(ib::platform::shell_execute(command, command_params, wd, getTerminal(), e) != 0){
+  }else if(ib::platform::shell_execute(command, command_params, wd, getTerminal(), isSudo(), e) != 0){
     error.setCode(e.getCode());
     error.setMessage(e.getMessage());
     ret = 1;

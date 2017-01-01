@@ -78,7 +78,7 @@ void ib::utils::reboot_application() { // {{{
   const auto server = ib::Singleton<ib::Server>::getInstance();
   ib::Error error;
   server->shutdown();
-  if(ib::platform::shell_execute(cfg->getSelfPath(), params, cfg->getInitialWorkdir(), "auto", error) != 0) {
+  if(ib::platform::shell_execute(cfg->getSelfPath(), params, cfg->getInitialWorkdir(), "auto", false, error) != 0) {
     server->start(error);
     fl_alert("%s", error.getMessage().c_str());
   }else{

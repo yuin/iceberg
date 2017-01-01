@@ -36,8 +36,8 @@ namespace ib {
     void activate_window(Fl_Window *window);
     void raise_window(Fl_Window *window);
     void set_window_alpha(Fl_Window *window, int alpha);
-    int  shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error& error);
-    int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error& error);
+    int  shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error& error);
+    int  shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error& error);
     int command_output(std::string &sstdout, std::string &sstderr, const char *command, ib::Error &error);
     int show_context_menu(ib::oschar *path);
     void on_command_init(ib::Command *command);
