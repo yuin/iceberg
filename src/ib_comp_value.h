@@ -73,7 +73,7 @@ namespace ib{
 #else
       workdir_("."), 
 #endif
-      description_(""), icon_file_(), terminal_("auto"), is_enabled_history_(true), score_(0.0), is_dynamic_workdir_(false) {}
+      description_(""), icon_file_(), terminal_("auto"), is_sudo_(false), is_enabled_history_(true), score_(0.0), is_dynamic_workdir_(false) {}
       ~BaseCommand() {}
       virtual int execute(const std::vector<std::string*> &args, const std::string* workdir, ib::Error &error) = 0;
       virtual void init() = 0;

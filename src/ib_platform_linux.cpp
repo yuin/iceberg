@@ -966,7 +966,7 @@ void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   if(!visible) window->hide();
 } // }}}
 
-static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+static int ib_platform_shell_execute(const std::string &path, const std::string &strparams, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   std::string cmd;
   ib::oschar quoted_path[IB_MAX_PATH];
   ib::platform::quote_string(quoted_path, path.c_str());
@@ -993,23 +993,42 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
   proto_reg.init();
   ret = 0;
   if(proto_reg.match(path) == 0){
+    if(sudo) { cmd += "gksudo "; }
     cmd += "xdg-open ";
     cmd += path;
     cmd += " ";
     cmd += strparams;
   } else {
+    std::string rpath;
     if(-1 == access(path.c_str(), R_OK)) {
+      ib::oschar os_path[IB_MAX_PATH];
+      ib::platform::utf82oschar_b(os_path, IB_MAX_PATH, path.c_str());
+      ib::oschar tmp[IB_MAX_PATH];
+      memcpy(tmp, os_path, sizeof(ib::oschar)*IB_MAX_PATH);
+      memset(os_path, 0, sizeof(ib::oschar)*IB_MAX_PATH);
+      if(!ib::platform::which(os_path, tmp)) {
+        memcpy(os_path, tmp, sizeof(ib::oschar)*IB_MAX_PATH);
+      }
+      char p[IB_MAX_PATH_BYTE];
+      ib::platform::oschar2utf8_b(p, IB_MAX_PATH_BYTE, os_path);
+      rpath += p;
+    } else {
+      rpath += path.c_str();
+    }
+    if(-1 == access(rpath.c_str(), R_OK)) {
       set_errno(error);
       ret = -1;
       goto finally;
     }
-    if(!strparams.empty() || access(path.c_str(), X_OK) == 0) {
+    if(!strparams.empty() || access(rpath.c_str(), X_OK) == 0) {
+      bool isterm = terminal == "yes" || (terminal == "auto" && !xis_gui_app(rpath.c_str()));
+      if(sudo) { cmd += isterm ? "sudo " : "gksudo "; }
       cmd += quoted_path;
       if(!strparams.empty()){
         cmd += " ";
         cmd += strparams;
       }
-      if(terminal == "yes" || (terminal == "auto" && !xis_gui_app(path.c_str()))) {
+      if(isterm) {
         ib::string_map values;
         cmd += ";";
         cmd += getenv("SHELL");
@@ -1037,6 +1056,7 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
         ret = -1;
         goto finally;
       }
+      if(sudo) { cmd += "gksudo "; }
       cmd += "xdg-open ";
       cmd += quoted_path;
     }
@@ -1057,7 +1077,7 @@ finally:
   return ret;
 } // }}}
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::unique_ptr<std::string>> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
     ib::oschar qparam[IB_MAX_PATH];
@@ -1065,10 +1085,10 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     ib::platform::quote_string(qparam, p.get()->c_str());
     strparams += qparam;
   }
-  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, sudo, error);
 } /* }}} */
 
-int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, ib::Error &error) { // {{{
+int ib::platform::shell_execute(const std::string &path, const std::vector<std::string*> &params, const std::string &cwd, const std::string &terminal, bool sudo, ib::Error &error) { // {{{
   std::string strparams;
   for(const auto &p : params) {
     ib::oschar qparam[IB_MAX_PATH];
@@ -1076,7 +1096,7 @@ int ib::platform::shell_execute(const std::string &path, const std::vector<std::
     ib::platform::quote_string(qparam, p->c_str());
     strparams += qparam;
   }
-  return ib_platform_shell_execute(path, strparams, cwd, terminal, error);
+  return ib_platform_shell_execute(path, strparams, cwd, terminal, sudo, error);
 } /* }}} */
 
 int ib::platform::command_output(std::string &sstdout, std::string &sstderr, const char *cmd, ib::Error &error) { // {{{
