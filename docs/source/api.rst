@@ -598,13 +598,6 @@ Windows support functions
 
     :returns: string
 
-.. lua:function:: winsupport.shell_start(cmd)
-
-    Launches a new application via ``cmd /c "start CMD"`` .
-
-    :param string cmd: command to run
- 
-
 Classes
 ---------------------------------
 

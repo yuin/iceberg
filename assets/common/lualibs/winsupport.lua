@@ -11,21 +11,6 @@ else
   lib.cmd_path = [[C:\Windows\System32\cmd.exe]]
 end
 
-lib.shell_start = function(cmd)
-  local script = [[
-    var wsh = new ActiveXObject("WScript.Shell");
-    wsh.Run("cmd /c \"start "+WScript.Arguments(0)+"\"", 0, false);
-  ]]
-  local tmppath = script_path .. "\\__shell_start__.js"
-  local test = io.open(tmppath)
-  if not test then
-    local file = io.open(tmppath, "w")
-    file:write(script)
-    file:close()
-  end
-  return function(args) ibs.shell_execute("wscript", {tmppath, cmd}) end
-end
-
 lib.foreground_explorer = function() 
   local script = [[
     var shell = new ActiveXObject("Shell.Application");
