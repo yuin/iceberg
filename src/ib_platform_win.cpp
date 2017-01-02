@@ -1131,6 +1131,8 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
     ib::platform::utf82oschar_b(command_path, IB_MAX_PATH, cmd->getCommandPath().c_str());
     IShellLink* shell_link_if = nullptr;
     IPersistFile* persist_file_if = nullptr;
+    IShellLinkDataList *data_list_if = nullptr;
+    DWORD flags;
     HRESULT result;
     CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&shell_link_if);
     shell_link_if->QueryInterface(IID_IPersistFile, (void**)&persist_file_if);
@@ -1166,6 +1168,14 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
         }
       }
 
+      result = shell_link_if->QueryInterface(IID_IShellLinkDataList, reinterpret_cast<void**>(&data_list_if));
+      if(SUCCEEDED(result)) {
+        data_list_if->GetFlags(&flags);
+        if(flags & SLDF_RUNAS_USER) {
+          cmd->setIsSudo(true);
+        }
+      }
+
       ib::oschar real_workdir[IB_MAX_PATH];
       shell_link_if->GetWorkingDirectory(real_workdir, IB_MAX_PATH);
       ib::oschar real_description[IB_MAX_PATH];
@@ -1183,6 +1193,7 @@ void ib::platform::on_command_init(ib::Command *cmd) { // {{{
         cmd->setDescription(new_description);
       }
     }
+    safe_release(&data_list_if);
     safe_release(&persist_file_if);
     safe_release(&shell_link_if);
   }

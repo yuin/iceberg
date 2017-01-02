@@ -878,6 +878,7 @@ void ib::Controller::cacheCommandsInSearchPath(const char *category) {
     ofs << c->getCommandPath() << std::endl;
     ofs << c->getIconFile() << std::endl;
     ofs << c->getTerminal() << std::endl;
+    ofs << (c->isSudo() ? "yes" : "no") << std::endl;
   }
 
   for(long i = prev_index, l = commands.size(); i < l; ++i){
@@ -912,6 +913,8 @@ void ib::Controller::loadCachedCommands() {
     cmd->setIconFile(buf);
     getline(ifs, buf);
     cmd->setTerminal(buf);
+    getline(ifs, buf);
+    if(buf == "yes") { cmd->setIsSudo(true); }
     cmd->setInitialized(true);
     addCommand(cmd->getName(), cmd);
   }
