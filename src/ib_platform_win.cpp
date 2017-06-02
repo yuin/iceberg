@@ -848,32 +848,26 @@ void ib::platform::finalize_system(){ // {{{
 } // }}}
 
 void ib::platform::get_runtime_platform(char *ret){ // {{{ 
-  BOOL (*is_wow64_process) (HANDLE, PBOOL);
+  OSVERSIONINFO version_info;
+  version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+  GetVersionEx(&version_info);
+
   BOOL is_wow64 = FALSE;
-  is_wow64_process = (BOOL (*)(HANDLE, PBOOL))GetProcAddress(
-    GetModuleHandle(L"kernel32"), "IsWow64Process");
   int type;
-  if(!is_wow64_process){
-    type = 0; // 32bit on 32bit
+  IsWow64Process(GetCurrentProcess(), &is_wow64);
+  if(is_wow64){
+    type = 1; // 32bit on 64bit
   }else{
-    is_wow64_process(GetCurrentProcess(), &is_wow64);
-    if(is_wow64){
-      type = 1; // 32bit on 64bit
-    }else{
 #ifdef IB_64BIT
-      type = 2; // 64bit on 64bit
+    type = 2; // 64bit on 64bit
 #else
-      type = 0; // 32bit on 32bit
+    type = 0; // 32bit on 32bit
 #endif
-    }
   }
 
-   OSVERSIONINFO version_info;
-   version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-   GetVersionEx(&version_info);
-   sprintf(ret, "%ld.%ld.%ld %s", version_info.dwMajorVersion, version_info.dwMinorVersion,
-                version_info.dwBuildNumber,
-                type == 0 ? "x32" : (type == 1 ? "wow64" : "x64"));
+  sprintf(ret, "%ld.%ld.%ld %s", version_info.dwMajorVersion, version_info.dwMinorVersion,
+               version_info.dwBuildNumber,
+               type == 0 ? "x32" : (type == 1 ? "wow64" : "x64"));
 } // }}}
 
 std::unique_ptr<ib::oschar[]> ib::platform::utf82oschar(const char *src) { // {{{
