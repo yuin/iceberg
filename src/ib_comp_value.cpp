@@ -74,7 +74,7 @@ const std::string& ib::BaseCommand::getWorkdir() {
     lua_getfield(IB_LUA, -1, getName().c_str());
     lua_getfield(IB_LUA, -1, "workdir");
     if(lua_pcall(IB_LUA, 0, 1, 0) != 0) {
-      fl_alert("Failed to get workdir.");
+      ib::utils::message_box("Failed to get workdir.");
     }else{
       setWorkdir(luaL_checkstring(IB_LUA, -1));
     }

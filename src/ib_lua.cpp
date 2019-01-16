@@ -123,7 +123,7 @@ static int Regex_gsub(lua_State *L) {
           *res += lua_tostring(L, -1);
         }
       }else{
-        fl_alert("%s", lua_tostring(L, lua_gettop(L)));
+        ib::utils::message_box("%s", lua_tostring(L, lua_gettop(L)));
       }
       lua_settop(L, top);
     }, L);
@@ -396,7 +396,7 @@ void ib::LuaState::init() { // {{{
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
   if(luaL_dofile(l_, cfg->getConfigPath().c_str())) {
-    fl_alert("%s", ib::platform::local2utf8(lua_tostring(l_, lua_gettop(l_))).get());
+    ib::utils::message_box("%s", ib::platform::local2utf8(lua_tostring(l_, lua_gettop(l_))).get());
     exit(1);
   }
 } // }}}
@@ -656,7 +656,7 @@ int ib::luamodule::message(lua_State *L) { // {{{
   ib::FlScopedLock fllock;
   ib::LuaState lua_state(L);
   const auto msg = luaL_checkstring(L, 1);
-  fl_message("%s", msg);
+  ib::utils::message_box("%s", msg);
   lua_state.clearStack();
   return 0;
 } // }}}

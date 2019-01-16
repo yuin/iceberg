@@ -171,6 +171,29 @@ namespace ib {
 
   }; // }}}
 
+  class MessageBox;
+  class MessageBox : public Fl_Double_Window, private NonCopyable<MessageBox> { // {{{
+    friend class ib::Singleton<ib::MessageBox>;
+    public:
+      ~MessageBox() { delete button_; }
+      void initLayout();
+      void init() { end(); initLayout(); callback(ib::_window_callback);}
+      void show(const char *message);
+      void show();
+      void hide();
+      void draw();
+
+    protected:
+      MessageBox() : Fl_Double_Window(0, 0, "icebergMessageBox"), button_(nullptr), message_("") {};
+
+      Fl_Button *button_;
+      std::string message_;
+
+    private:
+      int handle(int e);
+
+  }; // }}}
+
 }
 
 #endif

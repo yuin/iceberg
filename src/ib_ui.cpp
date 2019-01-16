@@ -91,7 +91,7 @@ keyup:
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_up");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
-            fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
+            ib::utils::message_box("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
             return 1;
         }
         accept = (int)lua_tonumber(IB_LUA, 1);
@@ -142,7 +142,7 @@ keyup:
         // calls an event handler
         lua_getglobal(IB_LUA, "on_key_down");
         if (lua_pcall(IB_LUA, 0, 1, 0)) {
-            fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
+            ib::utils::message_box("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
             return 1;
         }
         accept = (int)lua_tonumber(IB_LUA, 1);
@@ -166,7 +166,7 @@ keyup:
 
           lua_getglobal(IB_LUA, "on_enter");
           if (lua_pcall(IB_LUA, 0, 1, 0)) {
-              fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
+              ib::utils::message_box("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
               return 1;
           }
           accept = (int)lua_tonumber(IB_LUA, 1);
@@ -783,3 +783,103 @@ int ib::ListWindow::handle(int e){ /* {{{ */
 } /* }}} */
 // }}}
 
+static void ib_mb_ok_callback(Fl_Widget*, void *userdata) { // {{{
+  ib::Singleton<ib::MessageBox>::getInstance()->hide();
+  ib::Singleton<ib::Controller>::getInstance()->showApplication();
+} // }}}
+
+// class MessageBox {{{
+
+void ib::MessageBox::initLayout(){ // {{{
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  begin();
+  clear_border();
+  set_override();
+  position(100, 100);
+  size(300, 300);
+  button_ = new Fl_Button(0,0,100,20, "OK");
+  button_->callback(ib_mb_ok_callback);
+  button_->box(FL_FLAT_BOX);
+  button_->labelfont(ib::Fonts::list);
+  button_->labelcolor(cfg->getStyleListBgColor1());
+  button_->labelsize(12);
+  button_->color(cfg->getStyleListFontColor());
+  end();
+} /* }}} */
+
+void ib::MessageBox::hide(){ /* {{{ */
+  clear_visible();
+  Fl_Window::hide();
+  ib::platform::hide_window(this);
+} /* }}} */
+
+void ib::MessageBox::show(){ /* {{{ */
+#ifndef IB_OS_WIN
+  ib::platform::move_to_current_desktop(this);
+#endif
+  set_modal();
+  Fl_Window::show();
+  while (shown()) Fl::wait();
+} /* }}} */
+
+void ib::MessageBox::draw(){ /* {{{ */
+  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
+  std::stringstream ss(message_);
+  std::string to;
+  int y = 10;
+  int height = fl_height();
+
+  draw_box(FL_BORDER_BOX, 0, 0, w(), h(), cfg->getStyleListFontColor());
+  draw_box(FL_BORDER_BOX, 3, 3, w()-6, h()-6, cfg->getStyleListBgColor1());
+  fl_color(cfg->getStyleListFontColor());
+  fl_font(ib::Fonts::list, 12);
+  while(std::getline(ss,to,'\n')){
+    fl_draw(to.c_str(), 10, y, w()-10, height, Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_WRAP));
+    y += height;
+  }
+  draw_children();
+
+} /* }}} */
+
+void ib::MessageBox::show(const char *message){ /* {{{ */
+  message_ = message;
+  std::stringstream ss(message_);
+  std::string to;
+  int screen_x, screen_y, screen_w, screen_h;
+  const auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
+  double width = 0;
+  int height = 0;
+
+  Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
+  fl_font(ib::Fonts::list, 12);
+  int h = fl_height();
+  while(std::getline(ss,to,'\n')){
+    width = std::max(width, fl_width(to.c_str()) + 20);
+    height += h;
+  }
+  width += 10;
+  height += h * 4;
+
+  const auto x = screen_w/2 - width/2;
+  const auto y = screen_h/2 - height/2 + (mainwin->x() > 200 ? -50 : 50);
+
+  position(x, y);
+  size(width, height);
+  button_->position(width/2 - fl_width("OK"), height - h * 2);
+  button_->size(fl_width("OK")*2, h+5);
+
+  redraw();
+  show();
+} /* }}} */
+
+int ib::MessageBox::handle(int e){ /* {{{ */
+  int ret=0;
+
+  if(shown() && (e == FL_KEYDOWN) && Fl::event_key() == FL_Enter) {
+      ib_mb_ok_callback(this, this);
+      ret = 1;
+   }
+   return ret ? 1 : button_->handle(e);
+} /* }}} */
+
+// }}}

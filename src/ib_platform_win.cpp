@@ -31,6 +31,7 @@
 static HINSTANCE ib_g_hinst;
 static HWND ib_g_hwnd_main;
 static HWND ib_g_hwnd_list;
+static HWND ib_g_hwnd_mb;
 static NOTIFYICONDATA ib_g_trayicon;
 static WNDPROC ib_g_wndproc;
 static HWND ib_g_hwnd_clbchain_next;
@@ -103,7 +104,7 @@ static std::unique_ptr<char[]> get_last_winapi_error_message(){ // {{{
 static void hresult(HRESULT hr) { // {{{
   if(!SUCCEEDED(hr)) {
     auto message = get_last_winapi_error_message();
-    fl_alert("%s", message.get());
+    ib::utils::message_box("%s", message.get());
     ib::utils::exit_application(1);
   }
 } // }}}
@@ -169,7 +170,7 @@ static int create_renderer_taget(HWND w) {
     auto custom_param_values = splitter.split(custom_params);
     for(const auto custom_param_value : custom_param_values) {
       if(reg.match(custom_param_value) != 0) {
-        fl_message("invalid direct_write_params:%s", custom_param_value.c_str());
+        fl_alert("invalid direct_write_params:%s", custom_param_value.c_str());
         continue;
       }
       auto name = reg._1();
@@ -801,6 +802,7 @@ int ib::platform::init_system() { // {{{
 
   ib_g_hwnd_main = fl_xid(ib::Singleton<ib::MainWindow>::getInstance());
   ib_g_hwnd_list = fl_xid(ib::Singleton<ib::ListWindow>::getInstance());
+  ib_g_hwnd_mb = fl_xid(ib::Singleton<ib::MessageBox>::getInstance());
   ib_g_hinst    = fl_display;
 
   if(cfg->getDisableDirectWrite()) {
@@ -825,6 +827,9 @@ int ib::platform::init_system() { // {{{
   style = (GetWindowLongPtrW64(ib_g_hwnd_list, GWL_EXSTYLE));
   SetWindowLongPtrW64(ib_g_hwnd_list, GWL_EXSTYLE, style | WS_EX_LAYERED);
   ib::platform::set_window_alpha(ib::Singleton<ib::ListWindow>::getInstance(), cfg->getStyleListAlpha());
+
+  style = (GetWindowLongPtrW64(ib_g_hwnd_mb, GWL_EXSTYLE));
+  SetWindowLongPtrW64(ib_g_hwnd_mb, GWL_EXSTYLE, style | WS_EX_LAYERED);
 
   PostMessage(ib_g_hwnd_main, IB_WM_INIT, (WPARAM)0, (LPARAM)0);
 

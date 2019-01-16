@@ -77,12 +77,12 @@ void ib::Completer::completeOption(std::vector<ib::CompletionValue*> &candidates
 
   lua_pushinteger(IB_LUA, current_index);
   if(lua_pcall(IB_LUA, 2, 1, 0) != 0){
-    fl_alert("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
+    ib::utils::message_box("%s", lua_tostring(IB_LUA, lua_gettop(IB_LUA)));
     return;
   }
 
   if(!lua_istable(IB_LUA, -1)) {
-    fl_alert("Completion function must return a table, but got a(n) %s", lua_typename(IB_LUA, lua_type(IB_LUA, -1)));
+    ib::utils::message_box("Completion function must return a table, but got a(n) %s", lua_typename(IB_LUA, lua_type(IB_LUA, -1)));
     return;
   }
 

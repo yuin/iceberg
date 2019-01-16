@@ -80,7 +80,7 @@ void ib::utils::reboot_application() { // {{{
   server->shutdown();
   if(ib::platform::shell_execute(cfg->getSelfPath(), params, cfg->getInitialWorkdir(), "auto", false, error) != 0) {
     server->start(error);
-    fl_alert("%s", error.getMessage().c_str());
+    ib::utils::message_box("%s", error.getMessage().c_str());
   }else{
     ib::utils::exit_application(0);
   }
@@ -118,7 +118,7 @@ void ib::utils::scan_search_path(const char *category) {
   if(ib::platform::file_exists(oscache_path)){
     ib::Error error;
     if(ib::platform::remove_file(oscache_path, error) != 0){
-      fl_alert("%s", error.getMessage().c_str());
+      ib::utils::message_box("%s", error.getMessage().c_str());
       return;
     }
   }
@@ -134,7 +134,7 @@ void ib::utils::alert_lua_stack(lua_State *L) { // {{{
   
   num = lua_gettop(L);
   if (num == 0) {
-    fl_alert("No stack.");
+    ib::utils::message_box("No stack.");
     return;
   }
 
@@ -180,7 +180,7 @@ void ib::utils::alert_lua_stack(lua_State *L) { // {{{
       break;
     }
   }
-  fl_alert("%s", str.c_str());
+  ib::utils::message_box("%s", str.c_str());
 } // }}}
 
 std::string ib::utils::expand_vars(const std::string &tpl, const ib::string_map &values) { // {{{
@@ -569,6 +569,22 @@ void ib::utils::u32int2bebytes(char *result, ib::u32 value){ // {{{
 
 ib::u32 ib::utils::bebytes2u32int(const char *bytes){ // {{{
   return (ib::u32)(((bytes[3] | (bytes[2] << 8)) | (bytes[1] << 0x10)) | (bytes[0] << 0x18));
+} // }}}
+
+void ib::utils::message_box(const char *fmt, ...){ // {{{
+  auto* const mb = ib::Singleton<ib::MessageBox>::getInstance();
+  va_list ap, ap2;
+  va_start(ap, fmt);
+  va_copy(ap2, ap); 
+  
+  const int len = vsnprintf(NULL, 0, fmt, ap);
+  char *buf = (char *)malloc((len + 1) * sizeof(char));
+  vsnprintf(buf, len, fmt, ap2);
+  
+  va_end(ap);
+  va_end(ap2);
+  mb->show(buf);
+  free(buf);
 } // }}}
 
 ib::FlScopedLock::~FlScopedLock() { // {{{

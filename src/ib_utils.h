@@ -83,6 +83,9 @@ namespace ib {
     /* byte operation stuff */
     void u32int2bebytes(char *result, ib::u32 value);
     ib::u32 bebytes2u32int(const char *bytes);
+
+    /* messagebox stuff */
+    void message_box(const char *fmt, ...);
   }
 
   // Utility classes {{{

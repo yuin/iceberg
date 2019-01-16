@@ -50,6 +50,7 @@ static void init_common_singletons() {
 static void init_gui_singletons() {
   ib::Singleton<ib::MainWindow>::initInstance()->init();
   ib::Singleton<ib::ListWindow>::initInstance()->init();
+  ib::Singleton<ib::MessageBox>::initInstance()->init();
   ib::Singleton<ib::Server>::initInstance();
   ib::Singleton<ib::IconManager>::initInstance();
   ib::Singleton<ib::History>::initInstance();
@@ -95,6 +96,7 @@ int main(int argc, char **argv) { // {{{
 
   const auto mainwin = ib::Singleton<ib::MainWindow>::getInstance();
   const auto listwin = ib::Singleton<ib::ListWindow>::getInstance();
+  const auto messagebox = ib::Singleton<ib::MessageBox>::getInstance();
   const auto server = ib::Singleton<ib::Server>::getInstance();
   const auto icon_manager = ib::Singleton<ib::IconManager>::getInstance();
   const auto history = ib::Singleton<ib::History>::getInstance();
@@ -103,6 +105,7 @@ int main(int argc, char **argv) { // {{{
   listwin->show();
   mainwin->wait_for_expose();
   listwin->wait_for_expose();
+  messagebox->wait_for_expose();
 
   if(ib::platform::init_system() < 0) {
     fl_alert("Failed to initialize the application.(init_system)");
@@ -150,6 +153,7 @@ int main(int argc, char **argv) { // {{{
 #endif
     if(!flag){
       listwin->hide();
+      messagebox->hide();
       controller->showApplication();
       flag = true;
     }

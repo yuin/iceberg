@@ -119,7 +119,7 @@ void ib::CommandLexer::onReadChar() { // {{{
       }
       break;
     default:
-      fl_alert("unknown state");
+      ib::utils::message_box("unknown state");
   }
 
 } // }}}
@@ -217,7 +217,7 @@ void ib::SimpleTemplateLexer::onReadChar() { // {{{
       }
       break;
     default:
-      fl_alert("unknown state");
+      ib::utils::message_box("unknown state");
   }
 
 } // }}}

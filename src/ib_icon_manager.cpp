@@ -347,7 +347,7 @@ void ib::IconManager::shrinkCache() { // {{{
   const auto max_cache_size = ib::Singleton<ib::Config>::getInstance()->getMaxCachedIcons();
   if(cached_icons_.size() < max_cache_size) return;
   if(cached_icons_.size() != cached_icons_queue_.size()){
-    fl_alert("Warning: icon cache seems to be broken. iceberg clears icon cache.");
+    ib::utils::message_box("Warning: icon cache seems to be broken. iceberg clears icon cache.");
     deleteCachedIcons();
     return;
   }

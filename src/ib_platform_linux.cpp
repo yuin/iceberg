@@ -788,6 +788,7 @@ int ib::platform::startup_system() { // {{{
 
 int ib::platform::init_system() { // {{{
   ib::Singleton<ib::ListWindow>::getInstance()->set_menu_window();
+  ib::Singleton<ib::MessageBox>::getInstance()->set_menu_window();
   auto intern_atom = [](const char *msg) -> Atom { return XInternAtom(fl_display, msg, False); };
   ib_g_atoms.xembed = intern_atom("_XEMBED");
   ib_g_atoms.xembed_info = intern_atom("_XEMBED_INFO");
@@ -802,12 +803,12 @@ int ib::platform::init_system() { // {{{
   Fl::add_handler(xevent_handler);
 
   if(xregister_hotkey() < 0 ) {
-    fl_alert("%s", "Failed to register hotkeys.");
+    ib::utils::message_box("%s", "Failed to register hotkeys.");
     ib::utils::exit_application(1);
   }
 
   if(xregister_systray_icon() < 0 ) {
-    fl_alert("%s", "Failed to register a system tray icon.");
+    ib::utils::message_box("%s", "Failed to register a system tray icon.");
     ib::utils::exit_application(1);
   }
 
@@ -1533,7 +1534,7 @@ ib::oschar* ib::platform::get_self_path(ib::oschar *result){ // {{{
   snprintf(buf, 64, "/proc/%d/exe", getpid());
   const auto ret = readlink(buf, result, IB_MAX_PATH-1);
   if(ret < 0) {
-    fl_alert("Failed to get self path.");
+    ib::utils::message_box("Failed to get self path.");
   }
   result[ret] = '\0';
   return result;
