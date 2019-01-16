@@ -158,8 +158,7 @@ void ib::Controller::afterExecuteCommand(const bool success, const char *message
     }
   }
   if(message != nullptr){
-    //ib::utils::message_box("%s", message);
-    ib::utils::message_box(message);
+    ib::utils::message_box("%s", message);
   }
 } // }}}
 
@@ -203,7 +202,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
 
     if(error) {
-      ib::utils::message_box("%s", usage);
+      fl_alert("%s", usage);
       ib::utils::exit_application(1);
     }
   }
@@ -265,18 +264,18 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
   const auto completer = ib::Singleton<ib::Completer>::getInstance();
 #define READ_UNSIGNED_INT(name) \
   luint = lua_tointeger(IB_LUA, -1); \
-  if(luint < 0) { ib::utils::message_box(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
-  if(luint > 4096) { ib::utils::message_box(#name "is too large."); ib::utils::exit_application(1); } \
+  if(luint < 0) { fl_alert(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
+  if(luint > 4096) { fl_alert(#name "is too large."); ib::utils::exit_application(1); } \
   number = (int)luint;
 #define READ_UNSIGNED_INT_M(name, max) \
   luint = lua_tointeger(IB_LUA, -1); \
-  if(luint < 0) { ib::utils::message_box(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
-  if(luint > max) { ib::utils::message_box(#name "is too large(must be < %d).", max); ib::utils::exit_application(1); } \
+  if(luint < 0) { fl_alert(#name " must be an unsigned int."); ib::utils::exit_application(1); }\
+  if(luint > max) { fl_alert(#name "is too large(must be < %d).", max); ib::utils::exit_application(1); } \
   number = (int)luint;
-#define GET_FIELD(name, type) lua_getfield(IB_LUA, -1, name); if(!lua_isnil(IB_LUA, -1) && !lua_is##type(IB_LUA, -1)) { ib::utils::message_box(#name " must be " #type); ib::utils::exit_application(1); } if(!lua_isnil(IB_LUA, -1))
-#define GET_LIST(index, type) lua_pushinteger(IB_LUA, index); lua_gettable(IB_LUA, -2); if(lua_isnil(IB_LUA, -1)){lua_pop(IB_LUA, 1);break;}if(!lua_is##type(IB_LUA, -1)) { ib::utils::message_box("index" #index " must be " #type); ib::utils::exit_application(1); }
+#define GET_FIELD(name, type) lua_getfield(IB_LUA, -1, name); if(!lua_isnil(IB_LUA, -1) && !lua_is##type(IB_LUA, -1)) { fl_alert(#name " must be " #type); ib::utils::exit_application(1); } if(!lua_isnil(IB_LUA, -1))
+#define GET_LIST(index, type) lua_pushinteger(IB_LUA, index); lua_gettable(IB_LUA, -2); if(lua_isnil(IB_LUA, -1)){lua_pop(IB_LUA, 1);break;}if(!lua_is##type(IB_LUA, -1)) { fl_alert("index" #index " must be " #type); ib::utils::exit_application(1); }
 #define ENUMERATE_TABLE lua_pushnil(IB_LUA);while (lua_next(IB_LUA, -2) != 0) 
-#define PARSE_KEY_BIND(name) memset(key_buf, 0, sizeof(key_buf));ib::utils::parse_key_bind(key_buf, lua_tostring(IB_LUA, -1));if(key_buf[0] == 0) { ib::utils::message_box("Invalid key bind:" #name);ib::utils::exit_application(1);}
+#define PARSE_KEY_BIND(name) memset(key_buf, 0, sizeof(key_buf));ib::utils::parse_key_bind(key_buf, lua_tostring(IB_LUA, -1));if(key_buf[0] == 0) { fl_alert("Invalid key bind:" #name);ib::utils::exit_application(1);}
 #define PARSE_KEY_BIND_CONST(value) memset(key_buf, 0, sizeof(key_buf));ib::utils::parse_key_bind(key_buf, value);
 
 
@@ -324,7 +323,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     GET_FIELD("history_factor", number) {
        ludouble = lua_tonumber(IB_LUA, -1);
        if(ludouble > 1.0 || ludouble < 0.0) {
-         ib::utils::message_box("history_factor must be 1.0 > value > 0.0;");
+         fl_alert("history_factor must be 1.0 > value > 0.0;");
          ib::utils::exit_application(1);
        }
        cfg->setHistoryFactor(ludouble);
@@ -445,7 +444,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
           ib::Regex re1(search_path->getPattern().c_str(), ib::Regex::I);
           if(re1.init(&error_msg) != 0) {
-            ib::utils::message_box("search_path(%s, pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
+            fl_alert("search_path(%s, pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
             ib::utils::exit_application(1);
           }
 
@@ -456,7 +455,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
 
           ib::Regex re2(search_path->getExcludePattern().c_str(), ib::Regex::I);
           if(re2.init(&error_msg) != 0) {
-            ib::utils::message_box("search_path(%s, exclude_pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
+            fl_alert("search_path(%s, exclude_pattern) : %s", search_path->getPath().c_str(), error_msg.c_str());
             ib::utils::exit_application(1);
           }
           
@@ -476,7 +475,7 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
         case ib::CompletionMethod::ABBR:
           return new ib::AbbrMatchCompletionMethod();
       }
-      ib::utils::message_box("unknown completer(%s).", name);
+      fl_alert("unknown completer(%s).", name);
       ib::utils::exit_application(1);
       return nullptr;
     };
@@ -743,12 +742,12 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
       lua_pop(IB_LUA, 1);
 
       if(command->getName() == "" || command->getPath() == ""){
-        ib::utils::message_box("Command must have 'name' and 'path' attibutes.");
+        fl_alert("Command must have 'name' and 'path' attibutes.");
         ib::utils::exit_application(1);
       }
 
       if(command->getTerminal() != "auto" && command->getTerminal() != "yes" && command->getTerminal() != "no"){
-        ib::utils::message_box("%s: Invalid 'terminal' attribute.(%s)", command->getName().c_str(), command->getTerminal().c_str());
+        fl_alert("%s: Invalid 'terminal' attribute.(%s)", command->getName().c_str(), command->getTerminal().c_str());
         ib::utils::exit_application(1);
       }
 

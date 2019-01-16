@@ -249,7 +249,7 @@ public:
     auto osstr = utf82ochar_n(str, n);
     auto buf = osstr.get();
     IDWriteTextLayout *layout = nullptr;
-    hresult(ib_g_dwrite_factory->CreateTextLayout(buf, _tcslen(buf), current_dwrite_text_format(), 99999, 0, &layout));
+    hresult(ib_g_dwrite_factory->CreateTextLayout(buf, _tcslen(buf), current_dwrite_text_format(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), &layout));
     DWRITE_TEXT_METRICS metrics;
     hresult(layout->GetMetrics(&metrics));
     safe_release(&layout);

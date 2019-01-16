@@ -191,6 +191,7 @@ namespace ib {
 
     private:
       int handle(int e);
+      void adjustSize();
 
   }; // }}}
 

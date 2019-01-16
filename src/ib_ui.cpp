@@ -802,7 +802,7 @@ void ib::MessageBox::initLayout(){ // {{{
   button_->box(FL_FLAT_BOX);
   button_->labelfont(ib::Fonts::list);
   button_->labelcolor(cfg->getStyleListBgColor1());
-  button_->labelsize(12);
+  button_->labelsize(15);
   button_->color(cfg->getStyleListFontColor());
   end();
 } /* }}} */
@@ -827,22 +827,23 @@ void ib::MessageBox::draw(){ /* {{{ */
   std::stringstream ss(message_);
   std::string to;
   int y = 10;
-  int height = fl_height();
 
+  adjustSize();
   draw_box(FL_BORDER_BOX, 0, 0, w(), h(), cfg->getStyleListFontColor());
   draw_box(FL_BORDER_BOX, 3, 3, w()-6, h()-6, cfg->getStyleListBgColor1());
   fl_color(cfg->getStyleListFontColor());
-  fl_font(ib::Fonts::list, 12);
+  fl_font(button_->labelfont(), button_->labelsize());
+  int height = fl_height(button_->labelfont(), button_->labelsize());
+  int d = fl_descent();
   while(std::getline(ss,to,'\n')){
-    fl_draw(to.c_str(), 10, y, w()-10, height, Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_WRAP));
+    fl_draw(to.c_str(), 10, y - d + height);
     y += height;
   }
   draw_children();
 
 } /* }}} */
 
-void ib::MessageBox::show(const char *message){ /* {{{ */
-  message_ = message;
+void ib::MessageBox::adjustSize(){ /* {{{ */
   std::stringstream ss(message_);
   std::string to;
   int screen_x, screen_y, screen_w, screen_h;
@@ -851,13 +852,13 @@ void ib::MessageBox::show(const char *message){ /* {{{ */
   int height = 0;
 
   Fl::screen_xywh(screen_x, screen_y, screen_w, screen_h, 0, 0);
-  fl_font(ib::Fonts::list, 12);
-  int h = fl_height();
+  int h = fl_height(button_->labelfont(), button_->labelsize());
+  fl_font(button_->labelfont(), button_->labelsize());
   while(std::getline(ss,to,'\n')){
-    width = std::max(width, fl_width(to.c_str()) + 20);
+    width = std::max(width, fl_width(to.c_str()));
     height += h;
   }
-  width += 10;
+  width += 10 * 2 + button_->labelsize()*3;
   height += h * 4;
 
   const auto x = screen_w/2 - width/2;
@@ -866,8 +867,11 @@ void ib::MessageBox::show(const char *message){ /* {{{ */
   position(x, y);
   size(width, height);
   button_->position(width/2 - fl_width("OK"), height - h * 2);
-  button_->size(fl_width("OK")*2, h+5);
+  button_->size(fl_width("OK")+20, h);
+} /* }}} */
 
+void ib::MessageBox::show(const char *message){ /* {{{ */
+  message_ = message;
   redraw();
   show();
 } /* }}} */

@@ -396,7 +396,7 @@ void ib::LuaState::init() { // {{{
   lua_register(l_, "_iceberg_config_dir", &ib::luamodule::config_dir);
   Regex_register(l_);
   if(luaL_dofile(l_, cfg->getConfigPath().c_str())) {
-    ib::utils::message_box("%s", ib::platform::local2utf8(lua_tostring(l_, lua_gettop(l_))).get());
+    fl_alert("%s", ib::platform::local2utf8(lua_tostring(l_, lua_gettop(l_))).get());
     exit(1);
   }
 } // }}}

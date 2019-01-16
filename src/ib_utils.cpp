@@ -578,8 +578,8 @@ void ib::utils::message_box(const char *fmt, ...){ // {{{
   va_copy(ap2, ap); 
   
   const int len = vsnprintf(NULL, 0, fmt, ap);
-  char *buf = (char *)malloc((len + 1) * sizeof(char));
-  vsnprintf(buf, len, fmt, ap2);
+  char *buf = (char *)malloc((len + 2) * sizeof(char));
+  vsnprintf(buf, len+1, fmt, ap2);
   
   va_end(ap);
   va_end(ap2);
