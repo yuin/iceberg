@@ -3,19 +3,19 @@
 OLD_PWD=`pwd`; cd $(dirname $(dirname $0)); BASE_DIR=`pwd`; cd ${OLD_PWD}
 source ${BASE_DIR}/tools/common.sh
 
-if [ ! -d "${BASE_DIR}/ext/fltk-1.3.3" ]; then
-  echo "Downloading FLTK 1.3.3"
+if [ ! -d "${BASE_DIR}/ext/fltk-1.3.4" ]; then
+  echo "Downloading FLTK 1.3.4"
   cd ${BASE_DIR}/ext
-  wget http://fltk.org/pub/fltk/snapshots/fltk-1.3.x-r11862.tar.gz
+  wget https://www.fltk.org/pub/fltk/1.3.4/fltk-1.3.4-2-source.tar.gz
 
-  echo "explode FLTK 1.3.3"
-  tar zxvf fltk-1.3.x-r11862.tar.gz
+  echo "explode FLTK 1.3.4"
+  tar zxvf fltk-1.3.4-2-source.tar.gz
 
-  mv fltk-1.3.x-r11862 fltk-1.3.3
-  rm -f fltk-1.3.x-r11862.tar.gz
+  mv fltk-1.3.4-2 fltk-1.3.4
+  rm -f fltk-1.3.4-2-source.tar.gz
   
   echo "make FLTK libraries"
-  cd fltk-1.3.3/
+  cd fltk-1.3.4/
   if [ "${IB_OSTYPE}" != "windows" ]; then
     ./configure --enable-threads --enable-xft --enable-xdbe
   else
@@ -27,7 +27,7 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.3" ]; then
   fi
   make
 else
- echo "FLTK 1.3.3: installed"
+ echo "FLTK 1.3.4: installed"
 fi
 
 if [ ! -d "${BASE_DIR}/ext/lua-5.1.4" ]; then
@@ -122,7 +122,7 @@ if [ ! -d "${BASE_DIR}/ext/LuaXML_101012" ]; then
   echo "Downloading LuaXML 1.7.4"
   mkdir ${BASE_DIR}/ext/LuaXML_101012
   cd ${BASE_DIR}/ext/LuaXML_101012
-  wget http://viremo.eludi.net/LuaXML/LuaXML_101012.zip
+  wget http://de1.opensde.net/opensde/mirror/0.3/L/LuaXML_101012.zip
 
   echo "explode LuaXML 1.7.4"
   unzip LuaXML_101012.zip
