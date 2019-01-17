@@ -55,6 +55,7 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Select_Browser.H>
+#include <FL/Fl_Multiline_Output.H>
 #include <FL/x.H>
 #include <FL/fl_ask.H>
 #include <FL/fl_draw.H>

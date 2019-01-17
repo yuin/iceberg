@@ -797,6 +797,15 @@ void ib::MessageBox::initLayout(){ // {{{
   set_override();
   position(100, 100);
   size(300, 300);
+  color(cfg->getStyleListFontColor());
+
+  output_ = new Fl_Multiline_Output(3, 3, 100, 100);
+  output_->box(FL_FLAT_BOX);
+  output_->color(cfg->getStyleListBgColor1());
+  output_->textfont(ib::Fonts::list);
+  output_->textcolor(cfg->getStyleListFontColor());
+  output_->textsize(15);
+
   button_ = new Fl_Button(0,0,100,20, "OK");
   button_->callback(ib_mb_ok_callback);
   button_->box(FL_FLAT_BOX);
@@ -804,6 +813,7 @@ void ib::MessageBox::initLayout(){ // {{{
   button_->labelcolor(cfg->getStyleListBgColor1());
   button_->labelsize(15);
   button_->color(cfg->getStyleListFontColor());
+
   end();
 } /* }}} */
 
@@ -820,27 +830,8 @@ void ib::MessageBox::show(){ /* {{{ */
   set_modal();
   Fl_Window::show();
   while (shown()) Fl::wait();
-} /* }}} */
-
-void ib::MessageBox::draw(){ /* {{{ */
-  const auto* const cfg = ib::Singleton<ib::Config>::getInstance();
-  std::stringstream ss(message_);
-  std::string to;
-  int y = 10;
-
-  adjustSize();
-  draw_box(FL_BORDER_BOX, 0, 0, w(), h(), cfg->getStyleListFontColor());
-  draw_box(FL_BORDER_BOX, 3, 3, w()-6, h()-6, cfg->getStyleListBgColor1());
-  fl_color(cfg->getStyleListFontColor());
-  fl_font(button_->labelfont(), button_->labelsize());
-  int height = fl_height(button_->labelfont(), button_->labelsize());
-  int d = fl_descent();
-  while(std::getline(ss,to,'\n')){
-    fl_draw(to.c_str(), 10, y - d + height);
-    y += height;
-  }
-  draw_children();
-
+  output_->value("");
+  message_.clear();
 } /* }}} */
 
 void ib::MessageBox::adjustSize(){ /* {{{ */
@@ -864,26 +855,34 @@ void ib::MessageBox::adjustSize(){ /* {{{ */
   const auto x = screen_w/2 - width/2;
   const auto y = screen_h/2 - height/2 + (mainwin->x() > 200 ? -50 : 50);
 
-  position(x, y);
-  size(width, height);
+  resize(x, y, width, height);
+  output_->resize(3, 3, width - 6, height - 6);
   button_->position(width/2 - fl_width("OK"), height - h * 2);
   button_->size(fl_width("OK")+20, h);
 } /* }}} */
 
 void ib::MessageBox::show(const char *message){ /* {{{ */
   message_ = message;
+  adjustSize();
+  output_->value(message_.c_str());
   redraw();
   show();
 } /* }}} */
 
 int ib::MessageBox::handle(int e){ /* {{{ */
+  const auto state = Fl::event_state();
+  const auto mods = state & (FL_META|FL_CTRL|FL_ALT);
   int ret=0;
 
-  if(shown() && (e == FL_KEYDOWN) && Fl::event_key() == FL_Enter) {
+  if(shown()) {
+    if(e == FL_KEYDOWN && Fl::event_key() == FL_Enter) {
       ib_mb_ok_callback(this, this);
       ret = 1;
-   }
-   return ret ? 1 : button_->handle(e);
+    } else if(Fl::event_key() == 'c' && mods == FL_COMMAND) {
+      ib::utils::set_clipboard(message_.c_str());
+    }
+  }
+  return ret ? 1 : button_->handle(e);
 } /* }}} */
 
 // }}}
