@@ -1,5 +1,19 @@
 Changes
 =======================
+0.9.12 (2019-01-17)
+-----------------------
+- CHANGED: update fltk dependencies(1.3.4)
+- IMPROVED: Now commands and ``icebergsupport.shell_execute`` take a ``sudo`` parameter.
+  If this value is set to ``true``, the command will be run as an administrator user.
+- IMPROVED: Now iceberg uses a more good looking message box
+
+How to upgrade from 0.9.11
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Download 0.9.12
+- Copy ``iceberg.exe`` from 0.9.11 and paste it to the 0.9.12
+- Delete ``commands.cache`` and  ``icons.cache``
+- Execute ``:scan_search_path all``
+
 0.9.11 (2016-10-03)
 -----------------------
 - IMPROVED: Improve DirectWrite drawing perfornamce.
