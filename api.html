@@ -1,35 +1,25 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>API &#8212; iceberg 0.9.11 documentation</title>
-    
+    <title>API &#8212; iceberg 0.9.12 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.11',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.11 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Plugins" href="plugin.html" />
     <link rel="prev" title="Tips" href="tips.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.11 documentation</span></a></h1>
+          <span>iceberg 0.9.12 documentation</span></a></h1>
         <h2 class="heading"><span>API</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -50,11 +40,11 @@
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>iceberg uses <a class="reference external" href="http://www.lua.org">Lua</a> as a configuration and an extension language. Users can extend the functionality by using lua scripts. <code class="docutils literal"><span class="pre">icebergsupport</span></code> package has many APIs for extending iceberg.</p>
+<p>iceberg uses <a class="reference external" href="http://www.lua.org">Lua</a> as a configuration and an extension language. Users can extend the functionality by using lua scripts. <code class="docutils literal notranslate"><span class="pre">icebergsupport</span></code> package has many APIs for extending iceberg.</p>
 </div>
 <div class="section" id="charcter-encodings">
 <h2>Charcter encodings<a class="headerlink" href="#charcter-encodings" title="Permalink to this headline">¶</a></h2>
-<p>iceberg uses UTF-8 as an internal encoding, so most APIs accept and return UTF-8 encoded strings. However, <a class="reference internal" href="#icebergsupport.command_output" title="icebergsupport.command_output"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_output()</span></code></a> returns a string output by the command without any character encoding conversion.</p>
+<p>iceberg uses UTF-8 as an internal encoding, so most APIs accept and return UTF-8 encoded strings. However, <a class="reference internal" href="#icebergsupport.command_output" title="icebergsupport.command_output"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.command_output()</span></code></a> returns a string output by the command without any character encoding conversion.</p>
 <p><a class="reference external" href="http://www.lua.org">Lua</a> does not have multibyte aware string APIs. If you want to correctly iterate over actual characters in a UTF-8 encoded string, you have to use regular expression APIs in the <cite>icebergsupport</cite> package.</p>
 </div>
 <div class="section" id="constants">
@@ -62,7 +52,7 @@
 <dl class="attribute">
 <dt id="icebergsupport.EVENT_STATE_*">
 <code class="descclassname">icebergsupport.</code><code class="descname">EVENT_STATE_*</code><a class="headerlink" href="#icebergsupport.EVENT_STATE_*" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constants used for <a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.matches_key()</span></code></a> etc. Please refer to <a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.matches_key()</span></code></a> for further information.</p>
+<dd><p>Constants used for <a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.matches_key()</span></code></a> etc. Please refer to <a class="reference internal" href="#icebergsupport.matches_key" title="icebergsupport.matches_key"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.matches_key()</span></code></a> for further information.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -70,9 +60,9 @@
 <code class="descclassname">icebergsupport.</code><code class="descname">COMP_*</code><a class="headerlink" href="#icebergsupport.COMP_*" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constants mean completion methods.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">COMP_BEGINSWITH</span></code> : prefix match</li>
-<li><code class="docutils literal"><span class="pre">COMP_PARTIAL</span></code> : partial match</li>
-<li><code class="docutils literal"><span class="pre">COMP_ABBR</span></code> : fuzzy match</li>
+<li><code class="docutils literal notranslate"><span class="pre">COMP_BEGINSWITH</span></code> : prefix match</li>
+<li><code class="docutils literal notranslate"><span class="pre">COMP_PARTIAL</span></code> : partial match</li>
+<li><code class="docutils literal notranslate"><span class="pre">COMP_ABBR</span></code> : fuzzy match</li>
 </ul>
 </dd></dl>
 
@@ -84,13 +74,13 @@
 <dl class="function">
 <dt id="icebergsupport.dirname">
 <code class="descclassname">icebergsupport.</code><code class="descname">dirname</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.dirname" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the directory name of the pathname <code class="docutils literal"><span class="pre">path</span></code> .</p>
+<dd><p>Returns the directory name of the pathname <code class="docutils literal notranslate"><span class="pre">path</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -104,13 +94,13 @@
 <dl class="function">
 <dt id="icebergsupport.basename">
 <code class="descclassname">icebergsupport.</code><code class="descname">basename</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.basename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the base name of pathname <code class="docutils literal"><span class="pre">path</span></code> .</p>
+<dd><p>Returns the base name of pathname <code class="docutils literal notranslate"><span class="pre">path</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -124,13 +114,13 @@
 <dl class="function">
 <dt id="icebergsupport.directory_exists">
 <code class="descclassname">icebergsupport.</code><code class="descname">directory_exists</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.directory_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">true</span></code> if <code class="docutils literal"><span class="pre">path</span></code> refers to an existing directory.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">path</span></code> refers to an existing directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -144,13 +134,13 @@
 <dl class="function">
 <dt id="icebergsupport.file_exists">
 <code class="descclassname">icebergsupport.</code><code class="descname">file_exists</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.file_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">true</span></code> if <code class="docutils literal"><span class="pre">path</span></code> refers to an existing file.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">path</span></code> refers to an existing file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -164,13 +154,13 @@
 <dl class="function">
 <dt id="icebergsupport.path_exists">
 <code class="descclassname">icebergsupport.</code><code class="descname">path_exists</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.path_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">true</span></code> if <code class="docutils literal"><span class="pre">path</span></code> refers to an existing file or directory.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">path</span></code> refers to an existing file or directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -190,7 +180,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>pathparts</strong> (<em>string</em>) &#8211; a path component</li>
+<li><strong>pathparts</strong> (<em>string</em>) – a path component</li>
 </ul>
 </td>
 </tr>
@@ -204,13 +194,13 @@
 <dl class="function">
 <dt id="icebergsupport.list_dir">
 <code class="descclassname">icebergsupport.</code><code class="descname">list_dir</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.list_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list containing the names of the entries in the directory given by <code class="docutils literal"><span class="pre">path</span></code> .</p>
+<dd><p>Returns a list containing the names of the entries in the directory given by <code class="docutils literal notranslate"><span class="pre">path</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the directory path</li>
+<li><strong>path</strong> (<em>string</em>) – the directory path</li>
 </ul>
 </td>
 </tr>
@@ -224,13 +214,13 @@
 <dl class="function">
 <dt id="icebergsupport.quote_path">
 <code class="descclassname">icebergsupport.</code><code class="descname">quote_path</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.quote_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Searches a <code class="docutils literal"><span class="pre">path</span></code> for spaces. If spaces are found, the entire path is enclosed in <code class="docutils literal"><span class="pre">&quot;</span></code> .</p>
+<dd><p>Searches a <code class="docutils literal notranslate"><span class="pre">path</span></code> for spaces. If spaces are found, the entire path is enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
@@ -244,17 +234,17 @@
 <dl class="function">
 <dt id="icebergsupport.unquote_path">
 <code class="descclassname">icebergsupport.</code><code class="descname">unquote_path</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.unquote_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes <code class="docutils literal"><span class="pre">&quot;</span></code> at beginning or the end of <code class="docutils literal"><span class="pre">path</span></code> if <code class="docutils literal"><span class="pre">path</span></code> is enclosed in <code class="docutils literal"><span class="pre">&quot;</span></code></p>
+<dd><p>Removes <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> at beginning or the end of <code class="docutils literal notranslate"><span class="pre">path</span></code> if <code class="docutils literal notranslate"><span class="pre">path</span></code> is enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the path</li>
+<li><strong>path</strong> (<em>string</em>) – the path</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string: an unquote path if enclosed in <code class="docutils literal"><span class="pre">&quot;</span></code>, given path otherwise</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">string: an unquote path if enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code>, given path otherwise</p>
 </td>
 </tr>
 </tbody>
@@ -267,13 +257,13 @@
 <dl class="function">
 <dt id="icebergsupport.band">
 <code class="descclassname">icebergsupport.</code><code class="descname">band</code><span class="sig-paren">(</span><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.band" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the bitwise and of <code class="docutils literal"><span class="pre">numbers</span></code> . <code class="docutils literal"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal"><span class="pre">lua_Integer</span></code>.</p>
+<dd><p>Returns the bitwise and of <code class="docutils literal notranslate"><span class="pre">numbers</span></code> . <code class="docutils literal notranslate"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal notranslate"><span class="pre">lua_Integer</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>number</strong> (<em>[number]</em>) &#8211; </li>
+<li><strong>number</strong> (<em>[number]</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -287,13 +277,13 @@
 <dl class="function">
 <dt id="icebergsupport.bor">
 <code class="descclassname">icebergsupport.</code><code class="descname">bor</code><span class="sig-paren">(</span><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.bor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the bitwise and of <code class="docutils literal"><span class="pre">numbers</span></code> . <code class="docutils literal"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal"><span class="pre">lua_Integer</span></code>.</p>
+<dd><p>Returns the bitwise and of <code class="docutils literal notranslate"><span class="pre">numbers</span></code> . <code class="docutils literal notranslate"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal notranslate"><span class="pre">lua_Integer</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>number</strong> (<em>[number]</em>) &#8211; </li>
+<li><strong>number</strong> (<em>[number]</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -307,13 +297,13 @@
 <dl class="function">
 <dt id="icebergsupport.bxor">
 <code class="descclassname">icebergsupport.</code><code class="descname">bxor</code><span class="sig-paren">(</span><em>number</em><span class="optional">[</span>, <em>number</em>, <em>number ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.bxor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the bitwise exclusive or of <code class="docutils literal"><span class="pre">numbers</span></code> . <code class="docutils literal"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal"><span class="pre">lua_Integer</span></code>.</p>
+<dd><p>Returns the bitwise exclusive or of <code class="docutils literal notranslate"><span class="pre">numbers</span></code> . <code class="docutils literal notranslate"><span class="pre">numbers</span></code> are interpreted as a <code class="docutils literal notranslate"><span class="pre">lua_Integer</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>number</strong> (<em>[number]</em>) &#8211; </li>
+<li><strong>number</strong> (<em>[number]</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -327,14 +317,14 @@
 <dl class="function">
 <dt id="icebergsupport.brshift">
 <code class="descclassname">icebergsupport.</code><code class="descname">brshift</code><span class="sig-paren">(</span><em>number</em>, <em>disp</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.brshift" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number <code class="docutils literal"><span class="pre">number</span></code> shifted <code class="docutils literal"><span class="pre">disp</span></code> bits to the right. <code class="docutils literal"><span class="pre">number</span></code> and <code class="docutils literal"><span class="pre">disp</span></code> are interpreted as a <code class="docutils literal"><span class="pre">lua_Integer</span></code>.</p>
+<dd><p>Returns the number <code class="docutils literal notranslate"><span class="pre">number</span></code> shifted <code class="docutils literal notranslate"><span class="pre">disp</span></code> bits to the right. <code class="docutils literal notranslate"><span class="pre">number</span></code> and <code class="docutils literal notranslate"><span class="pre">disp</span></code> are interpreted as a <code class="docutils literal notranslate"><span class="pre">lua_Integer</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>number</strong> (<em>number</em>) &#8211; </li>
-<li><strong>disp</strong> (<em>number</em>) &#8211; </li>
+<li><strong>number</strong> (<em>number</em>) – </li>
+<li><strong>disp</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -348,14 +338,14 @@
 <dl class="function">
 <dt id="icebergsupport.blshift">
 <code class="descclassname">icebergsupport.</code><code class="descname">blshift</code><span class="sig-paren">(</span><em>number</em>, <em>disp</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.blshift" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number <code class="docutils literal"><span class="pre">number</span></code> shifted <code class="docutils literal"><span class="pre">disp</span></code> bits to the left. <code class="docutils literal"><span class="pre">number</span></code> and <code class="docutils literal"><span class="pre">disp</span></code> are interpreted as a <code class="docutils literal"><span class="pre">lua_Integer</span></code>.</p>
+<dd><p>Returns the number <code class="docutils literal notranslate"><span class="pre">number</span></code> shifted <code class="docutils literal notranslate"><span class="pre">disp</span></code> bits to the left. <code class="docutils literal notranslate"><span class="pre">number</span></code> and <code class="docutils literal notranslate"><span class="pre">disp</span></code> are interpreted as a <code class="docutils literal notranslate"><span class="pre">lua_Integer</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>number</strong> (<em>number</em>) &#8211; </li>
-<li><strong>disp</strong> (<em>number</em>) &#8211; </li>
+<li><strong>number</strong> (<em>number</em>) – </li>
+<li><strong>disp</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -377,7 +367,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string: a string such as <code class="docutils literal"><span class="pre">win_64</span></code></td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string: a string such as <code class="docutils literal notranslate"><span class="pre">win_64</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -391,7 +381,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string: a string such as <code class="docutils literal"><span class="pre">6.1.7601</span> <span class="pre">x64</span></code></td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string: a string such as <code class="docutils literal notranslate"><span class="pre">6.1.7601</span> <span class="pre">x64</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -402,24 +392,23 @@
 <h3>Sub processes<a class="headerlink" href="#sub-processes" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="icebergsupport.shell_execute">
-<code class="descclassname">icebergsupport.</code><code class="descname">shell_execute</code><span class="sig-paren">(</span><em>path</em><span class="optional">[</span>, <em>args</em>, <em>workdir</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.shell_execute" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">icebergsupport.</code><code class="descname">shell_execute</code><span class="sig-paren">(</span><em>path</em><span class="optional">[</span>, <em>args</em>, <em>workdir</em>, <em>sudo</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.shell_execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the sub process. If path is not a executable file, path will be opened by an application associated with its extension.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the file path</li>
-<li><strong>args</strong> (<em>[string]</em>) &#8211; arguments for the command</li>
-<li><strong>workdir</strong> (<em>string</em>) &#8211; a working directory. This defaults to the current directory.</li>
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>string</em>) – the file path</li>
+<li><strong>args</strong> (<em>[string]</em>) – arguments for the command</li>
+<li><strong>workdir</strong> (<em>string</em>) – a working directory. This defaults to the current directory.</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[bool:true if no errors, false otherwise, string:an error message]</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p>:param bool sudo : If sudo is true, the sub process will be run as an administrator user.
+:returns: [bool:true if no errors, false otherwise, string:an error message]</p>
 </dd></dl>
 
 <dl class="function">
@@ -431,7 +420,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>command</strong> (<em>string</em>) &#8211; </li>
+<li><strong>command</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -448,13 +437,13 @@
 <dl class="function">
 <dt id="icebergsupport.utf82local">
 <code class="descclassname">icebergsupport.</code><code class="descname">utf82local</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.utf82local" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts <code class="docutils literal"><span class="pre">text</span></code> from utf-8 to the local encoding.</p>
+<dd><p>Converts <code class="docutils literal notranslate"><span class="pre">text</span></code> from utf-8 to the local encoding.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -468,13 +457,13 @@
 <dl class="function">
 <dt id="icebergsupport.local2utf8">
 <code class="descclassname">icebergsupport.</code><code class="descname">local2utf8</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.local2utf8" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts <code class="docutils literal"><span class="pre">text</span></code> from the local encoding to utf-8.</p>
+<dd><p>Converts <code class="docutils literal notranslate"><span class="pre">text</span></code> from the local encoding to utf-8.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -488,13 +477,13 @@
 <dl class="function">
 <dt id="icebergsupport.crlf2lf">
 <code class="descclassname">icebergsupport.</code><code class="descname">crlf2lf</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.crlf2lf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts newline characters in <code class="docutils literal"><span class="pre">text</span></code> from <code class="docutils literal"><span class="pre">crlf</span></code> to <code class="docutils literal"><span class="pre">lf</span></code> .</p>
+<dd><p>Converts newline characters in <code class="docutils literal notranslate"><span class="pre">text</span></code> from <code class="docutils literal notranslate"><span class="pre">crlf</span></code> to <code class="docutils literal notranslate"><span class="pre">lf</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -508,21 +497,21 @@
 </div>
 <div class="section" id="regular-expressions">
 <h3>Regular expressions<a class="headerlink" href="#regular-expressions" title="Permalink to this headline">¶</a></h3>
-<p>UTF-8 aware regular expression APIs.  Flags are a bitwise or of <a class="reference internal" href="#Regex.S" title="Regex.S"><code class="xref lua lua-attr docutils literal"><span class="pre">Regex.S</span></code></a> , <a class="reference internal" href="#Regex.I" title="Regex.I"><code class="xref lua lua-attr docutils literal"><span class="pre">Regex.I</span></code></a> and so on. ( <a class="reference internal" href="#icebergsupport.bor" title="icebergsupport.bor"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.bor()</span></code></a> can be used for bitwise operations). You must pass <a class="reference internal" href="#Regex.NONE" title="Regex.NONE"><code class="xref lua lua-attr docutils literal"><span class="pre">Regex.NONE</span></code></a> if no flags.</p>
+<p>UTF-8 aware regular expression APIs.  Flags are a bitwise or of <a class="reference internal" href="#Regex.S" title="Regex.S"><code class="xref lua lua-attr docutils literal notranslate"><span class="pre">Regex.S</span></code></a> , <a class="reference internal" href="#Regex.I" title="Regex.I"><code class="xref lua lua-attr docutils literal notranslate"><span class="pre">Regex.I</span></code></a> and so on. ( <a class="reference internal" href="#icebergsupport.bor" title="icebergsupport.bor"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.bor()</span></code></a> can be used for bitwise operations). You must pass <a class="reference internal" href="#Regex.NONE" title="Regex.NONE"><code class="xref lua lua-attr docutils literal notranslate"><span class="pre">Regex.NONE</span></code></a> if no flags.</p>
 <dl class="function">
 <dt id="icebergsupport.regex_match">
 <code class="descclassname">icebergsupport.</code><code class="descname">regex_match</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em>, <em>string</em><span class="optional">[</span>, <em>startpos</em>, <em>endpos</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.regex_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Searches for <code class="docutils literal"><span class="pre">pattern</span></code> in <code class="docutils literal"><span class="pre">string</span></code> . (completely matching)</p>
+<dd><p>Searches for <code class="docutils literal notranslate"><span class="pre">pattern</span></code> in <code class="docutils literal notranslate"><span class="pre">string</span></code> . (completely matching)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>string</em>) &#8211; the regular expression</li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; the flags for searching</li>
-<li><strong>string</strong> (<em>string</em>) &#8211; the  string to be searched</li>
-<li><strong>startpos</strong> (<em>number</em>) &#8211; a starting byte position for searching</li>
-<li><strong>endpos</strong> (<em>number</em>) &#8211; an ending byte position for searching</li>
+<li><strong>pattern</strong> (<em>string</em>) – the regular expression</li>
+<li><strong>flags</strong> (<em>number</em>) – the flags for searching</li>
+<li><strong>string</strong> (<em>string</em>) – the  string to be searched</li>
+<li><strong>startpos</strong> (<em>number</em>) – a starting byte position for searching</li>
+<li><strong>endpos</strong> (<em>number</em>) – an ending byte position for searching</li>
 </ul>
 </td>
 </tr>
@@ -536,17 +525,17 @@
 <dl class="function">
 <dt id="icebergsupport.regex_search">
 <code class="descclassname">icebergsupport.</code><code class="descname">regex_search</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em>, <em>string</em><span class="optional">[</span>, <em>startpos</em>, <em>endpos</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.regex_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Searches for <code class="docutils literal"><span class="pre">pattern</span></code> in <code class="docutils literal"><span class="pre">string</span></code> . (partial matching)</p>
+<dd><p>Searches for <code class="docutils literal notranslate"><span class="pre">pattern</span></code> in <code class="docutils literal notranslate"><span class="pre">string</span></code> . (partial matching)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>string</em>) &#8211; the regular expression</li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; the flags for searching</li>
-<li><strong>string</strong> (<em>string</em>) &#8211; the  string to be searched</li>
-<li><strong>startpos</strong> (<em>number</em>) &#8211; a starting byte position for searching</li>
-<li><strong>endpos</strong> (<em>number</em>) &#8211; an ending byte position for searching</li>
+<li><strong>pattern</strong> (<em>string</em>) – the regular expression</li>
+<li><strong>flags</strong> (<em>number</em>) – the flags for searching</li>
+<li><strong>string</strong> (<em>string</em>) – the  string to be searched</li>
+<li><strong>startpos</strong> (<em>number</em>) – a starting byte position for searching</li>
+<li><strong>endpos</strong> (<em>number</em>) – an ending byte position for searching</li>
 </ul>
 </td>
 </tr>
@@ -560,15 +549,15 @@
 <dl class="function">
 <dt id="icebergsupport.regex_split">
 <code class="descclassname">icebergsupport.</code><code class="descname">regex_split</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em>, <em>string</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.regex_split" title="Permalink to this definition">¶</a></dt>
-<dd><p>Splits <code class="docutils literal"><span class="pre">string</span></code> by the occurrences of <code class="docutils literal"><span class="pre">pattern</span></code> .</p>
+<dd><p>Splits <code class="docutils literal notranslate"><span class="pre">string</span></code> by the occurrences of <code class="docutils literal notranslate"><span class="pre">pattern</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>string</em>) &#8211; the regular expression</li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; the flags for searching</li>
-<li><strong>string</strong> (<em>string</em>) &#8211; the string to be splitted</li>
+<li><strong>pattern</strong> (<em>string</em>) – the regular expression</li>
+<li><strong>flags</strong> (<em>number</em>) – the flags for searching</li>
+<li><strong>string</strong> (<em>string</em>) – the string to be splitted</li>
 </ul>
 </td>
 </tr>
@@ -583,16 +572,16 @@
 <dt id="icebergsupport.regex_gsub">
 <code class="descclassname">icebergsupport.</code><code class="descname">regex_gsub</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em>, <em>string</em>, <em>repl</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.regex_gsub" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div>Returns the string obtained by replacing the leftmost non-overlapping occurrences of pattern in <code class="docutils literal"><span class="pre">string</span></code> by the replacement <code class="docutils literal"><span class="pre">repl</span></code>. Backreferences, such as <code class="docutils literal"><span class="pre">%1</span></code>, <code class="docutils literal"><span class="pre">%2</span></code>, can be used in <code class="docutils literal"><span class="pre">repl</span></code> . Examples:</div></blockquote>
-<div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span><span class="p">)</span>
+<div>Returns the string obtained by replacing the leftmost non-overlapping occurrences of pattern in <code class="docutils literal notranslate"><span class="pre">string</span></code> by the replacement <code class="docutils literal notranslate"><span class="pre">repl</span></code>. Backreferences, such as <code class="docutils literal notranslate"><span class="pre">%1</span></code>, <code class="docutils literal notranslate"><span class="pre">%2</span></code>, can be used in <code class="docutils literal notranslate"><span class="pre">repl</span></code> . Examples:</div></blockquote>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;ABCDEFG&quot;</span><span class="p">,</span> <span class="s2">&quot;REPLACED&quot;</span><span class="p">)</span>
 
-<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">REPLACED&quot;</span>
+<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;REPLACED&quot;</span>
 
-<span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">ABCDEFG&quot;</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="n">re</span><span class="p">)</span>
- <span class="k">return</span> <span class="n">re</span><span class="p">:</span><span class="n">_1</span><span class="p">()</span>
-<span class="k">end</span><span class="p">))</span>
+<span class="n">icebergsupport</span><span class="p">.</span><span class="n">regex_gsub</span><span class="p">(</span><span class="s2">&quot;ABC([A-Z]+)&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="s2">&quot;ABCDEFG&quot;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">re</span><span class="p">)</span>
+ <span class="kr">return</span> <span class="n">re</span><span class="p">:</span><span class="n">_1</span><span class="p">()</span>
+<span class="kr">end</span><span class="p">))</span>
 
-<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;</span><span class="s">DEFG&quot;</span>
+<span class="o">#</span> <span class="o">-&gt;</span> <span class="s2">&quot;DEFG&quot;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -600,10 +589,10 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>pattern</strong> (<em>string</em>) &#8211; the regular expression</li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; the flags for searching</li>
-<li><strong>string</strong> (<em>string</em>) &#8211; the string to be replaced</li>
-<li><strong>repl</strong> (<em>callback</em>) &#8211; the callback function or a string</li>
+<li><strong>pattern</strong> (<em>string</em>) – the regular expression</li>
+<li><strong>flags</strong> (<em>number</em>) – the flags for searching</li>
+<li><strong>string</strong> (<em>string</em>) – the string to be replaced</li>
+<li><strong>repl</strong> (<em>callback</em>) – the callback function or a string</li>
 </ul>
 </td>
 </tr>
@@ -626,8 +615,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>args</strong> (<em>table</em>) &#8211; the list of arguments, such as <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code></li>
-<li><strong>option</strong> (<em>string</em>) &#8211; option names to parse, such as <code class="docutils literal"><span class="pre">-a</span></code> . An option must have suffix <code class="docutils literal"><span class="pre">:</span></code> such as <code class="docutils literal"><span class="pre">-a:</span></code> if the option requires a value</li>
+<li><strong>args</strong> (<em>table</em>) – the list of arguments, such as <code class="docutils literal notranslate"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code></li>
+<li><strong>option</strong> (<em>string</em>) – option names to parse, such as <code class="docutils literal notranslate"><span class="pre">-a</span></code> . An option must have suffix <code class="docutils literal notranslate"><span class="pre">:</span></code> such as <code class="docutils literal notranslate"><span class="pre">-a:</span></code> if the option requires a value</li>
 </ul>
 </td>
 </tr>
@@ -647,9 +636,9 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>values</strong> (<em>table</em>) &#8211; the list of arguments, such as <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code></li>
-<li><strong>pos</strong> (<em>number</em>) &#8211; the position in <code class="docutils literal"><span class="pre">values</span></code> that is pointed by the cursor.</li>
-<li><strong>option</strong> (<em>table</em>) &#8211; option definitions</li>
+<li><strong>values</strong> (<em>table</em>) – the list of arguments, such as <code class="docutils literal notranslate"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;}</span></code></li>
+<li><strong>pos</strong> (<em>number</em>) – the position in <code class="docutils literal notranslate"><span class="pre">values</span></code> that is pointed by the cursor.</li>
+<li><strong>option</strong> (<em>table</em>) – option definitions</li>
 </ul>
 </td>
 </tr>
@@ -661,24 +650,24 @@
 </dd></dl>
 
 <p>These functions are used for implementing completion functions and analyzing options.</p>
-<p><a class="reference internal" href="#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.comp_state()</span></code></a> is used in completion functions like the following:</p>
+<p><a class="reference internal" href="#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.comp_state()</span></code></a> is used in completion functions like the following:</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
   <span class="kd">local</span> <span class="n">state</span><span class="p">,</span> <span class="n">opts</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">comp_state</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
-    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-a&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">aaa&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">--abcd&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">--aefg&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a option&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-b&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b option&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">-c&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b option&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s">-a&quot;</span><span class="p">}}</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a option&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;aaa&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;--abcd&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;--aefg&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;b option&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">opt</span><span class="o">=</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;b option&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;-a&quot;</span><span class="p">}}</span>
   <span class="p">)</span>
-  <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">aaa&quot;</span> <span class="k">then</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">file1&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">file2&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">file3&quot;</span><span class="p">}</span>
-  <span class="k">elseif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">opt&quot;</span> <span class="k">then</span>
-    <span class="k">return</span> <span class="n">opts</span>
-  <span class="k">else</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">action1&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">action2&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">action3&quot;</span><span class="p">}</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+  <span class="kr">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;aaa&quot;</span> <span class="kr">then</span>
+    <span class="kr">return</span> <span class="p">{</span><span class="s2">&quot;file1&quot;</span><span class="p">,</span> <span class="s2">&quot;file2&quot;</span><span class="p">,</span> <span class="s2">&quot;file3&quot;</span><span class="p">}</span>
+  <span class="kr">elseif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;opt&quot;</span> <span class="kr">then</span>
+    <span class="kr">return</span> <span class="n">opts</span>
+  <span class="kr">else</span>
+    <span class="kr">return</span> <span class="p">{</span><span class="s2">&quot;action1&quot;</span><span class="p">,</span> <span class="s2">&quot;action2&quot;</span><span class="p">,</span> <span class="s2">&quot;action3&quot;</span><span class="p">}</span>
+  <span class="kr">end</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -687,37 +676,37 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">opt:</th><td class="field-body">An option name. This must start with <code class="docutils literal"><span class="pre">-</span></code>.</td>
+<tr class="field-odd field"><th class="field-name">opt:</th><td class="field-body">An option name. This must start with <code class="docutils literal notranslate"><span class="pre">-</span></code>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">description:</th><td class="field-body">A description for this option.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">state:</th><td class="field-body">A state name when this option is selected. If the input box value is <code class="docutils literal"><span class="pre">-b</span> <span class="pre">-a</span> <span class="pre">A</span></code> and now the cursor is just after <code class="docutils literal"><span class="pre">A</span></code>, the state name is <code class="docutils literal"><span class="pre">aaa</span></code> in above example.</td>
+<tr class="field-odd field"><th class="field-name">state:</th><td class="field-body">A state name when this option is selected. If the input box value is <code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">-a</span> <span class="pre">A</span></code> and now the cursor is just after <code class="docutils literal notranslate"><span class="pre">A</span></code>, the state name is <code class="docutils literal notranslate"><span class="pre">aaa</span></code> in above example.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">exclude:</th><td class="field-body">Options that cannot be specified if this option is specified. In above example, <code class="docutils literal"><span class="pre">-c</span></code> will not be included in completion candidates if <code class="docutils literal"><span class="pre">-a</span></code> is specified.</td>
+<tr class="field-even field"><th class="field-name">exclude:</th><td class="field-body">Options that cannot be specified if this option is specified. In above example, <code class="docutils literal notranslate"><span class="pre">-c</span></code> will not be included in completion candidates if <code class="docutils literal notranslate"><span class="pre">-a</span></code> is specified.</td>
 </tr>
 </tbody>
 </table>
-<p>In addition, the input box value is <code class="docutils literal"><span class="pre">value</span> <span class="pre">-</span></code> and now the cursor is just after the <code class="docutils literal"><span class="pre">-</span></code>, the state name is special value <code class="docutils literal"><span class="pre">&quot;opt&quot;</span></code> .</p>
-<p><a class="reference internal" href="#icebergsupport.getopts" title="icebergsupport.getopts"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.getopts()</span></code></a> is used in command functions like the following:</p>
+<p>In addition, the input box value is <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">-</span></code> and now the cursor is just after the <code class="docutils literal notranslate"><span class="pre">-</span></code>, the state name is special value <code class="docutils literal notranslate"><span class="pre">&quot;opt&quot;</span></code> .</p>
+<p><a class="reference internal" href="#icebergsupport.getopts" title="icebergsupport.getopts"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.getopts()</span></code></a> is used in command functions like the following:</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-  <span class="kd">local</span> <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">getopts</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-a:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">-c&quot;</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">opts</span><span class="p">.</span><span class="n">a</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
-    <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">-a must not be empty.&quot;</span><span class="p">)</span>
-  <span class="k">else</span>
-    <span class="k">if</span> <span class="n">opt</span><span class="p">.</span><span class="n">b</span> <span class="k">then</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">getopts</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;-a:&quot;</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">opts</span><span class="p">.</span><span class="n">a</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="s2">&quot;-a must not be empty.&quot;</span><span class="p">)</span>
+  <span class="kr">else</span>
+    <span class="kr">if</span> <span class="n">opt</span><span class="p">.</span><span class="n">b</span> <span class="kr">then</span>
       <span class="n">ibs</span><span class="p">.</span><span class="n">shell_execute</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
       <span class="c1">-- blah blah blah</span>
-    <span class="k">elseif</span> <span class="n">opt</span><span class="p">.</span><span class="n">c</span> <span class="k">then</span>
+    <span class="kr">elseif</span> <span class="n">opt</span><span class="p">.</span><span class="n">c</span> <span class="kr">then</span>
       <span class="c1">-- blah blah blah</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+    <span class="kr">end</span>
+  <span class="kr">end</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p><code class="docutils literal"><span class="pre">opts</span></code> is a table with keys that are an option name without <code class="docutils literal"><span class="pre">-</span></code> prefix. If the option has a <code class="docutils literal"><span class="pre">:</span></code> suffix, the next argument will be evaluated as a value. Unknown options are stored in <code class="docutils literal"><span class="pre">args</span></code> .</p>
-<p>In above example, If <code class="docutils literal"><span class="pre">a</span></code> is <code class="docutils literal"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;file1&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code>, <code class="docutils literal"><span class="pre">getopts</span></code> returns <code class="docutils literal"><span class="pre">opts.a</span> <span class="pre">=</span> <span class="pre">&quot;file1&quot;;</span> <span class="pre">opts.b</span> <span class="pre">=</span> <span class="pre">true;</span> <span class="pre">args</span> <span class="pre">=</span> <span class="pre">{&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code> .</p>
+<p><code class="docutils literal notranslate"><span class="pre">opts</span></code> is a table with keys that are an option name without <code class="docutils literal notranslate"><span class="pre">-</span></code> prefix. If the option has a <code class="docutils literal notranslate"><span class="pre">:</span></code> suffix, the next argument will be evaluated as a value. Unknown options are stored in <code class="docutils literal notranslate"><span class="pre">args</span></code> .</p>
+<p>In above example, If <code class="docutils literal notranslate"><span class="pre">a</span></code> is <code class="docutils literal notranslate"><span class="pre">{&quot;-a&quot;,</span> <span class="pre">&quot;file1&quot;,</span> <span class="pre">&quot;-b&quot;,</span> <span class="pre">&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code>, <code class="docutils literal notranslate"><span class="pre">getopts</span></code> returns <code class="docutils literal notranslate"><span class="pre">opts.a</span> <span class="pre">=</span> <span class="pre">&quot;file1&quot;;</span> <span class="pre">opts.b</span> <span class="pre">=</span> <span class="pre">true;</span> <span class="pre">args</span> <span class="pre">=</span> <span class="pre">{&quot;action&quot;,</span> <span class="pre">&quot;parameter&quot;}</span></code> .</p>
 </div>
 <div class="section" id="iceberg-operations">
 <h3>iceberg operations<a class="headerlink" href="#iceberg-operations" title="Permalink to this headline">¶</a></h3>
@@ -776,7 +765,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the directory path</li>
+<li><strong>path</strong> (<em>string</em>) – the directory path</li>
 </ul>
 </td>
 </tr>
@@ -790,13 +779,13 @@
 <dl class="function">
 <dt id="icebergsupport.set_result_text">
 <code class="descclassname">icebergsupport.</code><code class="descname">set_result_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.set_result_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets <code class="docutils literal"><span class="pre">text</span></code> to the input box as a message.</p>
+<dd><p>Sets <code class="docutils literal notranslate"><span class="pre">text</span></code> to the input box as a message.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; the message</li>
+<li><strong>text</strong> (<em>string</em>) – the message</li>
 </ul>
 </td>
 </tr>
@@ -813,7 +802,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>string</em>) &#8211; the name of the command</li>
+<li><strong>name</strong> (<em>string</em>) – the name of the command</li>
 </ul>
 </td>
 </tr>
@@ -825,7 +814,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">a command name</td>
 </tr>
-<tr class="field-even field"><th class="field-name">path:</th><td class="field-body">a command path. This is a <code class="docutils literal"><span class="pre">string</span></code> or a <code class="docutils literal"><span class="pre">function</span></code></td>
+<tr class="field-even field"><th class="field-name">path:</th><td class="field-body">a command path. This is a <code class="docutils literal notranslate"><span class="pre">string</span></code> or a <code class="docutils literal notranslate"><span class="pre">function</span></code></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">cmdpath:</th><td class="field-body">a command path without arguments</td>
 </tr>
@@ -835,7 +824,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">icon:</th><td class="field-body">an icon path</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">terminal:</th><td class="field-body">whether this command must be run in the terminal( <code class="docutils literal"><span class="pre">&quot;yes&quot;</span></code> , <code class="docutils literal"><span class="pre">&quot;no&quot;</span></code>  or <code class="docutils literal"><span class="pre">&quot;auto&quot;</span></code> )</td>
+<tr class="field-odd field"><th class="field-name">terminal:</th><td class="field-body">whether this command must be run in the terminal( <code class="docutils literal notranslate"><span class="pre">&quot;yes&quot;</span></code> , <code class="docutils literal notranslate"><span class="pre">&quot;no&quot;</span></code>  or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> )</td>
 </tr>
 <tr class="field-even field"><th class="field-name">history:</th><td class="field-body">whether this command is added to the history.</td>
 </tr>
@@ -851,13 +840,13 @@
 <dl class="function">
 <dt id="icebergsupport.to_path">
 <code class="descclassname">icebergsupport.</code><code class="descname">to_path</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.to_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">text</span></code> if <code class="docutils literal"><span class="pre">text</span></code> is a path, otherwise tries to find a command named <code class="docutils literal"><span class="pre">text</span></code> and returns <code class="docutils literal"><span class="pre">path</span></code> of the command.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">text</span></code> if <code class="docutils literal notranslate"><span class="pre">text</span></code> is a path, otherwise tries to find a command named <code class="docutils literal notranslate"><span class="pre">text</span></code> and returns <code class="docutils literal notranslate"><span class="pre">path</span></code> of the command.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -871,13 +860,13 @@
 <dl class="function">
 <dt id="icebergsupport.to_directory_path">
 <code class="descclassname">icebergsupport.</code><code class="descname">to_directory_path</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.to_directory_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">text</span></code> if <code class="docutils literal"><span class="pre">text</span></code> is a path, otherwise tries to find a command named <code class="docutils literal"><span class="pre">text</span></code> and returns <code class="docutils literal"><span class="pre">path</span></code> of the command.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">text</span></code> if <code class="docutils literal notranslate"><span class="pre">text</span></code> is a path, otherwise tries to find a command named <code class="docutils literal notranslate"><span class="pre">text</span></code> and returns <code class="docutils literal notranslate"><span class="pre">path</span></code> of the command.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -897,7 +886,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; the message</li>
+<li><strong>text</strong> (<em>string</em>) – the message</li>
 </ul>
 </td>
 </tr>
@@ -922,7 +911,7 @@
 <dl class="function">
 <dt id="icebergsupport.event_state">
 <code class="descclassname">icebergsupport.</code><code class="descname">event_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.event_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a number that is a bitfield of what modifier keys were on during the most recent GUI event. This bitfield consists of <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><code class="xref lua lua-data docutils literal"><span class="pre">icebergsupport.EVENT_STATE_*</span></code></a> .</p>
+<dd><p>Returns a number that is a bitfield of what modifier keys were on during the most recent GUI event. This bitfield consists of <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><code class="xref lua lua-data docutils literal notranslate"><span class="pre">icebergsupport.EVENT_STATE_*</span></code></a> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -936,13 +925,13 @@
 <dl class="function">
 <dt id="icebergsupport.matches_key">
 <code class="descclassname">icebergsupport.</code><code class="descname">matches_key</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.matches_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if event <code class="docutils literal"><span class="pre">key</span></code> is held, false otherwise. <code class="docutils literal"><span class="pre">key</span></code> is a string such as <code class="docutils literal"><span class="pre">ctrl-a</span></code> and <code class="docutils literal"><span class="pre">ctrl-alt-space</span></code> .</p>
+<dd><p>Returns true if event <code class="docutils literal notranslate"><span class="pre">key</span></code> is held, false otherwise. <code class="docutils literal notranslate"><span class="pre">key</span></code> is a string such as <code class="docutils literal notranslate"><span class="pre">ctrl-a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctrl-alt-space</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>key</strong> (<em>string</em>) &#8211; </li>
+<li><strong>key</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -968,13 +957,13 @@
 <dl class="function">
 <dt id="icebergsupport.scan_search_path">
 <code class="descclassname">icebergsupport.</code><code class="descname">scan_search_path</code><span class="sig-paren">(</span><em>category</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.scan_search_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scans the search path that belongs to <code class="docutils literal"><span class="pre">category</span></code> .</p>
+<dd><p>Scans the search path that belongs to <code class="docutils literal notranslate"><span class="pre">category</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>category</strong> (<em>string</em>) &#8211; </li>
+<li><strong>category</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -999,13 +988,13 @@
 <dl class="function">
 <dt id="icebergsupport.set_input_text">
 <code class="descclassname">icebergsupport.</code><code class="descname">set_input_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.set_input_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets <code class="docutils literal"><span class="pre">text</span></code> to the input box.</p>
+<dd><p>Sets <code class="docutils literal notranslate"><span class="pre">text</span></code> to the input box.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1016,7 +1005,7 @@
 <dl class="function">
 <dt id="icebergsupport.get_input_text_values">
 <code class="descclassname">icebergsupport.</code><code class="descname">get_input_text_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.get_input_text_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the value of the input box and returns a list of strings. This function parses a text that is shown in the input box, so if you want to parse a value including an autocompleted text, you have to call <a class="reference internal" href="#icebergsupport.do_autocomplete" title="icebergsupport.do_autocomplete"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.do_autocomplete()</span></code></a> before calling this function.</p>
+<dd><p>Parses the value of the input box and returns a list of strings. This function parses a text that is shown in the input box, so if you want to parse a value including an autocompleted text, you have to call <a class="reference internal" href="#icebergsupport.do_autocomplete" title="icebergsupport.do_autocomplete"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.do_autocomplete()</span></code></a> before calling this function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1044,13 +1033,13 @@
 <dl class="function">
 <dt id="icebergsupport.set_clipboard">
 <code class="descclassname">icebergsupport.</code><code class="descname">set_clipboard</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.set_clipboard" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets <code class="docutils literal"><span class="pre">text</span></code> to the clipboard</p>
+<dd><p>Sets <code class="docutils literal notranslate"><span class="pre">text</span></code> to the clipboard</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1089,14 +1078,14 @@
 <dl class="function">
 <dt id="icebergsupport.command_execute">
 <code class="descclassname">icebergsupport.</code><code class="descname">command_execute</code><span class="sig-paren">(</span><em>name</em><span class="optional">[</span>, <em>args</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.command_execute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs the command named <code class="docutils literal"><span class="pre">name</span></code> .</p>
+<dd><p>Runs the command named <code class="docutils literal notranslate"><span class="pre">name</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>string</em>) &#8211; </li>
-<li><strong>args</strong> (<em>[string]</em>) &#8211; a list of arguments</li>
+<li><strong>name</strong> (<em>string</em>) – </li>
+<li><strong>args</strong> (<em>[string]</em>) – a list of arguments</li>
 </ul>
 </td>
 </tr>
@@ -1110,14 +1099,14 @@
 <dl class="function">
 <dt id="icebergsupport.default_after_command_action">
 <code class="descclassname">icebergsupport.</code><code class="descname">default_after_command_action</code><span class="sig-paren">(</span><em>success</em>, <em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.default_after_command_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make the default behavior after the command execution. If <code class="docutils literal"><span class="pre">success</span></code> is true, this function clears the input box and hides all iceberg windows, otherwise shows <code class="docutils literal"><span class="pre">message</span></code> using the popup window. Typically, this function is used in combination with <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_execute()</span></code></a> such as <code class="docutils literal"><span class="pre">icebergsupport.default_after_command_action(icebergsupport.command_execute(&quot;cmd&quot;,</span> <span class="pre">{&quot;arg0&quot;,</span> <span class="pre">&quot;arg1&quot;}))</span></code></p>
+<dd><p>Make the default behavior after the command execution. If <code class="docutils literal notranslate"><span class="pre">success</span></code> is true, this function clears the input box and hides all iceberg windows, otherwise shows <code class="docutils literal notranslate"><span class="pre">message</span></code> using the popup window. Typically, this function is used in combination with <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.command_execute()</span></code></a> such as <code class="docutils literal notranslate"><span class="pre">icebergsupport.default_after_command_action(icebergsupport.command_execute(&quot;cmd&quot;,</span> <span class="pre">{&quot;arg0&quot;,</span> <span class="pre">&quot;arg1&quot;}))</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>success</strong> (<em>bool</em>) &#8211; whether the command was succeeded</li>
-<li><strong>message</strong> (<em>string</em>) &#8211; </li>
+<li><strong>success</strong> (<em>bool</em>) – whether the command was succeeded</li>
+<li><strong>message</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1128,14 +1117,14 @@
 <dl class="function">
 <dt id="icebergsupport.add_history">
 <code class="descclassname">icebergsupport.</code><code class="descname">add_history</code><span class="sig-paren">(</span><em>input</em><span class="optional">[</span>, <em>name</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.add_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds <code class="docutils literal"><span class="pre">input</span></code> to the last of the history. If you want to add a command that is registered with iceberg, pass the command name as <code class="docutils literal"><span class="pre">name</span></code> .</p>
+<dd><p>Adds <code class="docutils literal notranslate"><span class="pre">input</span></code> to the last of the history. If you want to add a command that is registered with iceberg, pass the command name as <code class="docutils literal notranslate"><span class="pre">name</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>input</strong> (<em>string</em>) &#8211; the text to be added to the history(including all arguments)</li>
-<li><strong>name</strong> (<em>string</em>) &#8211; a command name if <code class="docutils literal"><span class="pre">input</span></code> is registered with iceberg, nil otherwise</li>
+<li><strong>input</strong> (<em>string</em>) – the text to be added to the history(including all arguments)</li>
+<li><strong>name</strong> (<em>string</em>) – a command name if <code class="docutils literal notranslate"><span class="pre">input</span></code> is registered with iceberg, nil otherwise</li>
 </ul>
 </td>
 </tr>
@@ -1146,13 +1135,13 @@
 <dl class="function">
 <dt id="icebergsupport.open_dir">
 <code class="descclassname">icebergsupport.</code><code class="descname">open_dir</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.open_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Opens <code class="docutils literal"><span class="pre">path</span></code> with the application <code class="docutils literal"><span class="pre">system.file_browser</span></code> .</p>
+<dd><p>Opens <code class="docutils literal notranslate"><span class="pre">path</span></code> with the application <code class="docutils literal notranslate"><span class="pre">system.file_browser</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<em>string</em>) &#8211; the directory path</li>
+<li><strong>path</strong> (<em>string</em>) – the directory path</li>
 </ul>
 </td>
 </tr>
@@ -1166,8 +1155,8 @@
 <dl class="function">
 <dt id="icebergsupport.group_command">
 <code class="descclassname">icebergsupport.</code><code class="descname">group_command</code><span class="sig-paren">(</span><em>command</em><span class="optional">[</span>, <em>commmand</em>, <em>command ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.group_command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a new command that executes several commands in sequence. Each commands are run by <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.command_execute()</span></code></a>, so commands must be registered with iceberg.</p>
-<div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">userdir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
+<dd><p>Creates a new command that executes several commands in sequence. Each commands are run by <a class="reference internal" href="#icebergsupport.command_execute" title="icebergsupport.command_execute"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.command_execute()</span></code></a>, so commands must be registered with iceberg.</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;userdir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;runs a group of commands&quot;</span><span class="p">},</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1175,14 +1164,14 @@
 <dl class="function">
 <dt id="icebergsupport.bind_key">
 <code class="descclassname">icebergsupport.</code><code class="descname">bind_key</code><span class="sig-paren">(</span><em>key</em>, <em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.bind_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Executes <code class="docutils literal"><span class="pre">func</span></code> when <code class="docutils literal"><span class="pre">key</span></code> is pressed. This function is used in the <code class="docutils literal"><span class="pre">on_key_down</span></code> callback function.</p>
+<dd><p>Executes <code class="docutils literal notranslate"><span class="pre">func</span></code> when <code class="docutils literal notranslate"><span class="pre">key</span></code> is pressed. This function is used in the <code class="docutils literal notranslate"><span class="pre">on_key_down</span></code> callback function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>string</em>) &#8211; the string such as <code class="docutils literal"><span class="pre">ctrl-m</span></code></li>
-<li><strong>func</strong> (<em>function</em>) &#8211; </li>
+<li><strong>key</strong> (<em>string</em>) – the string such as <code class="docutils literal notranslate"><span class="pre">ctrl-m</span></code></li>
+<li><strong>func</strong> (<em>function</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1193,13 +1182,13 @@
 <dl class="function">
 <dt id="icebergsupport.is_modifier_pressed">
 <code class="descclassname">icebergsupport.</code><code class="descname">is_modifier_pressed</code><span class="sig-paren">(</span><em>keycode</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.is_modifier_pressed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if modifier keys <code class="docutils literal"><span class="pre">keycode</span></code> are pressed.</p>
+<dd><p>Returns true if modifier keys <code class="docutils literal notranslate"><span class="pre">keycode</span></code> are pressed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>keycode</strong> (<em>number</em>) &#8211; the bitwise or of the <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><code class="xref lua lua-data docutils literal"><span class="pre">icebergsupport.EVENT_STATE_*</span></code></a> constants</li>
+<li><strong>keycode</strong> (<em>number</em>) – the bitwise or of the <a class="reference internal" href="#icebergsupport.EVENT_STATE_*" title="icebergsupport.EVENT_STATE_*"><code class="xref lua lua-data docutils literal notranslate"><span class="pre">icebergsupport.EVENT_STATE_*</span></code></a> constants</li>
 </ul>
 </td>
 </tr>
@@ -1216,15 +1205,15 @@
 <dl class="function">
 <dt id="icebergsupport.dump_lua_object">
 <code class="descclassname">icebergsupport.</code><code class="descname">dump_lua_object</code><span class="sig-paren">(</span><em>object</em>, <em>indent</em>, <em>isarrayval</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.dump_lua_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts <code class="docutils literal"><span class="pre">object</span></code> to a string that can be interpreted as a Lua code.</p>
+<dd><p>Converts <code class="docutils literal notranslate"><span class="pre">object</span></code> to a string that can be interpreted as a Lua code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>object</strong> (<em>object</em>) &#8211; </li>
-<li><strong>indent</strong> (<em>number</em>) &#8211; the indent level of the result, this must be 0</li>
-<li><strong>isarrayval</strong> (<em>bool</em>) &#8211; pass <code class="docutils literal"><span class="pre">true</span></code> if <code class="docutils literal"><span class="pre">object</span></code> is an array</li>
+<li><strong>object</strong> (<em>object</em>) – </li>
+<li><strong>indent</strong> (<em>number</em>) – the indent level of the result, this must be 0</li>
+<li><strong>isarrayval</strong> (<em>bool</em>) – pass <code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">object</span></code> is an array</li>
 </ul>
 </td>
 </tr>
@@ -1238,13 +1227,13 @@
 <dl class="function">
 <dt id="icebergsupport.load_lua_object">
 <code class="descclassname">icebergsupport.</code><code class="descname">load_lua_object</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.load_lua_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses <code class="docutils literal"><span class="pre">text</span></code> as a lua code and returns a table.</p>
+<dd><p>Parses <code class="docutils literal notranslate"><span class="pre">text</span></code> as a lua code and returns a table.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1258,15 +1247,15 @@
 <dl class="function">
 <dt id="icebergsupport.grep">
 <code class="descclassname">icebergsupport.</code><code class="descname">grep</code><span class="sig-paren">(</span><em>text</em>, <em>pattern</em><span class="optional">[</span>, <em>flags</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.grep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the lines of <code class="docutils literal"><span class="pre">text</span></code> that include a regular expression <code class="docutils literal"><span class="pre">pattern</span></code></p>
+<dd><p>Returns the lines of <code class="docutils literal notranslate"><span class="pre">text</span></code> that include a regular expression <code class="docutils literal notranslate"><span class="pre">pattern</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
-<li><strong>pattern</strong> (<em>string</em>) &#8211; </li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
+<li><strong>pattern</strong> (<em>string</em>) – </li>
+<li><strong>flags</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1280,13 +1269,13 @@
 <dl class="function">
 <dt id="icebergsupport.is_array">
 <code class="descclassname">icebergsupport.</code><code class="descname">is_array</code><span class="sig-paren">(</span><em>table</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.is_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal"><span class="pre">true</span></code> if <code class="docutils literal"><span class="pre">table</span></code> is an array. <code class="docutils literal"><span class="pre">table</span></code> is considered as an array if all indecies are a positive number.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">table</span></code> is an array. <code class="docutils literal notranslate"><span class="pre">table</span></code> is considered as an array if all indecies are a positive number.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>table</strong> (<em>table</em>) &#8211; </li>
+<li><strong>table</strong> (<em>table</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1300,13 +1289,13 @@
 <dl class="function">
 <dt id="icebergsupport.merge_table">
 <code class="descclassname">icebergsupport.</code><code class="descname">merge_table</code><span class="sig-paren">(</span><em>table</em><span class="optional">[</span>, <em>obj</em>, <em>obj ...</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.merge_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merges multiple tables into the first <code class="docutils literal"><span class="pre">table</span></code> . Elements will be appended after the last element of <code class="docutils literal"><span class="pre">table</span></code> if <code class="docutils literal"><span class="pre">table</span></code> is a list.</p>
+<dd><p>Merges multiple tables into the first <code class="docutils literal notranslate"><span class="pre">table</span></code> . Elements will be appended after the last element of <code class="docutils literal notranslate"><span class="pre">table</span></code> if <code class="docutils literal notranslate"><span class="pre">table</span></code> is a list.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>table</strong> (<em>table</em>) &#8211; </li>
+<li><strong>table</strong> (<em>table</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1317,13 +1306,13 @@
 <dl class="function">
 <dt id="icebergsupport.table_find">
 <code class="descclassname">icebergsupport.</code><code class="descname">table_find</code><span class="sig-paren">(</span><em>table</em>, <em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#icebergsupport.table_find" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the lowest index in the <code class="docutils literal"><span class="pre">table</span></code> where the <code class="docutils literal"><span class="pre">obj</span></code> is found. Returns 0 if <code class="docutils literal"><span class="pre">obj</span></code> is not found.</p>
+<dd><p>Returns the lowest index in the <code class="docutils literal notranslate"><span class="pre">table</span></code> where the <code class="docutils literal notranslate"><span class="pre">obj</span></code> is found. Returns 0 if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is not found.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>table</strong> (<em>table</em>) &#8211; </li>
+<li><strong>table</strong> (<em>table</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1372,14 +1361,14 @@
 <dl class="class">
 <dt id="Regex.new">
 <em class="property">class </em><code class="descclassname">Regex.</code><code class="descname">new</code><span class="sig-paren">(</span><em>pattern</em>, <em>flags</em><span class="sig-paren">)</span><a class="headerlink" href="#Regex.new" title="Permalink to this definition">¶</a></dt>
-<dd><p>A regular expression object that handles UTF-8 strings correctly. This object is used in <code class="docutils literal"><span class="pre">icebergsupport.regex_*</span></code> functions.</p>
+<dd><p>A regular expression object that handles UTF-8 strings correctly. This object is used in <code class="docutils literal notranslate"><span class="pre">icebergsupport.regex_*</span></code> functions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pattern</strong> (<em>string</em>) &#8211; the regular expression that can be used in the Oniguruma</li>
-<li><strong>flags</strong> (<em>number</em>) &#8211; the regular expression flags(Regex.NONE or a bitwise or of the Regex.S,M and I)</li>
+<li><strong>pattern</strong> (<em>string</em>) – the regular expression that can be used in the Oniguruma</li>
+<li><strong>flags</strong> (<em>number</em>) – the regular expression flags(Regex.NONE or a bitwise or of the Regex.S,M and I)</li>
 </ul>
 </td>
 </tr>
@@ -1396,31 +1385,31 @@
 <dl class="attribute">
 <dt id="Regex.S">
 <code class="descclassname">Regex.</code><code class="descname">S</code><a class="headerlink" href="#Regex.S" title="Permalink to this definition">¶</a></dt>
-<dd><p>A regular expression flag that is equivalent to the Perl&#8217;s s flag.</p>
+<dd><p>A regular expression flag that is equivalent to the Perl’s s flag.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Regex.M">
 <code class="descclassname">Regex.</code><code class="descname">M</code><a class="headerlink" href="#Regex.M" title="Permalink to this definition">¶</a></dt>
-<dd><p>A regular expression flag that is equivalent to the Perl&#8217;s m flag.</p>
+<dd><p>A regular expression flag that is equivalent to the Perl’s m flag.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Regex.I">
 <code class="descclassname">Regex.</code><code class="descname">I</code><a class="headerlink" href="#Regex.I" title="Permalink to this definition">¶</a></dt>
-<dd><p>A regular expression flag that is equivalent to the Perl&#8217;s i flag.</p>
+<dd><p>A regular expression flag that is equivalent to the Perl’s i flag.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Regex.escape">
 <code class="descclassname">Regex.</code><code class="descname">escape</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#Regex.escape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Escapes all meta characters in <code class="docutils literal"><span class="pre">text</span></code></p>
+<dd><p>Escapes all meta characters in <code class="docutils literal notranslate"><span class="pre">text</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; </li>
+<li><strong>text</strong> (<em>string</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1435,7 +1424,7 @@
 <dt id="Regex:_1">
 <code class="descclassname">Regex:</code><code class="descname">_1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Regex:_1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the subgroup string of the match.</p>
-<p><code class="docutils literal"><span class="pre">Regex:_1()</span></code> , <code class="docutils literal"><span class="pre">Regex:_2()</span></code> ... <code class="docutils literal"><span class="pre">Regex:_9()</span></code> are defined.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Regex:_1()</span></code> , <code class="docutils literal notranslate"><span class="pre">Regex:_2()</span></code> … <code class="docutils literal notranslate"><span class="pre">Regex:_9()</span></code> are defined.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1455,7 +1444,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>group</strong> (<em>number</em>) &#8211; </li>
+<li><strong>group</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1469,13 +1458,13 @@
 <dl class="function">
 <dt id="Regex:startpos">
 <code class="descclassname">Regex:</code><code class="descname">startpos</code><span class="sig-paren">(</span><em>group</em><span class="sig-paren">)</span><a class="headerlink" href="#Regex:startpos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the index of the start of the substring matched by <code class="docutils literal"><span class="pre">group</span></code> .</p>
+<dd><p>Returns the index of the start of the substring matched by <code class="docutils literal notranslate"><span class="pre">group</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>group</strong> (<em>number</em>) &#8211; </li>
+<li><strong>group</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1489,13 +1478,13 @@
 <dl class="function">
 <dt id="Regex:endpos">
 <code class="descclassname">Regex:</code><code class="descname">endpos</code><span class="sig-paren">(</span><em>group</em><span class="sig-paren">)</span><a class="headerlink" href="#Regex:endpos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the index of the end of the substring matched by <code class="docutils literal"><span class="pre">group</span></code> .</p>
+<dd><p>Returns the index of the end of the substring matched by <code class="docutils literal notranslate"><span class="pre">group</span></code> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>group</strong> (<em>number</em>) &#8211; </li>
+<li><strong>group</strong> (<em>number</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1524,8 +1513,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+        &#169; Copyright 2012-2019, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.7.
     </div>
   </body>
 </html>

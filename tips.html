@@ -1,35 +1,25 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Tips &#8212; iceberg 0.9.11 documentation</title>
-    
+    <title>Tips &#8212; iceberg 0.9.12 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.11',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.11 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="Configurations" href="config.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.11 documentation</span></a></h1>
+          <span>iceberg 0.9.12 documentation</span></a></h1>
         <h2 class="heading"><span>Tips</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -55,54 +45,54 @@
 <div class="section" id="copy-current-date-or-time-into-the-clipboard">
 <h2>Copy current date or time into the clipboard<a class="headerlink" href="#copy-current-date-or-time-into-the-clipboard" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
-<span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="k">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">date_YYYYMMDD</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;%Y%m%d&quot;</span><span class="p">))</span> <span class="kr">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
+<span class="n">date_YYYYMMDDHHMMSS</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="n">ibs</span><span class="p">.</span><span class="n">set_clipboard</span><span class="p">(</span><span class="nb">os.date</span><span class="p">(</span><span class="s2">&quot;%Y%m%d%H%M%S&quot;</span><span class="p">))</span> <span class="kr">end</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
 </pre></div>
 </div>
 </div></blockquote>
 </div>
 <div class="section" id="open-a-file-that-selected-in-an-explorer-with-your-editor">
 <h2>Open a file that selected in an explorer with your editor<a class="headerlink" href="#open-a-file-that-selected-in-an-explorer-with-your-editor" title="Permalink to this headline">¶</a></h2>
-<p>Select a file in an explorer and bring iceberg foward, then hit <code class="docutils literal"><span class="pre">ctrl-m</span></code> .</p>
+<p>Select a file in an explorer and bring iceberg foward, then hit <code class="docutils literal notranslate"><span class="pre">ctrl-m</span></code> .</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
-  <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">ctrl-m&quot;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+  <span class="n">ibs</span><span class="p">.</span><span class="n">bind_key</span><span class="p">(</span><span class="s2">&quot;ctrl-m&quot;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
     <span class="kd">local</span> <span class="n">ex</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
-    <span class="n">ibs</span><span class="p">.</span><span class="n">default_after_command_action</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">vim&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">ex</span><span class="p">.</span><span class="n">path</span> <span class="o">..</span> <span class="s">[[\]]</span> <span class="o">..</span> <span class="n">ex</span><span class="p">.</span><span class="n">selected</span><span class="p">[</span><span class="mi">1</span><span class="p">]}))</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">default_after_command_action</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;vim&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">ex</span><span class="p">.</span><span class="n">path</span> <span class="o">..</span> <span class="s">[[\]]</span> <span class="o">..</span> <span class="n">ex</span><span class="p">.</span><span class="n">selected</span><span class="p">[</span><span class="mi">1</span><span class="p">]}))</span>
     <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
-  <span class="k">end</span><span class="p">)</span>
+  <span class="kr">end</span><span class="p">)</span>
 
-  <span class="k">if</span> <span class="n">accept</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+  <span class="kr">if</span> <span class="n">accept</span> <span class="o">==</span> <span class="mi">0</span> <span class="kr">then</span>
     <span class="n">accept</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">process_shortcut_keys</span><span class="p">()</span>
-  <span class="k">end</span>
-  <span class="k">return</span> <span class="n">accept</span>
-<span class="k">end</span>
+  <span class="kr">end</span>
+  <span class="kr">return</span> <span class="n">accept</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
 </div>
 <div class="section" id="show-files-under-a-directory-that-is-already-registered-as-a-command">
 <h2>Show files under a directory that is already registered as a command<a class="headerlink" href="#show-files-under-a-directory-that-is-already-registered-as-a-command" title="Permalink to this headline">¶</a></h2>
-<p>Consider a case that <code class="docutils literal"><span class="pre">C:\app</span></code> is registered as a command named <code class="docutils literal"><span class="pre">app</span></code> . When you type <code class="docutils literal"><span class="pre">app</span></code> and hit <code class="docutils literal"><span class="pre">ctrl-l</span></code> in this case, the current directory of iceberg will be changed to <code class="docutils literal"><span class="pre">C:\app</span></code> . Files under <code class="docutils literal"><span class="pre">C:\app</span></code> can be shown by typing <code class="docutils literal"><span class="pre">./</span></code> .</p>
+<p>Consider a case that <code class="docutils literal notranslate"><span class="pre">C:\app</span></code> is registered as a command named <code class="docutils literal notranslate"><span class="pre">app</span></code> . When you type <code class="docutils literal notranslate"><span class="pre">app</span></code> and hit <code class="docutils literal notranslate"><span class="pre">ctrl-l</span></code> in this case, the current directory of iceberg will be changed to <code class="docutils literal notranslate"><span class="pre">C:\app</span></code> . Files under <code class="docutils literal notranslate"><span class="pre">C:\app</span></code> can be shown by typing <code class="docutils literal notranslate"><span class="pre">./</span></code> .</p>
 </div>
 <div class="section" id="instant-calculator">
 <h2>Instant calculator<a class="headerlink" href="#instant-calculator" title="Permalink to this headline">¶</a></h2>
-<p>The following <code class="docutils literal"><span class="pre">on_enter</span></code> function allow you to perform numerical calculation quickly. Just type such as <code class="docutils literal"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></code> and hit Enter.</p>
+<p>The following <code class="docutils literal notranslate"><span class="pre">on_enter</span></code> function allow you to perform numerical calculation quickly. Just type such as <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">+</span> <span class="pre">20</span></code> and hit Enter.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_enter</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
   <span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">get_input_text</span><span class="p">()</span>
-  <span class="kd">local</span> <span class="n">ok</span> <span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">regex_match</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s">d+</span><span class="se">\\</span><span class="s">s+.*&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">ok</span> <span class="k">then</span>
-    <span class="n">ibs</span><span class="p">.</span><span class="n">default_after_command_action</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">cal&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">text</span><span class="p">}))</span>
+  <span class="kd">local</span> <span class="n">ok</span> <span class="p">,</span><span class="n">r</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">regex_match</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">d+</span><span class="se">\\</span><span class="s2">s+.*&quot;</span><span class="p">,</span> <span class="n">Regex</span><span class="p">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">ok</span> <span class="kr">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">default_after_command_action</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;cal&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">text</span><span class="p">}))</span>
     <span class="n">accept</span> <span class="o">=</span> <span class="mi">1</span>
-  <span class="k">end</span>
+  <span class="kr">end</span>
 
-  <span class="k">return</span> <span class="n">accept</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="n">accept</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -110,20 +100,20 @@
 <div class="section" id="execute-scan-search-path-command-automatically-when-you-start-iceberg">
 <h2>Execute :scan_search_path command automatically when you start iceberg<a class="headerlink" href="#execute-scan-search-path-command-automatically-when-you-start-iceberg" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_initialize</span><span class="p">()</span>
   <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="kd">local</span> <span class="n">autoscan_file</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">.autoscan&quot;</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">ibs</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span> <span class="k">then</span>
-    <span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">all&quot;</span><span class="p">})</span>
+  <span class="kd">local</span> <span class="n">autoscan_file</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">CONFIG_DIR</span><span class="p">,</span> <span class="s2">&quot;.autoscan&quot;</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">ibs</span><span class="p">.</span><span class="n">file_exists</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span> <span class="kr">then</span>
+    <span class="n">ibs</span><span class="p">.</span><span class="n">command_execute</span><span class="p">(</span><span class="s2">&quot;:scan_search_path&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">})</span>
     <span class="nb">os.remove</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">)</span>
-  <span class="k">else</span>
-    <span class="kd">local</span> <span class="n">fp</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">w&quot;</span><span class="p">)</span>
-    <span class="n">fp</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">1&quot;</span><span class="p">)</span>
+  <span class="kr">else</span>
+    <span class="kd">local</span> <span class="n">fp</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">autoscan_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
     <span class="n">fp</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-  <span class="k">end</span>
+  <span class="kr">end</span>
 
-  <span class="k">return</span> <span class="nb">error</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="nb">error</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -131,22 +121,22 @@
 <div class="section" id="interact-with-foobar2000">
 <h2>Interact with foobar2000<a class="headerlink" href="#interact-with-foobar2000" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">foobar2000</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">foobar2000</span> <span class="o">=</span> <span class="p">{</span>
   <span class="n">path</span><span class="o">=</span><span class="s">[[path of a foobar2000 executable]]</span><span class="p">,</span>
-  <span class="n">completion</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/playpause&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Play/Pause&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/stop&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Stop&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/pause&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Pause&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/play&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Play&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/prev&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Prev&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/next&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Next&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/rand&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Random&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/exit&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Exit&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/show&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Show&quot;</span><span class="p">},</span>
-      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">/hide&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">Hide&quot;</span><span class="p">}</span>
+  <span class="n">completion</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="kr">return</span> <span class="p">{</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/playpause&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Play/Pause&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/stop&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Stop&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/pause&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Pause&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/play&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Play&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/prev&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Prev&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/next&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Next&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/rand&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Random&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/exit&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Exit&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/show&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Show&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;/hide&quot;</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Hide&quot;</span><span class="p">}</span>
     <span class="p">}</span>
-  <span class="k">end</span><span class="p">,</span>
+  <span class="kr">end</span><span class="p">,</span>
   <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span>
 <span class="p">}</span>
 </pre></div>
@@ -170,8 +160,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+        &#169; Copyright 2012-2019, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.7.
     </div>
   </body>
 </html>

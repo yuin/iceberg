@@ -1,35 +1,25 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Configurations &#8212; iceberg 0.9.11 documentation</title>
-    
+    <title>Configurations &#8212; iceberg 0.9.12 documentation</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9.11',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="iceberg 0.9.11 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="Overview" href="overview.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
       <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.11 documentation</span></a></h1>
+          <span>iceberg 0.9.12 documentation</span></a></h1>
         <h2 class="heading"><span>Configurations</span></h2>
       </div>
       <div class="topnav" role="navigation" aria-label="top navigation">
@@ -58,16 +48,16 @@
 <p>Linux:</p>
 <p>iceberg searchs a configuration directory in the following order:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">${XDG_CONFIG_HOME}/iceberg</span></code> if <code class="docutils literal"><span class="pre">XDG_CONFIG_HOME</span></code> envvar exists.</li>
-<li><code class="docutils literal"><span class="pre">${HOME}/.config/iceberg</span></code> if <code class="docutils literal"><span class="pre">${HOME}/.config</span></code> is an existing directory path.</li>
-<li><code class="docutils literal"><span class="pre">${HOME}/.iceberg</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">${XDG_CONFIG_HOME}/iceberg</span></code> if <code class="docutils literal notranslate"><span class="pre">XDG_CONFIG_HOME</span></code> envvar exists.</li>
+<li><code class="docutils literal notranslate"><span class="pre">${HOME}/.config/iceberg</span></code> if <code class="docutils literal notranslate"><span class="pre">${HOME}/.config</span></code> is an existing directory path.</li>
+<li><code class="docutils literal notranslate"><span class="pre">${HOME}/.iceberg</span></code></li>
 </ul>
-<p>This directory shall be expressed as <code class="docutils literal"><span class="pre">ICEBERG_CONFIG_HOME</span></code> in this document.</p>
+<p>This directory shall be expressed as <code class="docutils literal notranslate"><span class="pre">ICEBERG_CONFIG_HOME</span></code> in this document.</p>
 <p>A configuration file has several global functions and global variables.</p>
-<p>Configuration files are also loaded from <code class="docutils literal"><span class="pre">${ICEBERG_CONFIG_HOME}/config.d/*.lua</span></code> .</p>
-<p><code class="docutils literal"><span class="pre">auto_merge</span></code> can be used for writing configurations loaded from <code class="docutils literal"><span class="pre">config.d</span></code>.</p>
+<p>Configuration files are also loaded from <code class="docutils literal notranslate"><span class="pre">${ICEBERG_CONFIG_HOME}/config.d/*.lua</span></code> .</p>
+<p><code class="docutils literal notranslate"><span class="pre">auto_merge</span></code> can be used for writing configurations loaded from <code class="docutils literal notranslate"><span class="pre">config.d</span></code>.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">icebergsupport&quot;</span><span class="p">)</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;icebergsupport&quot;</span><span class="p">)</span>
 
 <span class="n">auto_merge</span> <span class="o">=</span> <span class="kc">true</span> <span class="c1">-- configurations such as ``system`` and ``commands`` after this line will automatically be merged</span>
 
@@ -77,112 +67,112 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>Note that if you do not set <code class="docutils literal"><span class="pre">auto_merge</span></code> to <code class="docutils literal"><span class="pre">true</span></code>, all global variables will be overwritten.</p>
+<p>Note that if you do not set <code class="docutils literal notranslate"><span class="pre">auto_merge</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>, all global variables will be overwritten.</p>
 </div>
 <div class="section" id="key-names">
 <h2>Key names<a class="headerlink" href="#key-names" title="Permalink to this headline">¶</a></h2>
-<p>The following key names can be used in configurations. You can combine modifier keys and other keys by <code class="docutils literal"><span class="pre">-</span></code> (up to 3 keys) . The hot key configuration accepts OS native virtual keycodes.</p>
+<p>The following key names can be used in configurations. You can combine modifier keys and other keys by <code class="docutils literal notranslate"><span class="pre">-</span></code> (up to 3 keys) . The hot key configuration accepts OS native virtual keycodes.</p>
 <p>Examples:</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="s">alt-space&quot;</span>
-<span class="s2">&quot;</span><span class="s">shift-ctrl-a&quot;</span>
-<span class="s2">&quot;</span><span class="s">0x1d&quot;</span> <span class="c1">-- Muhenkan on Windows(jp106 keyboard layout)</span>
-<span class="s2">&quot;</span><span class="s">0x1c&quot;</span> <span class="c1">-- Henkan on Windows(jp106 keyboard layout)</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;alt-space&quot;</span>
+<span class="s2">&quot;shift-ctrl-a&quot;</span>
+<span class="s2">&quot;0x1d&quot;</span> <span class="c1">-- Muhenkan on Windows(jp106 keyboard layout)</span>
+<span class="s2">&quot;0x1c&quot;</span> <span class="c1">-- Henkan on Windows(jp106 keyboard layout)</span>
 </pre></div>
 </div>
 </div></blockquote>
-<ul>
+<ul class="simple">
 <li><dl class="first docutils">
 <dt>Modifiers</dt>
-<dd><ul class="first last simple">
-<li><code class="docutils literal"><span class="pre">shift</span></code></li>
-<li><code class="docutils literal"><span class="pre">caps_lock</span></code></li>
-<li><code class="docutils literal"><span class="pre">ctrl</span></code></li>
-<li><code class="docutils literal"><span class="pre">alt</span></code></li>
-<li><code class="docutils literal"><span class="pre">num_lock</span></code></li>
-<li><code class="docutils literal"><span class="pre">meta</span></code></li>
-<li><code class="docutils literal"><span class="pre">scroll_lock</span></code></li>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">shift</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">caps_lock</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ctrl</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">alt</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">num_lock</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">meta</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">scroll_lock</span></code></li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>Others</dt>
-<dd><ul class="first last simple">
-<li><code class="docutils literal"><span class="pre">a</span></code> - <code class="docutils literal"><span class="pre">z</span></code></li>
-<li><code class="docutils literal"><span class="pre">0</span></code> - <code class="docutils literal"><span class="pre">9</span></code></li>
-<li><code class="docutils literal"><span class="pre">space</span></code></li>
-<li><code class="docutils literal"><span class="pre">backspace</span></code></li>
-<li><code class="docutils literal"><span class="pre">tab</span></code></li>
-<li><code class="docutils literal"><span class="pre">iso_key</span></code></li>
-<li><code class="docutils literal"><span class="pre">enter</span></code></li>
-<li><code class="docutils literal"><span class="pre">pause</span></code></li>
-<li><code class="docutils literal"><span class="pre">scroll_lock</span></code></li>
-<li><code class="docutils literal"><span class="pre">escape</span></code></li>
-<li><code class="docutils literal"><span class="pre">home</span></code></li>
-<li><code class="docutils literal"><span class="pre">left</span></code></li>
-<li><code class="docutils literal"><span class="pre">up</span></code></li>
-<li><code class="docutils literal"><span class="pre">right</span></code></li>
-<li><code class="docutils literal"><span class="pre">down</span></code></li>
-<li><code class="docutils literal"><span class="pre">page_up</span></code></li>
-<li><code class="docutils literal"><span class="pre">page_down</span></code></li>
-<li><code class="docutils literal"><span class="pre">end</span></code></li>
-<li><code class="docutils literal"><span class="pre">print</span></code></li>
-<li><code class="docutils literal"><span class="pre">insert</span></code></li>
-<li><code class="docutils literal"><span class="pre">menu</span></code></li>
-<li><code class="docutils literal"><span class="pre">help</span></code></li>
-<li><code class="docutils literal"><span class="pre">num_lock</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp0</span></code> : keys start with &#8220;kp&#8221; are on a numeric keypad</li>
-<li><code class="docutils literal"><span class="pre">kp1</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp2</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp3</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp4</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp5</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp6</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp7</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp8</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp9</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp_enter</span></code></li>
-<li><code class="docutils literal"><span class="pre">kp_last</span></code></li>
-<li><code class="docutils literal"><span class="pre">f1</span></code></li>
-<li><code class="docutils literal"><span class="pre">f2</span></code></li>
-<li><code class="docutils literal"><span class="pre">f3</span></code></li>
-<li><code class="docutils literal"><span class="pre">f4</span></code></li>
-<li><code class="docutils literal"><span class="pre">f5</span></code></li>
-<li><code class="docutils literal"><span class="pre">f6</span></code></li>
-<li><code class="docutils literal"><span class="pre">f7</span></code></li>
-<li><code class="docutils literal"><span class="pre">f8</span></code></li>
-<li><code class="docutils literal"><span class="pre">f9</span></code></li>
-<li><code class="docutils literal"><span class="pre">f10</span></code></li>
-<li><code class="docutils literal"><span class="pre">f11</span></code></li>
-<li><code class="docutils literal"><span class="pre">f12</span></code></li>
-<li><code class="docutils literal"><span class="pre">f_last</span></code></li>
-<li><code class="docutils literal"><span class="pre">shift_l</span></code></li>
-<li><code class="docutils literal"><span class="pre">shift_r</span></code></li>
-<li><code class="docutils literal"><span class="pre">control_l</span></code></li>
-<li><code class="docutils literal"><span class="pre">control_r</span></code></li>
-<li><code class="docutils literal"><span class="pre">caps_lock</span></code></li>
-<li><code class="docutils literal"><span class="pre">meta_l</span></code></li>
-<li><code class="docutils literal"><span class="pre">meta_r</span></code></li>
-<li><code class="docutils literal"><span class="pre">alt_l</span></code></li>
-<li><code class="docutils literal"><span class="pre">alt_r</span></code></li>
-<li><code class="docutils literal"><span class="pre">delete</span></code></li>
-<li><code class="docutils literal"><span class="pre">volume_down</span></code></li>
-<li><code class="docutils literal"><span class="pre">volume_mute</span></code></li>
-<li><code class="docutils literal"><span class="pre">volume_up</span></code></li>
-<li><code class="docutils literal"><span class="pre">media_play</span></code></li>
-<li><code class="docutils literal"><span class="pre">media_stop</span></code></li>
-<li><code class="docutils literal"><span class="pre">media_prev</span></code></li>
-<li><code class="docutils literal"><span class="pre">media_next</span></code></li>
-<li><code class="docutils literal"><span class="pre">home_page</span></code></li>
-<li><code class="docutils literal"><span class="pre">mail</span></code></li>
-<li><code class="docutils literal"><span class="pre">search</span></code></li>
-<li><code class="docutils literal"><span class="pre">back</span></code></li>
-<li><code class="docutils literal"><span class="pre">forward</span></code></li>
-<li><code class="docutils literal"><span class="pre">stop</span></code></li>
-<li><code class="docutils literal"><span class="pre">refresh</span></code></li>
-<li><code class="docutils literal"><span class="pre">sleep</span></code></li>
-<li><code class="docutils literal"><span class="pre">favorites</span></code></li>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">a</span></code> - <code class="docutils literal notranslate"><span class="pre">z</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code> - <code class="docutils literal notranslate"><span class="pre">9</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">space</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">backspace</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tab</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">iso_key</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">enter</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">pause</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">scroll_lock</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">escape</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">home</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">left</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">up</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">right</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">down</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">page_up</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">page_down</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">end</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">print</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">insert</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">menu</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">help</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">num_lock</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp0</span></code> : keys start with “kp” are on a numeric keypad</li>
+<li><code class="docutils literal notranslate"><span class="pre">kp1</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp2</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp3</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp4</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp5</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp6</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp7</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp8</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp9</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp_enter</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">kp_last</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f1</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f2</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f3</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f4</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f5</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f6</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f7</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f8</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f9</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f10</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f11</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f12</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">f_last</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">shift_l</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">shift_r</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">control_l</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">control_r</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">caps_lock</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">meta_l</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">meta_r</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">alt_l</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">alt_r</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">delete</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">volume_down</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">volume_mute</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">volume_up</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">media_play</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">media_stop</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">media_prev</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">media_next</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">home_page</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">mail</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">search</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">back</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">forward</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">stop</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">refresh</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">sleep</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">favorites</span></code></li>
 </ul>
 </dd>
 </dl>
@@ -194,7 +184,7 @@
 <div class="section" id="examples-and-descriptions">
 <h3>Examples and descriptions<a class="headerlink" href="#examples-and-descriptions" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
   <span class="c1">-- a default value of limiting the depth of the search path --</span>
   <span class="n">default_search_path_depth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
@@ -202,7 +192,7 @@
   <span class="n">enable_icons</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
 
   <span class="c1">-- an icon theme : meaningful only for Linux platforms --</span>
-  <span class="n">icon_theme</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">nuoveXT.2.2&quot;</span><span class="p">,</span>
+  <span class="n">icon_theme</span> <span class="o">=</span> <span class="s2">&quot;nuoveXT.2.2&quot;</span><span class="p">,</span>
 
   <span class="c1">-- a maximum number of cached icon data --</span>
   <span class="n">max_cached_icons</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
@@ -242,23 +232,23 @@
   <span class="n">disable_direct_write</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
 
   <span class="c1">-- DirectWrite parameters. an empty string means using default parameter --</span>
-  <span class="n">direct_write_params</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.5,pixel_geometry=0,rendering_mode=5&quot;</span><span class="p">,</span>
+  <span class="n">direct_write_params</span><span class="o">=</span><span class="s2">&quot;gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.5,pixel_geometry=0,rendering_mode=5&quot;</span><span class="p">,</span>
 
   <span class="c1">-- Keys --</span>
   <span class="c1">-- hot_key accepts OS dependent virtual key codes --</span>
   <span class="c1">--   Example: hot_key = &quot;0x1d&quot;  muhenkan(jp106 keyboard layout) --</span>
-  <span class="n">hot_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-space&quot;</span><span class="p">,</span>
-  <span class="n">escape_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">escape&quot;</span><span class="p">,</span>
-  <span class="n">list_next_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-n&quot;</span><span class="p">,</span>
-  <span class="n">list_prev_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-p&quot;</span><span class="p">,</span>
-  <span class="n">toggle_mode_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-r&quot;</span><span class="p">,</span>
-  <span class="n">kill_word_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-w&quot;</span><span class="p">,</span>
+  <span class="n">hot_key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-space&quot;</span><span class="p">,</span>
+  <span class="n">escape_key</span> <span class="o">=</span> <span class="s2">&quot;escape&quot;</span><span class="p">,</span>
+  <span class="n">list_next_key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-n&quot;</span><span class="p">,</span>
+  <span class="n">list_prev_key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-p&quot;</span><span class="p">,</span>
+  <span class="n">toggle_mode_key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-r&quot;</span><span class="p">,</span>
+  <span class="n">kill_word_key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-w&quot;</span><span class="p">,</span>
 
   <span class="c1">-- Search paths --</span>
   <span class="n">search_path</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">system&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Windows\System32]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">^.*</span><span class="se">\\</span><span class="s">.(exe)$&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Users\]]</span> <span class="o">..</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">USERNAME&quot;</span><span class="p">)</span> <span class="o">..</span> <span class="s">[[\AppData\Roaming\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
-    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\ProgramData\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Windows\System32]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^.*</span><span class="se">\\</span><span class="s2">.(exe)$&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Users\]]</span> <span class="o">..</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s2">&quot;USERNAME&quot;</span><span class="p">)</span> <span class="o">..</span> <span class="s">[[\AppData\Roaming\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;programs&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\ProgramData\Microsoft\Windows\Start Menu\Programs]]</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s">[[^.*\.(exe|lnk)$]]</span><span class="p">},</span>
   <span class="p">},</span>
 
   <span class="c1">-- Completions --</span>
@@ -277,17 +267,17 @@
 
     <span class="c1">-- completion functions --</span>
     <span class="n">option_func</span> <span class="o">=</span> <span class="p">{</span>
-      <span class="p">[</span><span class="s2">&quot;</span><span class="s">:scan_search_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-        <span class="kd">local</span> <span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">all&quot;</span><span class="p">}</span>
+      <span class="p">[</span><span class="s2">&quot;:scan_search_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+        <span class="kd">local</span> <span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">}</span>
         <span class="kd">local</span> <span class="n">keys</span>       <span class="o">=</span> <span class="p">{</span><span class="n">all</span> <span class="o">=</span> <span class="kc">true</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">system</span><span class="p">.</span><span class="n">search_path</span><span class="p">)</span> <span class="k">do</span>
-          <span class="k">if</span> <span class="n">value</span><span class="p">.</span><span class="n">category</span> <span class="o">~=</span> <span class="kc">nil</span> <span class="ow">and</span> <span class="n">keys</span><span class="p">[</span><span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
+        <span class="kr">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">system</span><span class="p">.</span><span class="n">search_path</span><span class="p">)</span> <span class="kr">do</span>
+          <span class="kr">if</span> <span class="n">value</span><span class="p">.</span><span class="n">category</span> <span class="o">~=</span> <span class="kc">nil</span> <span class="ow">and</span> <span class="n">keys</span><span class="p">[</span><span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
             <span class="nb">table.insert</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">)</span>
             <span class="n">keys</span><span class="p">[</span><span class="n">value</span><span class="p">.</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span>
-          <span class="k">end</span>
-        <span class="k">end</span>
-        <span class="k">return</span> <span class="n">candidates</span>
-      <span class="k">end</span>
+          <span class="kr">end</span>
+        <span class="kr">end</span>
+        <span class="kr">return</span> <span class="n">candidates</span>
+      <span class="kr">end</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -297,16 +287,16 @@
 </div>
 <div class="section" id="search-paths">
 <h3>Search paths<a class="headerlink" href="#search-paths" title="Permalink to this headline">¶</a></h3>
-<p>iceberg can search under search paths and register found commands by single command( <code class="docutils literal"><span class="pre">:scan_search_path</span></code> ). A search path consists of</p>
+<p>iceberg can search under search paths and register found commands by single command( <code class="docutils literal notranslate"><span class="pre">:scan_search_path</span></code> ). A search path consists of</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">category:</th><td class="field-body">You can pass a category to <code class="docutils literal"><span class="pre">:scan_search_path</span></code> to filter target search paths. If a category is not specified, <code class="docutils literal"><span class="pre">default</span></code> is used as a category.</td>
+<tr class="field-odd field"><th class="field-name">category:</th><td class="field-body">You can pass a category to <code class="docutils literal notranslate"><span class="pre">:scan_search_path</span></code> to filter target search paths. If a category is not specified, <code class="docutils literal notranslate"><span class="pre">default</span></code> is used as a category.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">path:</th><td class="field-body">A base directory of this search path.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">depth:</th><td class="field-body">Limit the depth of the search path to this value. If <code class="docutils literal"><span class="pre">depth</span></code> is not specified, <code class="docutils literal"><span class="pre">system.default_search_path_depth</span></code> is used as <code class="docutils literal"><span class="pre">depth</span></code></td>
+<tr class="field-odd field"><th class="field-name">depth:</th><td class="field-body">Limit the depth of the search path to this value. If <code class="docutils literal notranslate"><span class="pre">depth</span></code> is not specified, <code class="docutils literal notranslate"><span class="pre">system.default_search_path_depth</span></code> is used as <code class="docutils literal notranslate"><span class="pre">depth</span></code></td>
 </tr>
 <tr class="field-even field"><th class="field-name">pattern:</th><td class="field-body">A regular expression to filter files by its name. Files that match this regular expression will be registerd with iceberg.</td>
 </tr>
@@ -317,23 +307,23 @@
 <h3>Completion functions<a class="headerlink" href="#completion-functions" title="Permalink to this headline">¶</a></h3>
 <p>Commands can have a completion function.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-  <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">}</span>
-<span class="k">end</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">}</span>
+<span class="kr">end</span>
 
 <span class="c1">-- もしくは</span>
 
-<span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-  <span class="k">return</span> <span class="p">{</span>
-   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">path_to/icon.png&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">desc&quot;</span><span class="p">},</span>
-   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">path_to/icon.jpg&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">desc&quot;</span><span class="p">},</span>
-   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">path_to/icon.gif&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">desc&quot;</span><span class="p">}</span>
+<span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="p">{</span>
+   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;path_to/icon.png&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;desc&quot;</span><span class="p">},</span>
+   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;path_to/icon.jpg&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;desc&quot;</span><span class="p">},</span>
+   <span class="p">{</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;path_to/icon.gif&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;desc&quot;</span><span class="p">}</span>
   <span class="p">}</span>
-<span class="k">end</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p><code class="docutils literal"><span class="pre">values</span></code> is a list of arguments for the command. If no argument exists, <code class="docutils literal"><span class="pre">value</span></code> will be a list that has single empty string entry. <code class="docutils literal"><span class="pre">pos</span></code> is an index of <code class="docutils literal"><span class="pre">value</span></code> where cursor exists.
+<p><code class="docutils literal notranslate"><span class="pre">values</span></code> is a list of arguments for the command. If no argument exists, <code class="docutils literal notranslate"><span class="pre">value</span></code> will be a list that has single empty string entry. <code class="docutils literal notranslate"><span class="pre">pos</span></code> is an index of <code class="docutils literal notranslate"><span class="pre">value</span></code> where cursor exists.
 Completion functions have to return the list of strings or a table contains following keys:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -349,7 +339,7 @@ Completion functions have to return the list of strings or a table contains foll
 </tr>
 </tbody>
 </table>
-<p>Please refer to <a class="reference internal" href="api.html#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal"><span class="pre">icebergsupport.comp_state()</span></code></a> for writing a complex completion function.</p>
+<p>Please refer to <a class="reference internal" href="api.html#icebergsupport.comp_state" title="icebergsupport.comp_state"><code class="xref lua lua-func docutils literal notranslate"><span class="pre">icebergsupport.comp_state()</span></code></a> for writing a complex completion function.</p>
 </div>
 </div>
 <div class="section" id="commands-global-variable">
@@ -357,28 +347,31 @@ Completion functions have to return the list of strings or a table contains foll
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
   <span class="c1">-- A directory, will not be recorded in the history file --</span>
   <span class="n">windir</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[C:\Windows]]</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">false</span><span class="p">},</span>
 
   <span class="c1">-- An executable file, runs with a iceberg current directory --</span>
-  <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[notepad.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Notepad&quot;</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">.&quot;</span><span class="p">},</span>
+  <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[notepad.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Notepad&quot;</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">},</span>
+
+  <span class="c1">-- An executable file, will be run as an administrator user</span>
+  <span class="n">admin_cmd</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[cmd.exe]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;cmd.exe(runas admin)&quot;</span><span class="p">,</span> <span class="n">sudo</span> <span class="o">=</span> <span class="kc">true</span><span class="p">},</span>
 
   <span class="c1">-- A shell script file, executed in the terminal --</span>
-  <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[myscript.sh]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">My script&quot;</span><span class="p">,</span> <span class="n">terminal</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">yes&quot;</span><span class="p">},</span>
+  <span class="n">np</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span> <span class="o">=</span> <span class="s">[[myscript.sh]]</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My script&quot;</span><span class="p">,</span> <span class="n">terminal</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">},</span>
 
   <span class="c1">-- A lua function, has a completion function --</span>
   <span class="n">lua_sample</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
       <span class="kd">local</span> <span class="n">explorer</span> <span class="o">=</span> <span class="n">wins</span><span class="p">.</span><span class="n">foreground_explorer</span><span class="p">()</span>
-      <span class="k">if</span> <span class="n">explorer</span> <span class="k">then</span>
+      <span class="kr">if</span> <span class="n">explorer</span> <span class="kr">then</span>
         <span class="n">ibs</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">table_to_string</span><span class="p">(</span><span class="n">explorer</span><span class="p">))</span>
-      <span class="k">end</span>
-    <span class="k">end</span><span class="p">,</span>
-    <span class="n">completion</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-      <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">1&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="s">2&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="s">3&quot;</span><span class="p">}</span>
-    <span class="k">end</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">Sample Lua command&quot;</span><span class="p">},</span>
+      <span class="kr">end</span>
+    <span class="kr">end</span><span class="p">,</span>
+    <span class="n">completion</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+      <span class="kr">return</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="s2">&quot;2&quot;</span><span class="p">,</span><span class="s2">&quot;3&quot;</span><span class="p">}</span>
+    <span class="kr">end</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sample Lua command&quot;</span><span class="p">},</span>
 
 
   <span class="c1">-- A URL, has a png icon file --</span>
@@ -386,7 +379,7 @@ Completion functions have to return the list of strings or a table contains foll
        <span class="n">icon</span> <span class="o">=</span> <span class="n">script_path</span> <span class="o">..</span><span class="s">[[images\google256.png]]</span><span class="p">},</span>
 
   <span class="c1">-- A group of commands --</span>
-  <span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;</span><span class="s">windir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">runs a group of commands&quot;</span><span class="p">},</span>
+  <span class="n">group_sample</span> <span class="o">=</span> <span class="p">{</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">group_command</span><span class="p">({</span><span class="s2">&quot;windir&quot;</span><span class="p">,</span> <span class="p">{}},</span> <span class="p">{</span><span class="s2">&quot;np&quot;</span><span class="p">,</span> <span class="p">{}}),</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;runs a group of commands&quot;</span><span class="p">},</span>
 
 <span class="p">}</span>
 </pre></div>
@@ -400,22 +393,22 @@ Completion functions have to return the list of strings or a table contains foll
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body"><p class="first">A key of the <code class="docutils literal"><span class="pre">commands</span></code> table.</p>
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body"><p class="first">A key of the <code class="docutils literal notranslate"><span class="pre">commands</span></code> table.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">path:</th><td class="field-body"><p class="first">A file path or URL or lua function. A path can contain arguments like the following.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;C:\s p a c e</span><span class="se">\b</span><span class="s2">in.exe&quot;</span> <span class="n">arg1</span> <span class="n">arg2</span><span class="p">]]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;C:\s p a c e</span><span class="se">\b</span><span class="s2">in.exe&quot;</span> <span class="n">arg1</span> <span class="n">arg2</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>Paths that contain spaces must be enclosed in <code class="docutils literal"><span class="pre">&quot;</span></code> .</p>
-<p>Positional variables can be use in a path. If the inputbox has <code class="docutils literal"><span class="pre">google</span> <span class="pre">iceberg</span></code> and a path of the <code class="docutils literal"><span class="pre">google</span></code> command is defined as follows, <code class="docutils literal"><span class="pre">${1}</span></code> will be replaced with <code class="docutils literal"><span class="pre">iceberg</span></code></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]
+<p>Paths that contain spaces must be enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> .</p>
+<p>Positional variables can be use in a path. If the inputbox has <code class="docutils literal notranslate"><span class="pre">google</span> <span class="pre">iceberg</span></code> and a path of the <code class="docutils literal notranslate"><span class="pre">google</span></code> command is defined as follows, <code class="docutils literal notranslate"><span class="pre">${1}</span></code> will be replaced with <code class="docutils literal notranslate"><span class="pre">iceberg</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>path = [[http://www.google.com/search?ie=utf8&amp;q=${1}]]
 </pre></div>
 </div>
 <p>In a Lua function, the function receives a list of string. Lua functions should return 0 when function executed successfully, 1 otherwise.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">completion:</th><td class="field-body"><p class="first">A completion function that has same form as <code class="docutils literal"><span class="pre">system.completer.option_func</span></code>. Completion functions can either be defined in a command definition or <code class="docutils literal"><span class="pre">system.completer.option_func</span></code> .  This value overrides <code class="docutils literal"><span class="pre">system.completer.option_func</span></code> if both are defined.</p>
+<tr class="field-odd field"><th class="field-name">completion:</th><td class="field-body"><p class="first">A completion function that has same form as <code class="docutils literal notranslate"><span class="pre">system.completer.option_func</span></code>. Completion functions can either be defined in a command definition or <code class="docutils literal notranslate"><span class="pre">system.completer.option_func</span></code> .  This value overrides <code class="docutils literal notranslate"><span class="pre">system.completer.option_func</span></code> if both are defined.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">description:</th><td class="field-body"><p class="first">A description for this command.</p>
@@ -424,18 +417,21 @@ Completion functions have to return the list of strings or a table contains foll
 <tr class="field-odd field"><th class="field-name">icon:</th><td class="field-body"><p class="first">An icon file path. On Linux platforms, an icon name in an icon theme is valid. If an icon name is used, iceberg select the best size of an image automatically.</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">terminal:</th><td class="field-body"><p class="first">If this value is set to <code class="docutils literal"><span class="pre">&quot;yes&quot;</span></code>, the command will always be executed in the terminal. <code class="docutils literal"><span class="pre">&quot;no&quot;</span></code> means the command will be executed without the termina. If this value is set to <code class="docutils literal"><span class="pre">&quot;auto&quot;</span></code> , iceberg determines whether or not this command should be executed in the terminal.</p>
+<tr class="field-even field"><th class="field-name">terminal:</th><td class="field-body"><p class="first">If this value is set to <code class="docutils literal notranslate"><span class="pre">&quot;yes&quot;</span></code>, the command will always be executed in the terminal. <code class="docutils literal notranslate"><span class="pre">&quot;no&quot;</span></code> means the command will be executed without the termina. If this value is set to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> , iceberg determines whether or not this command should be executed in the terminal.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">history:</th><td class="field-body"><p class="first">If this value is set to <code class="docutils literal"><span class="pre">false</span></code>, Additional arguments will no be recorded in the history file.</p>
+<tr class="field-odd field"><th class="field-name">history:</th><td class="field-body"><p class="first">If this value is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, Additional arguments will no be recorded in the history file.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">workdir:</th><td class="field-body"><p class="first">A working directory of this command.</p>
-<ul class="last simple">
+<ul class="simple">
 <li>strings</li>
-<li><code class="docutils literal"><span class="pre">.</span></code> : use iceberg current directory</li>
+<li><code class="docutils literal notranslate"><span class="pre">.</span></code> : use iceberg current directory</li>
 <li>Lua function: use a return value(string) of the function. You can make iceberg and your file browser cooperate by writing a function that returns a current directory of your file browser.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">sudo:</th><td class="field-body"><p class="first last">If this value is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, this command will be run as an administrator user.</p>
 </td>
 </tr>
 </tbody>
@@ -447,16 +443,16 @@ Completion functions have to return the list of strings or a table contains foll
 <div class="section" id="id1">
 <h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-d&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">:opendir&quot;</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">ctrl-l&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">:cd&quot;</span> <span class="p">}</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-d&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;:opendir&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ctrl-l&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;:cd&quot;</span> <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p>Consider, when you have pressed <code class="docutils literal"><span class="pre">ctrl-l</span></code> and the inputbox values is <code class="docutils literal"><span class="pre">c:\</span></code> .
+<p>Consider, when you have pressed <code class="docutils literal notranslate"><span class="pre">ctrl-l</span></code> and the inputbox values is <code class="docutils literal notranslate"><span class="pre">c:\</span></code> .
 In this situation, the following command will be executed</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">cd</span> <span class="n">c</span><span class="p">:</span>\
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">cd</span> <span class="n">c</span><span class="p">:</span>\
 </pre></div>
 </div>
 <p>In short, an inputbox value is passed as an argument to the command.</p>
@@ -466,10 +462,10 @@ In this situation, the following command will be executed</p>
 <h2>on_key_up event handler<a class="headerlink" href="#on-key-up-event-handler" title="Permalink to this headline">¶</a></h2>
 <p>This function will be executed when you release the key on the keyboard.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_key_up</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_key_up</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="k">return</span> <span class="n">accept</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="n">accept</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -479,10 +475,10 @@ In this situation, the following command will be executed</p>
 <h2>on_key_down event handler<a class="headerlink" href="#on-key-down-event-handler" title="Permalink to this headline">¶</a></h2>
 <p>This function will be executed when you press the key on the keyboard.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_key_down</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="k">return</span> <span class="n">accept</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="n">accept</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -492,10 +488,10 @@ In this situation, the following command will be executed</p>
 <h2>on_enter event handler<a class="headerlink" href="#on-enter-event-handler" title="Permalink to this headline">¶</a></h2>
 <p>This function will be executed when you press the Enter key on the keyboard.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_enter</span><span class="p">()</span>
   <span class="kd">local</span> <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="k">return</span> <span class="n">accept</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="n">accept</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -505,10 +501,10 @@ In this situation, the following command will be executed</p>
 <h2>on_initialize event handler<a class="headerlink" href="#on-initialize-event-handler" title="Permalink to this headline">¶</a></h2>
 <p>This function will be executed just after iceberg is launched.</p>
 <blockquote>
-<div><div class="highlight-lua"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">on_enter</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kr">function</span> <span class="nf">on_enter</span><span class="p">()</span>
   <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="k">return</span> <span class="nb">error</span>
-<span class="k">end</span>
+  <span class="kr">return</span> <span class="nb">error</span>
+<span class="kr">end</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -531,8 +527,8 @@ In this situation, the following command will be executed</p>
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2016, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+        &#169; Copyright 2012-2019, Yusuke Inuzuka.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.7.
     </div>
   </body>
 </html>
