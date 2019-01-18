@@ -30,6 +30,10 @@ namespace ib {
         return instance_;
       }
 
+      static bool hasInstance() {
+        return instance_ != nullptr;
+      }
+
     protected:
       static void destroy() {
         delete instance_;

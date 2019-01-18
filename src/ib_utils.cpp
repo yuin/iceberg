@@ -572,7 +572,6 @@ ib::u32 ib::utils::bebytes2u32int(const char *bytes){ // {{{
 } // }}}
 
 void ib::utils::message_box(const char *fmt, ...){ // {{{
-  auto* const mb = ib::Singleton<ib::MessageBox>::getInstance();
   va_list ap, ap2;
   va_start(ap, fmt);
   va_copy(ap2, ap); 
@@ -583,7 +582,12 @@ void ib::utils::message_box(const char *fmt, ...){ // {{{
   
   va_end(ap);
   va_end(ap2);
-  mb->show(buf);
+  if(ib::Singleton<ib::MainWindow>::hasInstance()) {
+    auto* const mb = ib::Singleton<ib::MessageBox>::getInstance();
+    mb->show(buf);
+  } else {
+    fl_message(buf);
+  }
   free(buf);
 } // }}}
 

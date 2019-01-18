@@ -404,18 +404,19 @@ void ib::LuaState::init() { // {{{
 Fl_Color ib::LuaState::getColorFromStackTop() { // {{{
   int r, g, b;
   auto L = get();
+  const size_t len = lua_objlen(L,-1);
 
-  lua_pushinteger(L, 1);
+  lua_pushinteger(L, len-2);
     lua_gettable(L, -2);
     r = (int)lua_tonumber(L, -1);
   lua_pop(L, 1);
 
-  lua_pushinteger(L, 2);
+  lua_pushinteger(L, len-1);
     lua_gettable(L, -2);
     g = (int)lua_tonumber(L, -1);
   lua_pop(L, 1);
 
-  lua_pushinteger(L, 3);
+  lua_pushinteger(L, len);
     lua_gettable(L, -2);
     b = (int)lua_tonumber(L, -1);
   lua_pop(L, 1);
