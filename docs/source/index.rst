@@ -4,7 +4,7 @@ iceberg manuals
 :Author: Yusuke Inuzuka
 :License: GPLv3
 :Date: |today|
-:Platform: Windows7(32bit,64bit), Windows 8,10(in 7 compatible mode), Linux(verified:Ubuntu 14.04)
+:Platform: Windows10/11(amd64), Linux(verified:Ubuntu 22.04 amd64)
 :Download:  `https://github.com/yuin/iceberg/releases <https://github.com/yuin/iceberg/releases>`_
 :Description: A lightweight hackable keystroke application launcher can run on Windows and Linux
 

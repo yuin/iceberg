@@ -3,19 +3,17 @@
 OLD_PWD=`pwd`; cd $(dirname $(dirname $0)); BASE_DIR=`pwd`; cd ${OLD_PWD}
 source ${BASE_DIR}/tools/common.sh
 
-if [ ! -d "${BASE_DIR}/ext/fltk-1.3.4" ]; then
-  echo "Downloading FLTK 1.3.4"
+if [ ! -d "${BASE_DIR}/ext/fltk-1.4.2" ]; then
+  echo "Downloading FLTK 1.4.2"
   cd ${BASE_DIR}/ext
-  wget https://www.fltk.org/pub/fltk/1.3.4/fltk-1.3.4-2-source.tar.gz
+  wget https://github.com/fltk/fltk/releases/download/release-1.4.2/fltk-1.4.2-source.tar.gz
 
-  echo "explode FLTK 1.3.4"
-  tar zxvf fltk-1.3.4-2-source.tar.gz
-
-  mv fltk-1.3.4-2 fltk-1.3.4
-  rm -f fltk-1.3.4-2-source.tar.gz
+  echo "explode FLTK 1.4.2"
+  tar zxvf fltk-1.4.2-source.tar.gz
+  rm -f fltk-1.4.2-source.tar.gz
   
   echo "make FLTK libraries"
-  cd fltk-1.3.4/
+  cd fltk-1.4.2/
   if [ "${IB_OSTYPE}" != "windows" ]; then
     ./configure --enable-threads --enable-xft --enable-xdbe
   else
@@ -27,7 +25,7 @@ if [ ! -d "${BASE_DIR}/ext/fltk-1.3.4" ]; then
   fi
   make
 else
- echo "FLTK 1.3.4: installed"
+ echo "FLTK 1.4.2: installed"
 fi
 
 if [ ! -d "${BASE_DIR}/ext/lua-5.1.4" ]; then
@@ -66,7 +64,7 @@ fi
 if [ ! -d "${BASE_DIR}/ext/luasocket-2.0.2" ]; then
   echo "Downloading luasocket 2.0.2"
   cd ${BASE_DIR}/ext
-  wget http://files.luaforge.net/releases/luasocket/luasocket/luasocket-2.0.2/luasocket-2.0.2.tar.gz
+  wget https://git.tecgraf.puc-rio.br/openbus-3rd-party/luasocket/-/archive/2.0.2/luasocket-2.0.2.tar.gz
   
   echo "explode luasocket 2.0.2"
   tar zxvf luasocket-2.0.2.tar.gz
@@ -85,11 +83,11 @@ fi
 if [ ! -d "${BASE_DIR}/ext/lua-cjson-2.1.0" ]; then
   echo "Downloading lua-cjson 2.1.0"
   cd ${BASE_DIR}/ext
-  wget http://www.kyne.com.au/~mark/software/download/lua-cjson-2.1.0.tar.gz
+  wget https://github.com/mpx/lua-cjson/archive/refs/tags/2.1.0.tar.gz
   
   echo "explode lua-cjson 2.1.0"
-  tar zxvf lua-cjson-2.1.0.tar.gz
-  rm -f lua-cjson-2.1.0.tar.gz
+  tar zxvf 2.1.0.tar.gz
+  rm -f 2.1.0.tar.gz
 
   echo "make the lua-cjson 2.1.0"
   cd ${BASE_DIR}/ext

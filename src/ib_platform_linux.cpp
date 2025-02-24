@@ -942,21 +942,41 @@ std::unique_ptr<ib::oschar[]> ib::platform::unquote_string(ib::oschar *result, c
 
 void ib::platform::hide_window(Fl_Window *window){ // {{{
   window->clear_visible();
-  XIconifyWindow(fl_display, fl_xid(window), fl_screen);
+  XUnmapWindow(fl_display, fl_xid(window));
+  // XIconifyWindow(fl_display, fl_xid(window), fl_screen);
   XFlush(fl_display);
+} // }}}
+
+static void ib_platform_remove_taskbar_icon(Fl_Window *window) { // {{{
+    Window xid = fl_xid(window); 
+    Display *display = fl_display;
+    Atom wmState = XInternAtom(display, "_NET_WM_STATE", False);
+    Atom skipTaskbar = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", False);
+    XChangeProperty(display, xid, wmState, XA_ATOM, 32,
+                    PropModeReplace, (unsigned char *)&skipTaskbar, 1);
 } // }}}
 
 void ib::platform::activate_window(Fl_Window *window){ // {{{
   window->set_visible_focus();
   xsend_message_la(fl_xid(window), ib_g_atoms.net_active_window, 1, CurrentTime, 0,0,0);
+  ib_platform_remove_taskbar_icon(window);
   XFlush(fl_display);
 } // }}}
 
 void ib::platform::raise_window(Fl_Window *window){ // {{{
   window->set_visible();
-  XRaiseWindow(fl_display, fl_xid(window));
+  // XRaiseWindow(fl_display, fl_xid(window));
+  Atom wmHints = XInternAtom(fl_display, "WM_HINTS", True);
+  if (wmHints != None) {
+      XWMHints hints;
+      hints.flags = InputHint;
+      hints.input = False;
+      XSetWMHints(fl_display, fl_xid(window), &hints);
+  }
+  ib_platform_remove_taskbar_icon(window);
+  XMapRaised(fl_display, fl_xid(window));
 } // }}}
-
+  
 void ib::platform::set_window_alpha(Fl_Window *window, int alpha){ // {{{
   auto visible = window->visible();
   if(!visible) window->show();

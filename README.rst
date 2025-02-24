@@ -23,9 +23,9 @@ Windows
 ~~~~~~~~~~~~~~~
 Download a zip file from `Release <https://github.com/yuin/iceberg/releases>`_ and unzip it where you want. iceberg does not use the registry.
 
-Linux(Ubuntu 14.04)
+Linux(Ubuntu 22.04)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-iceberg requires the following packages. You can install these packages with ``apt-get install`` .
+iceberg requires the following packages. You can install these packages with ``apt install`` .
 
 - g++
 - gdb
@@ -37,6 +37,7 @@ iceberg requires the following packages. You can install these packages with ``a
 - libftgl2
 - libfontconfig
 - libx11-dev
+- libxext-dev
 - libglu1-mesa-dev
 - libasound2-dev
 - libxft-dev

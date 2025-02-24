@@ -64,7 +64,7 @@
 #include <FL/Fl_GIF_Image.H>
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/Fl_Menu.H>
-#include "Fl_Font.H"
+#include <FL/Enumerations.H>
 #include <FL/filename.H>
 
 #include <lua.hpp>
@@ -72,7 +72,7 @@
 #include <migemo.h>
 
 // constants {{{
-#define IB_VERSION "0.9.12"
+#define IB_VERSION "0.9.13"
 #ifdef IB_PUBLIC
 #      define IB_EXPORT
 #else

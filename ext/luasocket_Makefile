@@ -2,10 +2,37 @@ ifeq ($(OS),Windows_NT)
 SOCKET_SO=socket.dll
 MIME_SO=mime.dll
 LIBS=../../lua-5.1.4/src/lua51.dll -lwsock32
+SOCKET_OBJS:= \
+	luasocket.o \
+	timeout.o \
+	buffer.o \
+	io.o \
+	auxiliar.o \
+	options.o \
+	inet.o \
+	tcp.o \
+	udp.o \
+	except.o \
+	select.o \
+	wsocket.o 
+
 else
 SOCKET_SO=libsocket.so
 MIME_SO=libmime.so
 LIBS=
+SOCKET_OBJS:= \
+	luasocket.o \
+	timeout.o \
+	buffer.o \
+	io.o \
+	auxiliar.o \
+	options.o \
+	inet.o \
+	tcp.o \
+	udp.o \
+	except.o \
+	select.o \
+
 endif
 
 LUAINC=-I../../lua-5.1.4/src
@@ -25,20 +52,6 @@ LD=gcc
 #
 
 #$(COMPAT)/compat-5.1.o \
-
-SOCKET_OBJS:= \
-	luasocket.o \
-	timeout.o \
-	buffer.o \
-	io.o \
-	auxiliar.o \
-	options.o \
-	inet.o \
-	tcp.o \
-	udp.o \
-	except.o \
-	select.o \
-	wsocket.o 
 
 #------
 # Modules belonging mime-core

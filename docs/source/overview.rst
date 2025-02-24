@@ -22,9 +22,9 @@ Windows
 ~~~~~~~~~~~~~~~
 Download a zip file from `Release <https://github.com/yuin/iceberg/releases>`_ and unzip it where you want. iceberg does not use the registry.
 
-Linux(Ubuntu 14.04)
+Linux(Ubuntu 22.04)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-iceberg requires the following packages. You can install these packages with ``apt-get install`` .
+iceberg requires the following packages. You can install these packages with ``apt install`` .
 
 - g++
 - gdb
@@ -53,7 +53,11 @@ And then run the following commands :
         % make
         % sudo make install
 
-On Linux, only UTF-8 is supported for system encodings.
+On Linux, only UTF-8 is supported for system encodings. Linux version has some limitations compared to Windows version.
+
+- `hot_key` may not work properly. You can activate iceberg with shortcut keys defined in your desktop environment.
+  - e.g. Assign ``ctrl-space`` to ``iceberg -m "activate"`` in System Settings -> Keyboard -> Shortcuts(Ubunutu Desktop)
+- A tray icon may not be shown
 
 Linux(others)
 ~~~~~~~~~~~~~~~

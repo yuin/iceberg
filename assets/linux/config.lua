@@ -7,19 +7,21 @@ local ibs = require("icebergsupport")
 system = {
   default_search_path_depth = 2,
   enable_icons = true,
-  icon_theme = "nuoveXT.2.2",
+  icon_theme = "Yaru",
   max_cached_icons = 999999,
   key_event_threshold = 0,
   max_histories = 500,
   max_candidates = 15,
   history_factor = 0.8,
-  file_browser = [[/usr/bin/pcmanfm ${1}]],
-  terminal  = [[/usr/bin/lxterminal -l -e ${1}]],
+  file_browser = [[/usr/bin/nautilus ${1}]],
+  terminal  = [[/usr/bin/gnome-terminal -- ${1}]],
   server_port = 4501,
   path_autocomplete = false,
   option_autocomplete = true,
 
-  hot_key = "alt-space",
+  hot_key = "ctrl-space", -- in linux, hot_key is not working some GUI env. use 
+                          -- GUI's hot key setting to set the hot key.
+                          -- Hot key action is `iceberg -m "activate"`
   escape_key = "escape",
   list_next_key = "ctrl-n",
   list_prev_key = "ctrl-p",

@@ -732,7 +732,7 @@ void ib::ListWindow::hide(){ /* {{{ */
 #ifdef IB_OS_WIN
   resize(-1, -1, 1, 1);
 #else
-  resize(x(), y(), 0, 0);
+  ib::platform::hide_window(this);
 #endif
 } /* }}} */
 
