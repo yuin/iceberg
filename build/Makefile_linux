@@ -57,12 +57,11 @@ ASSETDIR=assets
 LUA_DIR=./ext/lua-5.1.4
 LUASOCKET_FILES1=./ext/luasocket-2.0.2/src/{http,url,tp,ftp,smtp}.lua
 LUASOCKET_FILES2=./ext/luasocket-2.0.2/src/{ltn12,socket,mime}.lua
-LUASOCKET_SOCKETDLL=./ext/luasocket-2.0.2/src/socket.dll
-LUASOCKET_MIMEDLL=./ext/luasocket-2.0.2/src/mime.dll
-LUACJSON_FILES=./ext/lua-cjson-2.1.0/cjson.dll
-LUAFILESYSTEM_FILES=./ext/luafilesystem-1.5.0/src/lfs.dll
-LUAXML_FILES=./ext/LuaXML_101012/{LuaXml.lua,LuaXML_lib.dll}
-LUAWINALTTAB_FILES=./ext/luawinalttab-1.0.0/winalttab.dll
+LUASOCKET_SOCKET_LIB=./ext/luasocket-2.0.2/src/libsocket.so
+LUASOCKET_MIME_LIB=./ext/luasocket-2.0.2/src/libmime.so
+LUACJSON_FILES=./ext/lua-cjson-2.1.0/cjson.so
+LUAFILESYSTEM_FILES=./ext/luafilesystem-1.5.0/src/lfs.so
+LUAXML_FILES=./ext/LuaXML_101012/{LuaXml.lua,LuaXML_lib.so}
 
 FLTK_CXXFLAGS=$(shell ./ext/fltk-1.4.2/fltk-config --cxxflags) 
 FLTK_LDFLAGS=$(shell ./ext/fltk-1.4.2/fltk-config --ldflags)
@@ -72,7 +71,7 @@ LD=$(shell ./ext/fltk-1.4.2/fltk-config --cxx)
 
 CPPFLAGS=$(FLTK_CXXFLAGS) -I./src -I./ext/fltk-1.4.2/src -I$(LUA_DIR)/src -I$(LUA_DIR)/etc -I./ext/nanosvg-master/src $(DEBUGOPT) -O2  -Wall -Wno-deprecated -fthreadsafe-statics -std=gnu++0x
 
-LDFLAGS=$(LUA_DIR)/src/liblua.a -lfltk_images $(FLTK_LDFLAGS) -lpng -ljpeg -lz -lonig
+LDFLAGS=$(LUA_DIR)/src/liblua.a -rdynamic -lfltk_images $(FLTK_LDFLAGS) -lpng -ljpeg -lz -lonig
 
 .SUFFIXES: .o .cpp
 .PHONY: help clean venv pip docs
@@ -107,6 +106,15 @@ install:
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/linux/config.lua $(INSTALLDIR)
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/images/* $(INSTALLDIR)/images
 	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(ASSETDIR)/common/lualibs/icebergsupport.lua $(INSTALLDIR)/lualibs/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/lualibs/socket
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 -d $(INSTALLDIR)/lualibs/mime
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUASOCKET_FILES1) $(INSTALLDIR)/lualibs/socket/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUASOCKET_FILES2) $(INSTALLDIR)/lualibs/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUASOCKET_SOCKET_LIB) $(INSTALLDIR)/lualibs/socket/core.so
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUASOCKET_MIME_LIB) $(INSTALLDIR)/lualibs/mime/core.so
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUACJSON_FILES) $(INSTALLDIR)/lualibs/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUAFILESYSTEM_FILES) $(INSTALLDIR)/lualibs/
+	install -o ${SUDO_USER} -g ${SUDO_USER} -m 0755 $(LUAXML_FILES) $(INSTALLDIR)/lualibs/
 
 # doc: show this message.
 help:

@@ -21,6 +21,7 @@ SOCKET_SO=libsocket.so
 MIME_SO=libmime.so
 LIBS=
 SOCKET_OBJS:= \
+	cbuffer.o \
 	luasocket.o \
 	timeout.o \
 	buffer.o \
@@ -32,6 +33,8 @@ SOCKET_OBJS:= \
 	udp.o \
 	except.o \
 	select.o \
+	unix.o \
+	usocket.o \
 
 endif
 
@@ -39,8 +42,8 @@ LUAINC=-I../../lua-5.1.4/src
 
 CC=gcc
 DEF=
-CFLAGS= $(LUAINC) $(DEF) -pedantic -Wall -O2
-LDFLAGS=-O -shared
+CFLAGS= $(LUAINC) $(DEF) -pedantic -Wall -O2 -fPIC
+LDFLAGS=-O -shared 
 LD=gcc 
 
 #------
@@ -74,6 +77,7 @@ $(MIME_SO): $(MIME_OBJS)
 #
 auxiliar.o: auxiliar.c auxiliar.h
 buffer.o: buffer.c buffer.h io.h timeout.h
+cbuffer.o: cbuffer.c cbuffer.h
 except.o: except.c except.h
 inet.o: inet.c inet.h socket.h io.h timeout.h wsocket.h
 io.o: io.c io.h timeout.h
@@ -89,6 +93,8 @@ timeout.o: timeout.c auxiliar.h timeout.h
 udp.o: udp.c auxiliar.h socket.h io.h timeout.h wsocket.h inet.h \
   options.h udp.h
 wsocket.o: wsocket.c socket.h io.h timeout.h wsocket.h
+usocket.o: usocket.c usocket.h
+unix.o: unix.c unix.h buffer.h io.h timeout.h socket.h
 
 clean:
 	rm -f $(SOCKET_SO) $(SOCKET_OBJS) 
