@@ -157,17 +157,17 @@ if [ "${IB_OSTYPE}" = "windows" ]; then
     echo "luawinalttab 1.0.0: installed"
   fi
 
-  if [ ! -d "${BASE_DIR}/ext/onig-5.9.6" ]; then
-    echo "Downloading Oniguruma 5.9.6"
+  if [ ! -d "${BASE_DIR}/ext/onig-6.9.8" ]; then
+    echo "Downloading Oniguruma 6.9.8"
     cd ${BASE_DIR}/ext
-    wget --no-check-certificate https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz -O onig-5.9.6.tar.gz
+    wget --no-check-certificate https://github.com/kkos/oniguruma/releases/download/v6.9.8/onig-6.9.8.tar.gz -O onig-6.9.8.tar.gz
   
-    echo "explode Oniguruma 5.9.6"
-    tar zxvf onig-5.9.6.tar.gz
-    rm -f onig-5.9.6.tar.gz
+    echo "explode Oniguruma 6.9.8"
+    tar zxvf onig-6.9.8.tar.gz
+    rm -f onig-6.9.8.tar.gz
   
-    echo "make Oniguruma 5.9.6"
-    cd onig-5.9.6
+    echo "make Oniguruma 6.9.8"
+    cd onig-6.9.8
     if [ "${IB_OSTYPE}" != "windows" ]; then
       ./configure
     else
@@ -179,7 +179,7 @@ if [ "${IB_OSTYPE}" = "windows" ]; then
     fi
     make
   else
-    echo "Oniguruma 5.9.6: installed"
+    echo "Oniguruma 6.9.8: installed"
   fi
 
   if [ ! -d "${BASE_DIR}/ext/cmigemo-1.3c-MIT" ]; then

@@ -356,11 +356,6 @@ void ib::Controller::loadConfig(const int argc, char* const *argv) { // {{{
     }
     lua_pop(IB_LUA, 1);
 
-    GET_FIELD("disable_direct_write", boolean) {
-       cfg->setDisableDirectWrite(lua_toboolean(IB_LUA, -1) != 0);
-    }
-    lua_pop(IB_LUA, 1);
-
     GET_FIELD("direct_write_params", string) {
       cfg->setDirectWriteParams(lua_tostring(IB_LUA, -1));
     }

@@ -116,7 +116,6 @@ static void set_winapi_error(ib::Error &error){ // {{{
 } // }}}
 
 // DirectWrite stuff {{{
-
 static inline int xdpi2px(int dpi) {
   return ceil(dpi * ib_g_dpi_x / 96.f);
 }
@@ -200,7 +199,7 @@ static int create_renderer_taget(HWND w) {
 
 static void create_current_dwrite_font_data() {
   const auto fontname = Fl::get_font(fl_font());
-  const auto font_desc = fl_graphics_driver->font_descriptor();
+  const auto font_desc = (Fl_GDI_Font_Descriptor*)Fl_Graphics_Driver::default_driver().font_descriptor();
   double factor = 1.0;
   if(fl_font() == ib::Fonts::input) {
     factor = 0.8;
@@ -227,7 +226,7 @@ static void create_current_dwrite_font_data() {
 }
 
 static IDWriteTextFormat* current_dwrite_text_format() {
-  const auto font_desc = fl_graphics_driver->font_descriptor();
+  const auto font_desc = (Fl_GDI_Font_Descriptor*)Fl_Graphics_Driver::default_driver().font_descriptor();
   const auto format = ib_g_textformat_map[font_desc->fid];
   if(format != nullptr) return format;
   create_current_dwrite_font_data();
@@ -243,6 +242,7 @@ static std::unique_ptr<ib::oschar[]> utf82ochar_n(const char *src, int n) {
   return std::unique_ptr<ib::oschar[]>(wbuf);
 }
 
+/*
 class Fl_GDIDWrite_Graphics_Driver : public Fl_GDI_Graphics_Driver {
 public:
   double width(const char *str, int n) {
@@ -266,7 +266,7 @@ public:
 
     RECT rc;
     GetClientRect(fl_window, &rc);
-    auto font_desc = font_descriptor();
+    const auto font_desc = (Fl_GDI_Font_Descriptor*)Fl_Graphics_Driver::default_driver().font_descriptor();
     auto cref = fl_RGB();
 
     auto form = current_dwrite_text_format();
@@ -309,7 +309,8 @@ public:
   double width(const char *str, int n) {
     auto osstr = utf82ochar_n(str, n);
     auto oldColor = SetTextColor(fl_gc, fl_RGB());
-    SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
+    const auto font_desc = (Fl_GDI_Font_Descriptor*)Fl_Graphics_Driver::default_driver().font_descriptor();
+    SelectObject(fl_gc, font_desc->fid);
     RECT rect;
     DrawTextW(fl_gc, osstr.get(), -1, &rect, DT_NOCLIP | DT_TOP | DT_SINGLELINE | DT_LEFT | DT_CALCRECT);
     SetTextColor(fl_gc, oldColor);
@@ -319,7 +320,8 @@ public:
   void draw(const char* str, int n, int x, int y) {
     auto osstr = utf82ochar_n(str, n);
     auto oldColor = SetTextColor(fl_gc, fl_RGB());
-    SelectObject(fl_gc, fl_graphics_driver->font_descriptor()->fid);
+    const auto font_desc = (Fl_GDI_Font_Descriptor*)Fl_Graphics_Driver::default_driver().font_descriptor();
+    SelectObject(fl_gc, font_desc->fid);
     RECT rect;
     rect.left = x;
     rect.top  = y;
@@ -332,6 +334,7 @@ public:
     draw(str, n, x, y); // ignore angles, iceberg does not use angled texts.
   }
 };
+*/
 // }}}
 
 // key2oskey {{{
@@ -781,10 +784,6 @@ int ib::platform::startup_system() { // {{{
   }
 
 
-  if(!cfg->getDisableDirectWrite()) {
-    cfg->setStyleInputFontSize(ceil(cfg->getStyleInputFontSize() * 1.25));
-  }
-
   WSADATA wsa;
   if (WSAStartup(MAKEWORD(2,0), &wsa) != 0) {
     ret = 1;
@@ -805,16 +804,11 @@ int ib::platform::init_system() { // {{{
   ib_g_hwnd_mb = fl_xid(ib::Singleton<ib::MessageBox>::getInstance());
   ib_g_hinst    = fl_display;
 
-  if(cfg->getDisableDirectWrite()) {
-    Fl_Surface_Device::surface()->driver(new Fl_FastGDI_Graphics_Driver);
-  } else {
-    Fl_Surface_Device::surface()->driver(new Fl_GDIDWrite_Graphics_Driver);
-    if(create_renderer_taget(ib_g_hwnd_main) != 0) {
-      return -1;
-    }
-    if(create_renderer_taget(ib_g_hwnd_list) != 0) {
-      return -1;
-    }
+  if(create_renderer_taget(ib_g_hwnd_main) != 0) {
+    return -1;
+  }
+  if(create_renderer_taget(ib_g_hwnd_list) != 0) {
+    return -1;
   }
 
   ib_g_wndproc = (WNDPROC)(GetWindowLongPtrW64(ib_g_hwnd_main, IB_GWL_WNDPROC));

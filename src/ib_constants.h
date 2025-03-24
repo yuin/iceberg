@@ -44,6 +44,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <deque>
+#include <limits>
 
 #define FL_INTERNALS
 #include <FL/Fl.H>

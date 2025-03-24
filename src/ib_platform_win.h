@@ -5,6 +5,7 @@
 #endif
 #include <windows.h>
 #include <windowsx.h>
+#include <Winuser.h>
 #include <tchar.h>
 #include <process.h>
 #include <shellapi.h>
@@ -13,6 +14,8 @@
 #include <lm.h>
 #include <D2d1.h>
 #include <Dwrite.h>
+#include "drivers/GDI/Fl_Font.H"
+#include "drivers/GDI/Fl_GDI_Graphics_Driver.H"
 
 namespace ib{
   typedef int          socklen;

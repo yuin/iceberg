@@ -62,9 +62,6 @@ namespace ib {
       bool getOptionAutocomplete() const { return option_autocomplete_; }
       void setOptionAutocomplete(const bool value){ option_autocomplete_ = value; }
 
-      bool getDisableDirectWrite() const { return disable_direct_write_; }
-      void setDisableDirectWrite(const bool value){ disable_direct_write_ = value; }
-
       const std::string& getDirectWriteParams() const { return direct_write_params_; }
       void setDirectWriteParams(const std::string &value){ direct_write_params_ = value; }
       void setDirectWriteParams(const char *value){ direct_write_params_ = value; }
@@ -259,7 +256,6 @@ namespace ib {
         server_port_(0),
         path_autocomplete_(true),
         option_autocomplete_(true),
-        disable_direct_write_(true),
         direct_write_params_("rendering_mode=5"),
         search_path_(),
         completer_(0),
@@ -336,7 +332,6 @@ namespace ib {
       unsigned int server_port_;
       bool         path_autocomplete_;
       bool         option_autocomplete_;
-      bool         disable_direct_write_;
       std::string  direct_write_params_;
       std::vector<ib::SearchPath*> search_path_;
       ib::Completer *completer_;
