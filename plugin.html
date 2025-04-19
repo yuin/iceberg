@@ -1,28 +1,26 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Plugins &#8212; iceberg 0.9.12 documentation</title>
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Plugins &#8212; iceberg 0.9.14 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/haiku.css?v=fce32b03" />
+    <script src="_static/documentation_options.js?v=d0ba2447"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Changes" href="changes.html" />
     <link rel="prev" title="API" href="api.html" /> 
   </head><body>
-      <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.12 documentation</span></a></h1>
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.14 documentation</span></a></h1>
         <h2 class="heading"><span>Plugins</span></h2>
       </div>
-      <div class="topnav" role="navigation" aria-label="top navigation">
+      <div class="topnav" role="navigation" aria-label="Top">
       
         <p>
         «&#160;&#160;<a href="api.html">API</a>
@@ -33,78 +31,78 @@
         </p>
 
       </div>
-      <div class="content">
+      <div class="content" role="main">
         
         
-  <div class="section" id="plugins">
-<h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+  <section id="plugins">
+<h1>Plugins<a class="headerlink" href="#plugins" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>iceberg has a plugin system. This document describes how to use and develop plugins.</p>
-</div>
-<div class="section" id="how-to-use">
-<h2>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="how-to-use">
+<h2>How to use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h2>
 <p>Just put a plugin directory under <code class="docutils literal notranslate"><span class="pre">${ICEBERG_CONFIG_HOME}/plugins</span></code> .</p>
 <p>You can disable a certain plugin by renaming its directory name with a new name starting with <code class="docutils literal notranslate"><span class="pre">_</span></code> .</p>
-</div>
-<div class="section" id="how-to-develop">
-<h2>How to develop<a class="headerlink" href="#how-to-develop" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="structures">
-<h3>Structures<a class="headerlink" href="#structures" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="how-to-develop">
+<h2>How to develop<a class="headerlink" href="#how-to-develop" title="Link to this heading">¶</a></h2>
+<section id="structures">
+<h3>Structures<a class="headerlink" href="#structures" title="Link to this heading">¶</a></h3>
 <p>A plugin is a simple directory that has <code class="docutils literal notranslate"><span class="pre">main.lua</span></code> . Typically, plugins have the following structure :</p>
 <blockquote>
-<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">plugin</span><span class="o">-</span><span class="n">name</span>          <span class="o">-</span> <span class="n">plugin</span> <span class="n">directory</span>
-  <span class="o">|</span>
-  <span class="o">+----</span> <span class="n">main</span><span class="p">.</span><span class="n">lua</span>     <span class="o">-</span> <span class="n">main</span> <span class="n">script</span> <span class="n">of</span> <span class="n">the</span> <span class="n">plugin</span>
-  <span class="o">|</span>
-  <span class="o">+----</span> <span class="n">icon</span><span class="p">.</span><span class="n">svg</span>     <span class="o">-</span> <span class="n">icon</span> <span class="n">file</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">plugin</span><span class="o">-</span><span class="nv">name</span><span class="w">          </span><span class="o">-</span><span class="w"> </span><span class="nv">plugin</span><span class="w"> </span><span class="nv">directory</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+----</span><span class="w"> </span><span class="nv">main</span><span class="p">.</span><span class="py">lua</span><span class="w">     </span><span class="o">-</span><span class="w"> </span><span class="nv">main</span><span class="w"> </span><span class="nv">script</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">plugin</span>
+<span class="w">  </span><span class="o">|</span>
+<span class="w">  </span><span class="o">+----</span><span class="w"> </span><span class="nv">icon</span><span class="p">.</span><span class="py">svg</span><span class="w">     </span><span class="o">-</span><span class="w"> </span><span class="nv">icon</span><span class="w"> </span><span class="nv">file</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="main-lua-template">
-<h3>main.lua template<a class="headerlink" href="#main-lua-template" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="main-lua-template">
+<h3>main.lua template<a class="headerlink" href="#main-lua-template" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="mi">01</span>  <span class="kd">local</span> <span class="n">ibs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;icebergsupport&quot;</span><span class="p">)</span>
-<span class="mi">02</span>  <span class="kd">local</span> <span class="n">script_path</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">source</span><span class="p">:</span><span class="n">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="mi">01</span><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">ibs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="p">(</span><span class="s2">&quot;icebergsupport&quot;</span><span class="p">)</span>
+<span class="mi">02</span><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">script_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ibs</span><span class="p">.</span><span class="nf">dirname</span><span class="p">(</span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nv">source</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="mi">03</span>
-<span class="mi">04</span>  <span class="kd">local</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
-<span class="mi">05</span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;myplugin&quot;</span><span class="p">,</span>
-<span class="mi">06</span>    <span class="n">conf1</span> <span class="o">=</span> <span class="s2">&quot;aaa&quot;</span>
-<span class="mi">07</span>  <span class="p">}</span>
-<span class="mi">08</span>  <span class="n">ibs</span><span class="p">.</span><span class="n">merge_table</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">plugin_myplugin</span> <span class="ow">or</span> <span class="p">{})</span>
+<span class="mi">04</span><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="mi">05</span><span class="w">    </span><span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;myplugin&quot;</span><span class="p">,</span>
+<span class="mi">06</span><span class="w">    </span><span class="nv">conf1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;aaa&quot;</span>
+<span class="mi">07</span><span class="w">  </span><span class="p">}</span>
+<span class="mi">08</span><span class="w">  </span><span class="nv">ibs</span><span class="p">.</span><span class="nf">merge_table</span><span class="p">(</span><span class="nv">config</span><span class="p">,</span><span class="w"> </span><span class="nv">plugin_myplugin</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">{})</span>
 <span class="mi">09</span>
-<span class="mi">10</span>  <span class="n">commands</span><span class="p">[</span><span class="n">config</span><span class="p">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-<span class="mi">11</span>    <span class="n">path</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-<span class="mi">12</span>    <span class="kr">end</span><span class="p">,</span>
-<span class="mi">13</span>    <span class="n">completion</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-<span class="mi">14</span>    <span class="kr">end</span><span class="p">,</span>
-<span class="mi">15</span>    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;My plugin&quot;</span><span class="p">,</span>
-<span class="mi">16</span>    <span class="n">icon</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">script_path</span><span class="p">,</span> <span class="s2">&quot;icon.svg&quot;</span><span class="p">),</span>
-<span class="mi">17</span>    <span class="n">history</span><span class="o">=</span><span class="kc">false</span>
-<span class="mi">18</span>  <span class="p">}</span>
+<span class="mi">10</span><span class="w">  </span><span class="nv">commands</span><span class="p">[</span><span class="nv">config</span><span class="p">.</span><span class="py">name</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="mi">11</span><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">args</span><span class="p">)</span>
+<span class="mi">12</span><span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="mi">13</span><span class="w">    </span><span class="nv">completion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">values</span><span class="p">,</span><span class="w"> </span><span class="nv">pos</span><span class="p">)</span>
+<span class="mi">14</span><span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="mi">15</span><span class="w">    </span><span class="nv">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;My plugin&quot;</span><span class="p">,</span>
+<span class="mi">16</span><span class="w">    </span><span class="nv">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ibs</span><span class="p">.</span><span class="nf">join_path</span><span class="p">(</span><span class="nv">script_path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;icon.svg&quot;</span><span class="p">),</span>
+<span class="mi">17</span><span class="w">    </span><span class="nv">history</span><span class="o">=</span><span class="kc">false</span>
+<span class="mi">18</span><span class="w">  </span><span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
 <ul class="simple">
-<li>Line 04 : Holds configurations for this plugin as a local variable.</li>
-<li>Line 08 : Users can overwrite the configurations with a global variable named <code class="docutils literal notranslate"><span class="pre">plugin_PLUGINNAME</span></code> .</li>
-<li>Line 09 : Adds a command. Refer to <a class="reference internal" href="config.html"><span class="doc">Configurations</span></a> for further information.</li>
+<li><p>Line 04 : Holds configurations for this plugin as a local variable.</p></li>
+<li><p>Line 08 : Users can overwrite the configurations with a global variable named <code class="docutils literal notranslate"><span class="pre">plugin_PLUGINNAME</span></code> .</p></li>
+<li><p>Line 09 : Adds a command. Refer to <a class="reference internal" href="config.html"><span class="doc">Configurations</span></a> for further information.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="available-plugins">
-<h2>Available plugins<a class="headerlink" href="#available-plugins" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="available-plugins">
+<h2>Available plugins<a class="headerlink" href="#available-plugins" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/yuin/iceberg-ip">iceberg-ip</a> : Shows your machine IP addresses</li>
-<li><a class="reference external" href="https://github.com/yuin/iceberg-worldtime">iceberg-worldtime</a> : Shows the current time at the cities in the world.</li>
+<li><p><a class="reference external" href="https://github.com/yuin/iceberg-ip">iceberg-ip</a> : Shows your machine IP addresses</p></li>
+<li><p><a class="reference external" href="https://github.com/yuin/iceberg-worldtime">iceberg-worldtime</a> : Shows the current time at the cities in the world.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
       </div>
-      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      <div class="bottomnav" role="navigation" aria-label="Bottom">
       
         <p>
         «&#160;&#160;<a href="api.html">API</a>
@@ -117,8 +115,8 @@
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2019, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.7.
+    &#169; Copyright 2012-2025, Yusuke Inuzuka.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

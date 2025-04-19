@@ -1,28 +1,26 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Changes &#8212; iceberg 0.9.12 documentation</title>
-    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Changes &#8212; iceberg 0.9.14 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/haiku.css?v=fce32b03" />
+    <script src="_static/documentation_options.js?v=d0ba2447"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Acknowledgements" href="acknowledgements.html" />
     <link rel="prev" title="Plugins" href="plugin.html" /> 
   </head><body>
-      <div class="header" role="banner"><img class="rightlogo" src="_static/iceberg.png" alt="Logo"/><h1 class="heading"><a href="index.html">
-          <span>iceberg 0.9.12 documentation</span></a></h1>
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>iceberg 0.9.14 documentation</span></a></h1>
         <h2 class="heading"><span>Changes</span></h2>
       </div>
-      <div class="topnav" role="navigation" aria-label="top navigation">
+      <div class="topnav" role="navigation" aria-label="Top">
       
         <p>
         «&#160;&#160;<a href="plugin.html">Plugins</a>
@@ -33,230 +31,229 @@
         </p>
 
       </div>
-      <div class="content">
+      <div class="content" role="main">
         
         
-  <div class="section" id="changes">
-<h1>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>0.9.12 (2019-01-17)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+  <section id="changes">
+<h1>Changes<a class="headerlink" href="#changes" title="Link to this heading">¶</a></h1>
+<section id="id1">
+<h2>0.9.13 (2025-04-20)<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>CHANGED: update fltk dependencies(1.3.4)</li>
-<li>IMPROVED: Now commands and <code class="docutils literal notranslate"><span class="pre">icebergsupport.shell_execute</span></code> take a <code class="docutils literal notranslate"><span class="pre">sudo</span></code> parameter.
-If this value is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the command will be run as an administrator user.</li>
-<li>IMPROVED: Now iceberg uses a more good looking message box</li>
+<li><p>CHANGED: update fltk dependencies(1.4.2)</p></li>
+<li><p>IMPROVED: HiDPI support</p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-11">
-<h3>How to upgrade from 0.9.11<a class="headerlink" href="#how-to-upgrade-from-0-9-11" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id2">
+<h2>0.9.12 (2019-01-17)<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>Download 0.9.12</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.11 and paste it to the 0.9.12</li>
-<li>Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></li>
-<li>Execute <code class="docutils literal notranslate"><span class="pre">:scan_search_path</span> <span class="pre">all</span></code></li>
+<li><p>CHANGED: update fltk dependencies(1.3.4)</p></li>
+<li><p>IMPROVED: Now commands and <code class="docutils literal notranslate"><span class="pre">icebergsupport.shell_execute</span></code> take a <code class="docutils literal notranslate"><span class="pre">sudo</span></code> parameter.
+If this value is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the command will be run as an administrator user.</p></li>
+<li><p>IMPROVED: Now iceberg uses a more good looking message box</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id2">
-<h2>0.9.11 (2016-10-03)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="how-to-upgrade-from-0-9-11">
+<h3>How to upgrade from 0.9.11<a class="headerlink" href="#how-to-upgrade-from-0-9-11" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li>IMPROVED: Improve DirectWrite drawing perfornamce.</li>
-<li>IMPROVED: Add <code class="docutils literal notranslate"><span class="pre">direct_write_params</span></code> option, This allows you to configure the details of DirectWrite.</li>
-<li>IMPROVED: Now <code class="docutils literal notranslate"><span class="pre">XDG_CONFIG_PATH</span></code> affects a config file path on Linux.</li>
-<li>IMPROVED: Now double clicking on the list box runs a selected command.</li>
-<li>CHANGED:  Change the lua module directory name from  <code class="docutils literal notranslate"><span class="pre">luamodule</span></code> to <code class="docutils literal notranslate"><span class="pre">lualibs</span></code> .</li>
-<li>FIXED: Fix a bug where a multibyte font name was ignored when DirectWrite is enabled.</li>
-<li>NEW: Add <code class="docutils literal notranslate"><span class="pre">icebergsupport.get_input_text_values</span></code></li>
-<li>NEW: Add <code class="docutils literal notranslate"><span class="pre">auto_merge</span></code></li>
-<li>CHANGED: Translate the main content of the documents from Japanese to English.</li>
+<li><p>Download 0.9.12</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.11 and paste it to the 0.9.12</p></li>
+<li><p>Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">:scan_search_path</span> <span class="pre">all</span></code></p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-10">
-<h3>How to upgrade from 0.9.10<a class="headerlink" href="#how-to-upgrade-from-0-9-10" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="id3">
+<h2>0.9.11 (2016-10-03)<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>Download 0.9.11</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.11 and paste it to the 0.9.10</li>
-<li>Replace <code class="docutils literal notranslate"><span class="pre">luamodule</span></code> to <code class="docutils literal notranslate"><span class="pre">lualibs</span></code> in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> and <code class="docutils literal notranslate"><span class="pre">luamodule/winsupport.lua</span></code></li>
+<li><p>IMPROVED: Improve DirectWrite drawing perfornamce.</p></li>
+<li><p>IMPROVED: Add <code class="docutils literal notranslate"><span class="pre">direct_write_params</span></code> option, This allows you to configure the details of DirectWrite.</p></li>
+<li><p>IMPROVED: Now <code class="docutils literal notranslate"><span class="pre">XDG_CONFIG_PATH</span></code> affects a config file path on Linux.</p></li>
+<li><p>IMPROVED: Now double clicking on the list box runs a selected command.</p></li>
+<li><p>CHANGED:  Change the lua module directory name from  <code class="docutils literal notranslate"><span class="pre">luamodule</span></code> to <code class="docutils literal notranslate"><span class="pre">lualibs</span></code> .</p></li>
+<li><p>FIXED: Fix a bug where a multibyte font name was ignored when DirectWrite is enabled.</p></li>
+<li><p>NEW: Add <code class="docutils literal notranslate"><span class="pre">icebergsupport.get_input_text_values</span></code></p></li>
+<li><p>NEW: Add <code class="docutils literal notranslate"><span class="pre">auto_merge</span></code></p></li>
+<li><p>CHANGED: Translate the main content of the documents from Japanese to English.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id3">
-<h2>0.9.10 (2016-08-30)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<section id="how-to-upgrade-from-0-9-10">
+<h3>How to upgrade from 0.9.10<a class="headerlink" href="#how-to-upgrade-from-0-9-10" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li>IMPROVED: Implement DirectWrite on Windows.</li>
+<li><p>Download 0.9.11</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.11 and paste it to the 0.9.10</p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">luamodule</span></code> to <code class="docutils literal notranslate"><span class="pre">lualibs</span></code> in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> and <code class="docutils literal notranslate"><span class="pre">luamodule/winsupport.lua</span></code></p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-9">
-<h3>How to upgrade from 0.9.9<a class="headerlink" href="#how-to-upgrade-from-0-9-9" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="id4">
+<h2>0.9.10 (2016-08-30)<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>Download 0.9.10</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.10 and paste it to the 0.9.9</li>
-<li>Add <code class="docutils literal notranslate"><span class="pre">disable_direct_write=true</span></code> to the <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> . If you want to enable DirectWrite, set false.</li>
+<li><p>IMPROVED: Implement DirectWrite on Windows.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id4">
-<h2>0.9.9 (2016-01-31)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="how-to-upgrade-from-0-9-9">
+<h3>How to upgrade from 0.9.9<a class="headerlink" href="#how-to-upgrade-from-0-9-9" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li>IMPROVED: Now completion functions takes an argument position as a second parameter.</li>
-<li>NEW: Add <code class="docutils literal notranslate"><span class="pre">icebergsupport.table_find</span></code> , <code class="docutils literal notranslate"><span class="pre">icebergsupport.getopts</span></code> and <code class="docutils literal notranslate"><span class="pre">icebergsupport.comp_state</span></code> .</li>
-<li>FIXED: Fix a possible deadlock while loading icons.</li>
-<li>FIXED: Fix a possible segfault while typing a keyboard.</li>
+<li><p>Download 0.9.10</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.10 and paste it to the 0.9.9</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">disable_direct_write=true</span></code> to the <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> . If you want to enable DirectWrite, set false.</p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-8">
-<h3>How to upgrade from 0.9.8<a class="headerlink" href="#how-to-upgrade-from-0-9-8" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="id5">
+<h2>0.9.9 (2016-01-31)<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>Download 0.9.9</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.9 and paste it to the 0.9.8</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">luamodule/icebergsupport.lua</span></code> from 0.9.9 and paste it to the 0.9.8</li>
+<li><p>IMPROVED: Now completion functions takes an argument position as a second parameter.</p></li>
+<li><p>NEW: Add <code class="docutils literal notranslate"><span class="pre">icebergsupport.table_find</span></code> , <code class="docutils literal notranslate"><span class="pre">icebergsupport.getopts</span></code> and <code class="docutils literal notranslate"><span class="pre">icebergsupport.comp_state</span></code> .</p></li>
+<li><p>FIXED: Fix a possible deadlock while loading icons.</p></li>
+<li><p>FIXED: Fix a possible segfault while typing a keyboard.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id5">
-<h2>0.9.8 (2015-12-27)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<section id="how-to-upgrade-from-0-9-8">
+<h3>How to upgrade from 0.9.8<a class="headerlink" href="#how-to-upgrade-from-0-9-8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li>NEW: Command definitions now have a <code class="docutils literal notranslate"><span class="pre">terminal</span></code> attribute.</li>
-<li>IMPROVED: Now iceberg detects an update of environment variables on Windows, so you do not need to reboot the iceberg when you update environment variables anymore.</li>
-<li>IMPROVED: Standardization a plugin structure.</li>
-<li>IMPROVED: Now the <code class="docutils literal notranslate"><span class="pre">config.d</span></code> directory is available on Windows.</li>
-<li>FIXED: Fix the bug where loading a GIF or an XPM file causes segfault.</li>
+<li><p>Download 0.9.9</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.9 and paste it to the 0.9.8</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">luamodule/icebergsupport.lua</span></code> from 0.9.9 and paste it to the 0.9.8</p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-7">
-<h3>How to upgrade from 0.9.7<a class="headerlink" href="#how-to-upgrade-from-0-9-7" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="id6">
+<h2>0.9.8 (2015-12-27)<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>NEW: Command definitions now have a <code class="docutils literal notranslate"><span class="pre">terminal</span></code> attribute.</p></li>
+<li><p>IMPROVED: Now iceberg detects an update of environment variables on Windows, so you do not need to reboot the iceberg when you update environment variables anymore.</p></li>
+<li><p>IMPROVED: Standardization a plugin structure.</p></li>
+<li><p>IMPROVED: Now the <code class="docutils literal notranslate"><span class="pre">config.d</span></code> directory is available on Windows.</p></li>
+<li><p>FIXED: Fix the bug where loading a GIF or an XPM file causes segfault.</p></li>
+</ul>
+<section id="how-to-upgrade-from-0-9-7">
+<h3>How to upgrade from 0.9.7<a class="headerlink" href="#how-to-upgrade-from-0-9-7" title="Link to this heading">¶</a></h3>
 <ul>
-<li><p class="first">Download 0.9.8</p>
-</li>
-<li><p class="first">Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> and <code class="docutils literal notranslate"><span class="pre">luamodule/icebergsupport.lua</span></code> from 0.9.8 and paste it to the 0.9.7</p>
-</li>
-<li><p class="first">Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p>
-</li>
-<li><p class="first">Create <code class="docutils literal notranslate"><span class="pre">plugins</span></code> directory under <code class="docutils literal notranslate"><span class="pre">ICEBERG_CONFIG_HOME</span></code></p>
-</li>
-<li><p class="first">Create <code class="docutils literal notranslate"><span class="pre">config.d</span></code> directory under <code class="docutils literal notranslate"><span class="pre">ICEBERG_CONFIG_HOME</span></code> (Windows user only)</p>
-</li>
-<li><p class="first">Add <code class="docutils literal notranslate"><span class="pre">terminal</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> like the following (Windows user only)</p>
+<li><p>Download 0.9.8</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> and <code class="docutils literal notranslate"><span class="pre">luamodule/icebergsupport.lua</span></code> from 0.9.8 and paste it to the 0.9.7</p></li>
+<li><p>Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">plugins</span></code> directory under <code class="docutils literal notranslate"><span class="pre">ICEBERG_CONFIG_HOME</span></code></p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">config.d</span></code> directory under <code class="docutils literal notranslate"><span class="pre">ICEBERG_CONFIG_HOME</span></code> (Windows user only)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">terminal</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> like the following (Windows user only)</p>
 <blockquote>
-<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">terminal</span> <span class="o">=</span> <span class="s2">&quot;cmd /k ${1}&quot;</span><span class="p">,</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">terminal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;cmd /k ${1}&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
 </li>
-<li><p class="first">Add the following line to the end of the <code class="docutils literal notranslate"><span class="pre">config.lua</span></code></p>
+<li><p>Add the following line to the end of the <code class="docutils literal notranslate"><span class="pre">config.lua</span></code></p>
 <blockquote>
-<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">ibs</span><span class="p">.</span><span class="n">load_lua_files</span><span class="p">(</span><span class="n">ibs</span><span class="p">.</span><span class="n">join_path</span><span class="p">(</span><span class="n">script_path</span><span class="p">,</span> <span class="s2">&quot;config.d&quot;</span><span class="p">))</span>
-<span class="n">ibs</span><span class="p">.</span><span class="n">load_plugins</span><span class="p">()</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">ibs</span><span class="p">.</span><span class="nf">load_lua_files</span><span class="p">(</span><span class="nv">ibs</span><span class="p">.</span><span class="nf">join_path</span><span class="p">(</span><span class="nv">script_path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.d&quot;</span><span class="p">))</span>
+<span class="nv">ibs</span><span class="p">.</span><span class="nf">load_plugins</span><span class="p">()</span>
 </pre></div>
 </div>
 </div></blockquote>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="id6">
-<h2>0.9.7 (2015-11-19)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="id7">
+<h2>0.9.7 (2015-11-19)<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>NEW: Now iceberg works on Linux!</li>
-<li>NEW: Now you can use svg images as icons.</li>
-<li>CHANGED: Update fltk to 1.3.3.</li>
-<li>CHANGED: Update Oniguruma to 5.9.6.</li>
+<li><p>NEW: Now iceberg works on Linux!</p></li>
+<li><p>NEW: Now you can use svg images as icons.</p></li>
+<li><p>CHANGED: Update fltk to 1.3.3.</p></li>
+<li><p>CHANGED: Update Oniguruma to 5.9.6.</p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-6">
-<h3>How to upgrade from 0.9.6<a class="headerlink" href="#how-to-upgrade-from-0-9-6" title="Permalink to this headline">¶</a></h3>
+<section id="how-to-upgrade-from-0-9-6">
+<h3>How to upgrade from 0.9.6<a class="headerlink" href="#how-to-upgrade-from-0-9-6" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li>Download 0.9.7</li>
-<li>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.7 and paste it to the 0.9.6</li>
-<li>Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></li>
+<li><p>Download 0.9.7</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.7 and paste it to the 0.9.6</p></li>
+<li><p>Delete <code class="docutils literal notranslate"><span class="pre">commands.cache</span></code> and  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id7">
-<h2>0.9.6 (2014-10-20)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="id8">
+<h2>0.9.6 (2014-10-20)<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>FIXED: Fix the bug where some icons are not loaded correctly.</li>
-<li>NEW:  Add <code class="docutils literal notranslate"><span class="pre">path_autocomplete</span></code> and <code class="docutils literal notranslate"><span class="pre">option_autocomplete</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> .</li>
-<li>FIXED: Fix a a possible crash while reading certain paths.</li>
-<li>CHANGED: Now iceberg binary distributions are compiled with MinGW-W64 4.9.1 .</li>
-<li>IMPROVED: Now you can set a single key to <code class="docutils literal notranslate"><span class="pre">hot_key</span></code> .</li>
+<li><p>FIXED: Fix the bug where some icons are not loaded correctly.</p></li>
+<li><p>NEW:  Add <code class="docutils literal notranslate"><span class="pre">path_autocomplete</span></code> and <code class="docutils literal notranslate"><span class="pre">option_autocomplete</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> .</p></li>
+<li><p>FIXED: Fix a a possible crash while reading certain paths.</p></li>
+<li><p>CHANGED: Now iceberg binary distributions are compiled with MinGW-W64 4.9.1 .</p></li>
+<li><p>IMPROVED: Now you can set a single key to <code class="docutils literal notranslate"><span class="pre">hot_key</span></code> .</p></li>
 </ul>
-<div class="section" id="how-to-upgrade-from-0-9-5">
-<h3>How to upgrade from 0.9.5<a class="headerlink" href="#how-to-upgrade-from-0-9-5" title="Permalink to this headline">¶</a></h3>
+<section id="how-to-upgrade-from-0-9-5">
+<h3>How to upgrade from 0.9.5<a class="headerlink" href="#how-to-upgrade-from-0-9-5" title="Link to this heading">¶</a></h3>
 <ul>
-<li><p class="first">Download 0.9.6</p>
-</li>
-<li><p class="first">Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.6 and paste it to the 0.9.5</p>
-</li>
-<li><p class="first">Delete  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p>
-</li>
-<li><p class="first">Add <code class="docutils literal notranslate"><span class="pre">path_autocomplete</span></code> and <code class="docutils literal notranslate"><span class="pre">option_autocomplete</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> like the following:</p>
+<li><p>Download 0.9.6</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">iceberg.exe</span></code> from 0.9.6 and paste it to the 0.9.5</p></li>
+<li><p>Delete  <code class="docutils literal notranslate"><span class="pre">icons.cache</span></code></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">path_autocomplete</span></code> and <code class="docutils literal notranslate"><span class="pre">option_autocomplete</span></code> to <code class="docutils literal notranslate"><span class="pre">system</span></code> global variable in <code class="docutils literal notranslate"><span class="pre">config.lua</span></code> like the following:</p>
 <blockquote>
-<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">path_autocomplete</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="n">option_autocomplete</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">path_autocomplete</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">option_autocomplete</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="id8">
-<h2>0.9.5 (2014-03-04)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="id9">
+<h2>0.9.5 (2014-03-04)<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>FIXED: <code class="docutils literal notranslate"><span class="pre">'&amp;'</span></code> can not be shown in the list box.</li>
-<li>FIXED: Some key combinations(e.g. <code class="docutils literal notranslate"><span class="pre">shift-tab</span></code> ) do not work correctly.</li>
+<li><p>FIXED: <code class="docutils literal notranslate"><span class="pre">'&amp;'</span></code> can not be shown in the list box.</p></li>
+<li><p>FIXED: Some key combinations(e.g. <code class="docutils literal notranslate"><span class="pre">shift-tab</span></code> ) do not work correctly.</p></li>
 </ul>
-</div>
-<div class="section" id="id9">
-<h2>0.9.4 (2013-11-05)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id10">
+<h2>0.9.4 (2013-11-05)<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>NEW: Add <code class="docutils literal notranslate"><span class="pre">always_match</span></code> to completion candidates.</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.selected_index</span></code> , <code class="docutils literal notranslate"><span class="pre">icebergsupport.brshift</span></code> and <code class="docutils literal notranslate"><span class="pre">icebergsupport.blshift</span></code></li>
+<li><p>NEW: Add <code class="docutils literal notranslate"><span class="pre">always_match</span></code> to completion candidates.</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.selected_index</span></code> , <code class="docutils literal notranslate"><span class="pre">icebergsupport.brshift</span></code> and <code class="docutils literal notranslate"><span class="pre">icebergsupport.blshift</span></code></p></li>
 </ul>
-</div>
-<div class="section" id="id10">
-<h2>0.9.3 (2013-11-01)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id11">
+<h2>0.9.3 (2013-11-01)<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>FIXED: shift+arrow keys does not work.</li>
-<li>FIXED: Fix a possible crash while opening the context menu of certain items.</li>
-<li>FIXED: Relative paths are not converted correctly to an absolute path.</li>
-<li>FIXED: Fix the bug where rebooting is failed if <code class="docutils literal notranslate"><span class="pre">server_port</span></code> is enabled.</li>
-<li>CHANGED: Now record a command name to the history even though <code class="docutils literal notranslate"><span class="pre">history</span></code> is set to <code class="docutils literal notranslate"><span class="pre">false</span></code> .</li>
-<li>IMPROVED: A modal window can be closed by the Enter key.</li>
+<li><p>FIXED: shift+arrow keys does not work.</p></li>
+<li><p>FIXED: Fix a possible crash while opening the context menu of certain items.</p></li>
+<li><p>FIXED: Relative paths are not converted correctly to an absolute path.</p></li>
+<li><p>FIXED: Fix the bug where rebooting is failed if <code class="docutils literal notranslate"><span class="pre">server_port</span></code> is enabled.</p></li>
+<li><p>CHANGED: Now record a command name to the history even though <code class="docutils literal notranslate"><span class="pre">history</span></code> is set to <code class="docutils literal notranslate"><span class="pre">false</span></code> .</p></li>
+<li><p>IMPROVED: A modal window can be closed by the Enter key.</p></li>
 </ul>
-</div>
-<div class="section" id="id11">
-<h2>0.9.2 (2013-09-07)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id12">
+<h2>0.9.2 (2013-09-07)<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>FIXED: Non-threadsafe functions are called under a multithreaded environment without locks.</li>
-<li>IMPROVED: Now completion functions are defined in a command definition.</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.get_clipboard_histories</span></code> and <code class="docutils literal notranslate"><span class="pre">system.max_clipboard_histories</span></code> .</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">clipboard</span></code> command as a default command .</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.add_history</span></code></li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">activate</span></code> CUI option</li>
+<li><p>FIXED: Non-threadsafe functions are called under a multithreaded environment without locks.</p></li>
+<li><p>IMPROVED: Now completion functions are defined in a command definition.</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.get_clipboard_histories</span></code> and <code class="docutils literal notranslate"><span class="pre">system.max_clipboard_histories</span></code> .</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">clipboard</span></code> command as a default command .</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.add_history</span></code></p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">activate</span></code> CUI option</p></li>
 </ul>
-</div>
-<div class="section" id="id12">
-<h2>0.9.1 (2013-08-24)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id13">
+<h2>0.9.1 (2013-08-24)<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>FIXED: Can not execute <code class="docutils literal notranslate"><span class="pre">*.lnk</span></code> when the input box has a value that is enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> .</li>
-<li>FIXED: Compiletion candidates is not filtered correctly when a completion function returns a table.</li>
-<li>IMPROVED: Now you can use jpeng files as an icon.</li>
-<li>IMPROVED: More effective icon caching methods.</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.unquote_path</span></code>  .</li>
-<li>NEW: <code class="docutils literal notranslate"><span class="pre">alttab</span></code> command as a default command.</li>
+<li><p>FIXED: Can not execute <code class="docutils literal notranslate"><span class="pre">*.lnk</span></code> when the input box has a value that is enclosed in <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> .</p></li>
+<li><p>FIXED: Compiletion candidates is not filtered correctly when a completion function returns a table.</p></li>
+<li><p>IMPROVED: Now you can use jpeng files as an icon.</p></li>
+<li><p>IMPROVED: More effective icon caching methods.</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">icebergsupport.unquote_path</span></code>  .</p></li>
+<li><p>NEW: <code class="docutils literal notranslate"><span class="pre">alttab</span></code> command as a default command.</p></li>
 </ul>
-</div>
-<div class="section" id="id13">
-<h2>0.9.0 (2013-08-15)<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id14">
+<h2>0.9.0 (2013-08-15)<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li>First release</li>
+<li><p>First release</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
       </div>
-      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      <div class="bottomnav" role="navigation" aria-label="Bottom">
       
         <p>
         «&#160;&#160;<a href="plugin.html">Plugins</a>
@@ -269,8 +266,8 @@ If this value is set to <code class="docutils literal notranslate"><span class="
       </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2012-2019, Yusuke Inuzuka.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.7.
+    &#169; Copyright 2012-2025, Yusuke Inuzuka.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>
