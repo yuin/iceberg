@@ -489,7 +489,18 @@ void ib::utils::set_clipboard(const char *text) { // {{{
   ib::utils::get_clipboard(tmp);
 #endif
 } // }}}
+  
+int ib::utils::scaled_size(const int s) { // {{{
+  float scale = 1.0;
+  int   screen = 0;
 
+  const auto* const window = ib::Singleton<ib::MainWindow>::getInstance();
+  screen = Fl::screen_num(window->x(), window->y(), window->w(), window->h());
+
+  scale = Fl::screen_scale(screen);
+  return s * scale;
+} // }}}
+  
 std::string ib::utils::to_command_name(const std::string &string){ // {{{
   //TODO needs more efficiency
   ib::Regex re("\\s+", ib::Regex::NONE);

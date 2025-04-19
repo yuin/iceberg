@@ -59,7 +59,7 @@ Fl_Image* ib::CompletionString::loadIcon(const int size) { // {{{
     ib::oschar ospath[IB_MAX_PATH];
     ib::platform::utf82oschar_b(ospath, IB_MAX_PATH, icon_file_.c_str());
     if(ib::platform::is_path(ospath)){
-      return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(icon_file_.c_str(), size);
+      return ib::Singleton<ib::IconManager>::getInstance()->getImgFileIcon(icon_file_.c_str(), size);
     }else{
       return nullptr;
     }
@@ -122,7 +122,7 @@ Fl_Image* ib::Command::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     return icon_manager->getAssociatedIcon(command_path_.c_str(), size);
   }else{
-    return icon_manager->readFileIcon(icon_file_.c_str(), size);
+    return icon_manager->getImgFileIcon(icon_file_.c_str(), size);
   }
 } // }}}
 
@@ -199,7 +199,7 @@ Fl_Image* ib::LuaFunctionCommand::loadIcon(const int size) { // {{{
   if(icon_file_.empty()){
     return icon_manager->getLuaIcon(size);
   }else{
-    return icon_manager->readFileIcon(icon_file_.c_str(), size);
+    return icon_manager->getImgFileIcon(icon_file_.c_str(), size);
   }
 } // }}}
 

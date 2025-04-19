@@ -50,7 +50,7 @@ endif
 
 RM=rm -rf
 CP=cp
-VIRTUALENV=virtualenv
+VIRTUALENV=python3 -m venv
 BINDIR=bin
 TESTDIR=tests
 ASSETDIR=assets

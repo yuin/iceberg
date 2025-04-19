@@ -1368,7 +1368,7 @@ Fl_Image* ib::platform::get_associated_icon_image(const ib::oschar *path, const 
   }
 
   if(!iconpath.empty() && ib::platform::file_exists(iconpath.c_str())) {
-    return ib::Singleton<ib::IconManager>::getInstance()->readFileIcon(iconpath.c_str(), size);
+    return ib::Singleton<ib::IconManager>::getInstance()->getImgFileIcon(iconpath.c_str(), size);
   }
   return nullptr;
 } /* }}} */

@@ -185,9 +185,6 @@ Examples and descriptions
           -- should do autocompletion in an option completion --
           option_autocomplete = true,
 
-          -- do not use DirectWrite --
-          disable_direct_write = false,
-
           -- DirectWrite parameters. an empty string means using default parameter --
           direct_write_params="gamma=1.8,enchanced_contrast=0.5,clear_type_level=0.5,pixel_geometry=0,rendering_mode=5",
 
@@ -434,7 +431,7 @@ This function will be executed just after iceberg is launched.
 
     .. code-block:: lua
 
-        function on_enter()
+        function on_initialize()
           local error = 0
           return error
         end

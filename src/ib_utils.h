@@ -71,6 +71,9 @@ namespace ib {
     void set_clipboard(const std::string &text);
     void set_clipboard(const char *text);
 
+    /* hiDPI stuff */
+    int scaled_size(int);
+
     /* command stuff */
     std::string to_command_name(const std::string &string);
     int  open_directory(const std::string &path, ib::Error &error);

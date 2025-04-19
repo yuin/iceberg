@@ -1,8 +1,9 @@
 Changes
 =======================
-0.9.13 (2025-02-24)
+0.9.13 (2025-04-20)
 -----------------------
-- CHANGED: update fltk dependencies(1.4.2), so iceberg now works nicely with HiDPI displays on Linux.
+- CHANGED: update fltk dependencies(1.4.2)
+- IMPROVED: HiDPI support
 
 0.9.12 (2019-01-17)
 -----------------------
