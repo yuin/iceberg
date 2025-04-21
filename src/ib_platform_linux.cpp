@@ -1213,6 +1213,7 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
     auto prop_name = kvf.get(SECTION_KEY, "Name");
     if(prop_name.empty()) return; // Name is a required value. ignore errors;
     auto name = ib::utils::to_command_name(prop_name);
+    cmd->setName(name);
 
     auto prop_comment = kvf.get(SECTION_KEY, "Comment");
     if(!prop_comment.empty()){
