@@ -1051,9 +1051,8 @@ static int ib_platform_shell_execute(const std::string &path, const std::string 
       }
       if(isterm) {
         ib::string_map values;
-        cmd += ";";
-        cmd += getenv("SHELL");
         values.insert(ib::string_pair("1", ("'" + cmd + "'")));
+        values.insert(ib::string_pair("SHELL", getenv("SHELL")));
         cmd = ib::utils::expand_vars(ib::Singleton<ib::Config>::getInstance()->getTerminal(), values);
       }
     } else {
