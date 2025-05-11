@@ -1271,6 +1271,8 @@ void desktop_entry2command(ib::Command *cmd, const char *path) { // {{{
             command += quoted;
           }
         }
+        ib::utils::ltrim_string(command);
+        ib::utils::rtrim_string(command);
         cmd->setPath(command);
       }
       auto prop_terminal = kvf.get(SECTION_KEY, "Terminal");

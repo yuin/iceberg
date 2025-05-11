@@ -45,6 +45,16 @@ namespace ib {
     };
     inline unsigned int utf8len(const char c){return utf8_skip_data[(unsigned char)c]; }
     inline unsigned int utf8len(const char *str){return utf8_skip_data[(unsigned char)str[0]];}
+     inline void ltrim_string(std::string &s) {
+         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+             return !std::isspace(ch);
+         }));
+     }
+     inline void rtrim_string(std::string &s) {
+         s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+             return !std::isspace(ch);
+         }).base(), s.end());
+     }
 
     /* keyboard stuff */
     std::string expand_vars(const std::string &tpl, const string_map &values);
